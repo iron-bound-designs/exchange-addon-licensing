@@ -257,6 +257,22 @@ abstract class ITELIC_DB_Base {
 		$where    = $this->translate_where( $wheres );
 		$order_by = $this->translate_order_by( $orders );
 
+		return $this->assemble_statement( $select, $where, $order_by, $count, $offset );
+	}
+
+	/**
+	 * Assemble a sql statement.
+	 *
+	 * @param string $select
+	 * @param string $where
+	 * @param string $order_by
+	 * @param int    $count
+	 * @param int    $offset
+	 *
+	 * @return string
+	 */
+	protected function assemble_statement( $select = '*', $where = '', $order_by = '', $count = null, $offset = null ) {
+
 		$statement = "SELECT $select FROM {$this->table_name}";
 
 		if ( ! empty( $where ) ) {

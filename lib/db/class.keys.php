@@ -9,6 +9,11 @@
 class ITELIC_DB_Keys extends ITELIC_DB_Base {
 
 	/**
+	 * @var ITELIC_DB_Keys|null
+	 */
+	protected static $instance = null;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -17,6 +22,95 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 		$this->version     = 1.0;
 		$this->primary_key = 'key';
 		$this->table_name  = $this->wpdb->prefix . 'itelic_keys';
+	}
+
+	/**
+	 * Retrieve an instance of the db.
+	 *
+	 * @return ITELIC_DB_Keys
+	 */
+	public static function instance() {
+		if ( self::$instance === null ) {
+			self::$instance = new ITELIC_DB_Keys();
+		}
+
+		return self::$instance;
+	}
+
+	/**
+	 * Retrieve all licenses.
+	 *
+	 * @return object
+	 */
+	public static function all() {
+
+		$db = self::instance();
+
+		$query = $db->build_query();
+
+		return $db->wpdb->get_results( $query );
+	}
+
+	/**
+	 * Retrieve information about a license key.
+	 *
+	 * @param string $key
+	 *
+	 * @return object
+	 */
+	public static function retrieve( $key ) {
+
+		$db = self::instance();
+
+		return $db->get( $key );
+	}
+
+	/**
+	 * Find the first matching value.
+	 *
+	 * @param string $col Column to find a license by.
+	 * @param string $val Value of that column.
+	 *
+	 * @return object
+	 */
+	public static function find( $col, $val ) {
+
+		$db = self::instance();
+
+		return $db->get_by( $col, $val );
+	}
+
+	/**
+	 * Find many keys by a certain column or value.
+	 *
+	 * @param string $col Column to find licenses by.
+	 * @param string $val Value of that column.
+	 *
+	 * @return object
+	 */
+	public static function many( $col, $val ) {
+
+		$db = self::instance();
+
+		$query = $db->build_query( "*", array( $col => $val ) );
+
+		return $db->wpdb->get_results( $query );
+	}
+
+	/**
+	 * Search for license keys by multiple values.
+	 *
+	 * @param array $where
+	 *
+	 * @return object
+	 */
+	public static function search( $where ) {
+
+		$db = self::instance();
+
+		$query = $db->build_query( '*', $where );
+
+		return $db->wpdb->get_results( $query );
 	}
 
 	/**
