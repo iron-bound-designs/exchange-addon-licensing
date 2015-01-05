@@ -126,6 +126,7 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 		return array(
 			'lkey'           => '%s',
 			'transaction_id' => '%d',
+			'product'        => '%d',
 			'customer'       => '%d',
 			'status'         => '%s',
 			'count'          => '%d',
@@ -144,6 +145,7 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 		return array(
 			'lkey'           => '',
 			'transaction_id' => 0,
+			'product'        => 0,
 			'customer'       => 0,
 			'status'         => 'active',
 			'count'          => 0,
@@ -161,6 +163,7 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 		$sql = "CREATE TABLE {$this->table_name} (
 		lkey VARCHAR(255) NOT NULL,
 		transaction_id INT NOT NULL,
+		product INT NOT NULL,
 		customer INT NOT NULL,
 		status VARCHAR(255) NOT NULL,
 		count INT NOT NULL,
