@@ -68,7 +68,15 @@ class ITELIC_Key {
 	 * @throws InvalidArgumentException If an invalid transaction, product or customer.
 	 */
 	public function __construct( $data ) {
+		$this->init( $data );
+	}
 
+	/**
+	 * Initialize this object.
+	 *
+	 * @param object $data
+	 */
+	protected function init( $data ) {
 		$this->key         = $data->lkey;
 		$this->transaction = it_exchange_get_transaction( $data->transaction_id );
 		$this->product     = it_exchange_get_product( $data->product );
@@ -123,6 +131,22 @@ class ITELIC_Key {
 	}
 
 	/**
+	 * Log an activation of this license.
+	 *
+	 * @param ITELIC_Activation $activation
+	 */
+	public function log_activation( ITELIC_Activation $activation ) {
+		$update = array(
+			'count' => $this->get_count() + 1
+		);
+
+		$db = ITELIC_DB_Keys::instance();
+		$db->update( $this->get_key(), $update );
+
+		$this->refresh();
+	}
+
+	/**
 	 * @return string
 	 */
 	public function get_key() {
@@ -169,5 +193,12 @@ class ITELIC_Key {
 	 */
 	public function get_max() {
 		return $this->max;
+	}
+
+	/**
+	 * Refresh this object's properties.
+	 */
+	protected function refresh() {
+		$this->init( ITELIC_DB_Keys::retrieve( $this->get_key() ) );
 	}
 }
