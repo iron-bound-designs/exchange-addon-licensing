@@ -56,15 +56,15 @@ class ITELIC_DB_Activations extends ITELIC_DB_Base {
 	/**
 	 * Retrieve information about an activation.
 	 *
-	 * @param string $key
+	 * @param int $id
 	 *
 	 * @return object
 	 */
-	public static function retrieve( $key ) {
+	public static function retrieve( $id ) {
 
 		$db = self::instance();
 
-		return $db->get( $key );
+		return $db->get( $id );
 	}
 
 	/**
