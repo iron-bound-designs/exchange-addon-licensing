@@ -50,44 +50,52 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 
 		$downloads = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, 'downloads' );
 		$data      = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, $this->slug );
+
+		$hidden = $data['enabled'] ? '' : ' hide-if-js';
 		?>
 
 		<p><?php echo $this->description; ?></p>
 
-		<label for="itelic-limit"><?php _e( "Activation Limit", ITELIC::SLUG ); ?></label>
-		<input type="number" name="itelic[limit]" id="itelic-limit" min="0" value="<?php echo esc_attr( $data['limit'] ); ?>">
+		<p>
+			<input type="checkbox" id="itelic-enable" name="itelic[enabled]" <?php checked( true, $data['enabled'] ); ?>>
+			<label for="itelic-enable"><?php _e( "Enable Licensing for this product" ); ?></label>
+		</p>
 
-		<p class="description"><?php _e( "How many times can this license be activated. Leave blank for unlimited.", ITELIC::SLUG ); ?></p>
+		<div class="itelic-settings<?php echo esc_attr( $hidden ); ?>">
+			<label for="itelic-limit"><?php _e( "Activation Limit", ITELIC::SLUG ); ?></label>
+			<input type="number" name="itelic[limit]" id="itelic-limit" min="0" value="<?php echo esc_attr( $data['limit'] ); ?>">
 
-		<label for="itelic-key-type"><?php _e( "Key Type", ITELIC::SLUG ); ?></label>
-		<select id="itelic-key-type" name="itelic[key-type]">
+			<p class="description"><?php _e( "How many times can this license be activated. Leave blank for unlimited.", ITELIC::SLUG ); ?></p>
 
-			<option value=""><?php _e( "Select a Key Type", ITELIC::SLUG ); ?></option>
+			<label for="itelic-key-type"><?php _e( "Key Type", ITELIC::SLUG ); ?></label>
+			<select id="itelic-key-type" name="itelic[key-type]">
 
-			<?php foreach ( itelic_get_key_types() as $slug => $type ): ?>
-				<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $data['key-type'], $slug ); ?>>
-					<?php echo itelic_get_key_type_name( $slug ); ?>
-				</option>
-			<?php endforeach; ?>
-		</select>
+				<option value=""><?php _e( "Select a Key Type", ITELIC::SLUG ); ?></option>
 
-		<p class="description"><?php _e( "How should license keys be generated for this product.", ITELIC::SLUG ); ?></p>
+				<?php foreach ( itelic_get_key_types() as $slug => $type ): ?>
+					<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $data['key-type'], $slug ); ?>>
+						<?php echo itelic_get_key_type_name( $slug ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
 
-		<div id="itelic-key-type-settings">
-			<?php if ( $data['key-type'] != - 1 ): ?>
-				<?php $this->get_key_type_settings( $data['key-type'], isset( $post->ID ) ? $post->ID : 0 ); ?>
-			<?php endif; ?>
+			<p class="description"><?php _e( "How should license keys be generated for this product.", ITELIC::SLUG ); ?></p>
+
+			<div id="itelic-key-type-settings">
+				<?php if ( $data['key-type'] != - 1 ): ?>
+					<?php $this->get_key_type_settings( $data['key-type'], isset( $post->ID ) ? $post->ID : 0 ); ?>
+				<?php endif; ?>
+			</div>
+
+			<label for="itelic-update-file"><?php _e( "Update File", ITELIC::SLUG ); ?></label>
+			<select id="itelic-update-file" name="itelic[update-file]">
+				<?php foreach ( $downloads as $download ): ?>
+					<option value="<?php echo esc_attr( $download['id'] ); ?>"><?php echo $download['name']; ?></option>
+				<?php endforeach; ?>
+			</select>
+
+			<p class="description"><?php _e( "Select a file to be used for automatic updates.", ITELIC::SLUG ); ?></p>
 		</div>
-
-		<label for="itelic-update-file"><?php _e( "Update File", ITELIC::SLUG ); ?></label>
-		<select id="itelic-update-file" name="itelic[update-file]">
-			<?php foreach ( $downloads as $download ): ?>
-				<option value="<?php echo esc_attr( $download['id'] ); ?>"><?php echo $download['name']; ?></option>
-			<?php endforeach; ?>
-		</select>
-
-		<p class="description"><?php _e( "Select a file to be used for automatic updates.", ITELIC::SLUG ); ?></p>
-
 	<?php
 	}
 
@@ -159,6 +167,8 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 			return;
 		}
 
+		$_POST['itelic']['enabled'] = isset( $_POST['itelic'] ) ? it_exchange_str_true( $_POST['itelic']['enabled'] ) : false;
+
 		it_exchange_update_product_feature( $product_id, $this->slug, $_POST['itelic'] );
 	}
 
@@ -194,9 +204,10 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 	 */
 	public function get_feature( $existing, $product_id, $options = array() ) {
 		$defaults = array(
+			'enabled'     => false,
 			'limit'       => '',
 			'key-type'    => '',
-			'update-file' => ''
+			'update-file' => '',
 		);
 
 		$values   = get_post_meta( $product_id, '_it_exchange_itelic_feature', true );
@@ -237,7 +248,7 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 	 * @return boolean
 	 */
 	public function product_has_feature( $result, $product_id, $options = array() ) {
-		return (bool) it_exchange_get_product_feature( $product_id, $this->slug );
+		return (bool) it_exchange_get_product_feature( $product_id, $this->slug, array( 'field' => 'enabled' ) );
 	}
 
 	/**

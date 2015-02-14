@@ -7,6 +7,19 @@
 
 jQuery(document).ready(function ($) {
 
+	/**
+	 * When the enable checkbox is checked, show the configuration.
+	 */
+	$("#itelic-enable").click(function () {
+		var options = $(".itelic-settings");
+
+		if ($(this).attr('checked') == 'checked') {
+			options.removeClass('hide-if-js').show();
+		} else {
+			options.hide();
+		}
+	});
+
 	var key_type_select = $("#itelic-key-type");
 
 	/**
