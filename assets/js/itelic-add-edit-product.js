@@ -16,8 +16,10 @@ jQuery(document).ready(function ($) {
 
 		var val = $(this).val();
 
-		if (val.length > 0) {
+		if (val.length != -1) {
 			get_key_type_settings(val);
+		} else {
+			$("#itelic-key-type-settings").html('');
 		}
 	});
 

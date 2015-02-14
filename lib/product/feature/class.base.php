@@ -30,7 +30,7 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 
 		parent::IT_Exchange_Product_Feature_Abstract( $args );
 
-		add_action( 'wp_ajax_itelic_get_key_type_settings', array( $this, 'get_key_type_settings' ) );
+		add_action( 'wp_ajax_itelic_get_key_type_settings', array( $this, 'ajax_get_key_type_settings' ) );
 	}
 
 	/**
@@ -74,7 +74,9 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 		<p class="description"><?php _e( "How should license keys be generated for this product.", ITELIC::SLUG ); ?></p>
 
 		<div id="itelic-key-type-settings">
-
+			<?php if ( $data['key-type'] != - 1 ): ?>
+				<?php $this->get_key_type_settings( $data['key-type'], isset( $post->ID ) ? $post->ID : 0 ); ?>
+			<?php endif; ?>
 		</div>
 
 		<label for="itelic-update-file"><?php _e( "Update File", ITELIC::SLUG ); ?></label>
@@ -90,18 +92,47 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 	}
 
 	/**
-	 * Get the settings form for a certain key type.
+	 * Process the AJAX callback for the settings form for a certain key type.
 	 *
 	 * @since 1.0
 	 */
-	public function get_key_type_settings() {
-		$type    = $_POST['type'];
-		$product = $_POST['product'];
+	public function ajax_get_key_type_settings() {
+		$type    = sanitize_text_field( $_POST['type'] );
+		$product = absint( $_POST['product'] );
+
+		$this->get_key_type_settings( $type, $product );
+
+		die();
+	}
+
+	/**
+	 * Get the key type settings form.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $type
+	 * @param int    $product
+	 */
+	protected function get_key_type_settings( $type, $product ) {
 
 		$prefix = "itelic[type][$type]";
 
 		$values = it_exchange_get_product_feature( $product, $this->slug, array( 'field' => "type.$type" ) );
 
+		$this->render_key_type_settings( $type, $product, $prefix, $values );
+	}
+
+	/**
+	 * Render key type settings.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $type
+	 * @param int    $product
+	 * @param string $prefix
+	 * @param array  $values
+	 */
+	private function render_key_type_settings( $type, $product, $prefix, $values ) {
 		/**
 		 * Fires when the settings form for a key type should be shown.
 		 *
@@ -109,10 +140,9 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 		 *
 		 * @param int    $product
 		 * @param string $prefix
+		 * @param array  $values
 		 */
-		do_action( "it_exchange_itelic_render_key_type_{$type}_settings", $product, $prefix );
-
-		die();
+		do_action( "it_exchange_itelic_render_key_type_{$type}_settings", $product, $prefix, $values );
 	}
 
 	/**
@@ -120,7 +150,7 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 	 *
 	 * @since 1.0
 	 */
-	function save_feature_on_product_save() {
+	public function save_feature_on_product_save() {
 
 		// Abort if we don't have a product ID
 		$product_id = empty( $_POST['ID'] ) ? false : $_POST['ID'];
@@ -128,6 +158,8 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 		if ( ! $product_id ) {
 			return;
 		}
+
+		it_exchange_update_product_feature( $product_id, $this->slug, $_POST['itelic'] );
 	}
 
 	/**
@@ -141,8 +173,12 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 	 *
 	 * @return boolean
 	 */
-	function save_feature( $product_id, $new_value, $options = array() ) {
-		// TODO: Implement save_feature() method.
+	public function save_feature( $product_id, $new_value, $options = array() ) {
+
+		$prev_values = it_exchange_get_product_feature( $product_id, $this->slug );
+		$values      = ITUtility::merge_defaults( $new_value, $prev_values );
+
+		return update_post_meta( $product_id, '_it_exchange_itelic_feature', $values );
 	}
 
 	/**
@@ -156,7 +192,7 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 	 *
 	 * @return string product feature
 	 */
-	function get_feature( $existing, $product_id, $options = array() ) {
+	public function get_feature( $existing, $product_id, $options = array() ) {
 		$defaults = array(
 			'limit'       => '',
 			'key-type'    => '',
@@ -200,8 +236,8 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 	 *
 	 * @return boolean
 	 */
-	function product_has_feature( $result, $product_id, $options = array() ) {
-		// TODO: Implement product_has_feature() method.
+	public function product_has_feature( $result, $product_id, $options = array() ) {
+		return (bool) it_exchange_get_product_feature( $product_id, $this->slug );
 	}
 
 	/**
