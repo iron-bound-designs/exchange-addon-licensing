@@ -90,7 +90,9 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 			<label for="itelic-update-file"><?php _e( "Update File", ITELIC::SLUG ); ?></label>
 			<select id="itelic-update-file" name="itelic[update-file]">
 				<?php foreach ( $downloads as $download ): ?>
-					<option value="<?php echo esc_attr( $download['id'] ); ?>"><?php echo $download['name']; ?></option>
+					<option value="<?php echo esc_attr( $download['id'] ); ?>" <?php selected( $data['update-file'], $download['id'] ); ?>>
+						<?php echo $download['name']; ?>
+					</option>
 				<?php endforeach; ?>
 			</select>
 
