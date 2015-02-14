@@ -49,6 +49,7 @@ class ITELIC {
 	 * @since 1.0
 	 */
 	public function scripts_and_styles() {
+		wp_register_script( 'itelic-add-edit-product', self::$url . 'assets/js/itelic-add-edit-product.js', array( 'jquery' ) );
 	}
 
 	/**
@@ -70,9 +71,9 @@ class ITELIC {
 			$path  = self::$dir . "lib/classes";
 			$class = strtolower( $class_name );
 
-			$name  = str_replace( "_", "-", $class );
+			$name = str_replace( "_", "-", $class );
 		} else {
-			$path  = self::$dir . "lib";
+			$path = self::$dir . "lib";
 
 			$class = substr( $class_name, 6 );
 			$class = strtolower( $class );

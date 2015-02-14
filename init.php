@@ -7,6 +7,16 @@
  */
 
 /**
+ * Load key types API methods.
+ */
+require_once( ITELIC::$dir . 'api/key-types.php' );
+
+/**
+ * Load keys API methods.
+ */
+require_once( ITELIC::$dir . 'api/keys.php' );
+
+/**
  * Load the main plugin functions.
  */
 require_once( ITELIC::$dir . 'lib/functions.php' );
@@ -20,3 +30,13 @@ require_once( ITELIC::$dir . 'lib/hooks.php' );
  * Load the plugin settings page.
  */
 require_once( ITELIC::$dir . 'lib/settings.php' );
+
+/**
+ * Load the key types.
+ */
+require_once( ITELIC::$dir . 'lib/key/load.php' );
+
+/**
+ * Load the product features.
+ */
+require_once( ITELIC::$dir . 'lib/product/feature/load.php' );
