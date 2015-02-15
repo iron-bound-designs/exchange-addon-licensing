@@ -78,9 +78,9 @@ class ITELIC_Key_Generator_Pattern extends ITELIC_Key_Generator {
 	protected function map_char( $char ) {
 		if ( isset( $this->char_map[ $char ] ) ) {
 
-			$rand = mt_rand( 0, strlen( $this->char_map[ $char ] ) );
+			$rand = mt_rand( 0, strlen( $this->char_map[ $char ] ) - 1 );
 
-			return $this->char_map[ $char ][ $rand - 1 ];
+			return $this->char_map[ $char ][ $rand ];
 		} else {
 			return $char;
 		}
