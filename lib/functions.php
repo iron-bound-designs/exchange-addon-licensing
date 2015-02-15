@@ -28,7 +28,7 @@ function itelic_generate_keys_for_transaction( IT_Exchange_Transaction $transact
 			$customer = it_exchange_get_transaction_customer( $transaction );
 
 			$factory = new ITELIC_Key_Factory( $product, $customer, $transaction );
-			$key = $factory->make();
+			$key     = $factory->make();
 
 			$max = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'limit' ) );
 
@@ -39,4 +39,27 @@ function itelic_generate_keys_for_transaction( IT_Exchange_Transaction $transact
 	}
 
 	return $result;
+}
+
+/**
+ * Get the license key for a particular transaction product.
+ *
+ * @since 1.0
+ *
+ * @param int $transaction_id
+ * @param int $product_id
+ *
+ * @return ITELIC_Key
+ */
+function itelic_get_key_for_transaction_product( $transaction_id, $product_id ) {
+	$data = ITELIC_DB_Keys::search( array(
+		'transaction_id' => absint( $transaction_id ),
+		'product'        => absint( $product_id )
+	) );
+
+	if ( empty( $data ) ) {
+		return null;
+	}
+
+	return new ITELIC_Key( reset( $data ) );
 }

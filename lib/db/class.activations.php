@@ -88,7 +88,7 @@ class ITELIC_DB_Activations extends ITELIC_DB_Base {
 	 * @param string $col Column to find licenses by.
 	 * @param string $val Value of that column.
 	 *
-	 * @return object
+	 * @return array
 	 */
 	public static function many( $col, $val ) {
 
@@ -104,7 +104,7 @@ class ITELIC_DB_Activations extends ITELIC_DB_Base {
 	 *
 	 * @param array $where
 	 *
-	 * @return object
+	 * @return array
 	 */
 	public static function search( $where ) {
 
