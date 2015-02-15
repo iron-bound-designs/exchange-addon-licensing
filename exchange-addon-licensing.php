@@ -38,9 +38,48 @@ class ITELIC {
 	public function __construct() {
 		self::$dir = plugin_dir_path( __FILE__ );
 		self::$url = plugin_dir_url( __FILE__ );
+
 		spl_autoload_register( array( "ITELIC", "autoload" ) );
+
+		register_activation_hook( __FILE__, array( $this, 'activate' ) );
+		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
+
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts_and_styles' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'scripts_and_styles' ), 5 );
+	}
+
+	/**
+	 * Run the upgrade routine if necessary.
+	 */
+	public static function upgrade() {
+		$current_version = get_option( 'itelic_version', 0.1 );
+
+		if ( $current_version != self::VERSION ) {
+
+			/**
+			 * Runs when the version upgrades.
+			 *
+			 * @param $current_version
+			 * @param $new_version
+			 */
+			do_action( 'itelic_upgrade', self::VERSION, $current_version );
+
+			update_option( 'itelic_version', self::VERSION );
+		}
+	}
+
+	/**
+	 * The activation hook.
+	 */
+	public function activate() {
+		do_action( 'itelic_activate' );
+	}
+
+	/**
+	 * The deactivation hook.
+	 */
+	public function deactivate() {
+
 	}
 
 	/**

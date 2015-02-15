@@ -190,14 +190,12 @@ class ITELIC_DB_Activations extends ITELIC_DB_Base {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		$sql = "CREATE TABLE {$this->table_name} (
-		id INT NOT NULL AUTO_INCREMENT,
+		id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		lkey VARCHAR(255) NOT NULL,
 		location VARCHAR(255) NOT NULL,
 		activation DATETIME NOT NULL,
 		deactivation DATETIME,
 		status VARCHAR(255) NOT NULL,
-		PRIMARY KEY (id),
-		UNIQUE KEY id (id),
 		INDEX lkey (lkey)
 		) CHARACTER SET utf8 COLLATE utf8_general_ci;";
 
@@ -206,5 +204,25 @@ class ITELIC_DB_Activations extends ITELIC_DB_Base {
 		update_option( $this->table_name . '_db_version', $this->version );
 	}
 
+	/**
+	 * Get the version of the installed table.
+	 *
+	 * @since 1.0
+	 *
+	 * @return float
+	 */
+	public function get_installed_version() {
+		return (float) get_option( $this->table_name . '_db_version' );
+	}
 
+	/**
+	 * Get version of this table.
+	 *
+	 * @since 1.0
+	 *
+	 * @return float
+	 */
+	public function get_version() {
+		return $this->version;
+	}
 }

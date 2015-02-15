@@ -161,17 +161,15 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		$sql = "CREATE TABLE {$this->table_name} (
-		lkey VARCHAR(255) NOT NULL,
-		transaction_id INT NOT NULL,
-		product INT NOT NULL,
-		customer INT NOT NULL,
+		lkey VARCHAR(255) NOT NULL PRIMARY KEY,
+		transaction_id INTEGER UNSIGNED NOT NULL,
+		product INTEGER UNSIGNED NOT NULL,
+		customer INTEGER UNSIGNED NOT NULL,
 		status VARCHAR(255) NOT NULL,
-		count INT NOT NULL,
-		max INT NOT NULL,
-		PRIMARY KEY (lkey),
-		UNIQUE KEY lkey (lkey),
+		count INTEGER UNSIGNED NOT NULL,
+		max INTEGER UNSIGNED NOT NULL,
 		INDEX customer (customer),
-		INDEX transaction (transaction_id)
+		INDEX transaction_id (transaction_id)
 		) CHARACTER SET utf8 COLLATE utf8_general_ci;";
 
 		dbDelta( $sql );
@@ -179,5 +177,25 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 		update_option( $this->table_name . '_db_version', $this->version );
 	}
 
+	/**
+	 * Get the installed version of this table.
+	 *
+	 * @since 1.0
+	 *
+	 * @return float
+	 */
+	public function get_installed_version() {
+		return (float) get_option( $this->table_name . '_db_version' );
+	}
 
+	/**
+	 * Get version of this table.
+	 *
+	 * @since 1.0
+	 *
+	 * @return float
+	 */
+	public function get_version() {
+		return $this->version;
+	}
 }

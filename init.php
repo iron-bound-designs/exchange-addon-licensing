@@ -7,6 +7,11 @@
  */
 
 /**
+ * Load the DBs
+ */
+require_once( ITELIC::$dir . 'lib/db/load.php' );
+
+/**
  * Load key types API methods.
  */
 require_once( ITELIC::$dir . 'api/key-types.php' );
@@ -40,3 +45,8 @@ require_once( ITELIC::$dir . 'lib/key/load.php' );
  * Load the product features.
  */
 require_once( ITELIC::$dir . 'lib/product/feature/load.php' );
+
+/**
+ * Run the upgrade routine if necessary.
+ */
+ITELIC::upgrade();
