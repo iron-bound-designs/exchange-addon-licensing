@@ -104,6 +104,42 @@ class ITELIC_Key {
 	}
 
 	/**
+	 * Create a license key record.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string                  $key
+	 * @param IT_Exchange_Transaction $transaction
+	 * @param IT_Exchange_Product     $product
+	 * @param IT_Exchange_Customer    $customer
+	 * @param int                     $max
+	 * @param string                  $status
+	 *
+	 * @return ITELIC_Key
+	 */
+	public static function create( $key, IT_Exchange_Transaction $transaction, IT_Exchange_Product $product, IT_Exchange_Customer $customer, $max, $status = '' ) {
+
+		if ( empty( $status ) ) {
+			$status = self::ACTIVE;
+		}
+
+		$data = array(
+			'lkey'           => $key,
+			'transaction_id' => $transaction->ID,
+			'product'        => $product->ID,
+			'customer'       => $customer->id,
+			'status'         => $status,
+			'count'          => 0,
+			'max'            => $max
+		);
+
+		$db = ITELIC_DB_Keys::instance();
+		$db->insert( $data );
+
+		return self::with_key( $key );
+	}
+
+	/**
 	 * Check if this license is valid.
 	 *
 	 * The license is valid as long as:
