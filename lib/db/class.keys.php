@@ -20,7 +20,7 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 		parent::__construct();
 
 		$this->version     = 1.0;
-		$this->primary_key = 'key';
+		$this->primary_key = 'lkey';
 		$this->table_name  = $this->wpdb->prefix . 'itelic_keys';
 	}
 

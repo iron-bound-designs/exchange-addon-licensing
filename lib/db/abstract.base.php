@@ -357,10 +357,10 @@ abstract class ITELIC_DB_Base {
 
 			$value = $this->escape_value( $column, $value );
 
-			$statements[] = "$column = '$value''";
+			$statements[] = "$column = '$value'";
 		}
 
-		return implode( ' AND ', $wheres );
+		return implode( ' AND ', $statements );
 	}
 
 	/**
