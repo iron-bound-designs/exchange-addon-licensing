@@ -65,7 +65,7 @@ function itelic_get_key_type_name( $key_type ) {
  *
  * @return string|bool
  */
-function itelic_get_payout_method_class( $slug ) {
+function itelic_get_key_type_class( $slug ) {
 	$key_type = ITELIC_Key_Types::get( $slug );
 	$class    = is_array( $key_type ) ? $key_type['class'] : false;
 
@@ -83,7 +83,7 @@ function itelic_get_payout_method_class( $slug ) {
 	 * @param string $class
 	 * @param string $slug of requested class.
 	 */
-	$filtered = apply_filters( 'it_exchange_itelic_get_payout_method_class', $class, $slug );
+	$filtered = apply_filters( 'it_exchange_itelic_get_key_type_class', $class, $slug );
 
 	if ( $filtered != $class ) {
 

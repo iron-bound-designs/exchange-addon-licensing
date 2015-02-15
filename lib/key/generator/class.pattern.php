@@ -24,9 +24,8 @@ class ITELIC_Key_Generator_Pattern extends ITELIC_Key_Generator {
 	 * @since 1.0
 	 *
 	 * @param string $pattern
-	 * @param int    $length
 	 */
-	public function __construct( $pattern, $length = 64 ) {
+	public function __construct( $pattern ) {
 
 		$this->pattern = $pattern;
 
@@ -36,7 +35,7 @@ class ITELIC_Key_Generator_Pattern extends ITELIC_Key_Generator {
 		$this->char_map['#'] = '!@#$%^&*()+=[]/';
 		$this->char_map['?'] = $this->char_map['X'] . $this->char_map['x'] . $this->char_map['9'] . $this->char_map['#'];
 
-		parent::__construct( $length );
+		parent::__construct();
 	}
 
 	/**
@@ -49,8 +48,8 @@ class ITELIC_Key_Generator_Pattern extends ITELIC_Key_Generator {
 	public function generate() {
 
 		$key = '';
-
 		$len = strlen( $this->pattern );
+
 		for ( $i = 0; $i < $len; $i ++ ) {
 			$char = $this->pattern[ $i ];
 
@@ -62,14 +61,6 @@ class ITELIC_Key_Generator_Pattern extends ITELIC_Key_Generator {
 			} else {
 				$key .= $this->map_char( $char );
 			}
-		}
-
-		while ( strlen( $key ) < $this->length ) {
-			$key .= $this->map_char( '?' );
-		}
-
-		if ( strlen( $key ) > $this->length ) {
-			$key = substr( $key, 0, $this->length );
 		}
 
 		return $key;
