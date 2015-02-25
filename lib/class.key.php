@@ -137,7 +137,7 @@ class ITELIC_Key {
 			'customer'       => $customer->id,
 			'status'         => $status,
 			'max'            => $max,
-			'expires'        => isset( $expires ) ? $expires->format( "Y-m-d H:i:s" ) ? null
+			'expires'        => isset( $expires ) ? $expires->format( "Y-m-d H:i:s" ) : null
 		);
 
 		$db = ITELIC_DB_Keys::instance();
@@ -221,7 +221,10 @@ class ITELIC_Key {
 	 * @return int
 	 */
 	public function get_count() {
-		return $this->count;
+
+		$db = ITELIC_DB_Activations::instance();
+
+		return $db->count( array( 'lkey' => $this->get_key() ) );
 	}
 
 	/**

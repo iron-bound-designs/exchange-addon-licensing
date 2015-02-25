@@ -142,6 +142,22 @@ abstract class ITELIC_DB_Base {
 	}
 
 	/**
+	 * Retrieve the number of rows matching a certain where clause
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $where
+	 *
+	 * @return int
+	 */
+	public function count( $where = array() ) {
+
+		$statement = $this->assemble_statement( "SELECT COUNT(*)", $this->translate_where( $where ) );
+
+		return $this->wpdb->get_var( $statement );
+	}
+
+	/**
 	 * Insert a new row
 	 *
 	 * @since 1.0
