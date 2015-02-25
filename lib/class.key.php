@@ -228,6 +228,13 @@ class ITELIC_Key {
 	}
 
 	/**
+	 * @return DateTime|null
+	 */
+	public function get_expires() {
+		return $this->expires;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function get_max() {
