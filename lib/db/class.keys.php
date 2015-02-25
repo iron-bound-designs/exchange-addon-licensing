@@ -129,8 +129,8 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 			'product'        => '%d',
 			'customer'       => '%d',
 			'status'         => '%s',
-			'count'          => '%d',
-			'max'            => '%d'
+			'max'            => '%d',
+			'expires'        => '%s'
 		);
 	}
 
@@ -148,8 +148,8 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 			'product'        => 0,
 			'customer'       => 0,
 			'status'         => 'active',
-			'count'          => 0,
-			'max'            => 0
+			'max'            => 0,
+			'expires'        => ''
 		);
 	}
 
@@ -166,8 +166,8 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 		product INTEGER UNSIGNED NOT NULL,
 		customer INTEGER UNSIGNED NOT NULL,
 		status VARCHAR(255) NOT NULL,
-		count INTEGER UNSIGNED NOT NULL,
 		max INTEGER UNSIGNED NOT NULL,
+		expires DATETIME,
 		INDEX customer (customer),
 		INDEX transaction_id (transaction_id)
 		) CHARACTER SET utf8 COLLATE utf8_general_ci;";
