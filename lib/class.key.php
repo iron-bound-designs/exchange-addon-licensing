@@ -51,9 +51,9 @@ class ITELIC_Key {
 	private $status;
 
 	/**
-	 * @var int
+	 * @var DateTime|null
 	 */
-	private $count;
+	private $expires;
 
 	/**
 	 * @var int
@@ -82,8 +82,14 @@ class ITELIC_Key {
 		$this->product     = it_exchange_get_product( $data->product );
 		$this->customer    = it_exchange_get_customer( $data->customer );
 		$this->status      = $data->status;
-		$this->count       = $data->count;
 		$this->max         = $data->max;
+
+		try {
+			$this->expires = new DateTime( $data->expires );
+		}
+		catch ( Exception $e ) {
+			$this->expires = null;
+		}
 
 		foreach ( array( 'transaction', 'product', 'customer' ) as $maybe_error ) {
 			if ( ! $this->$maybe_error || is_wp_error( $this->$maybe_error ) ) {
@@ -113,11 +119,12 @@ class ITELIC_Key {
 	 * @param IT_Exchange_Product     $product
 	 * @param IT_Exchange_Customer    $customer
 	 * @param int                     $max
+	 * @param DateTime                $expires
 	 * @param string                  $status
 	 *
 	 * @return ITELIC_Key
 	 */
-	public static function create( $key, IT_Exchange_Transaction $transaction, IT_Exchange_Product $product, IT_Exchange_Customer $customer, $max, $status = '' ) {
+	public static function create( $key, IT_Exchange_Transaction $transaction, IT_Exchange_Product $product, IT_Exchange_Customer $customer, $max, DateTime $expires = null, $status = '' ) {
 
 		if ( empty( $status ) ) {
 			$status = self::ACTIVE;
@@ -129,8 +136,8 @@ class ITELIC_Key {
 			'product'        => $product->ID,
 			'customer'       => $customer->id,
 			'status'         => $status,
-			'count'          => 0,
-			'max'            => $max
+			'max'            => $max,
+			'expires'        => isset( $expires ) ? $expires->format( "Y-m-d H:i:s" ) ? null
 		);
 
 		$db = ITELIC_DB_Keys::instance();
@@ -172,14 +179,7 @@ class ITELIC_Key {
 	 * @param ITELIC_Activation $activation
 	 */
 	public function log_activation( ITELIC_Activation $activation ) {
-		$update = array(
-			'count' => $this->get_count() + 1
-		);
-
-		$db = ITELIC_DB_Keys::instance();
-		$db->update( $this->get_key(), $update );
-
-		$this->refresh();
+		// nothing to do
 	}
 
 	/**
