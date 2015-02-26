@@ -155,6 +155,7 @@
 
 #it-exchange-license-details .header-block h2 {
 	display: inline-block;
+	font-size: 24px;
 }
 
 #it-exchange-license-details .header-block .customer-name {
@@ -167,7 +168,7 @@
 }
 
 #it-exchange-license-details .header-block .product-name {
-	font-size: 18px;
+	font-size: 20px;
 	color: #666;
 }
 
@@ -229,6 +230,7 @@
 
 #it-exchange-license-details .activations .deactivate {
 	text-transform: lowercase;
+	font-style: oblique;
 }
 
 #it-exchange-license-details .activations .deactivate::before {
