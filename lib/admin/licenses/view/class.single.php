@@ -39,7 +39,7 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 			<div class="spacing-wrapper bottom-border header-block">
 
 				<div class="status status-<?php echo esc_attr( $this->key->get_status() ); ?>">
-					<span><?php echo $this->key->get_status(); ?></span>
+					<span><?php echo $this->key->get_status( true ); ?></span>
 				</div>
 
 				<div class="name-block">
