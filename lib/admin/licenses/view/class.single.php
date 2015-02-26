@@ -50,9 +50,8 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 				<div class="key-block">
 					<p>
 						<label for="license-key" class="screen-reader-text"><?php _e( "License Key", ITELIC::SLUG ); ?></label>
-						<input type="text" id="license-key" readonly value="<?php echo $this->key->get_key(); ?>">
-
-						<a href="javascript:" class="click-to-copy"><?php _e( "Click to copy", ITELIC::SLUG ); ?></a>
+						<input type="text" id="license-key" size="<?php echo esc_attr( strlen( $this->key->get_key() ) ); ?>"
+						       readonly value="<?php echo $this->key->get_key(); ?>">
 					</p>
 				</div>
 			</div>
