@@ -230,13 +230,14 @@
 	content: ')';
 }
 
-#it-exchange-license-details a.remove-item {
+#it-exchange-license-details .remove-item {
 	-webkit-box-sizing: content-box;
 	-moz-box-sizing: content-box;
 	box-sizing: content-box;
 	display: inline-block;
 	width: 20px;
 	height: 20px;
+	padding: 0;
 	border: 2px solid transparent;
 	border-radius: 50%;
 	font-size: 14px;
@@ -244,17 +245,19 @@
 	text-decoration: none;
 	text-align: center;
 	color: #BBB;
+	background: none;
 	-webkit-transition: all .2s linear;
 	-moz-transition: all .2s linear;
 	transition: all .2s linear;
 }
 
-#it-exchange-license-details a.remove-item:hover {
+#it-exchange-license-details .remove-item:hover {
 	border-color: #E1797A;
 	color: #E1797A;
+	cursor: pointer;
 }
 
-#it-exchange-license-details a.remove-item:active {
+#it-exchange-license-details .remove-item:active {
 	outline: none;
 	opacity: .8;
 }

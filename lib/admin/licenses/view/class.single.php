@@ -95,7 +95,7 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 						<th><?php _e( "Status", ITELIC::SLUG ); ?></th>
 						<th><?php _e( "Activation", ITELIC::SLUG ); ?></th>
 						<th><?php _e( "Deactivation", ITELIC::SLUG ); ?></th>
-						<th></th>
+						<th><span class="screen-reader-text"><?php _e( "Delete", ITELIC::SLUG ); ?></span></th>
 					</tr>
 					</thead>
 
@@ -115,7 +115,7 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 									<?php echo $d->format( $this->get_short_df() ); ?>
 								<?php endif; ?>
 							</td>
-							<td><a href="javascript:" data-id="<?php echo esc_attr(); ?>" class="remove-item">x</a></td>
+							<td><button data-id="<?php echo esc_attr(); ?>" class="remove-item">x</button></td>
 						</tr>
 
 					<?php endforeach; ?>
