@@ -7,7 +7,7 @@
  */
 
 /**
- * Class ITECLS_Admin_Roster_Controller_Classes
+ * Class ITELIC_Admin_Licenses_Controller_List
  */
 class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Controller {
 
@@ -28,11 +28,13 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 	 * Register screen options for manage members page.
 	 */
 	public function add_screen_options() {
-		add_screen_option( 'per_page', array(
-			'label'   => __( "Keys", ITELIC::SLUG ),
-			'default' => 20,
-			'option'  => 'itelic_licenses_list_table_per_page'
-		) );
+		if ( ITELIC_Admin_Licenses_Dispatch::is_current_view( 'list' ) ) {
+			add_screen_option( 'per_page', array(
+				'label'   => __( "Keys", ITELIC::SLUG ),
+				'default' => 20,
+				'option'  => 'itelic_licenses_list_table_per_page'
+			) );
+		}
 	}
 
 	/**
@@ -58,6 +60,10 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 	 * Setup the table.
 	 */
 	public function setup_table() {
+
+		if ( ! ITELIC_Admin_Licenses_Dispatch::is_current_view( 'list' ) ) {
+			return;
+		}
 
 		if ( ! isset( $_GET['orderby'] ) ) {
 			$_GET['orderby'] = 'transaction';

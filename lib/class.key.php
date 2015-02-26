@@ -26,6 +26,11 @@ class ITELIC_Key {
 	const EXPIRED = 'expired';
 
 	/**
+	 * Represents when this license key was disabled by an admin.
+	 */
+	const DISABLED = 'disabled';
+
+	/**
 	 * @var string
 	 */
 	private $key;

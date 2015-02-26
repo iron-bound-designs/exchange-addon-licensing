@@ -1,0 +1,287 @@
+/** -----------------------------------------------------:[ reset & locals ]:---------- */
+
+#it-exchange-license-details {
+	margin: 0;
+	padding: 0;
+	background: #FFF;
+	border: 1px solid #DFDFDF;
+	max-width: 750px;
+}
+
+#it-exchange-license-details * {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#it-exchange-license-details .left {
+	float: left;
+}
+
+#it-exchange-license-details .right {
+	float: right;
+	text-align: right;
+}
+
+#it-exchange-license-details .third {
+	margin: -2em 0;
+	padding: 2em 2em;
+	float: left;
+	width: 250px;
+	border-right: 1px solid #DFDFDF;
+}
+
+#it-exchange-license-details .third-row div:first-child {
+	padding-left: 2em;
+	margin-left: -2em;
+}
+
+#it-exchange-license-details .third-row div:last-child {
+	border-right: none;
+	margin-right: -2em;
+	padding-right: 2em;
+}
+
+#it-exchange-license-details:after,
+#it-exchange-license-details .clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+#it-exchange-license-details .spacing-wrapper {
+	overflow: hidden;
+	padding: 2em;
+}
+
+#it-exchange-license-details .bottom-border {
+	border-bottom: 1px solid #DFDFDF;
+}
+
+#it-exchange-license-details .top-border {
+	border-top: 1px solid #DFDFDF;
+}
+
+#it-exchange-license-details label {
+	display: block;
+}
+
+#it-exchange-license-details input[type="text"]:read-write {
+	background: #fff;
+	border: 1px solid #d6d6d6;
+	border-radius: 3px;
+	font-size: 18px;
+	padding: 10px;
+	color: #3d4142;
+	width: 260px;
+	-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	outline: 0;
+	-webkit-transition: .05s border-color ease-in-out;
+	transition: .05s border-color ease-in-out;
+}
+
+/** -----------------------------------------------------:[ license status ]:---------- */
+
+#it-exchange-license-details .header-block {
+	position: relative;
+}
+
+#it-exchange-license-details .header-block .status {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 75px;
+	height: 75px;
+	border-bottom-left-radius: 75px;
+	-webkit-transition-property: width, border-bottom-left-radius;
+	transition-property: width, border-bottom-left-radius;
+	-webkit-transition-duration: .75s;
+	transition-duration: .75s;
+}
+
+#it-exchange-license-details .header-block .status:hover {
+	width: 200px;
+	border-bottom-left-radius: 25px;
+}
+
+#it-exchange-license-details .header-block .status span {
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+	padding: 25px 0 0 25px;
+	font-size: 25px;
+	letter-spacing: .5px;
+	opacity: 0;
+	text-transform: uppercase;
+	-webkit-transition-property: opacity;
+	transition-property: opacity;
+	-webkit-transition-duration: .25s;
+	transition-duration: .25s;
+}
+
+#it-exchange-license-details .header-block .status:hover span {
+	opacity: 1;
+}
+
+#it-exchange-license-details .header-block .status-active {
+	background: #8cc53e;
+}
+
+#it-exchange-license-details .header-block .status-active span {
+	color: #fff;
+}
+
+#it-exchange-license-details .header-block .status-expired {
+	background: #ffba00;
+}
+
+#it-exchange-license-details .header-block .status-expired span {
+	color: #fafafa;
+}
+
+#it-exchange-license-details .header-block .status-disabled {
+	background: #dd3d36;
+}
+
+#it-exchange-license-details .header-block .status-disabled span {
+	color: #E7E7E7;
+}
+
+/** -----------------------------------------------------:[ license header-details ]:---------- */
+
+#it-exchange-license-details .header-block h2 {
+	display: inline-block;
+}
+
+#it-exchange-license-details .header-block .customer-name {
+	padding-right: 10px;
+}
+
+#it-exchange-license-details .header-block .customer-name::after {
+	content: '|';
+	padding-left: 10px;
+}
+
+#it-exchange-license-details .header-block .product-name {
+	font-size: 18px;
+	color: #666;
+}
+
+#it-exchange-license-details .header-block .key-block input {
+	font-family: Consolas, Monaco, monospace;
+}
+
+#it-exchange-license-details .header-block .key-block .click-to-copy {
+	text-transform: lowercase;
+	color: #999;
+	font-style: oblique;
+	font-size: .9em;
+	-webkit-transition: color .5s;
+	transition: color .5s;
+}
+
+#it-exchange-license-details .header-block .key-block .click-to-copy:hover {
+	color: #696969;
+}
+
+#it-exchange-license-details .header-block .key-block .click-to-copy::before {
+	content: '(';
+}
+
+#it-exchange-license-details .header-block .key-block .click-to-copy::after {
+	content: ')';
+}
+
+/** -----------------------------------------------------:[ license misc ]:---------- */
+
+#it-exchange-license-details .misc-block h4 {
+	margin: 0;
+	font-size: 16px;
+	color: #666666;
+	font-weight: 300;
+}
+
+#it-exchange-license-details .misc-block h3 {
+	margin: .75em 0 .4em 0;
+	font-size: 22px;
+	font-weight: 400;
+}
+
+#it-exchange-license-details .misc-block h3 a {
+	color: #222222;
+	-webkit-transition: color .5s;
+	transition: color .5s;
+}
+
+#it-exchange-license-details .misc-block h3 a:hover {
+	color: #6d6d6d;
+}
+
+/** -----------------------------------------------------:[ license activations ]:---------- */
+
+#it-exchange-license-details .activations h3 {
+	margin: .25em 0 .8em 0;
+}
+
+#it-exchange-license-details .activations .deactivate {
+	text-transform: lowercase;
+}
+
+#it-exchange-license-details .activations .deactivate::before {
+	content: '(';
+}
+
+#it-exchange-license-details .activations .deactivate::after {
+	content: ')';
+}
+
+#it-exchange-license-details a.remove-item {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border: 2px solid transparent;
+	border-radius: 50%;
+	font-size: 14px;
+	line-height: 1.4;
+	text-decoration: none;
+	text-align: center;
+	color: #BBB;
+	-webkit-transition: all .2s linear;
+	-moz-transition: all .2s linear;
+	transition: all .2s linear;
+}
+
+#it-exchange-license-details a.remove-item:hover {
+	border-color: #E1797A;
+	color: #E1797A;
+}
+
+#it-exchange-license-details a.remove-item:active {
+	outline: none;
+	opacity: .8;
+}
+
+#it-exchange-license-details .activations h4 {
+	color: #505050;
+	font-size: 1.15em;
+	margin: 1.8em 0 .5em 0;
+}
+
+#it-exchange-license-details #remote-activate-name {
+	width: 75%;
+}
+
+#it-exchange-license-details #remote-activate-submit {
+	width: 23%;
+	vertical-align: top;
+	height: 46px;
+	line-height: 15px;
+	cursor: pointer;
+}

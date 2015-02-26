@@ -25,11 +25,22 @@ class ITELIC_Admin_Licenses_Dispatch {
 	 * Constructor.
 	 */
 	public function __construct() {
+		$this->view = self::get_current_view();
+	}
+
+	/**
+	 * Get the current view being displayed.
+	 *
+	 * @since 1.0
+	 *
+	 * @return string
+	 */
+	private static function get_current_view() {
 
 		if ( isset( $_GET['view'] ) && array_key_exists( $_GET['view'], self::$views ) ) {
-			$this->view = $_GET['view'];
+			return $_GET['view'];
 		} else {
-			$this->view = 'list';
+			return 'list';
 		}
 	}
 
@@ -48,5 +59,27 @@ class ITELIC_Admin_Licenses_Dispatch {
 	 */
 	public static function register_view( $slug, $controller ) {
 		self::$views[ $slug ] = $controller;
+	}
+
+	/**
+	 * Check if the current view is for a certain tab.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $view
+	 *
+	 * @return bool
+	 */
+	public static function is_current_view( $view ) {
+
+		if ( ! ITELIC_Admin_Tab_Dispatch::is_current_view( 'licenses' ) ) {
+			return false;
+		}
+
+		if ( ! isset( self::$views[ $view ] ) ) {
+			return false;
+		}
+
+		return $view == self::get_current_view();
 	}
 }

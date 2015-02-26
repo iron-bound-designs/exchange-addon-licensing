@@ -30,11 +30,22 @@ class ITELIC_Admin_Tab_Dispatch {
 	 * Constructor.
 	 */
 	public function __construct() {
+		$this->tab = self::get_current_tab();
+	}
+
+	/**
+	 * Get the current tab being shown.
+	 *
+	 * @since 1.0
+	 *
+	 * @return string
+	 */
+	private static function get_current_tab() {
 
 		if ( isset( $_GET['tab'] ) && array_key_exists( $_GET['tab'], self::$tabs ) ) {
-			$this->tab = $_GET['tab'];
+			return $_GET['tab'];
 		} else {
-			$this->tab = 'licenses';
+			return 'licenses';
 		}
 	}
 
@@ -90,5 +101,22 @@ class ITELIC_Admin_Tab_Dispatch {
 	 */
 	public static function get_tab_link( $tab ) {
 		return admin_url( "admin.php?page=" . self::PAGE_SLUG . "&tab=$tab" );
+	}
+
+	/**
+	 * Check if the current view is for a certain tab.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $tab
+	 *
+	 * @return bool
+	 */
+	public static function is_current_view( $tab ) {
+		if ( ! isset( self::$tabs[ $tab ] ) ) {
+			return false;
+		}
+
+		return $tab == self::get_current_tab();
 	}
 }
