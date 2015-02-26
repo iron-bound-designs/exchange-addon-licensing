@@ -154,7 +154,7 @@ abstract class ITELIC_DB_Base {
 
 		$statement = $this->assemble_statement( "SELECT COUNT(*)", $this->translate_where( $where ) );
 
-		return $this->wpdb->get_var( $statement );
+		return (int) $this->wpdb->get_var( $statement );
 	}
 
 	/**
@@ -287,7 +287,7 @@ abstract class ITELIC_DB_Base {
 	 *
 	 * @return string
 	 */
-	protected function assemble_statement( $select = '*', $where = '', $order_by = '', $count = null, $offset = null ) {
+	public function assemble_statement( $select = '*', $where = '', $order_by = '', $count = null, $offset = null ) {
 
 		$statement = "SELECT $select FROM {$this->table_name}";
 
@@ -339,6 +339,14 @@ abstract class ITELIC_DB_Base {
 		$columns       = $this->get_columns();
 		$column_format = $columns[ $column ];
 
+		if ( $value[0] == '%' ) {
+			$value = '%' . $value;
+		}
+
+		if ( $value[ strlen( $value ) - 1 ] == '%' ) {
+			$value = $value . '%';
+		}
+
 		return sprintf( $column_format, $value );
 	}
 
@@ -349,7 +357,7 @@ abstract class ITELIC_DB_Base {
 	 *
 	 * @return string
 	 */
-	protected function translate_select( $columns ) {
+	public function translate_select( $columns ) {
 
 		if ( $columns == '*' ) {
 			return $columns;
@@ -362,10 +370,15 @@ abstract class ITELIC_DB_Base {
 	 * Build the where statement.
 	 *
 	 * @param array[] $wheres [column => value]
+	 * @param string  $mode   Either = or LIKE
 	 *
 	 * @return string
 	 */
-	protected function translate_where( $wheres ) {
+	public function translate_where( $wheres, $mode = '=' ) {
+
+		if ( ! in_array( $mode, array( '=', 'LIKE' ) ) ) {
+			$mode = '=';
+		}
 
 		$statements = array();
 
@@ -373,7 +386,7 @@ abstract class ITELIC_DB_Base {
 
 			$value = $this->escape_value( $column, $value );
 
-			$statements[] = "$column = '$value'";
+			$statements[] = "$column $mode '$value'";
 		}
 
 		return implode( ' AND ', $statements );
@@ -386,7 +399,7 @@ abstract class ITELIC_DB_Base {
 	 *
 	 * @return string
 	 */
-	protected function translate_order_by( $orders ) {
+	public function translate_order_by( $orders ) {
 
 		$statements = array();
 

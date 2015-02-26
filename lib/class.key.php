@@ -53,7 +53,7 @@ class ITELIC_Key {
 	/**
 	 * @var DateTime|null
 	 */
-	private $expires;
+	private $expires = null;
 
 	/**
 	 * @var int
@@ -84,11 +84,8 @@ class ITELIC_Key {
 		$this->status      = $data->status;
 		$this->max         = $data->max;
 
-		try {
+		if ( ! empty( $data->expires ) ) {
 			$this->expires = new DateTime( $data->expires );
-		}
-		catch ( Exception $e ) {
-			$this->expires = null;
 		}
 
 		foreach ( array( 'transaction', 'product', 'customer' ) as $maybe_error ) {

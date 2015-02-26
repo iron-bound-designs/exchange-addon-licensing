@@ -47,6 +47,11 @@ require_once( ITELIC::$dir . 'lib/key/load.php' );
 require_once( ITELIC::$dir . 'lib/product/feature/load.php' );
 
 /**
+ * Load the admin.
+ */
+require_once( ITELIC::$dir . 'lib/admin/load.php' );
+
+/**
  * Run the upgrade routine if necessary.
  */
 ITELIC::upgrade();
