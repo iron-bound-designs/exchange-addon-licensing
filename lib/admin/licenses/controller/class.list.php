@@ -12,10 +12,16 @@
 class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Controller {
 
 	/**
+	 * @var WP_List_Table
+	 */
+	protected $table;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		add_action( 'load-exchange_page_it-exchange-licensing', array( $this, 'add_screen_options' ) );
+		add_action( 'load-exchange_page_it-exchange-licensing', array( $this, 'setup_table' ) );
 	}
 
 	/**
@@ -49,6 +55,13 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 	}
 
 	/**
+	 * Setup the table.
+	 */
+	public function setup_table() {
+		$this->table = new ITELIC_Admin_Licenses_Controller_Table( $this->prepare_data( $this->get_keys() ), $this->get_total_keys() );
+	}
+
+	/**
 	 * Get the list table for the licenses list.
 	 *
 	 * @since 1.0
@@ -56,7 +69,7 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 	 * @return WP_List_Table
 	 */
 	protected function get_table() {
-		return new ITELIC_Admin_Licenses_Controller_Table( $this->prepare_data( $this->get_keys() ), $this->get_total_keys() );
+		return $this->table;
 	}
 
 	/**

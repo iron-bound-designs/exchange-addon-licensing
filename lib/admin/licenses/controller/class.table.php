@@ -45,7 +45,6 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 				'ajax'     => false //does this table support ajax?
 			)
 		);
-
 	}
 
 	/**
@@ -220,11 +219,7 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 	 */
 	public function prepare_items() {
 
-		$columns  = $this->get_columns();
-		$hidden   = array();
-		$sortable = $this->get_sortable_columns();
-
-		$this->_column_headers = array( $columns, $hidden, $sortable );
+		$this->_column_headers = $this->get_column_info();
 
 		$db_search_columns = array(
 			'first_name',
