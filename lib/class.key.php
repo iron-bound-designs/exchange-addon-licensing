@@ -185,6 +185,23 @@ class ITELIC_Key {
 	}
 
 	/**
+	 * Get all activations of this license key.
+	 *
+	 * @since 1.0
+	 *
+	 * @return ITELIC_Activation[]
+	 */
+	public function get_activations() {
+		$activations = ITELIC_DB_Activations::many( 'lkey', $this->get_key() );
+
+		if ( ! is_array( $activations ) || empty( $activations ) ) {
+			return array();
+		}
+
+		return array_map( 'itelic_get_activation_from_data', $activations );
+	}
+
+	/**
 	 * @return string
 	 */
 	public function get_key() {

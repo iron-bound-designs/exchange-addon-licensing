@@ -78,7 +78,7 @@ class ITELIC_Activation {
 	 */
 	protected function init( $data ) {
 		$this->id         = $data->id;
-		$this->key        = ITELIC_Activation::with_id( $data->lkey );
+		$this->key        = ITELIC_Key::with_key( $data->lkey );
 		$this->location   = $data->location;
 		$this->status     = $data->status;
 		$this->activation = new DateTime( $data->activation );
@@ -180,10 +180,28 @@ class ITELIC_Activation {
 	}
 
 	/**
+	 * Retrieve the status.
+	 *
+	 * @param bool $label If true, retrieve the label form.
+	 *
 	 * @return string
 	 */
-	public function get_status() {
-		return $this->status;
+	public function get_status( $label = false ) {
+
+		if ( ! $label ) {
+			return $this->status;
+		}
+
+		switch ( $this->status ) {
+			case self::ACTIVE:
+				return __( "Active", ITELIC::SLUG );
+			case self::DEACTIVATED:
+				return __( "Deactivated", ITELIC::SLUG );
+			case self::EXPIRED:
+				return __( "Expired", ITELIC::SLUG );
+			default:
+				return __( "Unknown", ITELIC::SLUG );
+		}
 	}
 
 	/**

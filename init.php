@@ -22,6 +22,11 @@ require_once( ITELIC::$dir . 'api/key-types.php' );
 require_once( ITELIC::$dir . 'api/keys.php' );
 
 /**
+ * Load activations API methods.
+ */
+require_once( ITELIC::$dir . 'api/activations.php' );
+
+/**
  * Load the main plugin functions.
  */
 require_once( ITELIC::$dir . 'lib/functions.php' );

@@ -65,7 +65,7 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 						<?php if ( null === ( $d = $this->key->get_expires() ) ) : ?>
 							<?php _e( "Forever", ITELIC::SLUG ); ?>
 						<?php else: ?>
-							<?php echo $d->format( str_replace( 'F', 'M', get_option( 'date_format' ) ) ); ?>
+							<?php echo $d->format( $this->get_short_df() ); ?>
 						<?php endif; ?>
 					</h3>
 				</div>
@@ -101,16 +101,25 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 					</thead>
 
 					<tbody>
-					<tr>
-						<td>1</td>
-						<td>www.storea.com</td>
-						<td>Active</td>
-						<td>Feb 15, 2015</td>
-						<td>
-							<a href="javascript:" data-id="<?php echo esc_attr(); ?>" class="deactivate"><?php _e( "Deactivate", ITELIC::SLUG ); ?></a>
-						</td>
-						<td><a href="javascript:" data-id="<?php echo esc_attr(); ?>" class="remove-item">x</a></td>
-					</tr>
+
+					<?php foreach ( $this->key->get_activations() as $activation ): ?>
+
+						<tr>
+							<td><?php echo $activation->get_id(); ?></td>
+							<td><?php echo $activation->get_location(); ?></td>
+							<td><?php echo $activation->get_status( true ); ?></td>
+							<td><?php echo $activation->get_activation()->format( $this->get_short_df() ); ?></td>
+							<td>
+								<?php if ( null === ( $d = $activation->get_deactivation() ) ): ?>
+									<a href="javascript:" data-id="<?php echo esc_attr(); ?>" class="deactivate"><?php _e( "Deactivate", ITELIC::SLUG ); ?></a>
+								<?php else: ?>
+									<?php echo $d->format( $this->get_short_df() ); ?>
+								<?php endif; ?>
+							</td>
+							<td><a href="javascript:" data-id="<?php echo esc_attr(); ?>" class="remove-item">x</a></td>
+						</tr>
+
+					<?php endforeach; ?>
 					</tbody>
 				</table>
 
@@ -123,6 +132,17 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 		</div>
 
 	<?php
+	}
+
+	/**
+	 * Get the date format. Replace full month name, with short month name if possible.
+	 *
+	 * @since 1.0
+	 *
+	 * @return string
+	 */
+	protected function get_short_df() {
+		return str_replace( 'F', 'M', get_option( 'date_format' ) );
 	}
 
 	/**
