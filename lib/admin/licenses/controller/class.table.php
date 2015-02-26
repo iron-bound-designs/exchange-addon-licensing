@@ -149,7 +149,7 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 		//Return the title contents
 		return sprintf( '%1$s %2$s',
 			/*$1%s*/
-			$item['expires'],
+			$item['max_active'],
 			/*$2%s*/
 			$this->row_actions( $actions )
 		);
@@ -193,6 +193,7 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 		}
 
 		unset( $sortable_columns['cb'] );
+		unset( $sortable_columns['active_installs'] );
 
 		return $sortable_columns;
 	}
@@ -221,16 +222,6 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 
 		$this->_column_headers = $this->get_column_info();
 
-		$db_search_columns = array(
-			'first_name',
-			'last_name',
-			'ID'
-		);
-
-		if ( isset( $_REQUEST['orderby'] ) && ! in_array( $_REQUEST['orderby'], $db_search_columns ) ) {
-			usort( $this->keys, array( $this, 'usort' ) );
-		}
-
 		/**
 		 * Now we can add our sorted data to the items property, where
 		 * it can be used by the rest of the class.
@@ -249,35 +240,5 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 				// we have to calculate the total number of pages
 			)
 		);
-	}
-
-	/**
-	 * This checks for sorting input and sorts the data in our array accordingly.
-	 *
-	 * The majority of sorting is done during the user_query, but if the sorting data is generated dynamically,
-	 * then we sort it here.
-	 *
-	 * @param $a mixed
-	 * @param $b mixed
-	 *
-	 * @return int
-	 */
-	public function usort( $a, $b ) {
-		$orderby = ( ! empty( $_REQUEST['orderby'] ) ) ? $_REQUEST['orderby'] : 'ID'; //If no sort, default to ID
-		$order   = ( ! empty( $_REQUEST['order'] ) ) ? $_REQUEST['order'] : 'asc'; //If no order, default to asc
-
-		if ( ! is_numeric( $a[ $orderby ] ) ) {
-			$result = strcmp( $a[ $orderby ], $b[ $orderby ] ); //Determine sort order
-
-			return ( $order === 'asc' ) ? $result : - $result; //Send final sort direction to usort
-		} else {
-			if ( $a[ $orderby ] <= $b[ $orderby ] ) {
-				$result = - 1;
-			} else {
-				$result = 1;
-			}
-
-			return ( $order === 'asc' ) ? $result : - $result;
-		}
 	}
 }

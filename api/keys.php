@@ -19,7 +19,7 @@ function itelic_get_keys( $args = array() ) {
 
 	$defaults = array(
 		'get_row_count' => false,
-		'orderby'       => 'transaction_id',
+		'orderby'       => 'transaction',
 		'order'         => 'ASC'
 	);
 
@@ -90,7 +90,20 @@ function itelic_get_keys( $args = array() ) {
 		$select = "*";
 	}
 
-	$statement = $db->assemble_statement( $select, $where, $db->translate_order_by( array( $args['orderby'] => $args['order'] ) ), $count, $offset );
+	switch ( $args['orderby'] ) {
+		case 'key':
+			$orderby = 'lkey';
+			break;
+		case 'transaction':
+			$orderby = 'transaction_id';
+			break;
+		default:
+			$orderby = $args['orderby'];
+	}
+
+	$order_by = $db->translate_order_by( array( $orderby => $args['order'] ) );
+
+	$statement = $db->assemble_statement( $select, $where, $order_by, $count, $offset );
 
 	$results = $wpdb->get_results( $statement );
 

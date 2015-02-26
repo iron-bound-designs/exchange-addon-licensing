@@ -58,6 +58,11 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 	 * Setup the table.
 	 */
 	public function setup_table() {
+
+		if ( ! isset( $_GET['orderby'] ) ) {
+			$_GET['orderby'] = 'transaction';
+		}
+
 		$this->table = new ITELIC_Admin_Licenses_Controller_Table( $this->prepare_data( $this->get_keys() ), $this->get_total_keys() );
 	}
 
@@ -158,6 +163,18 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 			} else {
 				$args['key_search'] = "$search";
 			}
+		}
+
+		if ( isset( $_GET['orderby'] ) ) {
+			$args['orderby'] = sanitize_text_field( $_GET['orderby'] );
+
+			if ( $args['orderby'] == 'max_active' ) {
+				$args['orderby'] = 'max';
+			}
+		}
+
+		if ( isset( $_GET['order'] ) ) {
+			$args['order'] = sanitize_text_field( $_GET['order'] );
 		}
 
 		return $args;
