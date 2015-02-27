@@ -17,6 +17,7 @@ class ITELIC_Admin_Licenses_Controller_Single extends ITELIC_Admin_Licenses_Cont
 	public function __construct() {
 		add_action( 'load-exchange_page_it-exchange-licensing', array( $this, 'add_screen_options' ) );
 
+		add_action( 'wp_ajax_itelic_admin_licenses_single_update', array( $this, 'handle_ajax_update' ) );
 		add_action( 'wp_ajax_itelic_admin_licenses_single_activate', array( $this, 'handle_ajax_activate' ) );
 		add_action( 'wp_ajax_itelic_admin_licenses_single_deactivate', array( $this, 'handle_ajax_deactivate' ) );
 		add_action( 'wp_ajax_itelic_admin_licenses_single_delete', array( $this, 'handle_ajax_delete' ) );
@@ -50,6 +51,64 @@ class ITELIC_Admin_Licenses_Controller_Single extends ITELIC_Admin_Licenses_Cont
 		$view->render();
 
 		$view->end();
+	}
+
+	/**
+	 * Handle the AJAX request for updating information about this license key.
+	 */
+	public function handle_ajax_update() {
+
+		if ( ! isset( $_POST['key'] ) || ! isset( $_POST['prop'] ) || ! isset( $_POST['val'] ) || ! isset( $_POST['nonce'] ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Invalid request format.", ITELIC::SLUG )
+			) );
+		}
+
+		$key   = sanitize_text_field( $_POST['key'] );
+		$prop  = sanitize_text_field( $_POST['prop'] );
+		$val   = sanitize_text_field( $_POST['val'] );
+		$nonce = sanitize_text_field( $_POST['nonce'] );
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-update-key-$key" ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Sorry, this page has expired. Please refresh and try again.", ITELIC::SLUG )
+			) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Sorry, you don't have permission to do this.", ITELIC::SLUG )
+			) );
+		}
+
+		$key = itelic_get_key( $key );
+
+		try {
+
+			switch ( $prop ) {
+				case 'status':
+					$key->set_status( $val );
+					break;
+				case 'max':
+					$key->set_max( $val );
+					break;
+				case 'expires':
+					$date = new DateTime( $val, new DateTimeZone( get_option( 'timezone_string' ) ) );
+					$key->set_expires( $date );
+					break;
+				default:
+					wp_send_json_error( array(
+						'message' => __( "Invalid request format.", ITELIC::SLUG )
+					) );
+			}
+		}
+		catch ( Exception $e ) {
+			wp_send_json_error( array(
+				'message' => $e->getMessage()
+			) );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**

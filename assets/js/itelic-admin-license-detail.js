@@ -15,13 +15,19 @@ jQuery(document).ready(function ($) {
 		name       : 'status',
 		source     : ITELIC.statuses,
 		showbuttons: false,
-		placement  : "top"
+		placement  : "top",
+		url        : function (params) {
+			return editable_ajax(params);
+		},
+		success    : function (response, newValue) {
+			return editable_success_callback(response, newValue);
+		}
 	});
 
 	$(".expires h3").editable({
 		type       : 'date',
 		pk         : ITELIC.key,
-		name       : 'expiration',
+		name       : 'expires',
 		placement  : "bottom",
 		showbuttons: false,
 		clear      : false,
@@ -32,16 +38,63 @@ jQuery(document).ready(function ($) {
 			changeMonth: false,
 			changeYear : false
 		},
-		viewformat : ITELIC.df
+		viewformat : ITELIC.df,
+		url        : function (params) {
+			return editable_ajax(params);
+		},
+		success    : function (response, newValue) {
+			return editable_success_callback(response, newValue);
+		}
 	});
 
 	$(".max-activations h3").editable({
 		type       : 'number',
 		pk         : ITELIC.key,
-		name       : 'max-activations',
+		name       : 'max',
 		placement  : "bottom",
-		showbuttons: false
+		showbuttons: false,
+		url        : function (params) {
+			return editable_ajax(params);
+		},
+		success    : function (response, newValue) {
+			return editable_success_callback(response, newValue);
+		}
 	});
+
+	/**
+	 * Callback function that parses the WP Ajax response.
+	 *
+	 * @param response
+	 * @param newValue
+	 * @returns {*}
+	 */
+	function editable_success_callback(response, newValue) {
+		if (!response.success) {
+			alert(response.data.message);
+			return false;
+		} else {
+			return {"newValue": newValue};
+		}
+	}
+
+	/**
+	 * Callback function that processes a change from editable
+	 * and posts it to a WP Ajax handle.
+	 *
+	 * @param params
+	 * @returns {$.promise|*}
+	 */
+	function editable_ajax(params) {
+		var data = {
+			action: 'itelic_admin_licenses_single_update',
+			key   : ITELIC.key,
+			prop  : params.name,
+			val   : params.value,
+			nonce : ITELIC.update_nonce
+		};
+
+		return $.post(ITELIC.ajax, data);
+	}
 
 	status_span.on('shown', function (e, editable) {
 		$(this).closest('.status').addClass('status-hovered');

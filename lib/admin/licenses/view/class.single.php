@@ -35,11 +35,12 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 		wp_enqueue_style( 'itelic-admin-license-detail' );
 		wp_enqueue_script( 'itelic-admin-license-detail' );
 		wp_localize_script( 'itelic-admin-license-detail', 'ITELIC', array(
-			'ajax'      => admin_url( 'admin-ajax.php' ),
-			'key'       => $this->key->get_key(),
-			'disabling' => __( "Deactivating", ITELIC::SLUG ),
-			'df'        => it_exchange_php_date_format_to_jquery_datepicker_format( $this->get_short_df() ),
-			'statuses'  => json_encode( array(
+			'ajax'         => admin_url( 'admin-ajax.php' ),
+			'key'          => $this->key->get_key(),
+			'disabling'    => __( "Deactivating", ITELIC::SLUG ),
+			'df'           => it_exchange_php_date_format_to_jquery_datepicker_format( $this->get_short_df() ),
+			'update_nonce' => wp_create_nonce( 'itelic-update-key-' . $this->key->get_key() ),
+			'statuses'     => json_encode( array(
 				ITELIC_Key::ACTIVE   => ITELIC_Key::get_status_label( ITELIC_Key::ACTIVE ),
 				ITELIC_Key::EXPIRED  => ITELIC_Key::get_status_label( ITELIC_Key::EXPIRED ),
 				ITELIC_Key::DISABLED => ITELIC_Key::get_status_label( ITELIC_Key::DISABLED )

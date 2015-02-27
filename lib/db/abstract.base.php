@@ -201,9 +201,6 @@ abstract class ITELIC_DB_Base {
 	 */
 	public function update( $row_key, $data, $where = array() ) {
 
-		// Row ID must be positive integer
-		$row_key = absint( $row_key );
-
 		if ( empty( $row_key ) ) {
 			return false;
 		}

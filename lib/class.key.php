@@ -246,6 +246,24 @@ class ITELIC_Key {
 	}
 
 	/**
+	 * Set the status of this key.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $status
+	 */
+	public function set_status( $status ) {
+		if ( ! in_array( $status, array( self::ACTIVE, self::EXPIRED, self::DISABLED ) ) ) {
+			throw new InvalidArgumentException( __( "Invalid value for key status.", ITELIC::SLUG ) );
+		}
+
+		$db = ITELIC_DB_Keys::instance();
+		$db->update( $this->get_key(), array( 'status' => $status ) );
+
+		$this->refresh();
+	}
+
+	/**
 	 * Get a status label.
 	 *
 	 * @since 1.0
@@ -286,10 +304,47 @@ class ITELIC_Key {
 	}
 
 	/**
+	 * Set the expiry date.
+	 *
+	 * @since 1.0
+	 *
+	 * @param DateTime $expires . Set null for forever.
+	 */
+	public function set_expires( DateTime $expires = null ) {
+		$db = ITELIC_DB_Keys::instance();
+
+		if ( $expires instanceof DateTime ) {
+			$val = $expires->format( "Y-m-d H:i:s" );
+		} else {
+			$val = null;
+		}
+
+		$db->update( $this->get_key(), array( 'expires' => $val ) );
+
+		$this->refresh();
+	}
+
+	/**
 	 * @return int
 	 */
 	public function get_max() {
 		return $this->max;
+	}
+
+	/**
+	 * Set the maximum number of activations.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int $max
+	 */
+	public function set_max( $max ) {
+		$db = ITELIC_DB_Keys::instance();
+		$res = $db->update( $this->get_key(), array( 'max' => absint( $max ) ) );
+
+		error_log("key: {$this->get_key()} max: $max res: $res" );
+
+		$this->refresh();
 	}
 
 	/**
