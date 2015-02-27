@@ -35,7 +35,8 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 		wp_enqueue_style( 'itelic-admin-license-detail', ITELIC::$url . 'assets/css/admin-license-detail.css', array(), ITELIC::VERSION );
 		wp_enqueue_script( 'itelic-admin-license-detail', ITELIC::$url . 'assets/js/itelic-admin-license-detail.js', array( 'jquery' ), ITELIC::VERSION );
 		wp_localize_script( 'itelic-admin-license-detail', 'ITELIC', array(
-			'ajax' => admin_url( 'admin-ajax.php' )
+			'ajax'      => admin_url( 'admin-ajax.php' ),
+			'disabling' => __( "Deactivating", ITELIC::SLUG )
 		) );
 		?>
 

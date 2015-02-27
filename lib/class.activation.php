@@ -111,6 +111,10 @@ class ITELIC_Activation {
 	 */
 	public static function create( $key, $location, DateTime $activation = null, $status = '' ) {
 
+		if ( empty( $key ) || empty( $location ) ) {
+			throw new InvalidArgumentException( __( "The license key and install location are required.", ITELIC::SLUG ) );
+		}
+
 		if ( $activation === null ) {
 			$activation = current_time( 'mysql' );
 		} else {

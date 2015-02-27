@@ -279,3 +279,7 @@
 	line-height: 15px;
 	cursor: pointer;
 }
+
+#it-exchange-license-details #remote-activate-submit:disabled {
+	background: #D8EAC2;
+}

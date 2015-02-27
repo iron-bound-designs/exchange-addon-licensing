@@ -18,7 +18,12 @@ jQuery(document).ready(function ($) {
 			nonce   : $("#_wpnonce").val()
 		};
 
+		var button = $(this);
+		button.prop('disabled', true);
+
 		$.post(ITELIC.ajax, data, function (response) {
+
+			button.prop('disabled', false);
 
 			if (!response.success) {
 				alert(response.data.message);
@@ -38,6 +43,29 @@ jQuery(document).ready(function ($) {
 
 		var link = $(this);
 
+		var i = 0;
+		var originalText = link.text();
+		link.text(ITELIC.disabling);
+
+		/**
+		 * Animate the working text to append 3 '.'
+		 * then revert.
+		 *
+		 * @type {number}
+		 */
+		var loading = setInterval(function () {
+
+			link.append(".");
+			i++;
+
+			if (i == 4) {
+				link.text(ITELIC.disabling);
+				i = 0;
+			}
+
+		}, 500);
+
+
 		var data = {
 			action: 'itelic_admin_licenses_single_deactivate',
 			id    : link.data('id'),
@@ -55,6 +83,9 @@ jQuery(document).ready(function ($) {
 				var row = link.closest('tr');
 				row.replaceWith(html);
 			}
+
+			clearTimeout(loading);
+			link.text(originalText);
 		});
 	});
 
@@ -63,6 +94,19 @@ jQuery(document).ready(function ($) {
 		e.preventDefault();
 
 		var button = $(this);
+
+		var degree = 0, timer;
+
+		rotate();
+		function rotate() {
+
+			button.css({WebkitTransform: 'rotate(' + degree + 'deg)'});
+			button.css({'-moz-transform': 'rotate(' + degree + 'deg)'});
+			timer = setTimeout(function () {
+				++degree;
+				rotate();
+			}, 1);
+		}
 
 		var data = {
 			action: 'itelic_admin_licenses_single_delete',
@@ -79,6 +123,10 @@ jQuery(document).ready(function ($) {
 				var row = button.closest('tr');
 				row.remove();
 			}
+
+			clearTimeout(timer);
+			button.css({WebkitTransform: 'rotate(' + 0 + 'deg)'});
+			button.css({'-moz-transform': 'rotate(' + 0 + 'deg)'});
 		});
 	});
 });

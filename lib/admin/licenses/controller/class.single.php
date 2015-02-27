@@ -85,7 +85,7 @@ class ITELIC_Admin_Licenses_Controller_Single extends ITELIC_Admin_Licenses_Cont
 		}
 		catch ( Exception $e ) {
 			wp_send_json_error( array(
-				'message' => __( "Something went wrong. Please refresh and try again.", ITELIC::SLUG )
+				'message' => $e->getMessage()
 			) );
 		}
 
@@ -140,7 +140,7 @@ class ITELIC_Admin_Licenses_Controller_Single extends ITELIC_Admin_Licenses_Cont
 		}
 		catch ( Exception $e ) {
 			wp_send_json_error( array(
-				'message' => __( "Something went wrong. Please refresh and try again.", ITELIC::SLUG )
+				'message' => $e->getMessage()
 			) );
 		}
 
@@ -189,7 +189,7 @@ class ITELIC_Admin_Licenses_Controller_Single extends ITELIC_Admin_Licenses_Cont
 		}
 		catch ( Exception $e ) {
 			wp_send_json_error( array(
-				'message' => __( "Something went wrong. Please refresh and try again.", ITELIC::SLUG )
+				'message' => $e->getMessage()
 			) );
 		}
 
