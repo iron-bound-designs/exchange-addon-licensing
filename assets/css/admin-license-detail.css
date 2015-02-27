@@ -101,11 +101,15 @@
 	transition-property: width, border-bottom-left-radius;
 	-webkit-transition-duration: .75s;
 	transition-duration: .75s;
+	-webkit-transition-delay: .3s;
+	transition-delay: .3s;
 }
 
 #it-exchange-license-details .header-block .status:hover {
 	width: 200px;
 	border-bottom-left-radius: 25px;
+	-webkit-transition-delay: 0s;
+	transition-delay: 0s;
 }
 
 #it-exchange-license-details .header-block .status span {
@@ -121,10 +125,14 @@
 	transition-property: opacity;
 	-webkit-transition-duration: .25s;
 	transition-duration: .25s;
+	-webkit-transition-delay: .3s;
+	transition-delay: .3s;
 }
 
 #it-exchange-license-details .header-block .status:hover span {
 	opacity: 1;
+	-webkit-transition-delay: 0s;
+	transition-delay: 0s;
 }
 
 #it-exchange-license-details .header-block .status-active {
