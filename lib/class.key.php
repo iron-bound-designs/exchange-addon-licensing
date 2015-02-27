@@ -185,6 +185,33 @@ class ITELIC_Key {
 	}
 
 	/**
+	 * Extend the expiration date of this license,
+	 * by its length. For example, if a license has an
+	 * expiration date of one year after purchase,
+	 * extending it will extend the expiration date by one year.
+	 *
+	 * @since 1.0
+	 *
+	 * @return DateTime
+	 */
+	public function extend() {
+		if ( $this->get_expires() === null ) {
+			return null;
+		}
+
+		$type  = it_exchange_get_product_feature( $this->get_product()->ID, 'recurring-payments', array( 'setting' => 'interval' ) );
+		$count = it_exchange_get_product_feature( $this->get_product()->ID, 'recurring-payments', array( 'setting' => 'interval-count' ) );
+
+		$interval = itelic_convert_rp_to_date_interval( $type, $count );
+		$expires  = $this->get_expires();
+
+		$expires->add( $interval );
+		$this->set_expires( $expires );
+
+		return $this->get_expires();
+	}
+
+	/**
 	 * Get all activations of this license key.
 	 *
 	 * @since 1.0
@@ -339,10 +366,10 @@ class ITELIC_Key {
 	 * @param int $max
 	 */
 	public function set_max( $max ) {
-		$db = ITELIC_DB_Keys::instance();
+		$db  = ITELIC_DB_Keys::instance();
 		$res = $db->update( $this->get_key(), array( 'max' => absint( $max ) ) );
 
-		error_log("key: {$this->get_key()} max: $max res: $res" );
+		error_log( "key: {$this->get_key()} max: $max res: $res" );
 
 		$this->refresh();
 	}

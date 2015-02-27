@@ -97,6 +97,7 @@ class ITELIC {
 		), '1.5.1' );
 
 		wp_register_script( 'itelic-add-edit-product', self::$url . 'assets/js/itelic-add-edit-product.js', array( 'jquery' ), self::VERSION );
+		wp_register_script( 'itelic-admin-licenses-list', self::$url . 'assets/js/itelic-admin-licenses-list.js', array( 'jquery' ), self::VERSION );
 		wp_register_script( 'itelic-admin-license-detail', self::$url . 'assets/js/itelic-admin-license-detail.js', array(
 			'jquery',
 			'jqueryui-editable'

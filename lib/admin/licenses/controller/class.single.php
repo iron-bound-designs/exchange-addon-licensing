@@ -84,7 +84,6 @@ class ITELIC_Admin_Licenses_Controller_Single extends ITELIC_Admin_Licenses_Cont
 		$key = itelic_get_key( $key );
 
 		try {
-
 			switch ( $prop ) {
 				case 'status':
 					$key->set_status( $val );

@@ -40,6 +40,11 @@ class ITELIC_Admin_Licenses_View_List extends ITELIC_Admin_Tab_View {
 	 * Render the view.
 	 */
 	public function render() {
+
+		wp_enqueue_script( 'itelic-admin-licenses-list' );
+		wp_localize_script( 'itelic-admin-licenses-list', 'ITELIC', array(
+			'ajax' => admin_url( 'admin-ajax.php' )
+		) );
 		?>
 
 		<form method="GET">

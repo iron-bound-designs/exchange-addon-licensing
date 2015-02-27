@@ -118,13 +118,14 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 	public function column_expires( $item ) {
 		//Build row actions
 		$actions = array(
-			'extend' => sprintf( '<a href="javascript:" data-key="%1%s">%2$s</a>', $item['key'], __( "Extend", ITELIC::SLUG ) )
+			'extend' => sprintf( '<a href="javascript:" data-key="%1$s" data-nonce="%2$s">%3$s</a>', $item['key'],
+				wp_create_nonce( 'itelic-extend-key-' . $item['key'] ), __( "Extend", ITELIC::SLUG ) )
 		);
 
 		//Return the title contents
 		return sprintf( '%1$s %2$s',
 			/*$1%s*/
-			$item['expires'],
+			'<span class="expires-date">' . $item['expires'] . '</span>',
 			/*$2%s*/
 			$this->row_actions( $actions )
 		);
