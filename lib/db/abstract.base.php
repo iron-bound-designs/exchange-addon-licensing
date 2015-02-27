@@ -152,7 +152,7 @@ abstract class ITELIC_DB_Base {
 	 */
 	public function count( $where = array() ) {
 
-		$statement = $this->assemble_statement( "SELECT COUNT(*)", $this->translate_where( $where ) );
+		$statement = $this->assemble_statement( "COUNT(*)", $this->translate_where( $where ) );
 
 		return (int) $this->wpdb->get_var( $statement );
 	}
