@@ -83,7 +83,7 @@ class ITELIC_Activation {
 		$this->status     = $data->status;
 		$this->activation = new DateTime( $data->activation );
 
-		if ( ! empty( $data->deactivation ) ) {
+		if ( ! empty( $data->deactivation ) && $data->deactivation != '0000-00-00 00:00:00' ) {
 			$this->deactivation = new DateTime( $data->deactivation );
 		}
 	}
@@ -109,7 +109,7 @@ class ITELIC_Activation {
 	 *
 	 * @return ITELIC_Activation
 	 */
-	public static function create( $key, $location, $activation = null, $status = '' ) {
+	public static function create( $key, $location, DateTime $activation = null, $status = '' ) {
 
 		if ( $activation === null ) {
 			$activation = current_time( 'mysql' );
@@ -122,16 +122,20 @@ class ITELIC_Activation {
 		}
 
 		$data = array(
-			'lkey'       => $key,
-			'location'   => $location,
-			'activation' => $activation,
-			'status'     => $status
+			'lkey'         => $key,
+			'location'     => $location,
+			'activation'   => $activation,
+			'deactivation' => null,
+			'status'       => $status
 		);
 
 		$db = ITELIC_DB_Activations::instance();
 		$id = $db->insert( $data );
 
-		return self::with_id( $id );
+		$activation = self::with_id( $id );
+		$activation->get_key()->log_activation( $activation );
+
+		return $activation;
 	}
 
 	/**
@@ -139,9 +143,9 @@ class ITELIC_Activation {
 	 *
 	 * @param DateTime $date
 	 */
-	public function deactivate( $date = null ) {
+	public function deactivate( DateTime $date = null ) {
 
-		if ( $date == null ) {
+		if ( $date === null ) {
 			$date = current_time( 'mysql' );
 		} else {
 			$date = $date->format( 'Y-m-d H:i:s' );
@@ -156,6 +160,15 @@ class ITELIC_Activation {
 		$db->update( $this->get_id(), $update );
 
 		$this->refresh();
+	}
+
+	/**
+	 * Delete an activation record.
+	 *
+	 * @since 1.0
+	 */
+	public function delete() {
+		ITELIC_DB_Activations::delete_by_id( $this->get_id() );
 	}
 
 	/**

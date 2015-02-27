@@ -145,6 +145,19 @@ class ITELIC_DB_Activations extends ITELIC_DB_Base {
 	}
 
 	/**
+	 * Delete an activation record by its ID.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $id
+	 */
+	public static function delete_by_id( $id ) {
+		$db = self::instance();
+
+		$db->delete( $id );
+	}
+
+	/**
 	 * Columns in the table.
 	 *
 	 * key => sprintf field type

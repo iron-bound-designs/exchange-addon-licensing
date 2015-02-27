@@ -25,14 +25,18 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 	 */
 	public function __construct( ITELIC_Key $key ) {
 		$this->key = $key;
-
-		wp_enqueue_style( 'itelic-admin-license-detail', ITELIC::$url . 'assets/css/admin-license-detail.css' );
 	}
 
 	/**
 	 * Render the view.
 	 */
 	public function render() {
+
+		wp_enqueue_style( 'itelic-admin-license-detail', ITELIC::$url . 'assets/css/admin-license-detail.css', array(), ITELIC::VERSION );
+		wp_enqueue_script( 'itelic-admin-license-detail', ITELIC::$url . 'assets/js/itelic-admin-license-detail.js', array( 'jquery' ), ITELIC::VERSION );
+		wp_localize_script( 'itelic-admin-license-detail', 'ITELIC', array(
+			'ajax' => admin_url( 'admin-ajax.php' )
+		) );
 		?>
 
 		<div id="it-exchange-license-details">
@@ -87,7 +91,7 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 			<div class="spacing-wrapper activations">
 				<h3><?php _e( "Activations", ITELIC::SLUG ); ?></h3>
 
-				<table class="widefat">
+				<table id="activations-table" class="widefat">
 					<thead>
 					<tr>
 						<th><?php _e( "ID", ITELIC::SLUG ); ?></th>
@@ -103,20 +107,7 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 
 					<?php foreach ( $this->key->get_activations() as $activation ): ?>
 
-						<tr>
-							<td><?php echo $activation->get_id(); ?></td>
-							<td><?php echo $activation->get_location(); ?></td>
-							<td><?php echo $activation->get_status( true ); ?></td>
-							<td><?php echo $activation->get_activation()->format( $this->get_short_df() ); ?></td>
-							<td>
-								<?php if ( null === ( $d = $activation->get_deactivation() ) ): ?>
-									<a href="javascript:" data-id="<?php echo esc_attr(); ?>" class="deactivate"><?php _e( "Deactivate", ITELIC::SLUG ); ?></a>
-								<?php else: ?>
-									<?php echo $d->format( $this->get_short_df() ); ?>
-								<?php endif; ?>
-							</td>
-							<td><button data-id="<?php echo esc_attr(); ?>" class="remove-item">x</button></td>
-						</tr>
+						<?php echo $this->get_activation_row_html( $activation ); ?>
 
 					<?php endforeach; ?>
 					</tbody>
@@ -124,13 +115,56 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 
 				<h4><?php _e( "Remote Activate", ITELIC::SLUG ); ?></h4>
 
-				<label for="remote-activate-name"><?php _e( "Install Location", ITELIC::SLUG ); ?></label>
-				<input type="text" id="remote-activate-name" placeholder="<?php _e( "www.store.com", ITELIC::SLUG ); ?>">
+				<label for="remote-activate-location"><?php _e( "Install Location", ITELIC::SLUG ); ?></label>
+				<input type="text" id="remote-activate-location" placeholder="<?php _e( "www.store.com", ITELIC::SLUG ); ?>">
 				<input type="submit" id="remote-activate-submit" class="it-exchange-button" value="<?php esc_attr_e( "Activate", ITELIC::SLUG ); ?>">
+				<input type="hidden" id="remote-activate-key" value="<?php echo esc_attr( $this->key->get_key() ); ?>">
+				<?php wp_nonce_field( 'itelic-remote-activate-key-' . $this->key->get_key() ) ?>
 			</div>
 		</div>
 
 	<?php
+	}
+
+	/**
+	 * Get the activation row HTML.
+	 *
+	 * @since 1.0
+	 *
+	 * @param ITELIC_Activation $activation
+	 *
+	 * @return string
+	 */
+	public function get_activation_row_html( ITELIC_Activation $activation ) {
+		$n_deactivate = wp_create_nonce( 'itelic-remote-deactivate-' . $activation->get_id() );
+		$n_delete     = wp_create_nonce( 'itelic-remote-delete-' . $activation->get_id() );
+		ob_start();
+		?>
+
+		<tr>
+			<td><?php echo $activation->get_id(); ?></td>
+			<td><?php echo $activation->get_location(); ?></td>
+			<td><?php echo $activation->get_status( true ); ?></td>
+			<td><?php echo $activation->get_activation()->format( $this->get_short_df() ); ?></td>
+			<td>
+				<?php if ( null === ( $d = $activation->get_deactivation() ) ): ?>
+					<a href="javascript:" data-id="<?php echo esc_attr( $activation->get_id() ); ?>" data-nonce="<?php echo $n_deactivate; ?>" class="deactivate">
+						<?php _e( "Deactivate", ITELIC::SLUG ); ?>
+					</a>
+				<?php else: ?>
+					<?php echo $d->format( $this->get_short_df() ); ?>
+				<?php endif; ?>
+			</td>
+			<td>
+				<button data-id="<?php echo esc_attr( $activation->get_id() ); ?>" class="remove-item" data-nonce="<?php echo $n_delete; ?>">
+					x
+				</button>
+			</td>
+		</tr>
+
+		<?php
+
+		return ob_get_clean();
 	}
 
 	/**
