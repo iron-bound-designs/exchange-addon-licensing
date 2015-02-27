@@ -303,3 +303,9 @@
 .ui-tooltip.editable-container {
 	background: none;
 }
+
+#it-exchange-license-details .status span,
+#it-exchange-license-details .expires h3,
+#it-exchange-license-details .max-activations h3 {
+	cursor: pointer;
+}
