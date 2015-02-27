@@ -69,7 +69,7 @@ class ITELIC_Settings {
 		$page  = empty( $_GET['page'] ) ? false : $_GET['page'];
 		$addon = empty( $_GET['add-on-settings'] ) ? false : $_GET['add-on-settings'];
 
-		if ( ! empty( $_POST ) && is_admin() && 'it-exchange-addons' == $page && 'commissions' == $addon ) {
+		if ( ! empty( $_POST ) && is_admin() && 'it-exchange-addons' == $page && 'licensing' == $addon ) {
 			add_action( 'it_exchange_save_add_on_settings_itelic', array( $this, 'save_settings' ) );
 			do_action( 'it_exchange_save_add_on_settings_itelic' );
 		}
@@ -86,7 +86,7 @@ class ITELIC_Settings {
 
 		$form_options = array(
 			'id'     => 'it-exchange-add-on-itelic-settings',
-			'action' => 'admin.php?page=it-exchange-addons&add-on-settings=commissions',
+			'action' => 'admin.php?page=it-exchange-addons&add-on-settings=licensing',
 		);
 
 		$form = new ITForm( $this->form_values, array( 'prefix' => 'it-exchange-add-on-itelic' ) );
@@ -167,10 +167,6 @@ class ITELIC_Settings {
 			$this->error_message = __( 'Error. Please try again', ITELIC::SLUG );
 
 			return;
-		}
-
-		if ( $defaults['pay-schedule-interval'] != $new_values['pay-schedule-interval'] ) {
-			update_option( 'itelic_last_scheduled_pay_out', time() );
 		}
 
 		/**
