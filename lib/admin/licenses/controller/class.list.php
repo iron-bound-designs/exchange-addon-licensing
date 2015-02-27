@@ -24,6 +24,7 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 		add_action( 'load-exchange_page_it-exchange-licensing', array( $this, 'setup_table' ) );
 
 		add_action( 'wp_ajax_itelic_admin_licenses_list_extend', array( $this, 'handle_ajax_extend' ) );
+		add_action( 'wp_ajax_itelic_admin_licenses_list_max', array( $this, 'handle_ajax_max' ) );
 	}
 
 	/**
@@ -105,6 +106,65 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 
 		wp_send_json_success( array(
 			'expires' => $key->get_expires() === null ? __( "Forever", ITELIC::SLUG ) : $key->get_expires()->format( get_option( 'date_format' ) )
+		) );
+	}
+
+	/**
+	 * Handle the AJAX request for altering the max number of activations.
+	 */
+	public function handle_ajax_max() {
+
+		if ( ! isset( $_POST['key'] ) || ! isset( $_POST['nonce'] ) || ! isset( $_POST['dir'] ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Invalid request format.", ITELIC::SLUG )
+			) );
+		}
+
+		$key   = sanitize_text_field( $_POST['key'] );
+		$nonce = sanitize_text_field( $_POST['nonce'] );
+		$dir   = strtolower( sanitize_text_field( $_POST['dir'] ) );
+
+		if ( $dir == 'up' ) {
+			$alter = 1;
+		} elseif ( $dir == 'down' ) {
+			$alter = - 1;
+		} else {
+			wp_send_json_error( array(
+				'message' => __( "Invalid request format.", ITELIC::SLUG )
+			) );
+		}
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-max-key-$key" ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Sorry, this page has expired. Please refresh and try again.", ITELIC::SLUG )
+			) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Sorry, you don't have permission to do this.", ITELIC::SLUG )
+			) );
+		}
+
+		$key = itelic_get_key( $key );
+
+		if ( ! $key instanceof ITELIC_Key ) {
+			wp_send_json_error( array(
+				'message' => __( "Sorry, we couldn't find that key. Please refresh and try again.", ITELIC::SLUG )
+			) );
+		}
+
+		try {
+			$key->set_max( $key->get_max() + $alter );
+		}
+		catch ( Exception $e ) {
+			wp_send_json_error( array(
+				'message' => $e->getMessage()
+			) );
+		}
+
+		wp_send_json_success( array(
+			'max' => $key->get_max()
 		) );
 	}
 

@@ -143,14 +143,18 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 	public function column_max_active( $item ) {
 		//Build row actions
 		$actions = array(
-			'decrease' => sprintf( '<a href="javascript:" data-key="%1%s">%2$s</a>', $item['key'], __( "Decrease", ITELIC::SLUG ) ),
-			'increase' => sprintf( '<a href="javascript:" data-key="%1%s">%2$s</a>', $item['key'], __( "Increase", ITELIC::SLUG ) )
+			'decrease' => sprintf( '<a href="javascript:" data-dir="down" data-key="%1$s" data-nonce="%2$s">%3$s</a>', $item['key'],
+				wp_create_nonce( "itelic-max-key-" . $item['key'] ),
+				__( "Decrease", ITELIC::SLUG ) ),
+			'increase' => sprintf( '<a href="javascript:" data-dir="up" data-key="%1$s" data-nonce="%2$s">%3$s</a>', $item['key'],
+				wp_create_nonce( "itelic-max-key-" . $item['key'] ),
+				__( "Increase", ITELIC::SLUG ) )
 		);
 
 		//Return the title contents
 		return sprintf( '%1$s %2$s',
 			/*$1%s*/
-			$item['max_active'],
+			'<span class="max-active-count">' . $item['max_active'] . '</span>',
 			/*$2%s*/
 			$this->row_actions( $actions )
 		);
