@@ -16,6 +16,7 @@ jQuery(document).ready(function ($) {
 		source     : ITELIC.statuses,
 		showbuttons: false,
 		placement  : "top",
+		title      : ' ',
 		url        : function (params) {
 			return editable_ajax(params);
 		},
@@ -29,6 +30,7 @@ jQuery(document).ready(function ($) {
 		pk         : ITELIC.key,
 		name       : 'expires',
 		placement  : "bottom",
+		title      : ' ',
 		showbuttons: false,
 		clear      : false,
 		datepicker : {
@@ -52,6 +54,7 @@ jQuery(document).ready(function ($) {
 		pk         : ITELIC.key,
 		name       : 'max',
 		placement  : "bottom",
+		title      : ' ',
 		showbuttons: false,
 		url        : function (params) {
 			return editable_ajax(params);

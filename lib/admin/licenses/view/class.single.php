@@ -52,7 +52,9 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 			<div class="spacing-wrapper bottom-border header-block">
 
 				<div class="status status-<?php echo esc_attr( $this->key->get_status() ); ?>">
-					<span data-value="<?php echo esc_attr( $this->key->get_status() ); ?>"><?php echo $this->key->get_status( true ); ?></span>
+					<span data-value="<?php echo esc_attr( $this->key->get_status() ); ?>" title="<?php esc_attr_e( "Click to edit", ITELIC::SLUG ); ?>">
+						<?php echo $this->key->get_status( true ); ?>
+					</span>
 				</div>
 
 				<div class="name-block">
@@ -73,7 +75,7 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 				<div class="third expires">
 					<h4><?php _e( "Expires", ITELIC::SLUG ); ?></h4>
 
-					<h3>
+					<h3 title="<?php esc_attr_e( "Click to edit", ITELIC::SLUG ); ?>">
 						<?php if ( null === ( $d = $this->key->get_expires() ) ) : ?>
 							<?php _e( "Forever", ITELIC::SLUG ); ?>
 						<?php else: ?>
@@ -93,7 +95,7 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 				<div class="third max-activations">
 					<h4><?php _e( "Max Activations", ITELIC::SLUG ); ?></h4>
 
-					<h3><?php echo $this->key->get_max(); ?></h3>
+					<h3 title="<?php esc_attr_e( "Click to edit", ITELIC::SLUG ); ?>"><?php echo $this->key->get_max(); ?></h3>
 				</div>
 			</div>
 
@@ -123,8 +125,8 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 
 				<h4><?php _e( "Remote Activate", ITELIC::SLUG ); ?></h4>
 
-				<label for="remote-activate-location"><?php _e( "Install Location", ITELIC::SLUG ); ?></label>
-				<input type="text" id="remote-activate-location" placeholder="<?php _e( "www.store.com", ITELIC::SLUG ); ?>">
+				<label for="remote-activate-location" class="screen-reader-text"><?php _e( "Install Location", ITELIC::SLUG ); ?></label>
+				<input type="text" id="remote-activate-location" placeholder="<?php _e( "Install Location", ITELIC::SLUG ); ?>">
 				<input type="submit" id="remote-activate-submit" class="it-exchange-button" value="<?php esc_attr_e( "Activate", ITELIC::SLUG ); ?>">
 				<input type="hidden" id="remote-activate-key" value="<?php echo esc_attr( $this->key->get_key() ); ?>">
 				<?php wp_nonce_field( 'itelic-remote-activate-key-' . $this->key->get_key() ) ?>
