@@ -88,7 +88,21 @@ class ITELIC {
 	 * @since 1.0
 	 */
 	public function scripts_and_styles() {
-		wp_register_script( 'itelic-add-edit-product', self::$url . 'assets/js/itelic-add-edit-product.js', array( 'jquery' ) );
+		wp_register_style( 'jqueryui-editable', self::$url . 'assets/vendor/jqueryui-editable/css/jqueryui-editable.css', array(), '1.5.1' );
+		wp_register_script( 'jqueryui-editable', self::$url . 'assets/vendor/jqueryui-editable/js/jqueryui-editable.js', array(
+			'jquery-ui-core',
+			'jquery-ui-tooltip',
+			'jquery-ui-button',
+			'jquery-ui-datepicker'
+		), '1.5.1' );
+
+		wp_register_script( 'itelic-add-edit-product', self::$url . 'assets/js/itelic-add-edit-product.js', array( 'jquery' ), self::VERSION );
+		wp_register_script( 'itelic-admin-license-detail', self::$url . 'assets/js/itelic-admin-license-detail.js', array(
+			'jquery',
+			'jqueryui-editable'
+		), self::VERSION );
+
+		wp_register_style( 'itelic-admin-license-detail', self::$url . 'assets/css/admin-license-detail.css', array( 'jqueryui-editable' ), self::VERSION );
 	}
 
 	/**

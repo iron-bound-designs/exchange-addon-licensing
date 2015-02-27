@@ -32,11 +32,18 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 	 */
 	public function render() {
 
-		wp_enqueue_style( 'itelic-admin-license-detail', ITELIC::$url . 'assets/css/admin-license-detail.css', array(), ITELIC::VERSION );
-		wp_enqueue_script( 'itelic-admin-license-detail', ITELIC::$url . 'assets/js/itelic-admin-license-detail.js', array( 'jquery' ), ITELIC::VERSION );
+		wp_enqueue_style( 'itelic-admin-license-detail' );
+		wp_enqueue_script( 'itelic-admin-license-detail' );
 		wp_localize_script( 'itelic-admin-license-detail', 'ITELIC', array(
 			'ajax'      => admin_url( 'admin-ajax.php' ),
-			'disabling' => __( "Deactivating", ITELIC::SLUG )
+			'key'       => $this->key->get_key(),
+			'disabling' => __( "Deactivating", ITELIC::SLUG ),
+			'df'        => it_exchange_php_date_format_to_jquery_datepicker_format( $this->get_short_df() ),
+			'statuses'  => json_encode( array(
+				ITELIC_Key::ACTIVE   => ITELIC_Key::get_status_label( ITELIC_Key::ACTIVE ),
+				ITELIC_Key::EXPIRED  => ITELIC_Key::get_status_label( ITELIC_Key::EXPIRED ),
+				ITELIC_Key::DISABLED => ITELIC_Key::get_status_label( ITELIC_Key::DISABLED )
+			) )
 		) );
 		?>
 
@@ -44,7 +51,7 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 			<div class="spacing-wrapper bottom-border header-block">
 
 				<div class="status status-<?php echo esc_attr( $this->key->get_status() ); ?>">
-					<span><?php echo $this->key->get_status( true ); ?></span>
+					<span data-value="<?php echo esc_attr( $this->key->get_status() ); ?>"><?php echo $this->key->get_status( true ); ?></span>
 				</div>
 
 				<div class="name-block">
@@ -105,7 +112,6 @@ class ITELIC_Admin_Licenses_View_Single extends ITELIC_Admin_Tab_View {
 					</thead>
 
 					<tbody>
-
 					<?php foreach ( $this->key->get_activations() as $activation ): ?>
 
 						<?php echo $this->get_activation_row_html( $activation ); ?>

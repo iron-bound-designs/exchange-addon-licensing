@@ -7,6 +7,60 @@
 
 jQuery(document).ready(function ($) {
 
+	var status_span = $(".status span");
+
+	status_span.editable({
+		type       : 'select',
+		pk         : ITELIC.key,
+		name       : 'status',
+		source     : ITELIC.statuses,
+		showbuttons: false,
+		placement  : "top"
+	});
+
+	$(".expires h3").editable({
+		type       : 'date',
+		pk         : ITELIC.key,
+		name       : 'expiration',
+		placement  : "bottom",
+		showbuttons: false,
+		clear      : false,
+		datepicker : {
+			prevText   : '',
+			nextText   : '',
+			minDate    : 0,
+			changeMonth: false,
+			changeYear : false
+		},
+		viewformat : ITELIC.df
+	});
+
+	$(".max-activations h3").editable({
+		type       : 'number',
+		pk         : ITELIC.key,
+		name       : 'max-activations',
+		placement  : "bottom",
+		showbuttons: false
+	});
+
+	status_span.on('shown', function (e, editable) {
+		$(this).closest('.status').addClass('status-hovered');
+	});
+
+	status_span.on('hidden', function (e, editable) {
+		$(this).closest('.status').removeClass('status-hovered');
+	});
+
+	status_span.on('save', function (e, params) {
+		var container = $(this).closest('.status');
+
+		$.each($.parseJSON(ITELIC.statuses), function (key, value) {
+			container.removeClass('status-' + key);
+		});
+
+		container.addClass('status-' + params.newValue);
+	});
+
 	$(document).on('click', '#remote-activate-submit', function (e) {
 
 		e.preventDefault();

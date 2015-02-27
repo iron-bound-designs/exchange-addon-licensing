@@ -242,7 +242,21 @@ class ITELIC_Key {
 			return $this->status;
 		}
 
-		switch ( $this->status ) {
+		return self::get_status_label( $this->status );
+	}
+
+	/**
+	 * Get a status label.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $status
+	 *
+	 * @return string
+	 */
+	public static function get_status_label( $status ) {
+
+		switch ( $status ) {
 			case self::ACTIVE:
 				return __( "Active", ITELIC::SLUG );
 			case self::DISABLED:
