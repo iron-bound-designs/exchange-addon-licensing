@@ -160,7 +160,7 @@ class ITELIC_Key {
 	 */
 	public function is_valid() {
 
-		if ( $this->get_count() >= $this->get_max() ) {
+		if ( $this->get_active_count() >= $this->get_max() ) {
 			return false;
 		}
 
@@ -316,11 +316,11 @@ class ITELIC_Key {
 	/**
 	 * @return int
 	 */
-	public function get_count() {
+	public function get_active_count() {
 
 		$db = ITELIC_DB_Activations::instance();
 
-		return $db->count( array( 'lkey' => $this->get_key() ) );
+		return $db->count( array( 'lkey' => $this->get_key(), 'status' => ITELIC_Activation::ACTIVE ) );
 	}
 
 	/**

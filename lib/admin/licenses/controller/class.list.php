@@ -226,7 +226,7 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 			'product'         => '<a href="' . get_edit_post_link( $key->get_product()->ID ) . '">' . $key->get_product()->post_title . '</a>',
 			'customer'        => $key->get_customer()->wp_user->display_name,
 			'expires'         => $key->get_expires() === null ? __( "Forever", ITELIC::SLUG ) : $key->get_expires()->format( get_option( 'date_format' ) ),
-			'active_installs' => $key->get_count(),
+			'active_installs' => $key->get_active_count(),
 			'max_active'      => $key->get_max(),
 			'transaction'     => '<a href="' . get_edit_post_link( $key->get_transaction()->ID ) . '">'
 			                     . it_exchange_get_transaction_order_number( $key->get_transaction() ) . '</a>'
