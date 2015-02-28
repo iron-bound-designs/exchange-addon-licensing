@@ -69,6 +69,50 @@ class ITELIC_Renewal {
 	}
 
 	/**
+	 * Get a renewal record from it's ID.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int $id
+	 *
+	 * @return ITELIC_Renewal
+	 */
+	public static function from_id( $id ) {
+		return new ITELIC_Renewal( ITELIC_DB_Renewals::retrieve( $id ) );
+	}
+
+	/**
+	 * Create a renewal record.
+	 *
+	 * @since 1.0
+	 *
+	 * @param ITELIC_Key              $key
+	 * @param IT_Exchange_Transaction $transaction
+	 * @param DateTime                $expired
+	 * @param DateTime                $renewal
+	 *
+	 * @return ITELIC_Renewal
+	 */
+	public static function create( ITELIC_Key $key, IT_Exchange_Transaction $transaction, DateTime $expired, DateTime $renewal = null ) {
+
+		if ( empty( $renewal ) ) {
+			$renewal = new DateTime();
+		}
+
+		$data = array(
+			'lkey'             => $key->get_key(),
+			'renewal_date'     => $renewal->format( "Y-m-d H:i:s" ),
+			'key_expired_date' => $expired->format( "Y-m-d H:i:s" ),
+			'transaction_id'   => $transaction->ID
+		);
+
+		$db = ITELIC_DB_Renewals::instance();
+		$id = $db->insert( $data );
+
+		return self::from_id( $id );
+	}
+
+	/**
 	 * Get the renewal record ID.
 	 *
 	 * @since 1.0

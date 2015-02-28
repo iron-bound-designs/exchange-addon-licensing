@@ -27,6 +27,11 @@ require_once( ITELIC::$dir . 'api/keys.php' );
 require_once( ITELIC::$dir . 'api/activations.php' );
 
 /**
+ * Load renewals API methods.
+ */
+require_once( ITELIC::$dir . 'api/renewals.php' );
+
+/**
  * Load the main plugin functions.
  */
 require_once( ITELIC::$dir . 'lib/functions.php' );
