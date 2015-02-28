@@ -137,9 +137,45 @@ class ITELIC_Settings {
 				$form->set_option( $key, $var );
 			}
 		}
+
+		$erd_class = $form->get_option( 'enable-renewal-discounts' ) ? '' : 'hide-if-js';
 		?>
 
 		<div class="it-exchange-addon-settings it-exchange-itelic-addon-settings">
+
+			<h3><?php _e( "Renewal Discounts", ITELIC::SLUG ); ?></h3>
+
+			<div class="enable-renewal-discounts-container">
+
+				<?php $form->add_check_box( 'enable-renewal-discounts' ); ?>
+				<label for="enable-renewal-discounts"><?php _e( "Enable Global Renewal Discounts?", ITELIC::SLUG ); ?></label>
+
+				<p class="description"><?php _e( "Don't worry, this can be overwritten on a per-product basis.", ITELIC::SLUG ); ?></p>
+			</div>
+
+			<div class="renewal-discount-type-container <?php echo esc_attr( $erd_class ); ?>">
+				<label for="renewal-discount-type"><?php _e( "Discount Type", ITELIC::SLUG ); ?></label>
+
+				<?php $form->add_drop_down( 'renewal-discount-type', array(
+					'flat'    => __( 'Flat', ITELIC::SLUG ),
+					'percent' => __( "Percent", ITELIC::SLUG )
+				) ); ?>
+			</div>
+
+			<div class="renewal-discount-amount-container <?php echo esc_attr( $erd_class ); ?>">
+				<label for="renewal-discount-amount"><?php _e( "Discount Amount", ITELIC::SLUG ); ?></label>
+
+				<?php $form->add_text_box( 'renewal-discount-amount' ); ?>
+			</div>
+
+			<div class="renewal-discount-expiry-container <?php echo esc_attr( $erd_class ); ?>">
+				<label for="renewal-discount-expiry"><?php _e( "Valid Until", ITELIC::SLUG ); ?></label>
+
+				<?php $form->add_text_box( 'renewal-discount-expiry' ); ?>
+
+				<p class="description"><?php _e( "how many days after the key expires should the renewal discount be offered.", ITELIC::SLUG ); ?></p>
+			</div>
+
 		</div>
 	<?php
 	}
@@ -150,7 +186,31 @@ class ITELIC_Settings {
 	 * @since 1.0
 	 */
 	function inline_scripts() {
+		wp_enqueue_script( 'jquery' );
+		?>
 
+		<script type="text/javascript">
+			jQuery(document).ready(function ($) {
+
+				$("#enable-renewal-discounts").change(function (e) {
+					var type_container = $(".renewal-discount-type-container");
+					var amount_container = $(".renewal-discount-amount-container");
+					var expiry_container = $(".renewal-discount-expiry-container");
+
+					if ($(this).is(":checked")) {
+						type_container.removeClass('hide-if-js');
+						amount_container.removeClass('hide-if-js');
+						expiry_container.removeClass('hide-if-js');
+					} else {
+						type_container.addClass('hide-if-js');
+						amount_container.addClass('hide-if-js');
+						expiry_container.addClass('hide-if-js');
+					}
+				});
+			});
+		</script>
+
+	<?php
 	}
 
 	/**
