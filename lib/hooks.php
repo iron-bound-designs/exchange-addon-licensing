@@ -88,3 +88,20 @@ function itelic_renew_key_on_update_expirations( $mid, $object_id, $meta_key, $_
 }
 
 add_action( 'updated_post_meta', 'itelic_renew_key_on_update_expirations', 10, 4 );
+
+/**
+ * Register our template paths
+ *
+ * @since 1.0
+ *
+ * @param array $paths existing template paths
+ *
+ * @return array
+ */
+function itelic_add_template_paths( $paths = array() ) {
+	$paths[] = ITELIC::$dir . "lib/templates";
+
+	return $paths;
+}
+
+add_filter( 'it_exchange_possible_template_paths', 'itelic_add_template_paths' );
