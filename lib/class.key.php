@@ -212,6 +212,28 @@ class ITELIC_Key {
 	}
 
 	/**
+	 * Renew this license.
+	 *
+	 * @since 1.0
+	 */
+	public function renew() {
+
+		$args = array(
+			'post_parent' => $this->get_transaction()->ID,
+			'post_type'   => 'it_exchange_tran',
+			'orderby'     => 'date',
+			'order'       => 'DESC'
+		);
+
+		$transactions = it_exchange_get_transactions( $args );
+		$transaction  = reset( $transactions );
+
+		ITELIC_Renewal::create( $this, $transaction, $this->get_expires(), new DateTime( $transaction->post_date ) );
+
+		$this->extend();
+	}
+
+	/**
 	 * Get all activations of this license key.
 	 *
 	 * @since 1.0

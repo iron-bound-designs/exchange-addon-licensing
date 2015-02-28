@@ -40,3 +40,40 @@ function itelic_display_keys_on_transaction_detail( $post, $transaction_product 
 }
 
 add_action( 'it_exchange_transaction_details_begin_product_details', 'itelic_display_keys_on_transaction_detail', 10, 2 );
+
+/**
+ * When a transaction's expiration is updated, renew the key.
+ *
+ * @since 1.0
+ *
+ * @param int    $mid
+ * @param int    $object_id
+ * @param string $meta_key
+ * @param mixed  $_meta_value
+ */
+function itelic_renew_key_on_update_expirations( $mid, $object_id, $meta_key, $_meta_value ) {
+
+	if ( false === strpos( $meta_key, '_it_exchange_transaction_subscription_expires_' ) ) {
+		return;
+	}
+
+	if ( false === it_exchange_get_transaction( $object_id ) ) {
+		return;
+	}
+
+	$product_id = (int) str_replace( '_it_exchange_transaction_subscription_expires_', '', $meta_key );
+
+	$data = ITELIC_DB_Keys::search( array(
+		'transaction_id' => $object_id,
+		'product'        => $product_id
+	) );
+
+	if ( empty( $data ) ) {
+		return;
+	}
+
+	$key = itelic_get_key_from_data( $data[0] );
+	$key->extend();
+}
+
+add_action( 'updated_post_meta', 'itelic_renew_key_on_update_expirations', 10, 4 );
