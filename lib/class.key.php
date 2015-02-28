@@ -215,22 +215,18 @@ class ITELIC_Key {
 	 * Renew this license.
 	 *
 	 * @since 1.0
+	 *
+	 * @param IT_Exchange_Transaction $transaction
+	 *
+	 * @return ITELIC_Renewal
 	 */
-	public function renew() {
+	public function renew( IT_Exchange_Transaction $transaction = null ) {
 
-		$args = array(
-			'post_parent' => $this->get_transaction()->ID,
-			'post_type'   => 'it_exchange_tran',
-			'orderby'     => 'date',
-			'order'       => 'DESC'
-		);
-
-		$transactions = it_exchange_get_transactions( $args );
-		$transaction  = reset( $transactions );
-
-		ITELIC_Renewal::create( $this, $transaction, $this->get_expires(), new DateTime( $transaction->post_date ) );
+		$record = ITELIC_Renewal::create( $this, $transaction, $this->get_expires(), new DateTime( $transaction->post_date ) );
 
 		$this->extend();
+
+		return $record;
 	}
 
 	/**

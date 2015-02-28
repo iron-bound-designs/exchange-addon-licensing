@@ -73,7 +73,18 @@ function itelic_renew_key_on_update_expirations( $mid, $object_id, $meta_key, $_
 	}
 
 	$key = itelic_get_key_from_data( $data[0] );
-	$key->extend();
+
+	$args = array(
+		'post_parent' => $key->get_transaction()->ID,
+		'post_type'   => 'it_exchange_tran',
+		'orderby'     => 'date',
+		'order'       => 'DESC'
+	);
+
+	$transactions = it_exchange_get_transactions( $args );
+	$transaction  = reset( $transactions );
+
+	$key->renew( $transaction );
 }
 
 add_action( 'updated_post_meta', 'itelic_renew_key_on_update_expirations', 10, 4 );
