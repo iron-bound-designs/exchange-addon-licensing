@@ -24,6 +24,12 @@ function itelic_create_tables() {
 	if ( $keys->get_installed_version() != $keys->get_version() ) {
 		$keys->create();
 	}
+
+	$renewals = ITELIC_DB_Renewals::instance();
+
+	if ( $renewals->get_installed_version() != $renewals->get_version() ) {
+		$renewals->create();
+	}
 }
 
 add_action( 'itelic_upgrade', 'itelic_create_tables' );
