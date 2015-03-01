@@ -340,11 +340,11 @@ add_action( 'it_exchange_delete_cart_product', 'itelic_remove_renewal_info_on_ca
  *
  * @since 1.0
  */
-function itecls_remove_trial_info_on_cart_empty() {
+function itelic_remove_renewal_info_on_cart_empty() {
 	itelic_clear_purchase_requirement_renew_product_session();
 }
 
-add_action( 'it_exchange_empty_shopping_cart', 'itecls_remove_trial_info_on_cart_empty' );
+add_action( 'it_exchange_empty_shopping_cart', 'itelic_remove_renewal_info_on_cart_empty' );
 
 
 /* --------------------------------------------
