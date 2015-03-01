@@ -190,6 +190,12 @@ function itelic_enqueue_purchase_requirement_scripts() {
 		) );
 	}
 
+	if ( it_exchange_is_page('checkout')) {
+		wp_enqueue_script( 'itelic-checkout' );
+		wp_localize_script( 'itelic-checkout', 'ITELIC', array(
+			'ajax' => admin_url( 'admin-ajax.php' )
+		) );
+	}
 }
 
 add_action( 'wp_enqueue_scripts', 'itelic_enqueue_purchase_requirement_scripts' );
