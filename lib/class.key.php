@@ -222,7 +222,17 @@ class ITELIC_Key {
 	 */
 	public function renew( IT_Exchange_Transaction $transaction = null ) {
 
-		$record = ITELIC_Renewal::create( $this, $transaction, $this->get_expires(), new DateTime( $transaction->post_date ) );
+		if ( $transaction === null ) {
+			$date = new DateTime();
+		} else {
+			$date = new DateTime( $transaction->post_date );
+		}
+
+		if ( $date === null ) {
+			$date = new DateTime();
+		}
+
+		$record = ITELIC_Renewal::create( $this, $transaction, $this->get_expires(), $date );
 
 		$this->extend();
 

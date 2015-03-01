@@ -42,6 +42,31 @@ function itelic_display_keys_on_transaction_detail( $post, $transaction_product 
 add_action( 'it_exchange_transaction_details_begin_product_details', 'itelic_display_keys_on_transaction_detail', 10, 2 );
 
 /**
+ * When a renewal purchase is made, renew the renewed key.
+ *
+ * @since 1.0
+ *
+ * @param int $transaction_id
+ */
+function itelic_renew_key_on_renewal_purchase( $transaction_id ) {
+
+	$transaction = it_exchange_get_transaction( $transaction_id );
+
+	foreach ( $transaction->get_products() as $product ) {
+
+		if ( isset( $product['renewed_key'] ) && $product['renewed_key'] ) {
+			$key = ITELIC_Key::with_key( $product['renewed_key'] );
+
+			if ( $key ) {
+				$key->renew( $transaction );
+			}
+		}
+	}
+}
+
+add_action( 'it_exchange_add_transaction_success', 'itelic_renew_key_on_renewal_purchase' );
+
+/**
  * When a transaction's expiration is updated, renew the key.
  *
  * @since 1.0
@@ -57,8 +82,16 @@ function itelic_renew_key_on_update_expirations( $mid, $object_id, $meta_key, $_
 		return;
 	}
 
-	if ( false === it_exchange_get_transaction( $object_id ) ) {
+	if ( false === ( $transaction = it_exchange_get_transaction( $object_id ) ) ) {
 		return;
+	}
+
+	foreach ( $transaction->get_products() as $product ) {
+		// if this was a renewal purchase, then we are already going to renew they key. No need to do it twice.
+		if ( isset( $product['renewed_key'] ) && $product['renewed_key'] ) {
+
+			return;
+		}
 	}
 
 	$product_id = (int) str_replace( '_it_exchange_transaction_subscription_expires_', '', $meta_key );
@@ -81,10 +114,10 @@ function itelic_renew_key_on_update_expirations( $mid, $object_id, $meta_key, $_
 		'order'       => 'DESC'
 	);
 
-	$transactions = it_exchange_get_transactions( $args );
-	$transaction  = reset( $transactions );
+	$child_transactions = it_exchange_get_transactions( $args );
+	$child_transaction  = reset( $child_transactions );
 
-	$key->renew( $transaction );
+	$key->renew( $child_transaction );
 }
 
 add_action( 'updated_post_meta', 'itelic_renew_key_on_update_expirations', 10, 4 );
@@ -105,3 +138,200 @@ function itelic_add_template_paths( $paths = array() ) {
 }
 
 add_filter( 'it_exchange_possible_template_paths', 'itelic_add_template_paths' );
+
+/**
+ * Register purchase requirements.
+ *
+ * @since 1.0
+ */
+function itelic_register_purchase_requirements() {
+
+	$trial_properties = array(
+		'priority'               => 2,
+		'requirement-met'        => 'itelic_purchase_requirement_renew_product',
+		'sw-template-part'       => 'itelic-renew-product',
+		'checkout-template-part' => 'itelic-renew-product',
+		'notification'           => __( "Would you like to renew this product?", ITELIC::SLUG ),
+	);
+
+	it_exchange_register_purchase_requirement( 'itelic-renew-product', $trial_properties );
+}
+
+add_action( 'init', 'itelic_register_purchase_requirements' );
+
+/**
+ * Force the renew product SW state.
+ *
+ * @since 1.0
+ *
+ * @param $valid_states array
+ *
+ * @return array
+ */
+function itelic_force_sw_valid_states( $valid_states ) {
+	$valid_states[] = 'itelic-renew-product';
+
+	return $valid_states;
+}
+
+add_filter( 'it_exchange_super_widget_valid_states', 'itelic_force_sw_valid_states' );
+
+/**
+ * Enqueue purchase requirement scripts.
+ *
+ * @since 1.0
+ */
+function itelic_enqueue_purchase_requirement_scripts() {
+
+	if ( it_exchange_is_page( 'product' ) || it_exchange_in_superwidget() ) {
+		wp_enqueue_script( 'itelic-super-widget' );
+		wp_localize_script( 'itelic-super-widget', 'ITELIC', array(
+			'ajax' => admin_url( 'admin-ajax.php' )
+		) );
+	}
+
+}
+
+add_action( 'wp_enqueue_scripts', 'itelic_enqueue_purchase_requirement_scripts' );
+
+/**
+ * Process the AJAX call from the renew product purchase requirement.
+ *
+ * @since 1.0
+ */
+function itelic_renew_product_purchase_requirement() {
+
+	if ( ! isset( $_POST['nonce'] ) || ! isset( $_POST['key'] ) || ! isset( $_POST['product'] ) || ! isset( $_POST['renew'] ) ) {
+		wp_send_json_error( array(
+			'message' => __( "Invalid request format.", ITELIC::SLUG )
+		) );
+	}
+
+	$nonce   = $_POST['nonce'];
+	$key     = itelic_get_key( $_POST['key'] );
+	$product = it_exchange_get_product( $_POST['product'] );
+	$renew   = (bool) $_POST['renew'];
+
+	if ( ! wp_verify_nonce( $nonce, 'itelic_renew_product_sw' ) ) {
+		wp_send_json_error( array(
+			'message' => __( "Sorry, this request has expired. Please refresh and try again.", ITELIC::SLUG )
+		) );
+	}
+
+	if ( $key->get_product()->ID != $product->ID || it_exchange_get_current_customer_id() != $key->get_customer()->wp_user->ID ) {
+		wp_send_json_error( array(
+			'message' => __( "Invalid license key selected.", ITELIC::SLUG )
+		) );
+	}
+
+	if ( $renew ) {
+		$key = $key->get_key();
+	} else {
+		$key = false;
+	}
+
+	itelic_set_purchase_requirement_renewal_key( $key, $product->ID );
+
+	wp_send_json_success();
+}
+
+add_action( 'wp_ajax_itelic_renew_product_purchase_requirement', 'itelic_renew_product_purchase_requirement' );
+
+/**
+ * Apply the renewal discount.
+ *
+ * @since 1.0
+ *
+ * @param string|float $db_base_price
+ * @param array        $product
+ * @param bool         $format
+ *
+ * @return string|float
+ */
+function itelic_apply_renewal_discount( $db_base_price, $product, $format ) {
+
+	if ( ! it_exchange_product_has_feature( $product['product_id'], 'licensing' ) ) {
+		return $db_base_price;
+	}
+
+	$discount = new ITELIC_Discount( it_exchange_get_product( $product['product_id'] ) );
+
+	return $discount->get_discount_price( $format );
+}
+
+add_filter( 'it_exchange_get_cart_product_base_price', 'itelic_apply_renewal_discount', 10, 3 );
+
+/**
+ * Save our renewal info with the transaction object.
+ *
+ * @since 1.0
+ *
+ * @param $products array
+ * @param $key      string
+ * @param $product  array
+ *
+ * @return object
+ */
+function itelic_save_renewal_info_to_transaction_object( $products, $key, $product ) {
+
+	$renewal = itelic_get_purchase_requirement_renew_product_session();
+
+	error_log( print_r( $renewal, true ) );
+
+	if ( $renewal['renew'] !== null && $renewal['renew'] !== false && $product['product_id'] == $renewal['product'] ) {
+		$products[ $key ]['renewed_key'] = $renewal['renew'];
+	}
+
+	return $products;
+}
+
+add_filter( 'it_exchange_generate_transaction_object_products', 'itelic_save_renewal_info_to_transaction_object', 10, 3 );
+
+/**
+ * Clear our renewal info data
+ * after the transaction object has been generated
+ *
+ * @since 1.0
+ *
+ * @param $transaction_object object
+ *
+ * @return object
+ */
+function itelic_clear_renewal_session_on_purchase( $transaction_object ) {
+	itelic_clear_purchase_requirement_renew_product_session();
+
+	return $transaction_object;
+}
+
+add_filter( 'it_exchange_transaction_object', 'itelic_clear_renewal_session_on_purchase' );
+
+
+/**
+ * Remove the renewal info, when a key is removed from the cart.
+ *
+ * @since 1.0
+ *
+ * @param int   $cart_product_id
+ * @param array $products
+ */
+function itelic_remove_renewal_info_on_cart_product_removal( $cart_product_id, $products ) {
+
+	$renew = itelic_get_purchase_requirement_renew_product_session();
+
+	if ( $renew['product'] == $cart_product_id ) {
+		itelic_clear_purchase_requirement_renew_product_session();
+	}
+}
+
+add_action( 'it_exchange_delete_cart_product', 'itelic_remove_renewal_info_on_cart_product_removal', 10, 2 );
+
+/**
+ * Remove the renewal info when a cart is emptied.
+ *
+ * @since 1.0
+ */
+function itecls_remove_trial_info_on_cart_empty() {
+	itelic_clear_purchase_requirement_renew_product_session();
+}
+
+add_action( 'it_exchange_empty_shopping_cart', 'itecls_remove_trial_info_on_cart_empty' );

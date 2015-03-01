@@ -67,7 +67,7 @@ function itelic_get_keys( $args = array() ) {
 
 	if ( empty( $where ) ) {
 		$where .= $key_search;
-	} else {
+	} elseif ( ! empty( $key_search ) ) {
 		$where .= ' AND ' . $key_search;
 	}
 

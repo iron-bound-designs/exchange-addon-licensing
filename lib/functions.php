@@ -147,3 +147,110 @@ function itelic_get_key_for_transaction_product( $transaction_id, $product_id ) 
 
 	return new ITELIC_Key( reset( $data ) );
 }
+
+/**
+ * Checks if the renew product purchase requirement has been met.
+ *
+ * @since 1.0
+ *
+ * @return boolean
+ */
+function itelic_purchase_requirement_renew_product() {
+
+	$customer   = it_exchange_get_current_customer_id();
+	$product_id = itelic_get_current_product_id();
+
+	if ( ! it_exchange_product_has_feature( $product_id, 'licensing' ) ) {
+		return true;
+	}
+
+	$keys = itelic_get_keys( array(
+		'customer' => $customer,
+		'product'  => $product_id
+	) );
+
+
+	if ( empty( $keys ) ) {
+		return true;
+	}
+
+	$session = itelic_get_purchase_requirement_renew_product_session();
+
+	return $session['renew'] !== null;
+}
+
+/**
+ * Get the purchase requirement session.
+ *
+ * @since 1.0
+ *
+ * @return array
+ */
+function itelic_get_purchase_requirement_renew_product_session() {
+
+	$session = (array) it_exchange_get_session_data( 'itelic_renew_product' );
+
+	$defaults = array(
+		'renew'   => null,
+		'product' => null
+	);
+
+	return ITUtility::merge_defaults( $session, $defaults );
+}
+
+/**
+ * Update the purchase requirement session.
+ *
+ * @since 1.0
+ *
+ * @param array $data
+ */
+function itelic_update_purchase_requirement_renew_product_session( array $data ) {
+	it_exchange_update_session_data( 'itelic_renew_product', $data );
+}
+
+/**
+ * Clear the session data.
+ *
+ * @since 1.0
+ */
+function itelic_clear_purchase_requirement_renew_product_session() {
+	it_exchange_clear_session_data( 'itelic_renew_product' );
+}
+
+/**
+ * Save the purchase requirement renewal key to the user's session.
+ *
+ * @since 1.0
+ *
+ * @param string|bool $key If false, user opted to purchase a new key.
+ * @param int         $product
+ */
+function itelic_set_purchase_requirement_renewal_key( $key, $product ) {
+
+	$session = itelic_get_purchase_requirement_renew_product_session();
+
+	if ( $session['renew'] === null ) {
+		$session['renew']   = $key;
+		$session['product'] = absint( $product );
+	}
+
+	itelic_update_purchase_requirement_renew_product_session( $session );
+}
+
+/**
+ * Exchange isn't very consistent in getting access to the current product.
+ *
+ * This function tries to abstract that away and provide all the possible means of getting the product.
+ *
+ * @return int
+ */
+function itelic_get_current_product_id() {
+	if ( isset( $GLOBALS['it_exchange']['product'] ) ) {
+		return $GLOBALS['it_exchange']['product']->ID;
+	} elseif ( isset( $GLOBALS['post'] ) ) {
+		return $GLOBALS['post']->ID;
+	}
+
+	return 0;
+}
