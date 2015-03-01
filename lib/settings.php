@@ -27,6 +27,11 @@ function itelic_addon_settings() {
  */
 function itelic_addon_settings_defaults( $defaults ) {
 
+	$defaults['enable-renewal-discounts'] = false;
+	$defaults['renewal-discount-type']    = 'percent';
+	$defaults['renewal-discount-amount']  = '';
+	$defaults['renewal-discount-expiry']  = '';
+
 	return $defaults;
 }
 
