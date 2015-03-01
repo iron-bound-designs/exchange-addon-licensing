@@ -53,4 +53,33 @@ jQuery(document).ready(function ($) {
 			$("#itelic-key-type-settings").html(response);
 		});
 	}
+
+	$("#itelic-discount-disable").click(function () {
+		var override = $("#itelic-discount-override");
+		var options = $("input, select", ".itelic-discount-settings");
+
+		if ($(this).attr('checked') == 'checked') {
+			override.prop('disabled', true);
+
+			options.each(function () {
+				$(this).prop('disabled', true);
+			});
+		} else {
+			override.prop('disabled', false);
+
+			options.each(function () {
+				$(this).prop('disabled', false);
+			});
+		}
+	});
+
+	$("#itelic-discount-override").click(function () {
+		var options = $(".itelic-discount-settings");
+
+		if ($(this).attr('checked') == 'checked') {
+			options.removeClass('hide-if-js').show();
+		} else {
+			options.hide();
+		}
+	});
 });

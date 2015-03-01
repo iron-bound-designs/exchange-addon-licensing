@@ -7,3 +7,4 @@
  */
 
 new ITELIC_Product_Feature_Base();
+new ITELIC_Product_Feature_Discount();
