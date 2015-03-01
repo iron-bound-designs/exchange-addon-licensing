@@ -115,6 +115,12 @@ class ITELIC_Activation {
 			throw new InvalidArgumentException( __( "The license key and install location are required.", ITELIC::SLUG ) );
 		}
 
+		$key = itelic_get_key( $key );
+
+		if ( $key->get_active_count() >= $key->get_max() ) {
+			throw new LogicException( __( "This license key has reached it's maximum number of activations.", ITELIC::SLUG ) );
+		}
+
 		if ( $activation === null ) {
 			$activation = current_time( 'mysql' );
 		} else {
@@ -126,7 +132,7 @@ class ITELIC_Activation {
 		}
 
 		$data = array(
-			'lkey'         => $key,
+			'lkey'         => $key->get_key(),
 			'location'     => $location,
 			'activation'   => $activation,
 			'deactivation' => null,
