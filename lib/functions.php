@@ -22,6 +22,10 @@ function itelic_generate_keys_for_transaction( IT_Exchange_Transaction $transact
 
 	foreach ( $transaction->get_products() as $product ) {
 
+		if ( isset( $product['renewed_key'] ) && $product['renewed_key'] ) {
+			continue; // this is a renewal purchase we shouldn't generate keys here.
+		}
+
 		if ( it_exchange_product_has_feature( $product['product_id'], 'licensing' ) ) {
 
 			$product = it_exchange_get_product( $product['product_id'] );
@@ -171,6 +175,20 @@ function itelic_purchase_requirement_renew_product() {
 
 
 	if ( empty( $keys ) ) {
+		return true;
+	}
+
+	// we only want to prompt for a renewal, if there is a key that exists that has an expiry date.
+	// because we can't renew keys with no expiry date.
+	$one_with_expiry = false;
+
+	foreach ( $keys as $key ) {
+		if ( $key->get_expires() !== null ) {
+			$one_with_expiry = true;
+		}
+	}
+
+	if ( $one_with_expiry === false ) {
 		return true;
 	}
 

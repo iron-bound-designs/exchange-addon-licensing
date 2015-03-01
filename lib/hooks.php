@@ -190,7 +190,7 @@ function itelic_enqueue_purchase_requirement_scripts() {
 		) );
 	}
 
-	if ( it_exchange_is_page('checkout')) {
+	if ( it_exchange_is_page( 'checkout' ) ) {
 		wp_enqueue_script( 'itelic-checkout' );
 		wp_localize_script( 'itelic-checkout', 'ITELIC', array(
 			'ajax' => admin_url( 'admin-ajax.php' )
@@ -282,8 +282,6 @@ function itelic_save_renewal_info_to_transaction_object( $products, $key, $produ
 
 	$renewal = itelic_get_purchase_requirement_renew_product_session();
 
-	error_log( print_r( $renewal, true ) );
-
 	if ( $renewal['renew'] !== null && $renewal['renew'] !== false && $product['product_id'] == $renewal['product'] ) {
 		$products[ $key ]['renewed_key'] = $renewal['renew'];
 	}
@@ -341,3 +339,134 @@ function itecls_remove_trial_info_on_cart_empty() {
 }
 
 add_action( 'it_exchange_empty_shopping_cart', 'itecls_remove_trial_info_on_cart_empty' );
+
+
+/* --------------------------------------------
+============= Display Renewal Info ============
+----------------------------------------------- */
+
+/**
+ * Display renewal information on the confirmation page.
+ *
+ * @since 1.0
+ */
+function itelic_display_renewal_on_confirmation_page() {
+	$product = $GLOBALS['it_exchange']['transaction_product'];
+
+	if ( ! isset( $product['renewed_key'] ) || ! $product['renewed_key'] ) {
+		return;
+	}
+
+	echo "<p>";
+	printf( __( "Renewed Key: %s", ITELIC::SLUG ), $product['renewed_key'] );
+	echo "</p>";
+}
+
+add_action( 'it_exchange_content_confirmation_after_product_attibutes', 'itelic_display_renewal_on_confirmation_page' );
+add_action( 'it_exchange_content_purchases_end_product_info_loop', 'itecls_add_trial_info_to_account_purchases_tab' );
+
+/**
+ * Add the renewal info to the payments screen.
+ *
+ * @since 1.0
+ *
+ * @param IT_Exchange_Transaction $transaction
+ * @param array                   $product
+ */
+function itelic_add_renewal_info_to_payments_screen( $transaction, $product ) {
+
+	if ( ! isset( $product['renewed_key'] ) || ! $product['renewed_key'] ) {
+		return;
+	}
+
+	?>
+	<div class="key-renewal">
+		<strong><?php printf( __( "Renewal – %s" ), $product['renewed_key'] ); ?></strong>
+	</div>
+
+<?php
+
+}
+
+add_action( 'it_exchange_transaction_details_begin_product_details', 'itelic_add_renewal_info_to_payments_screen', 10, 2 );
+
+/**
+ * Add renewal info to the cart description for a product.
+ *
+ * @since 1.0
+ *
+ * @param string $description
+ * @param array  $product
+ *
+ * @return string
+ */
+function itelic_add_renewal_info_to_cart_description_for_product( $description, $product ) {
+
+	if ( isset( $product['renewed_key'] ) ) {
+		$description .= " " . __( "Renewal", ITELIC::SLUG );
+	}
+
+	return $description;
+}
+
+add_filter( 'it_exchange_get_cart_description_for_product', 'itelic_add_renewal_info_to_cart_description_for_product', 10, 2 );
+
+/**
+ * Add trial info to the product title transaction feature.
+ *
+ * @since 1.0
+ *
+ * @param string $value
+ * @param array  $product
+ * @param string $feature
+ *
+ * @return string
+ */
+function itelic_add_renewal_info_to_product_title_transaction_feature( $value, $product, $feature ) {
+
+	if ( isset( $_GET['post'] ) && it_exchange_get_transaction( $_GET['post'] ) ) {
+		return $value;
+	}
+
+	if ( it_exchange_is_page() ) {
+		return $value;
+	}
+
+	if ( $feature != 'product_name' ) {
+		return $value;
+	}
+
+	if ( isset( $product['renewed_key'] ) && $product['renewed_key'] ) {
+		$product = it_exchange_get_product( $product['product_id'] );
+
+		if ( $product ) {
+			$value .= __( " – Renewal", ITELIC::SLUG );
+		}
+	}
+
+	return $value;
+}
+
+add_filter( 'it_exchange_get_transaction_product_feature', 'itelic_add_renewal_info_to_product_title_transaction_feature', 10, 3 );
+
+/**
+ * Modify the cart item title to specify that it is a renewal.
+ *
+ * @since 1.0
+ *
+ * @param string $title
+ *
+ * @return string
+ */
+function iteclic_modify_cart_item_title( $title ) {
+	$product = $GLOBALS['it_exchange']['cart-item'];
+	$session = itelic_get_purchase_requirement_renew_product_session();
+
+	if ( isset( $session['product'] ) && $session['product'] == $product['product_id'] ) {
+		$title .= __( " – Renewal", ITELIC::SLUG );
+	}
+
+	return $title;
+}
+
+add_filter( 'it_exchange_theme_api_cart-item_title', 'iteclic_modify_cart_item_title' );

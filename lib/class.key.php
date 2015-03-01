@@ -222,14 +222,14 @@ class ITELIC_Key {
 	 */
 	public function renew( IT_Exchange_Transaction $transaction = null ) {
 
-		if ( $transaction === null ) {
-			$date = new DateTime();
-		} else {
-			$date = new DateTime( $transaction->post_date );
+		if ( $this->get_expires() === null ) {
+			throw new InvalidArgumentException( __( "You can't renew a license key that doesn't expire.", ITELIC::SLUG ) );
 		}
 
-		if ( $date === null ) {
-			$date = new DateTime();
+		if ( $transaction === null ) {
+			$date = null;
+		} else {
+			$date = new DateTime( $transaction->post_date );
 		}
 
 		$record = ITELIC_Renewal::create( $this, $transaction, $this->get_expires(), $date );

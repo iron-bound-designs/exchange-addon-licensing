@@ -35,9 +35,11 @@ $keys = itelic_get_keys( array(
 			<label for="itelic-key-to-renew"><?php _e( "Select Key to Renew", ITELIC::SLUG ); ?></label>
 			<select id="itelic-key-to-renew">
 				<?php foreach ( $keys as $key ): ?>
-					<option value="<?php echo esc_attr( $key->get_key() ); ?>">
-						<?php echo $key->get_key(); ?>
-					</option>
+					<?php if ( $key->get_expires() !== null ) : ?>
+						<option value="<?php echo esc_attr( $key->get_key() ); ?>">
+							<?php echo $key->get_key(); ?>
+						</option>
+					<?php endif; ?>
 				<?php endforeach; ?>
 			</select>
 
