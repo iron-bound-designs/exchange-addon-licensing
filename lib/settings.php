@@ -162,8 +162,8 @@ class ITELIC_Settings {
 				<label for="renewal-discount-type"><?php _e( "Discount Type", ITELIC::SLUG ); ?></label>
 
 				<?php $form->add_drop_down( 'renewal-discount-type', array(
-					'flat'    => __( 'Flat', ITELIC::SLUG ),
-					'percent' => __( "Percent", ITELIC::SLUG )
+					ITELIC_Discount::TYPE_FLAT    => __( 'Flat', ITELIC::SLUG ),
+					ITELIC_Discount::TYPE_PERCENT => __( "Percent", ITELIC::SLUG )
 				) ); ?>
 			</div>
 
