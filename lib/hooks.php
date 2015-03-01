@@ -230,7 +230,7 @@ function itelic_renew_product_purchase_requirement() {
 		) );
 	}
 
-	if ( $renew ) {
+	if ( $renew === true ) {
 		$key = $key->get_key();
 	} else {
 		$key = false;
@@ -257,6 +257,12 @@ add_action( 'wp_ajax_itelic_renew_product_purchase_requirement', 'itelic_renew_p
 function itelic_apply_renewal_discount( $db_base_price, $product, $format ) {
 
 	if ( ! it_exchange_product_has_feature( $product['product_id'], 'licensing' ) ) {
+		return $db_base_price;
+	}
+
+	$session = itelic_get_purchase_requirement_renew_product_session();
+
+	if ( $session['renew'] == null || $session['renew'] == false || $session['product'] !== $product['product_id'] ) {
 		return $db_base_price;
 	}
 
