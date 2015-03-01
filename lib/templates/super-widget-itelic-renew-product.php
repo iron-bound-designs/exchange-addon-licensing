@@ -45,8 +45,8 @@ $keys = itelic_get_keys( array(
 
 			<input type="hidden" name="itelic_nonce" value="<?php echo wp_create_nonce( 'itelic_renew_product_sw' ); ?>">
 			<input type="hidden" name="itelic_product" value="<?php echo esc_attr( $product->ID ); ?>">
-			<input type="submit" name="itelic_purchase_another" value="<?php esc_attr_e( "Purchase Another", ITELIC::SLUG ); ?>">
-			<input type="submit" name="itelic_renew" value="<?php esc_attr_e( "Renew", ITELIC::SLUG ); ?>">
+			<input type="submit" class="itelic-submit" name="itelic_purchase_another" value="<?php esc_attr_e( "Purchase Another", ITELIC::SLUG ); ?>">
+			<input type="submit" class="itelic-submit" name="itelic_renew" value="<?php esc_attr_e( "Renew", ITELIC::SLUG ); ?>">
 		</div>
 	</form>
 </div>

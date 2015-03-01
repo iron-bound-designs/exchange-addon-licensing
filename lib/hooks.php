@@ -402,7 +402,7 @@ add_action( 'it_exchange_transaction_details_begin_product_details', 'itelic_add
  */
 function itelic_add_renewal_info_to_cart_description_for_product( $description, $product ) {
 
-	if ( isset( $product['renewed_key'] ) ) {
+	if ( isset( $product['renewed_key'] ) && $product['renewed_key'] ) {
 		$description .= " " . __( "Renewal", ITELIC::SLUG );
 	}
 

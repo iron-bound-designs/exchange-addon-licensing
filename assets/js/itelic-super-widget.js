@@ -6,7 +6,7 @@
 
 jQuery(document).ready(function ($) {
 
-	$('input[type="submit"]', '.it-exchange-sw-renew-product').click(function (e) {
+	$(document).on('click', '.itelic-submit', function (e) {
 
 		e.preventDefault();
 
