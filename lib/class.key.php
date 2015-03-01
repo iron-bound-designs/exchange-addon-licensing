@@ -397,8 +397,6 @@ class ITELIC_Key {
 		$db  = ITELIC_DB_Keys::instance();
 		$res = $db->update( $this->get_key(), array( 'max' => absint( $max ) ) );
 
-		error_log( "key: {$this->get_key()} max: $max res: $res" );
-
 		$this->refresh();
 	}
 
