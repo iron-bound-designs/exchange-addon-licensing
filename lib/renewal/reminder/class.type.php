@@ -24,6 +24,7 @@ class ITELIC_Renewal_Reminder_Type {
 		add_filter( 'parent_file', array( $this, 'set_exchange_to_parent' ) );
 		add_action( 'add_meta_boxes_' . self::TYPE, array( $this, 'add_meta_box' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts_and_styles' ) );
+		add_action( 'save_post_' . self::TYPE, array( $this, 'save_meta_box' ) );
 	}
 
 	/**
@@ -118,26 +119,72 @@ class ITELIC_Renewal_Reminder_Type {
 	 * Render the renewal reminder scheduling metabox.
 	 *
 	 * @since 1.0
+	 *
+	 * @param WP_Post $post
 	 */
-	public function render_meta_box() {
+	public function render_meta_box( $post ) {
+
+		if ( isset( $post->ID ) ) {
+			$post_id = $post->ID;
+		} else {
+			$post_id = 0;
+		}
+
+		$days = get_post_meta( $post_id, '_itelic_renewal_reminder_days', true );
+		$boa  = get_post_meta( $post_id, '_itelic_renewal_reminder_boa', true );
 		?>
 
 		<p><?php _e( "Control when this renewal reminder should be sent.", ITELIC::SLUG ); ?></p>
 
 		<p>
 			<label for="itelic-reminder-days"><?php _e( "Number of Days", ITELIC::SLUG ); ?></label>
-			<input type="number" id="itelic-reminder-days" name="itelic_reminder[days]">
+			<input type="number" id="itelic-reminder-days" min="0" name="itelic_reminder[days]" value="<?php echo esc_attr( $days ); ?>">
 		</p>
 
 		<p>
 			<label for="itelic-reminder-before-or-after"><?php _e( "Before or After Expiration", ITELIC::SLUG ); ?></label>
 			<select id="itelic-reminder-before-or-after" name="itelic_reminder[boa]">
-				<option value="before"><?php _e( "Before", ITELIC::SLUG ); ?></option>
-				<option value="after"><?php _e( "After", ITELIC::SLUG ); ?></option>
+				<option value="before" <?php selected( $boa, 'before' ); ?>><?php _e( "Before", ITELIC::SLUG ); ?></option>
+				<option value="after" <?php selected( $boa, 'after' ); ?>><?php _e( "After", ITELIC::SLUG ); ?></option>
 			</select>
 		</p>
+
+		<?php wp_nonce_field( 'itelic-renewal-reminders-metabox', 'itelic_reminder_nonce' ) ?>
 
 	<?php
 	}
 
+	/**
+	 * When the post is saved, saves our renewal data.
+	 *
+	 * @param int $post_id The ID of the post being saved.
+	 */
+	function save_meta_box( $post_id ) {
+
+		// Check if our nonce is set.
+		if ( ! isset( $_POST['itelic_reminder_nonce'] ) ) {
+			return;
+		}
+
+		// Verify that the nonce is valid.
+		if ( ! wp_verify_nonce( $_POST['itelic_reminder_nonce'], 'itelic-renewal-reminders-metabox' ) ) {
+			return;
+		}
+
+		// If this is an autosave, our form has not been submitted, so we don't want to do anything.
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		$days = absint( $_POST['itelic_reminder']['days'] );
+
+		if ( ! in_array( $_POST['itelic_reminder']['boa'], array( 'before', 'after' ) ) ) {
+			$boa = 'before';
+		} else {
+			$boa = $_POST['itelic_reminder']['boa'];
+		}
+
+		update_post_meta( $post_id, '_itelic_renewal_reminder_days', $days );
+		update_post_meta( $post_id, '_itelic_renewal_reminder_boa', $boa );
+	}
 }
