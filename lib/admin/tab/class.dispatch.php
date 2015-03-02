@@ -100,7 +100,7 @@ class ITELIC_Admin_Tab_Dispatch {
 	 * @return string
 	 */
 	public static function get_tab_link( $tab ) {
-		return admin_url( "admin.php?page=" . self::PAGE_SLUG . "&tab=$tab" );
+		return self::$tabs[ $tab ]['class']->get_tab_link( $tab );
 	}
 
 	/**
