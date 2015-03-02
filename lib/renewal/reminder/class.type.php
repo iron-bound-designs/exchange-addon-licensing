@@ -25,6 +25,8 @@ class ITELIC_Renewal_Reminder_Type {
 		add_action( 'add_meta_boxes_' . self::TYPE, array( $this, 'add_meta_box' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts_and_styles' ) );
 		add_action( 'save_post_' . self::TYPE, array( $this, 'save_meta_box' ) );
+		add_filter( 'manage_' . self::TYPE . '_posts_columns', array( $this, 'add_custom_columns' ) );
+		add_action( 'manage_' . self::TYPE . '_posts_custom_column', array( $this, 'render_custom_columns' ), 10, 2 );
 	}
 
 	/**
@@ -186,5 +188,46 @@ class ITELIC_Renewal_Reminder_Type {
 
 		update_post_meta( $post_id, '_itelic_renewal_reminder_days', $days );
 		update_post_meta( $post_id, '_itelic_renewal_reminder_boa', $boa );
+	}
+
+	/**
+	 * Add custom columns.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $columns
+	 *
+	 * @return array
+	 */
+	public function add_custom_columns( $columns ) {
+
+		$columns['title'] = __( "Subject", ITELIC::SLUG );
+
+		$date = $columns['date'];
+		unset( $columns['date'] );
+
+		$columns['schedule'] = __( "Schedule", ITELIC::SLUG );
+		$columns['date']     = $date;
+
+		return $columns;
+	}
+
+	/**
+	 * Render the custom columns.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $column
+	 * @param int    $post_id
+	 */
+	public function render_custom_columns( $column, $post_id ) {
+
+		if ( $column == 'schedule' ) {
+
+			$days = get_post_meta( $post_id, '_itelic_renewal_reminder_days', true );
+			$boa  = get_post_meta( $post_id, '_itelic_renewal_reminder_boa', true );
+
+			printf( "%d days %s expiration", $days, $boa );
+		}
 	}
 }
