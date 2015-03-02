@@ -42,6 +42,29 @@ function itelic_display_keys_on_transaction_detail( $post, $transaction_product 
 add_action( 'it_exchange_transaction_details_begin_product_details', 'itelic_display_keys_on_transaction_detail', 10, 2 );
 
 /**
+ * Display renewal information on the confirmation page.
+ *
+ * @since 1.0
+ */
+function itelic_display_license_key_on_confirmation_page() {
+	$transaction = $GLOBALS['it_exchange']['transaction'];
+	$product     = $GLOBALS['it_exchange']['transaction_product'];
+
+	$key = itelic_get_key_for_transaction_product( $transaction->ID, $product['product_id'] );
+
+	if ( ! $key ) {
+		return;
+	}
+
+	echo "<p>";
+	printf( __( "License Key: %s", ITELIC::SLUG ), $key->get_key() );
+	echo "</p>";
+}
+
+add_action( 'it_exchange_content_confirmation_after_product_attibutes', 'itelic_display_license_key_on_confirmation_page' );
+add_action( 'it_exchange_content_purchases_end_product_info_loop', 'itelic_display_license_key_on_confirmation_page' );
+
+/**
  * When a renewal purchase is made, renew the renewed key.
  *
  * @since 1.0
@@ -369,7 +392,7 @@ function itelic_display_renewal_on_confirmation_page() {
 }
 
 add_action( 'it_exchange_content_confirmation_after_product_attibutes', 'itelic_display_renewal_on_confirmation_page' );
-add_action( 'it_exchange_content_purchases_end_product_info_loop', 'itecls_add_trial_info_to_account_purchases_tab' );
+add_action( 'it_exchange_content_purchases_end_product_info_loop', 'itelic_display_renewal_on_confirmation_page' );
 
 /**
  * Add the renewal info to the payments screen.
