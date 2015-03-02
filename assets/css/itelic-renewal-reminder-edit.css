@@ -1,0 +1,28 @@
+#itelic-renewal-reminder-scheduling label {
+	display: block;
+}
+
+#itelic-renewal-reminder-scheduling input[type="text"],
+#itelic-renewal-reminder-scheduling input[type="email"],
+#itelic-renewal-reminder-scheduling input[type="password"],
+#itelic-renewal-reminder-scheduling input[type="number"],
+#itelic-renewal-reminder-scheduling input[type="url"],
+#itelic-renewal-reminder-scheduling textarea {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #d6d6d6;
+	border-radius: 2px;
+	font-size: 16px;
+	font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+	line-height: 1.2;
+	color: #4e5559;
+}
+
+#itelic-renewal-reminder-scheduling input {
+	font-size: 24px;
+}
+
+#itelic-renewal-reminder-scheduling textarea {
+	line-height: 1.6;
+}
