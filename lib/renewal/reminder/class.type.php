@@ -120,7 +120,11 @@ class ITELIC_Renewal_Reminder_Type {
 	public function scripts_and_styles() {
 		if ( get_current_screen()->post_type == self::TYPE ) {
 			wp_enqueue_style( 'itelic-renewal-reminder-edit' );
+
 			wp_enqueue_script( 'itelic-renewal-reminder-edit' );
+			wp_localize_script( 'itelic-renewal-reminder-edit', 'ITELIC', array(
+				'must_select' => __( "You must select an item.", ITELIC::SLUG )
+			) );
 		}
 	}
 
@@ -312,18 +316,6 @@ class ITELIC_Renewal_Reminder_Type {
 		$shortcodes = IBD_Shortcode_Listener_Manager::get_listeners( self::SHORTCODE );
 		?>
 
-		<script type="text/javascript">
-			function ITELICInsertEmailShortcode() {
-				var shortcode = jQuery("#add-shortcode-value").val();
-				if (shortcode.length == 0 || shortcode == -1) {
-					alert("<?php _e("You must select an item."); ?>");
-					return;
-				}
-				window.send_to_editor(shortcode);
-				tb_remove();
-			}
-		</script>
-
 		<div id="itelic-select-shortcode" style="display: none">
 			<div class="wrap">
 				<div>
@@ -343,9 +335,9 @@ class ITELIC_Renewal_Reminder_Type {
 				</div>
 
 				<div style="padding: 15px 15px 15px 0">
-					<input type="button" class="button-primary" value="<?php _e( 'Insert Shortcode' ); ?>" onclick="ITELICInsertEmailShortcode();" />
+					<input type="button" class="button-primary insert-shortcode" value="<?php _e( 'Insert Shortcode' ); ?>" />
 					&nbsp;&nbsp;&nbsp;
-					<a class="button" style="color:#bbb;" href="#" onclick="tb_remove(); return false;">
+					<a class="button cancel-shortcode-insert" style="color:#bbb;" href="javascript:">
 						<?php _e( 'Cancel' ); ?>
 					</a>
 				</div>
