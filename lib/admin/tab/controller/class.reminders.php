@@ -16,6 +16,7 @@ class ITELIC_Admin_Tab_Controller_Reminders extends ITELIC_Admin_Tab_Controller 
 	 */
 	public function __construct() {
 		add_action( 'views_edit-it_exchange_licrenew', array( $this, 'render' ) );
+		add_action( 'edit_form_top', array( $this, 'tabs_on_edit' ) );
 	}
 
 	/**
@@ -25,7 +26,18 @@ class ITELIC_Admin_Tab_Controller_Reminders extends ITELIC_Admin_Tab_Controller 
 	 */
 	public function render() {
 		$view = new ITELIC_Admin_Tab_View_Reminders();
-		$view->tabs('reminders');
+		$view->tabs( 'reminders' );
+	}
+
+	/**
+	 * Add the tabs on the edit screen.
+	 */
+	public function tabs_on_edit() {
+		$screen = get_current_screen();
+
+		if ( $screen->post_type == ITELIC_Renewal_Reminder_Type::TYPE ) {
+			$this->render();
+		}
 	}
 
 	/**
