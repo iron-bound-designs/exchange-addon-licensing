@@ -62,6 +62,11 @@ require_once( ITELIC::$dir . 'lib/product/feature/load.php' );
 require_once( ITELIC::$dir . 'lib/admin/load.php' );
 
 /**
+ * Load the renewal reminders.
+ */
+require_once( ITELIC::$dir . 'lib/renewal/load.php' );
+
+/**
  * Run the upgrade routine if necessary.
  */
 ITELIC::upgrade();

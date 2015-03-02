@@ -9,7 +9,7 @@
 /**
  * Class ITELIC_Discount
  */
-class ITELIC_Discount {
+class ITELIC_Renewal_Discount {
 
 	/**
 	 * @var string

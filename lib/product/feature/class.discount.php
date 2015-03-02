@@ -36,8 +36,8 @@ class ITELIC_Product_Feature_Discount extends IT_Exchange_Product_Feature_Abstra
 		$data   = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, $this->slug, array( 'db' => true ) );
 		$hidden = $data['override'] ? '' : ' hide-if-js';
 
-		$types = array( ITELIC_Discount::TYPE_FLAT    => __( "Flat", ITELIC::SLUG ),
-		                ITELIC_Discount::TYPE_PERCENT => __( "Percent", ITELIC::SLUG )
+		$types = array( ITELIC_Renewal_Discount::TYPE_FLAT    => __( "Flat", ITELIC::SLUG ),
+		                ITELIC_Renewal_Discount::TYPE_PERCENT => __( "Percent", ITELIC::SLUG )
 		);
 		?>
 

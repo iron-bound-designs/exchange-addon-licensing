@@ -266,7 +266,7 @@ function itelic_apply_renewal_discount( $db_base_price, $product, $format ) {
 		return $db_base_price;
 	}
 
-	$discount = new ITELIC_Discount( it_exchange_get_product( $product['product_id'] ) );
+	$discount = new ITELIC_Renewal_Discount( it_exchange_get_product( $product['product_id'] ) );
 
 	return $discount->get_discount_price( $format );
 }
