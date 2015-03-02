@@ -17,6 +17,11 @@ class ITELIC_Renewal_Reminder_Type {
 	const TYPE = 'it_exchange_licrenew';
 
 	/**
+	 * @var string
+	 */
+	const SHORTCODE = 'itelic_renewal';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -27,6 +32,8 @@ class ITELIC_Renewal_Reminder_Type {
 		add_action( 'save_post_' . self::TYPE, array( $this, 'save_meta_box' ) );
 		add_filter( 'manage_' . self::TYPE . '_posts_columns', array( $this, 'add_custom_columns' ) );
 		add_action( 'manage_' . self::TYPE . '_posts_custom_column', array( $this, 'render_custom_columns' ), 10, 2 );
+
+		add_action( 'current_screen', array( $this, 'configure_shortcode_popup' ) );
 	}
 
 	/**
@@ -229,5 +236,145 @@ class ITELIC_Renewal_Reminder_Type {
 
 			printf( "%d days %s expiration", $days, $boa );
 		}
+	}
+
+	/**
+	 * Configure the shortcode popup.
+	 *
+	 * @since 1.0
+	 */
+	public function configure_shortcode_popup() {
+
+		if ( get_current_screen()->post_type == self::TYPE ) {
+			remove_action( 'media_buttons', 'media_buttons' );
+			add_action( 'media_buttons', array( $this, 'display_shortcode_button' ), 15 );
+			add_filter( 'mce_buttons', array( $this, 'modify_mce_buttons' ) );
+			add_action( 'admin_footer', array( $this, 'shortcode_popup' ) );
+
+			self::register_shortcodes();
+		}
+	}
+
+	/**
+	 * Register email shortcodes.
+	 *
+	 * @since 1.0
+	 */
+	public static function register_shortcodes() {
+		IBD_Shortcode_Listener_Manager::listen( self::SHORTCODE, new IBD_Shortcode_Listener( 'customer', 'first_name',
+			function ( IT_Exchange_Customer $customer ) {
+				return get_user_meta( $customer->wp_user->ID, 'first_name', true );
+			} ) );
+
+		IBD_Shortcode_Listener_Manager::listen( self::SHORTCODE, new IBD_Shortcode_Listener( 'customer', 'last_name',
+			function ( IT_Exchange_Customer $customer ) {
+				return get_user_meta( $customer->wp_user->ID, 'last_name', true );
+			} ) );
+
+		IBD_Shortcode_Listener_Manager::listen( self::SHORTCODE, new IBD_Shortcode_Listener( 'key', 'key',
+			function ( ITELIC_Key $key ) {
+				return $key->get_key();
+			} ) );
+
+		IBD_Shortcode_Listener_Manager::listen( self::SHORTCODE, new IBD_Shortcode_Listener( 'key', 'expiry_date',
+			function ( ITELIC_Key $key ) {
+				return $key->get_expires()->format( get_option( 'date_format' ) );
+			} ) );
+
+		IBD_Shortcode_Listener_Manager::listen( self::SHORTCODE, new IBD_Shortcode_Listener( 'key', 'days_from_expiry',
+			function ( ITELIC_Key $key ) {
+
+				$diff = $key->get_expires()->diff( new DateTime(), true );
+
+				return $diff->days;
+			} ) );
+
+		IBD_Shortcode_Listener_Manager::listen( self::SHORTCODE, new IBD_Shortcode_Listener( 'product', 'name',
+			function ( IT_Exchange_Product $product ) {
+				return $product->post_title;
+			} ) );
+
+		IBD_Shortcode_Listener_Manager::listen( self::SHORTCODE, new IBD_Shortcode_Listener( 'transaction', 'order_number',
+			function ( IT_Exchange_Transaction $transaction ) {
+				return it_exchange_get_transaction_order_number( $transaction );
+			} ) );
+
+		IBD_Shortcode_Listener_Manager::listen( self::SHORTCODE, new IBD_Shortcode_Listener( 'discount', 'amount',
+			function ( ITELIC_Renewal_Discount $discount ) {
+				return $discount->get_amount( true );
+			} ) );
+	}
+
+	/**
+	 * Display the shortcode popup.
+	 */
+	public function shortcode_popup() {
+		$shortcodes = IBD_Shortcode_Listener_Manager::get_listeners( self::SHORTCODE );
+		?>
+
+		<script type="text/javascript">
+			function ITELICInsertEmailShortcode() {
+				var shortcode = jQuery("#add-shortcode-value").val();
+				if (shortcode.length == 0 || shortcode == -1) {
+					alert("<?php _e("You must select an item."); ?>");
+					return;
+				}
+				window.send_to_editor(shortcode);
+				tb_remove();
+			}
+		</script>
+
+		<div id="itelic-select-shortcode" style="display: none">
+			<div class="wrap">
+				<div>
+					<p><?php _e( "Select a piece of data to insert" ); ?></p>
+
+					<label for="add-shortcode-value"><?php _e( "Data" ); ?></label><br>
+
+					<select id="add-shortcode-value">
+						<option value="-1"><?php _e( "Select an item..." ); ?></option>
+
+						<?php foreach ( $shortcodes as $shortcode ): ?>
+							<option value="<?php echo esc_attr( IBD_Shortcode_Listener_Manager::get_shortcode( self::SHORTCODE, $shortcode ) ); ?>">
+								<?php echo $shortcode; ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+
+				<div style="padding: 15px 15px 15px 0">
+					<input type="button" class="button-primary" value="<?php _e( 'Insert Shortcode' ); ?>" onclick="ITELICInsertEmailShortcode();" />
+					&nbsp;&nbsp;&nbsp;
+					<a class="button" style="color:#bbb;" href="#" onclick="tb_remove(); return false;">
+						<?php _e( 'Cancel' ); ?>
+					</a>
+				</div>
+			</div>
+		</div>
+
+	<?php
+	}
+
+	/**
+	 * Display the shortcode button.
+	 *
+	 * @since 1.0
+	 */
+	public function display_shortcode_button() {
+		add_thickbox();
+		echo '<a href="#TB_inline?width=150height=250&inlineId=itelic-select-shortcode" class="thickbox button itelic_emails" id="add_itelic_email" title="' . __( 'Insert Email Shortcode' ) . '"> ' . __( 'Insert Email Shortcode' ) . '</a>';
+	}
+
+	/**
+	 * Modify the tinyMCE buttons.
+	 *
+	 * @param array $buttons
+	 *
+	 * @return array
+	 */
+	public function modify_mce_buttons( $buttons ) {
+		unset( $buttons[ array_search( 'wp_more', $buttons ) ] );
+
+		return $buttons;
 	}
 }
