@@ -251,6 +251,8 @@ class ITELIC_Renewal_Reminder_Type {
 
 		if ( get_current_screen()->post_type == self::TYPE ) {
 			remove_action( 'media_buttons', 'media_buttons' );
+			remove_action( 'media_buttons', 'it_exchange_membership_addon_media_form_button', 15 );
+
 			add_action( 'media_buttons', array( $this, 'display_shortcode_button' ), 15 );
 			add_filter( 'mce_buttons', array( $this, 'modify_mce_buttons' ) );
 			add_action( 'admin_footer', array( $this, 'shortcode_popup' ) );
