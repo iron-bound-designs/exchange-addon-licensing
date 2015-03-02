@@ -32,10 +32,14 @@ class ITELIC_Renewal_Reminder_Type {
 	public function register() {
 
 		$labels = array(
-			'name'          => __( 'Renewal Reminders', ITELIC::SLUG ),
-			'singular_name' => __( 'Renewal Reminder', ITELIC::SLUG ),
-			'edit_item'     => __( 'Edit Reminder', ITELIC::SLUG ),
-			'search_items'  => __( 'Search Renewal Reminders', ITELIC::SLUG )
+			'name'               => __( 'Renewal Reminders', ITELIC::SLUG ),
+			'singular_name'      => __( 'Renewal Reminder', ITELIC::SLUG ),
+			'edit_item'          => __( 'Edit Reminder', ITELIC::SLUG ),
+			'search_items'       => __( 'Search Renewal Reminders', ITELIC::SLUG ),
+			'add_new_item'       => __( "Add New Reminder", ITELIC::SLUG ),
+			'view_item'          => __( "View Reminder", ITELIC::SLUG ),
+			'not_found'          => __( "No renewal reminders found", ITELIC::SLUG ),
+			'not_found_in_trash' => __( "No reminders found in trash", ITELIC::SLUG )
 		);
 
 		$args = array(
@@ -52,7 +56,7 @@ class ITELIC_Renewal_Reminder_Type {
 				'edit_others_posts' => 'edit_others_posts',
 				'publish_posts'     => 'publish_posts',
 			),
-			'supports'          => array('title', 'editor'),
+			'supports'          => array( 'title', 'editor' ),
 			'map_meta_cap'      => true,
 			'capability_type'   => 'post'
 		);
