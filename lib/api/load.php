@@ -7,3 +7,5 @@
  */
 
 new ITELIC_API_Dispatch();
+
+ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Activate(), 'activate' );

@@ -9,7 +9,7 @@
 /**
  * Interface ITELIC_API_Endpoint_Authenticatable
  */
-interface ITELIC_API_Endpoint_Authenticatable {
+interface ITELIC_API_Interface_Authenticatable {
 
 	/**
 	 * @var string. Used when the license key must be valid ( not expired ).
@@ -38,5 +38,23 @@ interface ITELIC_API_Endpoint_Authenticatable {
 	 * @return string
 	 */
 	public function get_error_message();
+
+	/**
+	 * Get the error code to be displayed if authentication is not provided.
+	 *
+	 * @since 1.0
+	 *
+	 * @return int
+	 */
+	public function get_error_code();
+
+	/**
+	 * Give a reference of the API key to this object.
+	 *
+	 * @since 1.0
+	 *
+	 * @param ITELIC_Key $key
+	 */
+	public function give_license_key( ITELIC_Key $key );
 
 }

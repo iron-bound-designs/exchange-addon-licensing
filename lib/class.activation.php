@@ -13,7 +13,7 @@
  *
  * @since 1.0
  */
-class ITELIC_Activation {
+class ITELIC_Activation implements ITELIC_API_Serializable {
 
 	/**
 	 * Represents when this site is active.
@@ -246,6 +246,25 @@ class ITELIC_Activation {
 	 */
 	public function __toString() {
 		return $this->get_key() . ' – ' . $this->get_location();
+	}
+
+	/**
+	 * Get data suitable for the API.
+	 *
+	 * @since 1.0
+	 *
+	 * @return array
+	 */
+	public function get_api_data() {
+		$data = array(
+			'id'           => $this->get_id(),
+			'activation'   => $this->get_activation()->format( DateTime::ISO8601 ),
+			'deactivation' => ( $d = $this->get_deactivation() ) === null ? "" : $d->format( DateTime::ISO8601 ),
+			'location'     => $this->get_location(),
+			'status'       => $this->get_status()
+		);
+
+		return $data;
 	}
 
 	/**

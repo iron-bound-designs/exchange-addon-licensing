@@ -65,11 +65,13 @@ class ITELIC_API_Dispatch {
 			} else {
 				$endpoint = self::$endpoints[ $action ];
 
-				if ( $endpoint instanceof ITELIC_API_Endpoint_Authenticatable ) {
-					if ( ! $this->check_auth( $endpoint ) ) {
+				if ( $endpoint instanceof ITELIC_API_Interface_Authenticatable ) {
+					if ( ! $this->handle_auth( $endpoint ) ) {
 						$this->send_response( $this->send_auth_missing( $endpoint ) );
 					}
 				}
+
+				$this->send_response( $endpoint->serve( new ArrayObject( $_GET ), new ArrayObject( $_POST ) ) );
 			}
 		}
 	}
@@ -121,12 +123,12 @@ class ITELIC_API_Dispatch {
 	 *
 	 * @since 1.0
 	 *
-	 * @param ITELIC_API_Endpoint_Authenticatable $endpoint
+	 * @param ITELIC_API_Interface_Authenticatable $endpoint
 	 *
 	 * @return bool
 	 */
-	protected function check_auth( ITELIC_API_Endpoint_Authenticatable $endpoint ) {
-		if ( empty( $_SERVER['PHP_AUTH_USER'] ) ) {
+	protected function handle_auth( ITELIC_API_Interface_Authenticatable $endpoint ) {
+		if ( ! isset( $_SERVER['PHP_AUTH_USER'] ) || trim( $_SERVER['PHP_AUTH_USER'] ) == '' ) {
 			return false;
 		}
 
@@ -139,7 +141,9 @@ class ITELIC_API_Dispatch {
 			return false;
 		}
 
-		if ( $endpoint->get_mode() == ITELIC_API_Endpoint_Authenticatable::MODE_ACTIVE ) {
+		if ( $endpoint->get_mode() == ITELIC_API_Interface_Authenticatable::MODE_ACTIVE ) {
+			$endpoint->give_license_key( $key );
+
 			return $key->get_status() == ITELIC_Key::ACTIVE;
 		} else {
 			return true;
@@ -151,25 +155,25 @@ class ITELIC_API_Dispatch {
 	 *
 	 * @since 1.0
 	 *
-	 * @param ITELIC_API_Endpoint_Authenticatable $endpoint
+	 * @param ITELIC_API_Interface_Authenticatable $endpoint
 	 *
 	 * @return ITELIC_API_Response
 	 */
-	protected function send_auth_missing( ITELIC_API_Endpoint_Authenticatable $endpoint ) {
+	protected function send_auth_missing( ITELIC_API_Interface_Authenticatable $endpoint ) {
 		$response = new ITELIC_API_Response( array(
 			'success' => false,
 			'error'   => array(
-				'code'    => 404,
+				'code'    => $endpoint->get_error_code(),
 				'message' => $endpoint->get_error_message()
 			)
 		), 401 );
 
 		switch ( $endpoint->get_mode() ) {
-			case ITELIC_API_Endpoint_Authenticatable::MODE_ACTIVE:
+			case ITELIC_API_Interface_Authenticatable::MODE_ACTIVE:
 				$realm = __( "An active license key is required to access this resource, passed as the username. Leave password blank.", ITELIC::SLUG );
 				break;
 
-			case ITELIC_API_Endpoint_Authenticatable::MODE_EXISTS:
+			case ITELIC_API_Interface_Authenticatable::MODE_EXISTS:
 			default:
 				$realm = __( "A license key is required to access this resource, passed as the username. Leave password blank.", ITELIC::SLUG );
 				break;
@@ -273,7 +277,12 @@ class ITELIC_API_Dispatch {
 				return array_map( array( $this, 'prepare_response' ), $data );
 
 			case 'object':
-				$data = get_object_vars( $data );
+
+				if ( $data instanceof ITELIC_API_Serializable ) {
+					$data = $data->get_api_data();
+				} else {
+					$data = get_object_vars( $data );
+				}
 
 				// Now, pass the array (or whatever was returned from
 				// jsonSerialize through.)
