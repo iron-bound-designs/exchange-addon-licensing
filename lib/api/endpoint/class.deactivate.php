@@ -43,25 +43,41 @@ class ITELIC_API_Endpoint_Deactivate extends ITELIC_API_Endpoint implements ITEL
 
 		try {
 			$activation = ITELIC_Activation::with_id( $location_id );
-			$activation->deactivate();
+
+			if ( $activation ) {
+				if ( $activation->get_key()->get_key() !== $this->key->get_key() ) {
+					return $this->trigger_not_found();
+				} else {
+					$activation->deactivate();
+				}
+			} else {
+				return $this->trigger_not_found();
+			}
 		}
 		catch ( Exception $e ) {
-
-		}
-
-		if ( ! isset( $activation ) || ! $activation ) {
-			return new ITELIC_API_Response( array(
-				'success' => false,
-				'error'   => array(
-					'code'    => self::CODE_NO_LOCATION_ID,
-					'message' => __( "Activation record could not be found.", ITELIC::SLUG )
-				)
-			) );
+			return $this->trigger_not_found();
 		}
 
 		return new ITELIC_API_Response( array(
 			'success' => true,
 			'body'    => $activation
+		) );
+	}
+
+	/**
+	 * Trigger the location not found.
+	 *
+	 * @since 1.0
+	 *
+	 * @return ITELIC_API_Response
+	 */
+	protected function trigger_not_found() {
+		return new ITELIC_API_Response( array(
+			'success' => false,
+			'error'   => array(
+				'code'    => self::CODE_INVALID_LOCATION,
+				'message' => __( "Activation record could not be found.", ITELIC::SLUG )
+			)
 		) );
 	}
 
