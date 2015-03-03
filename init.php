@@ -67,6 +67,11 @@ require_once( ITELIC::$dir . 'lib/admin/load.php' );
 require_once( ITELIC::$dir . 'lib/renewal/load.php' );
 
 /**
+ * Load the REST API.
+ */
+require_once( ITELIC::$dir . 'lib/api/load.php' );
+
+/**
  * Run the upgrade routine if necessary.
  */
 ITELIC::upgrade();
