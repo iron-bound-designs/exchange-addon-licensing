@@ -499,3 +499,67 @@ function iteclic_modify_cart_item_title( $title ) {
 }
 
 add_filter( 'it_exchange_theme_api_cart-item_title', 'iteclic_modify_cart_item_title' );
+
+/* --------------------------------------------
+============== Confirmation Email =============
+----------------------------------------------- */
+
+/**
+ * Register custom email notification shortcodes.
+ *
+ * @since 1.0
+ *
+ * @param array $shortcodes
+ *
+ * @return array
+ */
+function itelic_register_email_notification_shortcodes( $shortcodes ) {
+
+	$shortcodes['license_keys'] = 'itelic_render_license_keys_email_notification_shortcode';
+
+	return $shortcodes;
+}
+
+add_filter( 'it_exchange_email_notification_shortcode_functions', 'itelic_register_email_notification_shortcodes' );
+
+/**
+ * Render the license keys email notification shortcode tag.
+ *
+ * @since 1.0
+ *
+ * @param IT_Exchange_Email_Notifications $email_notifications
+ *
+ * @return string
+ */
+function itelic_render_license_keys_email_notification_shortcode( IT_Exchange_Email_Notifications $email_notifications ) {
+
+	$transaction = it_exchange_get_transaction( $email_notifications->transaction_id );
+
+	$out = '';
+
+	foreach ( $transaction->get_products() as $product ) {
+		$product = it_exchange_get_product( $product['product_id'] );
+		$key     = itelic_get_key_for_transaction_product( $transaction->ID, $product->ID );
+
+		if ( $key ) {
+			$out .= "<li>" . $product->post_title . ": " . $key->get_key() . "</li>";
+		}
+	}
+
+	if ( $out ) {
+		$out = "<h4>" . __( "License Keys", ITELIC::SLUG ) . "<h4/>" . "<ul>$out</ul>";
+	}
+
+	return $out;
+}
+
+/**
+ * Display our custom email notification shortcodes on the settings page.
+ *
+ * @since 1.0
+ */
+function itelic_display_email_notification_shortcodes() {
+	echo "<li>license_keys - " . __( "Display product license keys, if any.", ITELIC::SLUG ) . "</li>";
+}
+
+add_action( 'it_exchange_email_template_tags_list', 'itelic_display_email_notification_shortcodes' );
