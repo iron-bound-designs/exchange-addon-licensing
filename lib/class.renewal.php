@@ -166,4 +166,11 @@ class ITELIC_Renewal {
 	public function get_transaction() {
 		return $this->transaction;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function __toString() {
+		return $this->get_key() . ' – ' . $this->get_renewal_date()->format( get_option( 'date_format' ) );
+	}
 }

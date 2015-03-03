@@ -137,4 +137,11 @@ class ITELIC_Renewal_Discount {
 			return $price;
 		}
 	}
+
+	/**
+	 * @return string
+	 */
+	public function __toString() {
+		return $this->get_amount( true );
+	}
 }

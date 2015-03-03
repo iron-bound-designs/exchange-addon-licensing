@@ -242,6 +242,13 @@ class ITELIC_Activation {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function __toString() {
+		return $this->get_key() . ' – ' . $this->get_location();
+	}
+
+	/**
 	 * Refresh this object's data.
 	 *
 	 * Should be called whenever a method that changes state completes.

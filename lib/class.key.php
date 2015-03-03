@@ -401,6 +401,13 @@ class ITELIC_Key {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function __toString() {
+		return $this->get_key();
+	}
+
+	/**
 	 * Refresh this object's properties.
 	 */
 	protected function refresh() {
