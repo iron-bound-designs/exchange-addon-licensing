@@ -11,6 +11,8 @@
  */
 abstract class ITELIC_API_Endpoint {
 
+	const CODE_INVALID_KEY = 2;
+
 	/**
 	 * Serve the request to this endpoint.
 	 *

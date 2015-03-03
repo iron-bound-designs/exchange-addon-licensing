@@ -96,7 +96,13 @@ class ITELIC_Activation implements ITELIC_API_Serializable {
 	 * @return ITELIC_Activation
 	 */
 	public static function with_id( $id ) {
-		return new ITELIC_Activation( ITELIC_DB_Activations::retrieve( $id ) );
+		$db = ITELIC_DB_Activations::retrieve( $id );
+
+		if ( empty( $id ) ) {
+			return null;
+		}
+
+		return new ITELIC_Activation( $db );
 	}
 
 	/**

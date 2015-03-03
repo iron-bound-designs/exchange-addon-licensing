@@ -1,15 +1,18 @@
 <?php
-
 /**
- * Endpoint for activating a license key.
+ * Endpoint for deactivating a license key at a location.
  *
  * @author Iron Bound Designs
  * @since  1.0
  */
-class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC_API_Interface_Authenticatable {
 
-	const CODE_MAX_ACTIVATIONS = 1;
-	const CODE_NO_LOCATION = 3;
+/**
+ * Class ITELIC_API_Endpoint_Deactivate
+ */
+class ITELIC_API_Endpoint_Deactivate extends ITELIC_API_Endpoint implements ITELIC_API_Interface_Authenticatable {
+
+	const CODE_NO_LOCATION_ID = 4;
+	const CODE_INVALID_LOCATION = 5;
 
 	/**
 	 * @var ITELIC_Key
@@ -26,28 +29,32 @@ class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC
 	 */
 	public function serve( ArrayAccess $get, ArrayAccess $post ) {
 
-		if ( ! isset( $post['location'] ) ) {
+		if ( ! isset( $post['location_id'] ) ) {
 			return new ITELIC_API_Response( array(
 				'success' => false,
 				'error'   => array(
-					'code'    => self::CODE_NO_LOCATION,
-					'message' => __( "Activation location is required.", ITELIC::SLUG )
+					'code'    => self::CODE_NO_LOCATION_ID,
+					'message' => __( "Activation location ID is required.", ITELIC::SLUG )
 				)
 			), 400 );
 		}
 
-		$location = sanitize_text_field( $post['location'] );
+		$location_id = absint( $post['location_id'] );
 
 		try {
-			$activation = ITELIC_Activation::create( $this->key->get_key(), $location );
-			$this->key->log_activation( $activation );
+			$activation = ITELIC_Activation::with_id( $location_id );
+			$activation->deactivate();
 		}
-		catch ( LogicException $e ) {
+		catch ( Exception $e ) {
+
+		}
+
+		if ( ! isset( $activation ) || ! $activation ) {
 			return new ITELIC_API_Response( array(
 				'success' => false,
 				'error'   => array(
-					'code'    => self::CODE_MAX_ACTIVATIONS,
-					'message' => $e->getMessage()
+					'code'    => self::CODE_NO_LOCATION_ID,
+					'message' => __( "Activation record could not be found.", ITELIC::SLUG )
 				)
 			) );
 		}
@@ -66,7 +73,7 @@ class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC
 	 * @return string One of MODE_VALID, MODE_ACTIVE
 	 */
 	public function get_mode() {
-		return ITELIC_API_Interface_Authenticatable::MODE_ACTIVE;
+		return ITELIC_API_Interface_Authenticatable::MODE_EXISTS;
 	}
 
 	/**
@@ -77,7 +84,7 @@ class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC
 	 * @return string
 	 */
 	public function get_error_message() {
-		return __( "Your license key has expired.", ITELIC::SLUG );
+		return __( "A license key is required for this request.", ITELIC::SLUG );
 	}
 
 	/**
