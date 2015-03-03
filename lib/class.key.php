@@ -13,7 +13,7 @@
  *
  * @since 1.0
  */
-class ITELIC_Key {
+class ITELIC_Key implements ITELIC_API_Serializable {
 
 	/**
 	 * Represents when this license is active.
@@ -405,6 +405,33 @@ class ITELIC_Key {
 	 */
 	public function __toString() {
 		return $this->get_key();
+	}
+
+	/**
+	 * Get data suitable for the API.
+	 *
+	 * @since 1.0
+	 *
+	 * @return array
+	 */
+	public function get_api_data() {
+
+		$activations = $this->get_activations();
+
+		$data = array(
+			'transaction' => $this->get_transaction()->ID,
+			'product'     => $this->get_product()->ID,
+			'customer'    => $this->get_customer()->wp_user->ID,
+			'status'      => $this->get_status(),
+			'max'         => $this->get_max(),
+			'activations' => array(
+				'count'        => count( $activations ),
+				'count_active' => $this->get_active_count(),
+				'list'         => $activations
+			)
+		);
+
+		return $data;
 	}
 
 	/**

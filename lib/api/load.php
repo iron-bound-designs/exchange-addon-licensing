@@ -10,3 +10,4 @@ new ITELIC_API_Dispatch();
 
 ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Activate(), 'activate' );
 ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Deactivate(), 'deactivate' );
+ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Info(), 'info' );

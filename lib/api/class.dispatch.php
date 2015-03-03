@@ -141,9 +141,9 @@ class ITELIC_API_Dispatch {
 			return false;
 		}
 
-		if ( $endpoint->get_mode() == ITELIC_API_Interface_Authenticatable::MODE_ACTIVE ) {
-			$endpoint->give_license_key( $key );
+		$endpoint->give_license_key( $key );
 
+		if ( $endpoint->get_mode() == ITELIC_API_Interface_Authenticatable::MODE_ACTIVE ) {
 			return $key->get_status() == ITELIC_Key::ACTIVE;
 		} else {
 			return true;
