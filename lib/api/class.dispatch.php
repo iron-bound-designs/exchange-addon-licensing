@@ -304,4 +304,17 @@ class ITELIC_API_Dispatch {
 	public static function register_endpoint( ITELIC_API_Endpoint $endpoint, $action ) {
 		self::$endpoints[ (string) $action ] = $endpoint;
 	}
+
+	/**
+	 * Get the URL for an API Endpoint.
+	 *
+	 * @since 1.0
+	 *
+	 * @param $slug
+	 *
+	 * @return string
+	 */
+	public static function get_url( $slug ) {
+		return site_url( "itelic-api/$slug/" );
+	}
 }

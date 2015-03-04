@@ -97,6 +97,9 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 			</select>
 
 			<p class="description"><?php _e( "Select a file to be used for automatic updates.", ITELIC::SLUG ); ?></p>
+
+			<label for="itelic-version"><?php _e( "Current Version", ITELIC::SLUG ); ?></label>
+			<input type="text" id="itelic-version" name="itelic[version]" value="<?php echo esc_attr( $data['version'] ); ?>">
 		</div>
 	<?php
 	}
@@ -210,6 +213,7 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 			'limit'       => '',
 			'key-type'    => '',
 			'update-file' => '',
+			'version'     => ''
 		);
 
 		$values   = get_post_meta( $product_id, '_it_exchange_itelic_feature', true );

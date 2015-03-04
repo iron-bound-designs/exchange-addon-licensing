@@ -272,3 +272,60 @@ function itelic_get_current_product_id() {
 
 	return 0;
 }
+
+/**
+ * Generates query args to be appended to the download URL.
+ *
+ * @since 1.0
+ *
+ * @param ITELIC_Key $key
+ * @param DateTime   $expires
+ *
+ * @return array
+ */
+function itelic_generate_download_query_args( ITELIC_Key $key, DateTime $expires ) {
+
+	$args = array(
+		'key'     => $key->get_key(),
+		'expires' => $expires->getTimestamp()
+	);
+
+	$token = hash_hmac( 'sha256', serialize( $args ), wp_salt() );
+
+	$args['token'] = $token;
+
+	return $args;
+}
+
+/**
+ * Validate a download link.
+ *
+ * @since 1.0
+ *
+ * @param string $link
+ *
+ * @return bool
+ */
+function itelic_validate_download_link( $link ) {
+
+	wp_parse_str( $link, $query_args );
+
+	if ( ! isset( $query_args['key'] ) || ! isset( $query_args['expires'] ) || ! isset( $query_args['token'] ) ) {
+		return false;
+	}
+
+	$args = array(
+		'key'     => $query_args['key'],
+		'expires' => $query_args['expires']
+	);
+
+	$token = hash_hmac( 'sha256', serialize( $args ), wp_salt() );
+
+	if ( ! hash_equals( $token, $query_args['token'] ) ) {
+		return false;
+	}
+
+	$now = new DateTime();
+
+	return $now < new DateTime( "@{$key['expires']}" );
+}
