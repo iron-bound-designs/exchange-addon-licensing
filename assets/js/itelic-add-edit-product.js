@@ -8,6 +8,37 @@
 jQuery(document).ready(function ($) {
 
 	/**
+	 * When the changelog textarea is clicked, popup the changelog editor.
+	 */
+	$("#itelic-changelog").click(function (e) {
+		$("#itelic-edit-changelog").val($("#itelic-changelog").val());
+
+		tb_show('Changelog', '#TB_inline?inlineId=itelic-edit-changelog-popup', false);
+
+		this.blur();
+
+		e.preventDefault();
+	});
+
+	/**
+	 * When the update button is clicked, update the textarea.
+	 */
+	$(".update-changelog").click(function (e) {
+		$("#itelic-changelog").val($("#itelic-edit-changelog").val());
+
+		tb_remove();
+	});
+
+	/**
+	 * When the cancel button is clicked, ignore latest changes.
+	 */
+	$(".cancel-update-changelog").click(function (e) {
+		e.preventDefault();
+
+		tb_remove()
+	});
+
+	/**
 	 * When the enable checkbox is checked, show the configuration.
 	 */
 	$("#itelic-enable").click(function () {
