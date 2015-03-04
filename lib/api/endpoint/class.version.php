@@ -25,7 +25,7 @@ class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_
 	 * @return ITELIC_API_Response
 	 */
 	public function serve( ArrayAccess $get, ArrayAccess $post ) {
-		$now     = new DateTime();
+		$now     = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
 		$expires = $now->add( new DateInterval( "P1D" ) );
 
 		$download = ITELIC_API_Dispatch::get_url( 'download' );

@@ -12,3 +12,4 @@ ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Activate(), 'act
 ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Deactivate(), 'deactivate' );
 ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Info(), 'info' );
 ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Version(), 'version' );
+ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Download(), 'download' );

@@ -287,10 +287,12 @@ function itelic_generate_download_query_args( ITELIC_Key $key, DateTime $expires
 
 	$args = array(
 		'key'     => $key->get_key(),
-		'expires' => $expires->getTimestamp()
+		'expires' => (int) $expires->getTimestamp()
 	);
 
-	$token = hash_hmac( 'sha256', serialize( $args ), wp_salt() );
+	$salt = wp_salt();
+
+	$token = md5( serialize( $args ) . $salt );
 
 	$args['token'] = $token;
 
@@ -302,13 +304,11 @@ function itelic_generate_download_query_args( ITELIC_Key $key, DateTime $expires
  *
  * @since 1.0
  *
- * @param string $link
+ * @param array $query_args
  *
  * @return bool
  */
-function itelic_validate_download_link( $link ) {
-
-	wp_parse_str( $link, $query_args );
+function itelic_validate_query_args( $query_args ) {
 
 	if ( ! isset( $query_args['key'] ) || ! isset( $query_args['expires'] ) || ! isset( $query_args['token'] ) ) {
 		return false;
@@ -316,16 +316,20 @@ function itelic_validate_download_link( $link ) {
 
 	$args = array(
 		'key'     => $query_args['key'],
-		'expires' => $query_args['expires']
+		'expires' => (int) $query_args['expires']
 	);
 
-	$token = hash_hmac( 'sha256', serialize( $args ), wp_salt() );
+	$salt = wp_salt();
+
+	$token = md5( serialize( $args ) . $salt );
+
 
 	if ( ! hash_equals( $token, $query_args['token'] ) ) {
 		return false;
 	}
 
-	$now = new DateTime();
+	$now     = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
+	$expires = new DateTime( "@{$args['expires']}", new DateTimeZone( get_option( 'timezone_string' ) ) );
 
-	return $now < new DateTime( "@{$args['expires']}" );
+	return $now < $expires;
 }
