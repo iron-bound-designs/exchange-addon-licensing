@@ -327,5 +327,5 @@ function itelic_validate_download_link( $link ) {
 
 	$now = new DateTime();
 
-	return $now < new DateTime( "@{$key['expires']}" );
+	return $now < new DateTime( "@{$args['expires']}" );
 }
