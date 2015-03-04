@@ -67,6 +67,22 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 
 			<p class="description"><?php _e( "How many times can this license be activated. Leave blank for unlimited.", ITELIC::SLUG ); ?></p>
 
+			<label for="itelic-update-file"><?php _e( "Update File", ITELIC::SLUG ); ?></label>
+			<select id="itelic-update-file" name="itelic[update-file]">
+				<?php foreach ( $downloads as $download ): ?>
+					<option value="<?php echo esc_attr( $download['id'] ); ?>" <?php selected( $data['update-file'], $download['id'] ); ?>>
+						<?php echo $download['name']; ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+
+			<p class="description"><?php _e( "Select a file to be used for automatic updates.", ITELIC::SLUG ); ?></p>
+
+			<label for="itelic-version"><?php _e( "Current Version", ITELIC::SLUG ); ?></label>
+			<input type="text" id="itelic-version" name="itelic[version]" value="<?php echo esc_attr( $data['version'] ); ?>">
+
+			<p class="description"><?php _e( "Update this whenever you want to push out an update.", ITELIC::SLUG ); ?></p>
+
 			<label for="itelic-key-type"><?php _e( "Key Type", ITELIC::SLUG ); ?></label>
 			<select id="itelic-key-type" name="itelic[key-type]">
 
@@ -86,20 +102,6 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 					<?php $this->get_key_type_settings( $data['key-type'], isset( $post->ID ) ? $post->ID : 0 ); ?>
 				<?php endif; ?>
 			</div>
-
-			<label for="itelic-update-file"><?php _e( "Update File", ITELIC::SLUG ); ?></label>
-			<select id="itelic-update-file" name="itelic[update-file]">
-				<?php foreach ( $downloads as $download ): ?>
-					<option value="<?php echo esc_attr( $download['id'] ); ?>" <?php selected( $data['update-file'], $download['id'] ); ?>>
-						<?php echo $download['name']; ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
-
-			<p class="description"><?php _e( "Select a file to be used for automatic updates.", ITELIC::SLUG ); ?></p>
-
-			<label for="itelic-version"><?php _e( "Current Version", ITELIC::SLUG ); ?></label>
-			<input type="text" id="itelic-version" name="itelic[version]" value="<?php echo esc_attr( $data['version'] ); ?>">
 		</div>
 	<?php
 	}
