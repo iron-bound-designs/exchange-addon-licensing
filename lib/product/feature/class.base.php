@@ -47,7 +47,8 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 		wp_enqueue_script( 'itelic-add-edit-product' );
 		wp_localize_script( 'itelic-add-edit-product', 'ITELIC', array(
 			'ajax'    => admin_url( 'admin-ajax.php' ),
-			'product' => isset( $post->ID ) ? $post->ID : 0
+			'product' => isset( $post->ID ) ? $post->ID : 0,
+			'df'      => it_exchange_php_date_format_to_jquery_datepicker_format( get_option( 'date_format' ) )
 		) );
 
 		$downloads = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, 'downloads' );

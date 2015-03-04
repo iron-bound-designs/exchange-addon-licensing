@@ -51,12 +51,10 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-	var key_type_select = $("#itelic-key-type");
-
 	/**
 	 * When a new key type is selected, get a new form.
 	 */
-	key_type_select.change(function () {
+	$("#itelic-key-type").change(function () {
 
 		var val = $(this).val();
 
@@ -112,5 +110,21 @@ jQuery(document).ready(function ($) {
 		} else {
 			options.hide();
 		}
+	});
+
+	$("#itelic-readme-enable").click(function () {
+		var options = $(".itelic-readme-settings");
+
+		if ($(this).attr('checked') == 'checked') {
+			options.removeClass('hide-if-js').show();
+		} else {
+			options.hide();
+		}
+	});
+
+	$("#itelic-readme-last-updated").datepicker({
+		prevText  : '',
+		nextText  : '',
+		dateFormat: ITELIC.df
 	});
 });

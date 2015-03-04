@@ -32,19 +32,23 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 		$download = ITELIC_API_Dispatch::get_url( 'download' );
 		$download = add_query_arg( itelic_generate_download_query_args( $this->key, $expires ), $download );
 
+		$readme = it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing-readme' );
+
 		$body = array(
 			'id'              => $this->key->get_product()->ID,
 			'name'            => $this->key->get_product()->post_title,
 			'description'     => it_exchange_get_product_feature( $this->key->get_product()->ID, 'description' ),
 			'version'         => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'version' ) ),
-			'tested'          => '',
-			'author'          => '',
-			'last_updated'    => '',
-			'banner_low'      => '',
-			'banner_high'     => '',
+			'tested'          => $readme['tested'],
+			'requires'        => $readme['requires'],
+			'author'          => $readme['author'],
+			'last_updated'    => empty( $readme['last_updated'] ) ? '' : $readme['last_updated']->format( DateTime::ISO8601 ),
+			'banner_low'      => $readme['banner_low'],
+			'banner_high'     => $readme['banner_high'],
 			'package_url'     => $download,
 			'description_url' => get_permalink( $this->key->get_product()->ID ),
-			'changelog'       => ''
+			'changelog'       => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'changelog' ) ),
+			'sections'        => array()
 		);
 
 		return new ITELIC_API_Response( array(
