@@ -563,3 +563,53 @@ function itelic_display_email_notification_shortcodes() {
 }
 
 add_action( 'it_exchange_email_template_tags_list', 'itelic_display_email_notification_shortcodes' );
+
+/* --------------------------------------------
+================ Licenses Page ================
+----------------------------------------------- */
+
+/**
+ * Register the account/classes page.
+ *
+ * @since 1.0
+ */
+function itelic_register_account_licenses_page() {
+
+	// Profile
+	$options = array(
+		'slug'          => 'licenses',
+		'name'          => __( 'Licenses', ITELIC::SLUG ),
+		'rewrite-rules' => array( 127, 'itelic_page_rewrites' ),
+		'url'           => 'it_exchange_get_core_page_urls',
+		'settings-name' => __( 'Licenses Page', ITELIC::SLUG ),
+		'tip'           => __( 'A list of a customer\'s licenses.', ITELIC::SLUG ),
+		'type'          => 'exchange',
+		'menu'          => true,
+		'optional'      => true,
+	);
+
+	it_exchange_register_page( 'licenses', $options );
+}
+
+add_action( 'init', 'itelic_register_account_licenses_page' );
+
+/**
+ * Protect licenses page, and register as a profile page.
+ *
+ * @since 1.0
+ *
+ * @param array $pages
+ *
+ * @return array
+ */
+function itelic_register_protect_licenses_page( $pages ) {
+
+	$pages[] = 'licenses';
+
+	return $pages;
+}
+
+add_filter( 'it_exchange_profile_pages', 'itelic_register_protect_licenses_page' );
+add_filter( 'it_exchange_pages_to_protect', 'itelic_register_protect_licenses_page' );
+add_filter( 'it_exchange_account_based_pages', 'itelic_register_protect_licenses_page' );
+add_filter( 'it_exchange_customer_menu_pages', 'itelic_register_protect_licenses_page' );

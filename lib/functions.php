@@ -333,3 +333,30 @@ function itelic_validate_query_args( $query_args ) {
 
 	return $now < $expires;
 }
+
+/**
+ * Get page rewrites for it_exchange_register_page
+ *
+ * @since 1.0
+ *
+ * @param string $page
+ *
+ * @return array
+ */
+function itelic_page_rewrites( $page ) {
+	$slug         = it_exchange_get_page_slug( $page );
+	$account_slug = it_exchange_get_page_slug( 'account' );
+
+	// If we're using WP as acount page type, add the WP slug to rewrites and return.
+	if ( 'wordpress' == it_exchange_get_page_type( 'account' ) ) {
+		$account      = get_post( it_exchange_get_page_wpid( 'account' ) );
+		$account_slug = $account->post_name;
+	}
+
+	$rewrites = array(
+		$account_slug . '/([^/]+)/' . $slug . '$' => 'index.php?' . $account_slug . '=$matches[1]&' . $slug . '=1',
+		$account_slug . '/' . $slug . '$'         => 'index.php?' . $account_slug . '=1&' . $slug . '=1',
+	);
+
+	return $rewrites;
+}
