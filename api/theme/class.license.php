@@ -212,13 +212,13 @@ class IT_Theme_API_License implements IT_Theme_API {
 		$defaults = array(
 			'format' => 'html',
 			'df'     => str_replace( 'F', 'M', get_option( 'date_format' ) ),
-			'label'  => __( 'Expiration', ITELIC::SLUG )
+			'label'  => __( 'Expires', ITELIC::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
 		if ( $this->license ) {
 			if ( $this->license->get_expires() === null ) {
-				$value = __( "Forever", ITELIC::SLUG );
+				$value = __( "Never", ITELIC::SLUG );
 			} else {
 				$value = $this->license->get_expires()->format( $options['df'] );
 			}
