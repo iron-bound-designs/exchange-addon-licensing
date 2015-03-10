@@ -219,6 +219,10 @@ function itelic_enqueue_purchase_requirement_scripts() {
 			'ajax' => admin_url( 'admin-ajax.php' )
 		) );
 	}
+
+	if ( it_exchange_is_page( 'licenses' ) ) {
+		wp_enqueue_style( 'itelic-account-licenses' );
+	}
 }
 
 add_action( 'wp_enqueue_scripts', 'itelic_enqueue_purchase_requirement_scripts' );
@@ -579,7 +583,7 @@ function itelic_register_account_licenses_page() {
 	$options = array(
 		'slug'          => 'licenses',
 		'name'          => __( 'Licenses', ITELIC::SLUG ),
-		'rewrite-rules' => array( 127, 'itelic_page_rewrites' ),
+		'rewrite-rules' => array( 128, 'itelic_page_rewrites' ),
 		'url'           => 'it_exchange_get_core_page_urls',
 		'settings-name' => __( 'Licenses Page', ITELIC::SLUG ),
 		'tip'           => __( 'A list of a customer\'s licenses.', ITELIC::SLUG ),

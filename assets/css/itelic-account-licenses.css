@@ -1,0 +1,45 @@
+.it-exchange-licenses-list span {
+	display: inline-block;
+	padding: 10px 7px 10px 0;
+}
+
+.it-exchange-licenses-list-header {
+	white-space: nowrap;
+}
+
+.it-exchange-licenses-list-header span {
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.it-exchange-license {
+	white-space: nowrap;
+}
+
+.it-exchange-license-product-name {
+	width: 30%;
+	white-space: pre-line;
+	vertical-align: middle;
+}
+
+.it-exchange-license-key {
+	width: 30%;
+}
+
+.it-exchange-license-key-status {
+	width: 15%;
+}
+
+.it-exchange-license-key-activations {
+	width: 15%;
+}
+
+.it-exchange-license-key-expiration {
+	width: 15%;
+}
+
+.it-exchange-license .it-exchange-license-key {
+	white-space: normal;
+	font-family: monospace;
+	vertical-align: middle;
+}
