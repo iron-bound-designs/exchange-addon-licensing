@@ -28,16 +28,16 @@ class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_
 		$now     = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
 		$expires = $now->add( new DateInterval( "P1D" ) );
 
-		$download = ITELIC_API_Dispatch::get_url( 'download' );
-		$download = add_query_arg( itelic_generate_download_query_args( $this->key, $expires ), $download );
-
-
 		return new ITELIC_API_Response( array(
 			'success' => true,
 			'body'    => array(
-				'version' => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'version' ) ),
-				'package' => $download,
-				'expires' => $expires->format( DateTime::ISO8601 )
+				'list' => array(
+					$this->key->get_product()->ID => array(
+						'version' => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'version' ) ),
+						'package' => itelic_generate_download_link( $this->key, $this->key->get_product() ),
+						'expires' => $expires->format( DateTime::ISO8601 )
+					)
+				)
 			)
 		) );
 	}

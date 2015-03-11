@@ -273,6 +273,30 @@ function itelic_get_current_product_id() {
 	return 0;
 }
 
+
+/**
+ * Generate a download link.
+ *
+ * @since 1.0
+ *
+ * @param ITELIC_Key          $key
+ * @param IT_Exchange_Product $product
+ *
+ * @return string
+ */
+function itelic_generate_download_link( ITELIC_Key $key, IT_Exchange_Product $product ) {
+
+	$now     = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
+	$expires = $now->add( new DateInterval( "P1D" ) );
+
+	$args            = itelic_generate_download_query_args( $key, $expires );
+	$args['product'] = $product->ID;
+
+	$download_ep = ITELIC_API_Dispatch::get_url( 'download' );
+
+	return add_query_arg( $args, $download_ep );
+}
+
 /**
  * Generates query args to be appended to the download URL.
  *

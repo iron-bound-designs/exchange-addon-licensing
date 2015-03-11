@@ -26,15 +26,9 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 	 */
 	public function serve( ArrayAccess $get, ArrayAccess $post ) {
 
-		$now     = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
-		$expires = $now->add( new DateInterval( "P1D" ) );
-
-		$download = ITELIC_API_Dispatch::get_url( 'download' );
-		$download = add_query_arg( itelic_generate_download_query_args( $this->key, $expires ), $download );
-
 		$readme = it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing-readme' );
 
-		$body = array(
+		$product = array(
 			'id'              => $this->key->get_product()->ID,
 			'name'            => $this->key->get_product()->post_title,
 			'description'     => it_exchange_get_product_feature( $this->key->get_product()->ID, 'description' ),
@@ -45,7 +39,7 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 			'last_updated'    => empty( $readme['last_updated'] ) ? '' : $readme['last_updated']->format( DateTime::ISO8601 ),
 			'banner_low'      => $readme['banner_low'],
 			'banner_high'     => $readme['banner_high'],
-			'package_url'     => $download,
+			'package_url'     => itelic_generate_download_link( $this->key, $this->key->get_product() ),
 			'description_url' => get_permalink( $this->key->get_product()->ID ),
 			'changelog'       => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'changelog' ) ),
 			'sections'        => array()
@@ -53,7 +47,11 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 
 		return new ITELIC_API_Response( array(
 			'success' => true,
-			'body'    => $body
+			'body'    => array(
+				'list' => array(
+					$this->key->get_product()->ID => $product
+				)
+			)
 		) );
 	}
 
