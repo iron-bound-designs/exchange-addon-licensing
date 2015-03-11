@@ -29,7 +29,10 @@ class IT_Theme_API_License implements IT_Theme_API {
 		'productname'     => 'product_name',
 		'status'          => 'status',
 		'activationcount' => 'activation_count',
-		'expirationdate'  => 'expiration_date'
+		'expirationdate'  => 'expiration_date',
+		'activations'     => 'activations',
+		'manage'          => 'manage',
+		'activate'        => 'activate'
 	);
 
 	/**
@@ -239,6 +242,125 @@ class IT_Theme_API_License implements IT_Theme_API {
 			default :
 				return $value;
 				break;
+		}
+	}
+
+	/**
+	 * Loop through a license's activations.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $options
+	 *
+	 * @return bool
+	 */
+	public function activations( $options = array() ) {
+
+		if ( $options['has'] ) {
+			return count( $this->get_activations() ) > 0;
+		}
+
+		// If we made it here, we're doing a loop of classes for the current query.
+		// This will init/reset the classes global and loop through them. the /api/theme/class.php file will handle individual classes.
+		if ( empty( $GLOBALS['it_exchange']['license_activations'] ) ) {
+			$GLOBALS['it_exchange']['license_activations'] = $this->get_activations();
+			$GLOBALS['it_exchange']['license_activation']  = reset( $GLOBALS['it_exchange']['license_activations'] );
+
+			return true;
+		} else {
+			if ( next( $GLOBALS['it_exchange']['license_activations'] ) ) {
+				$GLOBALS['it_exchange']['license_activation'] = current( $GLOBALS['it_exchange']['license_activations'] );
+
+				return true;
+			} else {
+				$GLOBALS['it_exchange']['license_activations'] = array();
+				end( $GLOBALS['it_exchange']['license_activations'] );
+				$GLOBALS['it_exchange']['license_activation'] = false;
+
+				return false;
+			}
+		}
+	}
+
+	/**
+	 * Outputs a manage link.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $options
+	 *
+	 * @return string
+	 */
+	public function manage( $options = array() ) {
+
+		$defaults = array(
+			'format' => 'html',
+			'label'  => __( "Manage", ITELIC::SLUG )
+		);
+
+		$options = ITUtility::merge_defaults( $options, $defaults );
+
+		if ( $options['format'] == 'html' ) {
+			$output = "<a href=\"javascript:\">{$options['label']}</a>";
+		} else {
+			$output = '';
+		}
+
+		return $output;
+	}
+
+
+	/**
+	 * Outputs an activate form.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $options
+	 *
+	 * @return string
+	 */
+	public function activate( $options = array() ) {
+
+		$defaults = array(
+			'format'       => 'html',
+			'label'        => __( "Remote Activate", ITELIC::SLUG ),
+			'submit_label' => __( "Activate", ITELIC::SLUG ),
+			'placeholder'  => 'http://www.example.com',
+			'description'  => __( 'Authorize a website for activation.', ITELIC::SLUG )
+		);
+		$options  = ITUtility::merge_defaults( $options, $defaults );
+
+		$submit = $options['submit_label'];
+		$key    = $this->license->get_key();
+		$nonce  = wp_create_nonce( "itelic-remote-activate-$key" );
+
+		ob_start();
+		?>
+
+		<form class="itelic-activate-form">
+			<label for="itelic-remote-activate-url"><?php echo $options['label']; ?></label>
+			<input type="url" class="remote-activate-url" placeholder="<?php echo $options['placeholder']; ?>">
+			<input type="submit" class="remote-activate" data-key="<?php echo $key; ?>" data-nonce="<?php echo $nonce; ?>" value="<?php echo $submit ?>">
+
+			<p class="description"><?php echo $options['description']; ?></p>
+		</form>
+
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Retrieve the activations.
+	 *
+	 * @since 1.0
+	 *
+	 * @return ITELIC_Activation[]
+	 */
+	protected function get_activations() {
+		if ( $this->license ) {
+			return $this->license->get_activations( ITELIC_Activation::ACTIVE );
+		} else {
+			return array();
 		}
 	}
 }

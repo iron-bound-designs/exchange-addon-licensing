@@ -67,7 +67,11 @@ class IT_Theme_API_Licenses implements IT_Theme_API {
 	}
 
 	/**
-	 * Retrieve the ,icenses.
+	 * Retrieve the licenses.
+	 *
+	 * @since 1.0
+	 *
+	 * @return ITELIC_Key[]
 	 */
 	protected function get_licenses() {
 

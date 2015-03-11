@@ -9,7 +9,8 @@
 				'key',
 				'key-status',
 				'key-activations',
-				'key-expiration'
+				'key-expiration',
+				'key-manage'
 			) ) as $detail
 		): ?>
 
@@ -22,6 +23,28 @@
 
 	<div class="it-exchange-item-data-bottom">
 		<?php do_action( 'it_exchange_content_licenses_begin_license_loop_bottom' ); ?>
+
+		<div class="it-exchange-license-activations-list-header">
+			<?php it_exchange_get_template_part( 'content-licenses/elements/activations-list-header' ); ?>
+		</div>
+
+		<?php if ( it_exchange( 'license', 'has-activations' ) ): ?>
+
+			<?php do_action( 'it_exchange_content_licenses_begin_license_activations_loop' ); ?>
+
+			<div class="it-exchange-license-activations-list-body">
+				<?php it_exchange_get_template_part( 'content-licenses/loops/activations' ); ?>
+			</div>
+
+			<?php do_action( 'it_exchange_content_licenses_end_license_activations_loop' ); ?>
+
+		<?php else: ?>
+
+			<?php it_exchange_get_template_part( 'content-licenses/elements/no-activations-found' ); ?>
+
+		<?php endif; ?>
+
+		<?php it_exchange_get_template_part( 'content-licenses/elements/key-activate' ) ?>
 
 		<?php do_action( 'it_exchange_content_licenses_end_license_loop_bottom' ); ?>
 	</div>

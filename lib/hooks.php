@@ -222,6 +222,11 @@ function itelic_enqueue_purchase_requirement_scripts() {
 
 	if ( it_exchange_is_page( 'licenses' ) ) {
 		wp_enqueue_style( 'itelic-account-licenses' );
+		wp_enqueue_script( 'itelic-account-licenses' );
+		wp_localize_script( 'itelic-account-licenses', 'ITELIC', array(
+			'ajax'              => admin_url( 'admin-ajax.php' ),
+			'location_required' => __( "Location Required", ITELIC::SLUG )
+		) );
 	}
 }
 
@@ -617,3 +622,104 @@ add_filter( 'it_exchange_profile_pages', 'itelic_register_protect_licenses_page'
 add_filter( 'it_exchange_pages_to_protect', 'itelic_register_protect_licenses_page' );
 add_filter( 'it_exchange_account_based_pages', 'itelic_register_protect_licenses_page' );
 add_filter( 'it_exchange_customer_menu_pages', 'itelic_register_protect_licenses_page' );
+
+/**
+ * AJAX handler for deactivating a location.
+ *
+ * @since 1.0
+ */
+function itelic_account_licenses_deactivate_location() {
+
+	if ( ! isset( $_POST['id'] ) || ! isset( $_POST['nonce'] ) ) {
+		wp_send_json_error( array(
+			'message' => __( "Invalid request format.", ITELIC::SLUG )
+		) );
+	}
+
+	$id    = absint( $_POST['id'] );
+	$nonce = $_POST['nonce'];
+
+	if ( ! wp_verify_nonce( $nonce, "itelic-deactivate-$id" ) ) {
+		wp_send_json_error( array(
+			'message' => __( "Request expired. Please refresh and try again.", ITELIC::SLUG )
+		) );
+	}
+
+	try {
+		$record = ITELIC_Activation::with_id( $id );
+	}
+	catch ( Exception $e ) {
+		wp_send_json_error( array(
+			'message' => __( "Invalid install location.", ITELIC::SLUG )
+		) );
+
+		die();
+	}
+
+	if ( ! current_user_can( 'edit_user', $record->get_key()->get_customer()->wp_user->ID ) ) {
+		wp_send_json_error( array(
+			'message' => __( "You don't have permission to do this.", ITELIC::SLUG )
+		) );
+	}
+
+	$record->deactivate();
+
+	wp_send_json_success();
+}
+
+add_action( 'wp_ajax_itelic_account_licenses_deactivate_location', 'itelic_account_licenses_deactivate_location' );
+
+/**
+ * AJAX handler for remote activating a location.
+ *
+ * @since 1.0
+ */
+function itelic_account_licenses_activate() {
+
+	if ( ! isset( $_POST['location'] ) || ! isset( $_POST['nonce'] ) || ! isset( $_POST['key'] ) ) {
+		wp_send_json_error( array(
+			'message' => __( "Invalid request format.", ITELIC::SLUG )
+		) );
+	}
+
+	$location = sanitize_text_field( $_POST['location'] );
+	$key      = $_POST['key'];
+	$nonce    = $_POST['nonce'];
+
+	if ( ! wp_verify_nonce( $nonce, "itelic-remote-activate-$key" ) ) {
+		wp_send_json_error( array(
+			'message' => __( "Request expired. Please refresh and try again.", ITELIC::SLUG )
+		) );
+	}
+
+	try {
+		$key = ITELIC_Key::with_key( $key );
+	}
+	catch ( Exception $e ) {
+		wp_send_json_error( array(
+			'message' => __( "Invalid license key.", ITELIC::SLUG )
+		) );
+
+		die();
+	}
+
+	if ( ! current_user_can( 'edit_user', $key->get_customer()->wp_user->ID ) ) {
+		wp_send_json_error( array(
+			'message' => __( "You don't have permission to do this.", ITELIC::SLUG )
+		) );
+	}
+
+	try {
+		$activation = ITELIC_Activation::create( $key->get_key(), $location );
+		$key->log_activation( $activation );
+	}
+	catch ( Exception $e ) {
+		wp_send_json_error( array(
+			'message' => $e->getMessage()
+		) );
+	}
+
+	wp_send_json_success();
+}
+
+add_action( 'wp_ajax_itelic_account_licenses_activate', 'itelic_account_licenses_activate' );

@@ -20,4 +20,8 @@
 	<?php it_exchange( 'license', 'expiration-date', array( 'format' => 'label' ) ); ?>
 </span>
 
+<span class="it-exchange-license-key-manage it-exchange-license-key-manage-header">
+	<?php it_exchange( 'license', 'manage', array( 'format' => 'label' ) ); ?>
+</span>
+
 <?php do_action( 'it_exchange_content_licenses_end_license_list_header' ); ?>

@@ -5,6 +5,7 @@
 
 .it-exchange-licenses-list-header {
 	white-space: nowrap;
+	padding-left: 5px;
 }
 
 .it-exchange-licenses-list-header span {
@@ -12,34 +13,72 @@
 	white-space: nowrap;
 }
 
-.it-exchange-license {
+.it-exchange-license .it-exchange-item-data-top {
 	white-space: nowrap;
+	padding-left: 5px;
 }
 
 .it-exchange-license-product-name {
-	width: 30%;
+	width: 27%;
 	white-space: pre-line;
 	vertical-align: middle;
 }
 
 .it-exchange-license-key {
-	width: 30%;
+	width: 27%;
+}
+
+.it-exchange-license-key input {
+	width: 90%;
 }
 
 .it-exchange-license-key-status {
-	width: 15%;
+	width: 12%;
 }
 
 .it-exchange-license-key-activations {
-	width: 15%;
+	width: 10%;
 }
 
 .it-exchange-license-key-expiration {
 	width: 15%;
 }
 
+.it-exchange-licenses-key-manage {
+	width: 9%;
+}
+
 .it-exchange-license .it-exchange-license-key {
 	white-space: normal;
 	font-family: monospace;
 	vertical-align: middle;
+}
+
+.it-exchange-license .it-exchange-item-data-bottom {
+	display: none;
+	margin-left: 7%;
+}
+
+.it-exchange-no-licenses-found,
+.it-exchange-no-key-activations-found {
+	font-style: oblique;
+	margin-bottom: 0 !important;
+}
+
+.it-exchange-license .it-exchange-item-data-bottom ul {
+	margin-bottom: 0;
+}
+
+.it-exchange-license .it-exchange-item-data-bottom ul,
+.it-exchange-license .it-exchange-item-data-bottom ul li {
+	margin-left: 0;
+}
+
+.it-exchange-license p.description {
+	font-style: oblique;
+	color: #737373;
+}
+
+label[for="itelic-remote-activate-url"] {
+	margin: 0;
 }

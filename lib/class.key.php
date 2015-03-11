@@ -244,10 +244,21 @@ class ITELIC_Key implements ITELIC_API_Serializable {
 	 *
 	 * @since 1.0
 	 *
+	 * @param string $status
+	 *
 	 * @return ITELIC_Activation[]
 	 */
-	public function get_activations() {
-		$activations = ITELIC_DB_Activations::many( 'lkey', $this->get_key() );
+	public function get_activations( $status = '' ) {
+
+		$wheres = array(
+			'lkey' => $this->get_key()
+		);
+
+		if ( $status ) {
+			$wheres['status'] = $status;
+		}
+
+		$activations = ITELIC_DB_Activations::search( $wheres );
 
 		if ( ! is_array( $activations ) || empty( $activations ) ) {
 			return array();

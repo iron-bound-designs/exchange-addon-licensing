@@ -114,6 +114,7 @@ class ITELIC {
 		wp_register_script( 'itelic-renewal-reminder-edit', self::$url . 'assets/js/itelic-renewal-reminder-edit.js', array( 'jquery' ), self::VERSION );
 
 		wp_register_style( 'itelic-account-licenses', self::$url . 'assets/css/itelic-account-licenses.css', array(), self::VERSION );
+		wp_register_script( 'itelic-account-licenses', self::$url . 'assets/js/itelic-account-licenses.js', array( 'jquery' ), self::VERSION );
 	}
 
 	/**
@@ -135,11 +136,11 @@ class ITELIC {
 			if ( substr( $class_name, 0, 12 ) == "IT_Theme_API" ) {
 				$path  = self::$dir . "api/theme";
 				$class = strtolower( substr( $class_name, 13 ) );
-				$name = str_replace( "_", "-", $class );
+				$name  = str_replace( "_", "-", $class );
 			} else {
 				$path  = self::$dir . "lib/classes";
 				$class = strtolower( $class_name );
-				$name = str_replace( "_", "-", $class );
+				$name  = str_replace( "_", "-", $class );
 			}
 		} else {
 			$path = self::$dir . "lib";
