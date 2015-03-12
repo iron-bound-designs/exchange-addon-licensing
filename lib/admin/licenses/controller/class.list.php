@@ -54,11 +54,63 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 		$view->begin();
 		$view->title();
 
+		try {
+			$view->notice( $this->process_bulk_actions(), ITELIC_Admin_Tab_View::NOTICE_SUCCESS );
+		}
+		catch ( Exception $e ) {
+			$view->notice( $e->getMessage(), ITELIC_Admin_Tab_View::NOTICE_ERROR );
+		}
+
 		$view->tabs( 'licenses' );
 
 		$view->render();
 
 		$view->end();
+	}
+
+	/**
+	 * Process the bulk actions.
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 */
+	public function process_bulk_actions() {
+		$action = $this->get_table()->current_action();
+
+		if ( empty( $action ) ) {
+			return '';
+		}
+
+		if ( empty( $_GET['key'] ) ) {
+			throw new Exception( sprintf( __( "You must select keys to %s", ITELIC::SLUG ), $action ) );
+		}
+
+		/**
+		 * @var ITELIC_Key[] $keys
+		 */
+		$keys = array_map( 'itelic_get_key', $_GET['key'] );
+
+		switch ( $action ) {
+
+			case 'extend':
+				foreach ( $keys as $key ) {
+					$key->extend();
+				}
+
+				return sprintf( __( "Extended %d keys", ITELIC::SLUG ), count( $keys ) );
+
+			case 'delete':
+				foreach ( $keys as $key ) {
+					$key->delete();
+				}
+
+				$this->setup_table();
+
+				return sprintf( __( "Deleted %d keys", ITELIC::SLUG ), count( $keys ) );
+		}
+
+		return '';
 	}
 
 	/**

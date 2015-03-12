@@ -12,6 +12,26 @@
 abstract class ITELIC_Admin_Tab_View {
 
 	/**
+	 * Success notice class.
+	 */
+	const NOTICE_SUCCESS = 'notice-success';
+
+	/**
+	 * Warning notice class.
+	 */
+	const NOTICE_WARNING = 'notice-warning';
+
+	/**
+	 * Error notice class.
+	 */
+	const NOTICE_ERROR = 'notice-error';
+
+	/**
+	 * Info notice class.
+	 */
+	const NOTICE_INFO = 'notice-info';
+
+	/**
 	 * Begin the page.
 	 */
 	public function begin() {
@@ -44,6 +64,30 @@ abstract class ITELIC_Admin_Tab_View {
 		</div>
 
 	<?php
+	}
+
+	/**
+	 * Render a message to the screen.
+	 *
+	 * @since 1.0
+	 *
+	 * @param $message string
+	 * @param $type    ( NOTICE_SUCCESS | NOTICE_WARNING | NOTICE_ERROR | NOTICE_INFO )
+	 */
+	public function notice( $message, $type ) {
+
+		if ( empty( $message ) ) {
+			return;
+		}
+
+		?>
+
+		<div class="notice <?php echo esc_attr( $type ); ?>">
+			<p><?php echo $message; ?></p>
+		</div>
+
+	<?php
+
 	}
 
 	/**
