@@ -25,6 +25,8 @@ class ITELIC_Renewal_Reminder_Sender {
 	 */
 	public function on_schedule() {
 
+		// stripe calls get_current_screen during this filter
+		// this isn't provided during cron
 		remove_filter( 'it_exchange_get_currencies', 'it_exchange_stripe_addon_get_currency_options' );
 
 		$reminders = ITELIC_Renewal_Reminder_Type::get_reminders();
@@ -38,29 +40,30 @@ class ITELIC_Renewal_Reminder_Sender {
 		$db = ITELIC_DB_Keys::instance();
 		$tn = $db->get_table_name();
 
+		// retrieve key information and just the date value ( no time ) of when the key expires
 		$sql = "SELECT *, Date(`expires`) AS EXP_DAY FROM {$tn} WHERE ";
 
+		// START manual first record
 		$sql .= $this->convert_interval_to_between( $reminders[0]->get_interval() );
-
 		$date_to_reminder[ $this->convert_interval_to_date( $reminders[0]->get_interval() )->format( "Y-m-d" ) ] = $reminders[0];
+
 		unset( $reminders[0] );
+		// END manual first record
 
 		foreach ( $reminders as $reminder ) {
+			// search for keys that expire any time during the day of the current reminder.
 			$sql .= " OR " . $this->convert_interval_to_between( $reminder->get_interval() );
 
+			// store a reference of that entire day to the reminder object for later use.
 			$date_to_reminder[ $this->convert_interval_to_date( $reminder->get_interval() )->format( "Y-m-d" ) ] = $reminder;
 		}
-
-		$sql .= " GROUP BY EXP_DAY";
 
 		/*
 		 * SQL generated is similar to:
 		 * SELECT *, Date(`expires`) AS EXP_DAY FROM wp_itelic_keys WHERE
 		 * (`expires` BETWEEN '2015-03-08' AND '2015-03-08 23:59:59') OR
 		 * (`expires` BETWEEN '2017-03-01' AND '2017-03-01 23:59:59')
-		 * GROUP BY EXP_DAY
 		 */
-
 		$result = $GLOBALS['wpdb']->get_results( $sql );
 
 		if ( empty( $result ) ) {
