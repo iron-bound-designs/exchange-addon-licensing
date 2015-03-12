@@ -19,10 +19,10 @@ class IBD_Email_Template_Post implements IBD_Email_Template {
 	/**
 	 * Constructor.
 	 *
-	 * @param WP_Post $post
+	 * @param WP_Post $reminder
 	 */
-	public function __construct( WP_Post $post ) {
-		$this->post = $post;
+	public function __construct( WP_Post $reminder ) {
+		$this->post = $reminder;
 	}
 
 	/**
@@ -39,19 +39,24 @@ class IBD_Email_Template_Post implements IBD_Email_Template {
 			return $content;
 		}
 
-		/**
-		 * Filter the post content.
-		 *
-		 * @since 0.71
-		 *
-		 * @param string $content Content of the current post.
-		 */
-		$content = apply_filters( 'the_content', $content );
+		return $this->filter_subject( $content );
+	}
 
-		$content = str_replace( ']]>', ']]&gt;', $content );
-		$content = strip_tags( $content );
+	/**
+	 * Filter the subject. Preparing it for sending.
+	 *
+	 * @param $raw
+	 *
+	 * @return string
+	 */
+	protected function filter_subject( $raw ) {
 
-		return $content;
+		$raw = apply_filters( 'the_content', $raw );
+
+		$raw = str_replace( ']]>', ']]&gt;', $raw );
+		$raw = strip_tags( $raw );
+
+		return $raw;
 	}
 
 	/**
@@ -68,16 +73,20 @@ class IBD_Email_Template_Post implements IBD_Email_Template {
 			return $content;
 		}
 
-		/**
-		 * Filter the post content.
-		 *
-		 * @since 0.71
-		 *
-		 * @param string $content Content of the current post.
-		 */
-		$content = apply_filters( 'the_content', $content );
-		$content = str_replace( ']]>', ']]&gt;', $content );
+		return $this->filter_content( $content );
+	}
 
-		return $content;
+	/**
+	 * Filter the content. Preparing it for sending.
+	 *
+	 * @param string $raw
+	 *
+	 * @return string
+	 */
+	protected function filter_content( $raw ) {
+		$raw = apply_filters( 'the_content', $raw );
+		$raw = str_replace( ']]>', ']]&gt;', $raw );
+
+		return $raw;
 	}
 }

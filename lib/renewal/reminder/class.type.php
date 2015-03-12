@@ -202,6 +202,28 @@ class ITELIC_Renewal_Reminder_Type {
 	}
 
 	/**
+	 * Get all renewal reminders.
+	 *
+	 * @since 1.0
+	 *
+	 * @return ITELIC_Renewal_Reminder[]
+	 */
+	public static function get_reminders() {
+
+		$query = new WP_Query( array(
+			'post_type' => ITELIC_Renewal_Reminder_Type::TYPE
+		) );
+
+		$reminders = array();
+
+		foreach ( $query->get_posts() as $post ) {
+			$reminders[] = new ITELIC_Renewal_Reminder( $post );
+		}
+
+		return $reminders;
+	}
+
+	/**
 	 * Add custom columns.
 	 *
 	 * @since 1.0

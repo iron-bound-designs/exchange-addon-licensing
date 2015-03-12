@@ -210,3 +210,25 @@ function it_exchange_itelic_set_textdomain() {
 }
 
 add_action( 'plugins_loaded', 'it_exchange_itelic_set_textdomain' );
+
+/**
+ * On activation, set a time, frequency and name of an action hook to be scheduled.
+ *
+ * @since 1.0
+ */
+function itelic_activation() {
+	wp_schedule_event( strtotime( 'Tomorrow 4AM' ), 'daily', 'it_exchange_itelic_daily_schedule' );
+}
+
+register_activation_hook( __FILE__, 'itelic_activation' );
+
+/**
+ * On deactivation, remove all functions from the scheduled action hook.
+ *
+ * @since 1.0
+ */
+function itelic_deactivation() {
+	wp_clear_scheduled_hook( 'it_exchange_itelic_daily_schedule' );
+}
+
+register_deactivation_hook( __FILE__, 'itelic_deactivation' );

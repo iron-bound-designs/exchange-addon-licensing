@@ -7,3 +7,4 @@
  */
 
 new ITELIC_Renewal_Reminder_Type();
+new ITELIC_Renewal_Reminder_Sender();
