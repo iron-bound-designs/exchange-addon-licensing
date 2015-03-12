@@ -254,6 +254,27 @@ abstract class ITELIC_DB_Base {
 	}
 
 	/**
+	 * Delete many rows.
+	 *
+	 * @since 1.0
+	 *
+	 * @param $wheres array
+	 *
+	 * @return bool
+	 */
+	public function delete_many( $wheres ) {
+		$where = $this->translate_where( $wheres );
+
+		$statement = "DELETE FROM {$this->table_name} WHERE $where";
+
+		if ( false === $this->wpdb->query( $statement ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Build a simple mysql query.
 	 *
 	 * @param string|array $select

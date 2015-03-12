@@ -23,6 +23,8 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 		add_action( 'load-exchange_page_it-exchange-licensing', array( $this, 'add_screen_options' ) );
 		add_action( 'load-exchange_page_it-exchange-licensing', array( $this, 'setup_table' ) );
 
+		add_action( 'admin_init', array( $this, 'process_delete_row_action' ) );
+
 		add_action( 'wp_ajax_itelic_admin_licenses_list_extend', array( $this, 'handle_ajax_extend' ) );
 		add_action( 'wp_ajax_itelic_admin_licenses_list_max', array( $this, 'handle_ajax_max' ) );
 	}
@@ -57,6 +59,44 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 		$view->render();
 
 		$view->end();
+	}
+
+	/**
+	 * Process a request to delete a key as a row action.
+	 *
+	 * @since 1.0
+	 */
+	public function process_delete_row_action() {
+
+		if ( ! ITELIC_Admin_Licenses_Dispatch::is_current_view( 'list' ) ) {
+			return;
+		}
+
+		if ( ! isset( $_GET['itelic_action'] ) || $_GET['itelic_action'] != 'delete' ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+
+		$key = $_GET['key'];
+
+		if ( ! wp_verify_nonce( $_GET['nonce'], 'itelic-delete-license-' . $key ) ) {
+			return;
+		}
+
+		try {
+			$key = itelic_get_key( $key );
+			$key->delete();
+
+			wp_redirect( ITELIC_Admin_Tab_Dispatch::get_tab_link( 'licenses' ) );
+			exit;
+		}
+		catch ( Exception $e ) {
+			return;
+		}
 	}
 
 	/**

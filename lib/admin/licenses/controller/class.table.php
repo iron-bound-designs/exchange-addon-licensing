@@ -92,9 +92,18 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_key( $item ) {
+
+		$del_link = add_query_arg( array(
+				'itelic_action' => 'delete',
+				'key'           => $item['key'],
+				'nonce'         => wp_create_nonce( 'itelic-delete-license-' . $item['key'] )
+			), ITELIC_Admin_Tab_Dispatch::get_tab_link( 'licenses' )
+		);
+
 		//Build row actions
 		$actions = array(
-			'view' => sprintf( '<a href="%1$s">%2$s</a>', itelic_get_admin_edit_key_link( $item['key'] ), __( "View", ITELIC::SLUG ) )
+			'view'   => sprintf( '<a href="%1$s">%2$s</a>', itelic_get_admin_edit_key_link( $item['key'] ), __( "View", ITELIC::SLUG ) ),
+			'delete' => sprintf( '<a href="%1$s" class="submitdelete">%2$s</a>', $del_link, __( "Delete", ITELIC::SLUG ) )
 		);
 
 		//Return the title contents
@@ -210,9 +219,8 @@ class ITELIC_Admin_Licenses_Controller_Table extends WP_List_Table {
 	 */
 	protected function get_bulk_actions() {
 		$actions = array(
-			'extend'       => __( "Extend", ITELIC::SLUG ),
-			'send_renewal' => __( "Send Renewal Notice", ITELIC::SLUG ),
-			'delete'       => __( "Delete", ITELIC::SLUG )
+			'extend' => __( "Extend", ITELIC::SLUG ),
+			'delete' => __( "Delete", ITELIC::SLUG )
 		);
 
 		return $actions;

@@ -446,6 +446,20 @@ class ITELIC_Key implements ITELIC_API_Serializable {
 	}
 
 	/**
+	 * Delete the license key.
+	 */
+	public function delete() {
+		$keys = ITELIC_DB_Keys::instance();
+		$keys->delete( $this->get_key() );
+
+		$activations = ITELIC_DB_Activations::instance();
+		$activations->delete_many( array( 'lkey' => $this->get_key() ) );
+
+		$renewals = ITELIC_DB_Renewals::instance();
+		$renewals->delete_many( array( 'lkey' => $this->get_key() ) );
+	}
+
+	/**
 	 * Refresh this object's properties.
 	 */
 	protected function refresh() {
