@@ -98,6 +98,8 @@ class ITELIC_Admin_Licenses_Controller_List extends ITELIC_Admin_Licenses_Contro
 					$key->extend();
 				}
 
+				$this->setup_table();
+
 				return sprintf( __( "Extended %d keys", ITELIC::SLUG ), count( $keys ) );
 
 			case 'delete':
