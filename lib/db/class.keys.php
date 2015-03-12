@@ -169,7 +169,8 @@ class ITELIC_DB_Keys extends ITELIC_DB_Base {
 		max INTEGER UNSIGNED NOT NULL,
 		expires DATETIME,
 		INDEX customer (customer),
-		INDEX transaction_id (transaction_id)
+		INDEX transaction_id (transaction_id),
+		INDEX expires (expires),
 		) CHARACTER SET utf8 COLLATE utf8_general_ci;";
 
 		dbDelta( $sql );
