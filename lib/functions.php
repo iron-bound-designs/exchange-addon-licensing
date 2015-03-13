@@ -59,7 +59,35 @@ function itelic_generate_key_for_transaction_product( IT_Exchange_Transaction $t
 	$factory = new ITELIC_Key_Factory( $product, $customer, $transaction );
 	$key     = $factory->make();
 
-	$max = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'limit' ) );
+	foreach ( $transaction->get_products() as $tran_product ) {
+
+		if ( $tran_product['product_id'] == $product->ID ) {
+
+			if ( empty( $tran_product['itemized_data'] ) ) {
+				continue;
+			}
+
+			if ( is_string( $tran_product['itemized_data'] ) ) {
+				$itemized = maybe_unserialize( $tran_product['itemized_data'] );
+			} else {
+				$itemized = $tran_product['itemized_data'];
+			}
+
+			if ( isset( $itemized['it_variant_combo_hash'] ) ) {
+				$hash = $itemized['it_variant_combo_hash'];
+
+				$max = it_exchange_get_product_feature( $product->ID, 'licensing', array(
+					'field'    => 'limit',
+					'for_hash' => $hash
+				) );
+			}
+
+		}
+	}
+
+	if ( ! isset( $max ) ) {
+		$max = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'limit' ) );
+	}
 
 	if ( ! it_exchange_product_has_feature( $product->ID, 'recurring-payments' ) ) {
 		$expires = null;

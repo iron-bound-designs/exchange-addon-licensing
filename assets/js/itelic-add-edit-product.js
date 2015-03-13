@@ -83,6 +83,19 @@ jQuery(document).ready(function ($) {
 		});
 	}
 
+	var simple_activation = $(".itelic-activation-limit");
+	var variant_activation = $(".itelic-variants-activation-limit-table");
+
+	$("#itelic-enable-variant-activations").click(function (e) {
+		if ($(this).attr('checked') == 'checked') {
+			variant_activation.removeClass('hide-if-js').show();
+			simple_activation.hide();
+		} else {
+			simple_activation.removeClass('hide-if-js').show();
+			variant_activation.hide();
+		}
+	});
+
 	$("#itelic-discount-disable").click(function () {
 		var override = $("#itelic-discount-override");
 		var options = $("input, select", ".itelic-discount-settings");
