@@ -353,6 +353,10 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 		$values   = get_post_meta( $product_id, '_it_exchange_itelic_feature', true );
 		$raw_meta = ITUtility::merge_defaults( $values, $defaults );
 
+		if ( ! function_exists( 'it_exchange_variants_addon_create_inital_presets' ) ) {
+			$raw_meta['enabled_variant_activations'] = false;
+		}
+
 		if ( ! isset( $options['field'] ) ) { // if we aren't looking for a particular field
 			return $raw_meta;
 		}
