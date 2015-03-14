@@ -68,7 +68,7 @@ add_action( 'wp_enqueue_scripts', 'itelic_scripts_and_styles' );
 
 
 /* --------------------------------------------
-============ Purchase Requirements ============
+================== Renewals ===================
 ----------------------------------------------- */
 
 /**
@@ -448,6 +448,63 @@ function itelic_renew_key_on_update_expirations( $mid, $object_id, $meta_key, $_
 }
 
 add_action( 'updated_post_meta', 'itelic_renew_key_on_update_expirations', 10, 4 );
+
+/**
+ * Listen for the auto renewal URL.
+ *
+ * @since 1.0
+ */
+function itelic_listen_for_auto_renewal_url() {
+
+	if ( ! it_exchange_is_page( 'product' ) ) {
+		return;
+	}
+
+	if ( ! isset( $_GET['renew_key'] ) ) {
+		return;
+	}
+
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
+	$key = itelic_get_key( $_GET['renew_key'] );
+
+	it_exchange_empty_shopping_cart();
+	it_exchange_add_product_to_shopping_cart( $key->get_product()->ID );
+	itelic_update_purchase_requirement_renewal_product( $key->get_product(), $key );
+}
+
+add_action( 'template_redirect', 'itelic_listen_for_auto_renewal_url', 0 );
+
+/**
+ * On login, look for the renewal key query param.
+ *
+ * @since 1.0
+ *
+ * @param string  $login
+ * @param WP_User $user
+ */
+function itelic_add_renewal_key_to_session_on_login( $login, $user ) {
+
+	if ( ! isset( $_GET['renew_key'] ) ) {
+		return;
+	}
+
+	$key = itelic_get_key( $_GET['renew_key'] );
+
+	it_exchange_empty_shopping_cart();
+	it_exchange_add_product_to_shopping_cart( $key->get_product()->ID );
+	itelic_update_purchase_requirement_renewal_product( $key->get_product(), $key );
+
+	if ( ! it_exchange_is_page( 'product' ) || ! is_page( $key->get_product()->ID ) ) {
+		wp_redirect( get_permalink( $key->get_product()->ID ) );
+		exit;
+	}
+}
+
+add_action( 'wp_login', 'itelic_add_renewal_key_to_session_on_login', 10, 2 );
+
 
 /* --------------------------------------------
 ============= Display License Key =============
