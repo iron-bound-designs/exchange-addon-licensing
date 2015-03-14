@@ -180,6 +180,10 @@ function itelic_get_key_for_transaction_product( $transaction_id, $product_id ) 
 	return new ITELIC_Key( reset( $data ) );
 }
 
+/* --------------------------------------------
+============ Purchase Requirements ============
+----------------------------------------------- */
+
 /**
  * Checks if the renew product purchase requirement has been met.
  *
@@ -187,42 +191,33 @@ function itelic_get_key_for_transaction_product( $transaction_id, $product_id ) 
  *
  * @return boolean
  */
-function itelic_purchase_requirement_renew_product() {
+function itelic_purchase_requirement_renewal_met() {
 
-	$customer   = it_exchange_get_current_customer_id();
 	$product_id = itelic_get_current_product_id();
+	$session    = itelic_get_purchase_requirement_renewal_session();
 
-	if ( ! it_exchange_product_has_feature( $product_id, 'licensing' ) ) {
-		return true;
-	}
+	// we are on checkout
+	if ( ! $product_id ) {
 
-	$keys = itelic_get_keys( array(
-		'customer' => $customer,
-		'product'  => $product_id
-	) );
+		foreach ( $session as $product => $key ) {
 
-
-	if ( empty( $keys ) ) {
-		return true;
-	}
-
-	// we only want to prompt for a renewal, if there is a key that exists that has an expiry date.
-	// because we can't renew keys with no expiry date.
-	$one_with_expiry = false;
-
-	foreach ( $keys as $key ) {
-		if ( $key->get_expires() !== null ) {
-			$one_with_expiry = true;
+			// so all products marked for renewal must have a key
+			if ( $key === null ) {
+				return false;
+			}
 		}
-	}
 
-	if ( $one_with_expiry === false ) {
 		return true;
 	}
 
-	$session = itelic_get_purchase_requirement_renew_product_session();
+	// we are on a product page
 
-	return $session['renew'] !== null;
+	// if there is no record of this product in the session then the PR has been met
+	if ( ! array_key_exists( $product_id, $session ) ) {
+		return true;
+	}
+
+	return $session[ $product_id ] !== null;
 }
 
 /**
@@ -232,16 +227,44 @@ function itelic_purchase_requirement_renew_product() {
  *
  * @return array
  */
-function itelic_get_purchase_requirement_renew_product_session() {
+function itelic_get_purchase_requirement_renewal_session() {
+	return (array) it_exchange_get_session_data( 'itelic_renew_product' );
+}
 
-	$session = (array) it_exchange_get_session_data( 'itelic_renew_product' );
+/**
+ * Update a purchase requirement renewal product.
+ *
+ * @since 1.0
+ *
+ * @param IT_Exchange_Product $product
+ * @param ITELIC_Key          $key
+ */
+function itelic_update_purchase_requirement_renewal_product( IT_Exchange_Product $product, ITELIC_Key $key = null ) {
 
-	$defaults = array(
-		'renew'   => null,
-		'product' => null
-	);
+	$session = itelic_get_purchase_requirement_renewal_session();
 
-	return ITUtility::merge_defaults( $session, $defaults );
+	if ( $key ) {
+		$session[ $product->ID ] = $key->get_key();
+	} else {
+		$session[ $product->ID ] = null;
+	}
+
+	itelic_update_purchase_requirement_renewal_session( $session );
+}
+
+/**
+ * Remove a purchase requirement renewal product.
+ *
+ * @since 1.0
+ *
+ * @param IT_Exchange_Product $product
+ */
+function itelic_remove_purchase_requirement_renewal_product( IT_Exchange_Product $product ) {
+	$session = itelic_get_purchase_requirement_renewal_session();
+
+	unset( $session[ $product->ID ] );
+
+	itelic_update_purchase_requirement_renewal_session( $session );
 }
 
 /**
@@ -251,7 +274,7 @@ function itelic_get_purchase_requirement_renew_product_session() {
  *
  * @param array $data
  */
-function itelic_update_purchase_requirement_renew_product_session( array $data ) {
+function itelic_update_purchase_requirement_renewal_session( array $data ) {
 	it_exchange_update_session_data( 'itelic_renew_product', $data );
 }
 
@@ -260,28 +283,8 @@ function itelic_update_purchase_requirement_renew_product_session( array $data )
  *
  * @since 1.0
  */
-function itelic_clear_purchase_requirement_renew_product_session() {
+function itelic_clear_purchase_requirement_renewal_session() {
 	it_exchange_clear_session_data( 'itelic_renew_product' );
-}
-
-/**
- * Save the purchase requirement renewal key to the user's session.
- *
- * @since 1.0
- *
- * @param string|bool $key If false, user opted to purchase a new key.
- * @param int         $product
- */
-function itelic_set_purchase_requirement_renewal_key( $key, $product ) {
-
-	$session = itelic_get_purchase_requirement_renew_product_session();
-
-	if ( $session['renew'] === null ) {
-		$session['renew']   = $key;
-		$session['product'] = absint( $product );
-	}
-
-	itelic_update_purchase_requirement_renew_product_session( $session );
 }
 
 /**
@@ -293,12 +296,18 @@ function itelic_set_purchase_requirement_renewal_key( $key, $product ) {
  */
 function itelic_get_current_product_id() {
 	if ( isset( $GLOBALS['it_exchange']['product'] ) ) {
-		return $GLOBALS['it_exchange']['product']->ID;
+		$id = $GLOBALS['it_exchange']['product']->ID;
 	} elseif ( isset( $GLOBALS['post'] ) ) {
-		return $GLOBALS['post']->ID;
+		$id = $GLOBALS['post']->ID;
+	} else {
+		return 0;
 	}
 
-	return 0;
+	if ( get_post( $id )->post_type != 'it_exchange_prod' ) {
+		return 0;
+	}
+
+	return $id;
 }
 
 

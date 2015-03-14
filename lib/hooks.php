@@ -20,51 +20,6 @@ function itelic_on_add_transaction_generate_license_keys( $transaction_id ) {
 add_action( 'it_exchange_add_transaction_success', 'itelic_on_add_transaction_generate_license_keys' );
 
 /**
- * Display the license key for a transaction product on the payments detail page.
- *
- * @since 1.0
- *
- * @param WP_Post $post
- * @param array   $transaction_product
- */
-function itelic_display_keys_on_transaction_detail( $post, $transaction_product ) {
-	$key = itelic_get_key_for_transaction_product( $post->ID, $transaction_product['product_id'] );
-
-	if ( $key === null ) {
-		return;
-	}
-
-	echo "<h4 class='product-license-key'>";
-	printf( __( "License Key: %s", ITELIC::SLUG ), $key->get_key() );
-	echo "</h4>";
-}
-
-add_action( 'it_exchange_transaction_details_begin_product_details', 'itelic_display_keys_on_transaction_detail', 10, 2 );
-
-/**
- * Display renewal information on the confirmation page.
- *
- * @since 1.0
- */
-function itelic_display_license_key_on_confirmation_page() {
-	$transaction = $GLOBALS['it_exchange']['transaction'];
-	$product     = $GLOBALS['it_exchange']['transaction_product'];
-
-	$key = itelic_get_key_for_transaction_product( $transaction->ID, $product['product_id'] );
-
-	if ( ! $key ) {
-		return;
-	}
-
-	echo "<p>";
-	printf( __( "License Key: %s", ITELIC::SLUG ), $key->get_key() );
-	echo "</p>";
-}
-
-add_action( 'it_exchange_content_confirmation_after_product_attibutes', 'itelic_display_license_key_on_confirmation_page' );
-add_action( 'it_exchange_content_purchases_end_product_info_loop', 'itelic_display_license_key_on_confirmation_page' );
-
-/**
  * When a renewal purchase is made, renew the renewed key.
  *
  * @since 1.0
@@ -162,6 +117,10 @@ function itelic_add_template_paths( $paths = array() ) {
 
 add_filter( 'it_exchange_possible_template_paths', 'itelic_add_template_paths' );
 
+/* --------------------------------------------
+============ Purchase Requirements ============
+----------------------------------------------- */
+
 /**
  * Register purchase requirements.
  *
@@ -171,7 +130,7 @@ function itelic_register_purchase_requirements() {
 
 	$trial_properties = array(
 		'priority'               => 2,
-		'requirement-met'        => 'itelic_purchase_requirement_renew_product',
+		'requirement-met'        => 'itelic_purchase_requirement_renewal_met',
 		'sw-template-part'       => 'itelic-renew-product',
 		'checkout-template-part' => 'itelic-renew-product',
 		'notification'           => __( "Would you like to renew this product?", ITELIC::SLUG ),
@@ -181,6 +140,71 @@ function itelic_register_purchase_requirements() {
 }
 
 add_action( 'init', 'itelic_register_purchase_requirements' );
+
+/**
+ * Add the renew button to the super widget.
+ *
+ * @since 1.0
+ */
+function itelic_add_renew_button_to_sw() {
+
+	$product_id = itelic_get_current_product_id();
+
+	if ( ! $product_id ) {
+		return;
+	}
+
+	if ( ! it_exchange_product_has_feature( $product_id, 'licensing' ) ) {
+		return;
+	}
+
+	if ( is_user_logged_in() ) {
+		$keys = itelic_get_keys( array( 'customer' => it_exchange_get_current_customer_id() ) );
+
+		if ( empty( $keys ) ) {
+			return;
+		}
+	}
+	?>
+
+	<form method="POST" class="it-exchange-sw-purchase-options it-exchange-sw-itelic-renew">
+		<input type="hidden" name="it-exchange-renew-product" value="<?php echo esc_attr( $product_id ); ?>">
+		<?php wp_nonce_field( 'itelic-renew-' . $product_id ); ?>
+		<input type="submit" value="<?php esc_attr_e( "Renew", ITELIC::SLUG ); ?>" class="itelic-renew-button" style="width:100%;">
+	</form>
+
+<?php
+}
+
+add_action( 'it_exchange_super_widget_product_end_purchase_options_element', 'itelic_add_renew_button_to_sw' );
+
+/**
+ * Enter the renewal process when the renew button is pressed on the super widget.
+ *
+ * @since 1.0
+ */
+function itelic_enter_renewal_process_sw() {
+
+	if ( ! isset( $_GET['sw-product'] ) || ! isset( $_GET['_wpnonce'] ) ) {
+		return;
+	}
+
+	$product = $_GET['sw-product'];
+
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], "itelic-renew-$product" ) ) {
+		it_exchange_add_message( 'error', __( "Something went wrong. Please refresh and try again.", ITELIC::SLUG ) );
+
+		return;
+	}
+
+	it_exchange_add_product_to_shopping_cart( $product, 1 );
+
+	itelic_update_purchase_requirement_renewal_product( it_exchange_get_product( $product ) );
+
+	die( 1 );
+}
+
+add_action( 'it_exchange_processing_super_widget_ajax_renew_key', 'itelic_enter_renewal_process_sw' );
 
 /**
  * Force the renew product SW state.
@@ -263,12 +287,10 @@ function itelic_renew_product_purchase_requirement() {
 	}
 
 	if ( $renew === true ) {
-		$key = $key->get_key();
+		itelic_update_purchase_requirement_renewal_product( $product, $key );
 	} else {
-		$key = false;
+		itelic_remove_purchase_requirement_renewal_product( $product );
 	}
-
-	itelic_set_purchase_requirement_renewal_key( $key, $product->ID );
 
 	wp_send_json_success();
 }
@@ -292,9 +314,9 @@ function itelic_apply_renewal_discount( $db_base_price, $product, $format ) {
 		return $db_base_price;
 	}
 
-	$session = itelic_get_purchase_requirement_renew_product_session();
+	$session = itelic_get_purchase_requirement_renewal_session();
 
-	if ( $session['renew'] == null || $session['renew'] == false || $session['product'] !== $product['product_id'] ) {
+	if ( ! isset( $session[ $product['product_id'] ] ) || $session[ $product['product_id'] ] === null ) {
 		return $db_base_price;
 	}
 
@@ -318,10 +340,12 @@ add_filter( 'it_exchange_get_cart_product_base_price', 'itelic_apply_renewal_dis
  */
 function itelic_save_renewal_info_to_transaction_object( $products, $key, $product ) {
 
-	$renewal = itelic_get_purchase_requirement_renew_product_session();
+	$session = itelic_get_purchase_requirement_renewal_session();
 
-	if ( $renewal['renew'] !== null && $renewal['renew'] !== false && $product['product_id'] == $renewal['product'] ) {
-		$products[ $key ]['renewed_key'] = $renewal['renew'];
+	foreach ( $session as $renewed_product => $license_key ) {
+		if ( $renewed_product == $product['product_id'] ) {
+			$products[ $key ]['renewed_key'] = $license_key;
+		}
 	}
 
 	return $products;
@@ -340,7 +364,7 @@ add_filter( 'it_exchange_generate_transaction_object_products', 'itelic_save_ren
  * @return object
  */
 function itelic_clear_renewal_session_on_purchase( $transaction_object ) {
-	itelic_clear_purchase_requirement_renew_product_session();
+	itelic_clear_purchase_requirement_renewal_session();
 
 	return $transaction_object;
 }
@@ -358,10 +382,10 @@ add_filter( 'it_exchange_transaction_object', 'itelic_clear_renewal_session_on_p
  */
 function itelic_remove_renewal_info_on_cart_product_removal( $cart_product_id, $products ) {
 
-	$renew = itelic_get_purchase_requirement_renew_product_session();
+	$renew = itelic_get_purchase_requirement_renewal_session();
 
 	if ( $renew['product'] == $cart_product_id ) {
-		itelic_clear_purchase_requirement_renew_product_session();
+		itelic_clear_purchase_requirement_renewal_session();
 	}
 }
 
@@ -373,11 +397,59 @@ add_action( 'it_exchange_delete_cart_product', 'itelic_remove_renewal_info_on_ca
  * @since 1.0
  */
 function itelic_remove_renewal_info_on_cart_empty() {
-	itelic_clear_purchase_requirement_renew_product_session();
+	itelic_clear_purchase_requirement_renewal_session();
 }
 
 add_action( 'it_exchange_empty_shopping_cart', 'itelic_remove_renewal_info_on_cart_empty' );
 
+/* --------------------------------------------
+============= Display License Key =============
+----------------------------------------------- */
+
+/**
+ * Display the license key for a transaction product on the payments detail page.
+ *
+ * @since 1.0
+ *
+ * @param WP_Post $post
+ * @param array   $transaction_product
+ */
+function itelic_display_keys_on_transaction_detail( $post, $transaction_product ) {
+	$key = itelic_get_key_for_transaction_product( $post->ID, $transaction_product['product_id'] );
+
+	if ( $key === null ) {
+		return;
+	}
+
+	echo "<h4 class='product-license-key'>";
+	printf( __( "License Key: %s", ITELIC::SLUG ), $key->get_key() );
+	echo "</h4>";
+}
+
+add_action( 'it_exchange_transaction_details_begin_product_details', 'itelic_display_keys_on_transaction_detail', 10, 2 );
+
+/**
+ * Display renewal information on the confirmation page.
+ *
+ * @since 1.0
+ */
+function itelic_display_license_key_on_confirmation_page() {
+	$transaction = $GLOBALS['it_exchange']['transaction'];
+	$product     = $GLOBALS['it_exchange']['transaction_product'];
+
+	$key = itelic_get_key_for_transaction_product( $transaction->ID, $product['product_id'] );
+
+	if ( ! $key ) {
+		return;
+	}
+
+	echo "<p>";
+	printf( __( "License Key: %s", ITELIC::SLUG ), $key->get_key() );
+	echo "</p>";
+}
+
+add_action( 'it_exchange_content_confirmation_after_product_attibutes', 'itelic_display_license_key_on_confirmation_page' );
+add_action( 'it_exchange_content_purchases_end_product_info_loop', 'itelic_display_license_key_on_confirmation_page' );
 
 /* --------------------------------------------
 ============= Display Renewal Info ============
@@ -498,7 +570,7 @@ add_filter( 'it_exchange_get_transaction_product_feature', 'itelic_add_renewal_i
  */
 function iteclic_modify_cart_item_title( $title ) {
 	$product = $GLOBALS['it_exchange']['cart-item'];
-	$session = itelic_get_purchase_requirement_renew_product_session();
+	$session = itelic_get_purchase_requirement_renewal_session();
 
 	if ( isset( $session['product'] ) && $session['product'] == $product['product_id'] ) {
 		$title .= __( " – Renewal", ITELIC::SLUG );
