@@ -121,12 +121,15 @@ function itelic_add_renew_button_to_sw() {
 		return;
 	}
 
-	if ( ! it_exchange_product_has_feature( $product_id, 'licensing' ) ) {
+	if ( ! it_exchange_product_has_feature( $product_id, 'licensing' ) || ! it_exchange_product_has_feature( $product_id, 'recurring-payments' ) ) {
 		return;
 	}
 
 	if ( is_user_logged_in() ) {
-		$keys = itelic_get_keys( array( 'customer' => it_exchange_get_current_customer_id() ) );
+		$keys = itelic_get_keys( array(
+			'product'  => $product_id,
+			'customer' => it_exchange_get_current_customer_id()
+		) );
 
 		if ( empty( $keys ) ) {
 			return;
@@ -166,7 +169,18 @@ function itelic_enter_renewal_process_sw() {
 
 	it_exchange_add_product_to_shopping_cart( $product, 1 );
 
-	itelic_update_purchase_requirement_renewal_product( it_exchange_get_product( $product ) );
+	$keys = itelic_get_keys( array(
+		'product'  => $product,
+		'customer' => it_exchange_get_current_customer_id()
+	) );
+
+	if ( count( $keys ) == 1 ) {
+		$key = reset( $keys );
+	} else {
+		$key = null;
+	}
+
+	itelic_update_purchase_requirement_renewal_product( it_exchange_get_product( $product ), $key );
 
 	die( 1 );
 }
