@@ -19,8 +19,6 @@ function itelic_on_add_transaction_generate_license_keys( $transaction_id ) {
 
 add_action( 'it_exchange_add_transaction_success', 'itelic_on_add_transaction_generate_license_keys' );
 
-
-
 /**
  * Register our template paths
  *
@@ -53,10 +51,7 @@ function itelic_scripts_and_styles() {
 	}
 
 	if ( it_exchange_is_page( 'checkout' ) ) {
-		wp_enqueue_script( 'itelic-checkout' );
-		wp_localize_script( 'itelic-checkout', 'ITELIC', array(
-			'ajax' => admin_url( 'admin-ajax.php' )
-		) );
+		wp_enqueue_style( 'itelic-checkout' );
 	}
 
 	if ( it_exchange_is_page( 'licenses' ) ) {
@@ -88,7 +83,7 @@ function itelic_register_purchase_requirements() {
 		'requirement-met'        => 'itelic_purchase_requirement_renewal_met',
 		'sw-template-part'       => 'itelic-renew-product',
 		'checkout-template-part' => 'itelic-renew-product',
-		'notification'           => __( "Select a license key to renew.", ITELIC::SLUG ),
+		'notification'           => __( "You need to select a license key to renew.", ITELIC::SLUG ),
 	);
 
 	it_exchange_register_purchase_requirement( 'itelic-renew-product', $trial_properties );
@@ -219,6 +214,40 @@ function itelic_process_purchase_requirement_renewal_ajax() {
 }
 
 add_action( 'wp_ajax_itelic_renew_product_purchase_requirement', 'itelic_process_purchase_requirement_renewal_ajax' );
+
+/**
+ * Process the renewal purchase requirement from the checkout screen.
+ *
+ * @since 1.0
+ */
+function itelic_process_purchase_requirement_renewal_checkout() {
+
+	if ( ! isset( $_POST['itelic_renew_keys_checkout'] ) || ! isset( $_POST['_wpnonce'] ) || empty( $_POST['itelic_key'] ) ) {
+		return;
+	}
+
+	if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'itelic-renew-keys-checkout' ) ) {
+		it_exchange_add_message( 'error', __( "Sorry this request has expired. Please refresh and try again.", ITELIC::SLUG ) );
+
+		return;
+	}
+
+	$session = itelic_get_purchase_requirement_renewal_session();
+	$keys    = $_POST['itelic_key'];
+
+	foreach ( $session as $product => $key ) {
+
+		if ( $key === null ) {
+			if ( isset( $keys[ $product ] ) ) {
+				$session[ $product ] = $keys[ $product ];
+			}
+		}
+	}
+
+	itelic_update_purchase_requirement_renewal_session( $session );
+}
+
+add_action( 'init', 'itelic_process_purchase_requirement_renewal_checkout' );
 
 /**
  * Apply the renewal discount.

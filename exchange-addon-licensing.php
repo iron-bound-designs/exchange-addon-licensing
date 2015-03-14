@@ -108,7 +108,7 @@ class ITELIC {
 		wp_register_style( 'itelic-admin-license-detail', self::$url . 'assets/css/admin-license-detail.css', array( 'jqueryui-editable' ), self::VERSION );
 
 		wp_register_script( 'itelic-super-widget', self::$url . 'assets/js/itelic-super-widget.js', array( 'jquery' ), self::VERSION );
-		wp_register_script( 'itelic-checkout', self::$url . 'assets/js/itelic-checkout.js', array( 'jquery' ), self::VERSION );
+		wp_register_style( 'itelic-checkout', self::$url . 'assets/css/itelic-checkout.css', array(), self::VERSION );
 
 		wp_register_style( 'itelic-renewal-reminder-edit', self::$url . 'assets/css/itelic-renewal-reminder-edit.css', array(), self::VERSION );
 		wp_register_script( 'itelic-renewal-reminder-edit', self::$url . 'assets/js/itelic-renewal-reminder-edit.js', array( 'jquery' ), self::VERSION );
