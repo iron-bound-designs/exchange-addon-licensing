@@ -88,7 +88,7 @@ function itelic_register_purchase_requirements() {
 		'requirement-met'        => 'itelic_purchase_requirement_renewal_met',
 		'sw-template-part'       => 'itelic-renew-product',
 		'checkout-template-part' => 'itelic-renew-product',
-		'notification'           => __( "Would you like to renew this product?", ITELIC::SLUG ),
+		'notification'           => __( "Select a license key to renew.", ITELIC::SLUG ),
 	);
 
 	it_exchange_register_purchase_requirement( 'itelic-renew-product', $trial_properties );
