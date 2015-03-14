@@ -24,6 +24,8 @@
 	<div class="it-exchange-item-data-bottom">
 		<?php do_action( 'it_exchange_content_licenses_begin_license_loop_bottom' ); ?>
 
+		<?php it_exchange_get_template_part( 'content-licenses/elements/key-renew-link' ); ?>
+
 		<div class="it-exchange-license-activations-list-header">
 			<?php it_exchange_get_template_part( 'content-licenses/elements/activations-list-header' ); ?>
 		</div>

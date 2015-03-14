@@ -32,7 +32,8 @@ class IT_Theme_API_License implements IT_Theme_API {
 		'expirationdate'  => 'expiration_date',
 		'activations'     => 'activations',
 		'manage'          => 'manage',
-		'activate'        => 'activate'
+		'activate'        => 'activate',
+		'renewlink'       => 'renew_link'
 	);
 
 	/**
@@ -347,6 +348,35 @@ class IT_Theme_API_License implements IT_Theme_API {
 
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Outputs a renew link.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $options
+	 *
+	 * @return string
+	 */
+	public function renew_link( $options ) {
+		$defaults = array(
+			'format' => 'html',
+			'label'  => __( "Renew this license key", ITELIC::SLUG )
+		);
+		$options  = ITUtility::merge_defaults( $options, $defaults );
+
+		$link = itelic_generate_auto_renewal_url( $this->license );
+
+		switch ( $options['format'] ) {
+			case 'link':
+				return $link;
+			case 'label':
+				return $options['label'];
+			case 'html':
+			default:
+				return '<a href="' . $link . '">' . $options['label'] . '</a>';
+		}
 	}
 
 	/**

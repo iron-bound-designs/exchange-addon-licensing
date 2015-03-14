@@ -82,3 +82,7 @@
 label[for="itelic-remote-activate-url"] {
 	margin: 0;
 }
+
+.it-exchange-license-activations-list-header h4 {
+	margin: 0;
+}
