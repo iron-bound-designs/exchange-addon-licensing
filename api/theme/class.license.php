@@ -25,15 +25,17 @@ class IT_Theme_API_License implements IT_Theme_API {
 	 * @var array
 	 */
 	public $_tag_map = array(
-		'key'             => 'key',
-		'productname'     => 'product_name',
-		'status'          => 'status',
-		'activationcount' => 'activation_count',
-		'expirationdate'  => 'expiration_date',
-		'activations'     => 'activations',
-		'manage'          => 'manage',
-		'activate'        => 'activate',
-		'renewlink'       => 'renew_link'
+		'key'                 => 'key',
+		'productname'         => 'product_name',
+		'status'              => 'status',
+		'activationcount'     => 'activation_count',
+		'expirationdate'      => 'expiration_date',
+		'activations'         => 'activations',
+		'manage'              => 'manage',
+		'activate'            => 'activate',
+		'renewlink'           => 'renew_link',
+		'canremoteactivate'   => 'can_remote_activate',
+		'canremotedeactivate' => 'can_remote_deactivate'
 	);
 
 	/**
@@ -310,7 +312,6 @@ class IT_Theme_API_License implements IT_Theme_API {
 		return $output;
 	}
 
-
 	/**
 	 * Outputs an activate form.
 	 *
@@ -359,7 +360,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 	 *
 	 * @return string
 	 */
-	public function renew_link( $options ) {
+	public function renew_link( $options = array() ) {
 		$defaults = array(
 			'format' => 'html',
 			'label'  => __( "Renew this license key", ITELIC::SLUG )
@@ -377,6 +378,38 @@ class IT_Theme_API_License implements IT_Theme_API {
 			default:
 				return '<a href="' . $link . '">' . $options['label'] . '</a>';
 		}
+	}
+
+	/**
+	 * Check if we can remotely activate this license key.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $options
+	 *
+	 * @return bool
+	 */
+	public function can_remote_activate( $options = array() ) {
+		$settings = it_exchange_get_option( 'addon_itelic' );
+
+		return $settings['enable-remote-activation'] && it_exchange_get_product_feature( $this->license->get_product()->ID,
+			'licensing', array( 'field' => 'online-software' ) );
+	}
+
+	/**
+	 * Check if we can remotely deactivate this license key.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $options
+	 *
+	 * @return bool
+	 */
+	public function can_remote_deactivate( $options = array() ) {
+		$settings = it_exchange_get_option( 'addon_itelic' );
+
+		return $settings['enable-remote-deactivation'] && it_exchange_get_product_feature( $this->license->get_product()->ID,
+			'licensing', array( 'field' => 'online-software' ) );
 	}
 
 	/**

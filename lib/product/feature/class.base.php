@@ -9,9 +9,10 @@
 /**
  * Class ITELIC_Product_Feature_Base
  *
- * Base product feature for licensing. This controls the versions of the software released,
- * as well as the ReadMe parser. If variants is not enabled, this will also present an
- * input to configure the number of times this product's license can be activated.
+ * Base product feature for licensing. This controls the versions of the
+ * software released, as well as the ReadMe parser. If variants is not enabled,
+ * this will also present an input to configure the number of times this
+ * product's license can be activated.
  *
  * @since 1.0
  */
@@ -30,7 +31,10 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 
 		parent::IT_Exchange_Product_Feature_Abstract( $args );
 
-		add_action( 'wp_ajax_itelic_get_key_type_settings', array( $this, 'ajax_get_key_type_settings' ) );
+		add_action( 'wp_ajax_itelic_get_key_type_settings', array(
+			$this,
+			'ajax_get_key_type_settings'
+		) );
 	}
 
 	/**
@@ -51,6 +55,8 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 			'df'      => it_exchange_php_date_format_to_jquery_datepicker_format( get_option( 'date_format' ) )
 		) );
 
+		$settings = it_exchange_get_option( 'addon_itelic' );
+
 		$downloads = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, 'downloads' );
 		$data      = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, $this->slug );
 
@@ -66,9 +72,14 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 			<label for="itelic-enable"><?php _e( "Enable Licensing for this product", ITELIC::SLUG ); ?></label>
 		</p>
 
-		<?php $controller = $this->get_variants_controller( $post->ID ); ?>
-
 		<div class="itelic-settings<?php echo esc_attr( $hidden ); ?>">
+
+			<?php if ( $settings['sell-online-software'] ): ?>
+				<p>
+					<input type="checkbox" id="itelic-online-software" name="itelic[online-software]" <?php checked( true, $data['online-software'] ); ?>>
+					<label for="itelic-online-software"><?php _e( "Enable Online Software Tools for this product", ITELIC::SLUG ); ?></label>
+				</p>
+			<?php endif; ?>
 
 			<label for="itelic-update-file"><?php _e( "Update File", ITELIC::SLUG ); ?></label>
 			<select id="itelic-update-file" name="itelic[update-file]">
@@ -111,6 +122,8 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 				<?php endif; ?>
 			</div>
 
+			<?php $controller = $this->get_variants_controller( $post->ID ); ?>
+
 			<?php if ( $controller ): ?>
 				<p>
 					<input type="checkbox" id="itelic-enable-variant-activations" name="itelic[enabled_variant_activations]"
@@ -141,8 +154,7 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 							<div class="itelic-activation-limit-variant-cell"><?php echo $controller->generate_title_from_combos( $combo ); ?></div>
 
 							<div class="itelic-activation-limit-variant-cell itelic-activation-limit-variant-input-cell">
-								<input class="itelic-activation-limit-variant-input" name="itelic[activation_variant][<?php echo esc_attr( $hash ); ?>]" type="number" min="0"
-								       value="<?php echo isset( $hashes[ $hash ] ) ? $hashes[ $hash ] : ''; ?>">
+								<input class="itelic-activation-limit-variant-input" name="itelic[activation_variant][<?php echo esc_attr( $hash ); ?>]" type="number" min="0" value="<?php echo isset( $hashes[ $hash ] ) ? $hashes[ $hash ] : ''; ?>">
 							</div>
 						</div>
 					<?php endforeach; ?>
@@ -275,7 +287,7 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 			</div>
 
 			<div style="padding: 15px 15px 15px 0">
-				<input type="button" class="button-primary update-changelog" value="<?php _e( 'Update Changelog' ); ?>" />
+				<input type="button" class="button-primary update-changelog" value="<?php _e( 'Update Changelog' ); ?>"/>
 				&nbsp;&nbsp;&nbsp;
 				<a class="button cancel-update-changelog" style="color:#bbb;" href="javascript:">
 					<?php _e( 'Cancel' ); ?>
@@ -304,6 +316,7 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 
 		$data['enabled']                     = isset( $data['enabled'] ) ? it_exchange_str_true( $data['enabled'] ) : false;
 		$data['enabled_variant_activations'] = isset( $data['enabled_variant_activations'] ) ? it_exchange_str_true( $data['enabled_variant_activations'] ) : false;
+		$data['online-software']             = isset( $data['online-software'] ) ? it_exchange_str_true( $data['online-software'] ) : false;
 
 		it_exchange_update_product_feature( $product_id, $this->slug, $data );
 	}
@@ -332,15 +345,20 @@ class ITELIC_Product_Feature_Base extends IT_Exchange_Product_Feature_Abstract {
 	 *
 	 * @since 1.0
 	 *
-	 * @param mixed   $existing   the values passed in by the WP Filter API. Ignored here.
+	 * @param mixed   $existing   the values passed in by the WP Filter API.
+	 *                            Ignored here.
 	 * @param integer $product_id the WordPress post ID
 	 * @param array   $options
 	 *
 	 * @return string product feature
 	 */
 	public function get_feature( $existing, $product_id, $options = array() ) {
+
+		$settings = it_exchange_get_option( 'addon_itelic' );
+
 		$defaults = array(
 			'enabled'                     => false,
+			'online-software'             => $settings['sell-online-software'],
 			'limit'                       => '',
 			'key-type'                    => '',
 			'update-file'                 => '',

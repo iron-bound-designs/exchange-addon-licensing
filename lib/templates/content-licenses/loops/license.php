@@ -46,7 +46,9 @@
 
 		<?php endif; ?>
 
-		<?php it_exchange_get_template_part( 'content-licenses/elements/key-activate' ) ?>
+		<?php if ( it_exchange( 'license', 'can-remote-activate' ) ): ?>
+			<?php it_exchange_get_template_part( 'content-licenses/elements/key-activate' ) ?>
+		<?php endif; ?>
 
 		<?php do_action( 'it_exchange_content_licenses_end_license_loop_bottom' ); ?>
 	</div>

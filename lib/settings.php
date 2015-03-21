@@ -27,10 +27,13 @@ function itelic_addon_settings() {
  */
 function itelic_addon_settings_defaults( $defaults ) {
 
-	$defaults['enable-renewal-discounts'] = false;
-	$defaults['renewal-discount-type']    = 'percent';
-	$defaults['renewal-discount-amount']  = '';
-	$defaults['renewal-discount-expiry']  = '';
+	$defaults['enable-renewal-discounts']   = false;
+	$defaults['renewal-discount-type']      = 'percent';
+	$defaults['renewal-discount-amount']    = '';
+	$defaults['renewal-discount-expiry']    = '';
+	$defaults['sell-online-software']       = false;
+	$defaults['enable-remote-activation']   = false;
+	$defaults['enable-remote-deactivation'] = true;
 
 	return $defaults;
 }
@@ -75,7 +78,10 @@ class ITELIC_Settings {
 		$addon = empty( $_GET['add-on-settings'] ) ? false : $_GET['add-on-settings'];
 
 		if ( ! empty( $_POST ) && is_admin() && 'it-exchange-addons' == $page && 'licensing' == $addon ) {
-			add_action( 'it_exchange_save_add_on_settings_itelic', array( $this, 'save_settings' ) );
+			add_action( 'it_exchange_save_add_on_settings_itelic', array(
+				$this,
+				'save_settings'
+			) );
 			do_action( 'it_exchange_save_add_on_settings_itelic' );
 		}
 	}
@@ -143,10 +149,36 @@ class ITELIC_Settings {
 			}
 		}
 
-		$erd_class = $form->get_option( 'enable-renewal-discounts' ) ? '' : 'hide-if-js';
+		$erd_class    = $form->get_option( 'enable-renewal-discounts' ) ? '' : 'hide-if-js';
+		$era_disabled = $form->get_option( 'enable-remote-activation' ) ? array() : array( 'disabled' => 'disabled' );
 		?>
 
 		<div class="it-exchange-addon-settings it-exchange-itelic-addon-settings">
+
+			<h3><?php _e( "General", ITELIC::SLUG ); ?></h3>
+
+			<div class="sell-online-software-container">
+				<?php $form->add_check_box( 'sell-online-software' ); ?>
+				<label for="sell-online-software"><?php _e( "Enable Online Software Tools?", ITELIC::SLUG ); ?></label>
+
+				<p class="description"><?php _e( "Check this if you sell at least one software product that is tied to URLs.", ITELIC::SLUG ); ?></p>
+			</div>
+
+			<div class="enable-remote-activation-container">
+				<?php $form->add_check_box( 'enable-remote-activation', $era_disabled ); ?>
+				<label for="enable-remote-activation"><?php _e( "Enable Remote License Activation?", ITELIC::SLUG ); ?></label>
+
+				<p class="description">
+					<?php _e( "Allow your customer's to activate a license key from your website. Requires Online Software Tools to be enabled.", ITELIC::SLUG ); ?>
+				</p>
+			</div>
+
+			<div class="enable-remote-deactivation-container">
+				<?php $form->add_check_box( 'enable-remote-deactivation' ); ?>
+				<label for="enable-remote-deactivation"><?php _e( "Enable Remote License Deactivation", ITELIC::SLUG ); ?></label>
+
+				<p class="description"><?php _e( "Allow your customer's to remotely deactivate a license key.", ITELIC::SLUG ); ?></p>
+			</div>
 
 			<h3><?php _e( "Renewal Discounts", ITELIC::SLUG ); ?></h3>
 
@@ -195,24 +227,34 @@ class ITELIC_Settings {
 		?>
 
 		<script type="text/javascript">
-			jQuery(document).ready(function ($) {
+			jQuery( document ).ready( function ( $ ) {
 
-				$("#enable-renewal-discounts").change(function (e) {
-					var type_container = $(".renewal-discount-type-container");
-					var amount_container = $(".renewal-discount-amount-container");
-					var expiry_container = $(".renewal-discount-expiry-container");
+				$( "#enable-renewal-discounts" ).change( function ( e ) {
+					var type_container = $( ".renewal-discount-type-container" );
+					var amount_container = $( ".renewal-discount-amount-container" );
+					var expiry_container = $( ".renewal-discount-expiry-container" );
 
-					if ($(this).is(":checked")) {
-						type_container.removeClass('hide-if-js');
-						amount_container.removeClass('hide-if-js');
-						expiry_container.removeClass('hide-if-js');
+					if ( $( this ).is( ":checked" ) ) {
+						type_container.removeClass( 'hide-if-js' );
+						amount_container.removeClass( 'hide-if-js' );
+						expiry_container.removeClass( 'hide-if-js' );
 					} else {
-						type_container.addClass('hide-if-js');
-						amount_container.addClass('hide-if-js');
-						expiry_container.addClass('hide-if-js');
+						type_container.addClass( 'hide-if-js' );
+						amount_container.addClass( 'hide-if-js' );
+						expiry_container.addClass( 'hide-if-js' );
 					}
-				});
-			});
+				} );
+
+				$( "#sell-online-software" ).change( function ( e ) {
+					var remote_activation_checkbox = $( "#enable-remote-activation" );
+
+					if ( $( this ).is( ":checked" ) ) {
+						remote_activation_checkbox.prop( 'disabled', false );
+					} else {
+						remote_activation_checkbox.prop( 'disabled', true );
+					}
+				} );
+			} );
 		</script>
 
 	<?php
