@@ -209,7 +209,8 @@ class ITELIC_DB_Activations extends ITELIC_DB_Base {
 		activation DATETIME NOT NULL,
 		deactivation DATETIME,
 		status VARCHAR(255) NOT NULL,
-		INDEX lkey (lkey)
+		INDEX lkey (lkey),
+		UNIQUE KEY key_location (lkey, location)
 		) CHARACTER SET utf8 COLLATE utf8_general_ci;";
 
 		dbDelta( $sql );
