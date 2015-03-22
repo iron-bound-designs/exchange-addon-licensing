@@ -15,12 +15,27 @@ class ITELIC_Admin_Licenses_Controller_Single extends ITELIC_Admin_Licenses_Cont
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'load-exchange_page_it-exchange-licensing', array( $this, 'add_screen_options' ) );
+		add_action( 'load-exchange_page_it-exchange-licensing', array(
+			$this,
+			'add_screen_options'
+		) );
 
-		add_action( 'wp_ajax_itelic_admin_licenses_single_update', array( $this, 'handle_ajax_update' ) );
-		add_action( 'wp_ajax_itelic_admin_licenses_single_activate', array( $this, 'handle_ajax_activate' ) );
-		add_action( 'wp_ajax_itelic_admin_licenses_single_deactivate', array( $this, 'handle_ajax_deactivate' ) );
-		add_action( 'wp_ajax_itelic_admin_licenses_single_delete', array( $this, 'handle_ajax_delete' ) );
+		add_action( 'wp_ajax_itelic_admin_licenses_single_update', array(
+			$this,
+			'handle_ajax_update'
+		) );
+		add_action( 'wp_ajax_itelic_admin_licenses_single_activate', array(
+			$this,
+			'handle_ajax_activate'
+		) );
+		add_action( 'wp_ajax_itelic_admin_licenses_single_deactivate', array(
+			$this,
+			'handle_ajax_deactivate'
+		) );
+		add_action( 'wp_ajax_itelic_admin_licenses_single_delete', array(
+			$this,
+			'handle_ajax_delete'
+		) );
 	}
 
 	/**

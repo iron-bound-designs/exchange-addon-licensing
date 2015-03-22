@@ -114,6 +114,8 @@ class ITELIC_Activation implements ITELIC_API_Serializable {
 	 * @param string   $status
 	 *
 	 * @return ITELIC_Activation
+	 *
+	 * @throws Exception|ITELIC_DB_Exception
 	 */
 	public static function create( $key, $location, DateTime $activation = null, $status = '' ) {
 
@@ -150,7 +152,20 @@ class ITELIC_Activation implements ITELIC_API_Serializable {
 		);
 
 		$db = ITELIC_DB_Activations::instance();
-		$id = $db->insert( $data );
+
+		try {
+			$id = $db->insert( $data );
+		}
+		catch ( ITELIC_DB_Exception $e ) {
+
+			if ( $e->getCode() === 1062 ) {
+				$message = __( "An activation with this same location already exists.", ITELIC::SLUG );
+			} else {
+				$message = $e->getMessage();
+			}
+
+			throw new ITELIC_DB_Exception( $message, $e->getCode(), $e );
+		}
 
 		$activation = self::with_id( $id );
 		$activation->get_key()->log_activation( $activation );
