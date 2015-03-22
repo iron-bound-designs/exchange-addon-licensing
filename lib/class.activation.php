@@ -159,12 +159,10 @@ class ITELIC_Activation implements ITELIC_API_Serializable {
 		catch ( ITELIC_DB_Exception $e ) {
 
 			if ( $e->getCode() === 1062 ) {
-				$message = __( "An activation with this same location already exists.", ITELIC::SLUG );
+				throw new ITELIC_DB_Exception( __( "An activation with this same location already exists.", ITELIC::SLUG ), $e->getCode(), $e );
 			} else {
-				$message = $e->getMessage();
+				throw $e;
 			}
-
-			throw new ITELIC_DB_Exception( $message, $e->getCode(), $e );
 		}
 
 		$activation = self::with_id( $id );
