@@ -112,5 +112,5 @@ function itelic_normalize_url( $url ) {
 
 	$normalizer = new URL_Normalizer( $url );
 
-	return esc_url_raw( $normalizer->normalize() );
+	return trailingslashit( esc_url_raw( $normalizer->normalize() ) );
 }

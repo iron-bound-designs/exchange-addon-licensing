@@ -185,7 +185,9 @@ abstract class ITELIC_DB_Base {
 		$data_keys      = array_keys( $data );
 		$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
 
+		$prev = $this->wpdb->show_errors( false );
 		$this->wpdb->insert( $this->table_name, $data, $column_formats );
+		$this->wpdb->show_errors( $prev );
 
 		if ( $this->wpdb->last_error ) {
 			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
@@ -230,7 +232,9 @@ abstract class ITELIC_DB_Base {
 		$data_keys      = array_keys( $data );
 		$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
 
+		$prev = $this->wpdb->show_errors( false );
 		$result = $this->wpdb->update( $this->table_name, $data, $where, $column_formats );
+		$this->wpdb->show_errors( $prev );
 
 		if ( $this->wpdb->last_error ) {
 			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
@@ -258,7 +262,9 @@ abstract class ITELIC_DB_Base {
 
 		$row_key = $this->escape_value( $this->primary_key, $row_key );
 
+		$prev = $this->wpdb->show_errors( false );
 		$result = $this->wpdb->delete( $this->table_name, array( $this->primary_key => $row_key ) );
+		$this->wpdb->show_errors( $prev );
 
 		if ( $this->wpdb->last_error ) {
 			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
@@ -280,7 +286,9 @@ abstract class ITELIC_DB_Base {
 	 */
 	public function delete_many( $wheres ) {
 
+		$prev = $this->wpdb->show_errors( false );
 		$result = $this->wpdb->delete( $this->get_table_name(), $wheres );
+		$this->wpdb->show_errors( $prev );
 
 		if ( $this->wpdb->last_error ) {
 			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
