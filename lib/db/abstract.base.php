@@ -165,6 +165,8 @@ abstract class ITELIC_DB_Base {
 	 * @param array $data
 	 *
 	 * @return mixed Insert ID
+	 *
+	 * @throws ITELIC_DB_Exception
 	 */
 	public function insert( $data ) {
 		// Set default values
@@ -185,6 +187,10 @@ abstract class ITELIC_DB_Base {
 
 		$this->wpdb->insert( $this->table_name, $data, $column_formats );
 
+		if ( $this->wpdb->last_error ) {
+			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
+		}
+
 		return $this->wpdb->insert_id;
 	}
 
@@ -198,6 +204,8 @@ abstract class ITELIC_DB_Base {
 	 * @param array  $where
 	 *
 	 * @return  bool
+	 *
+	 * @throws ITELIC_DB_Exception
 	 */
 	public function update( $row_key, $data, $where = array() ) {
 
@@ -222,11 +230,13 @@ abstract class ITELIC_DB_Base {
 		$data_keys      = array_keys( $data );
 		$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
 
-		if ( false === $this->wpdb->update( $this->table_name, $data, $where, $column_formats ) ) {
-			return false;
+		$result = $this->wpdb->update( $this->table_name, $data, $where, $column_formats );
+
+		if ( $this->wpdb->last_error ) {
+			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
 		}
 
-		return true;
+		return (bool) $result;
 	}
 
 	/**
@@ -237,6 +247,8 @@ abstract class ITELIC_DB_Base {
 	 * @param string $row_key
 	 *
 	 * @return  bool
+	 *
+	 * @throws ITELIC_DB_Exception
 	 */
 	public function delete( $row_key ) {
 
@@ -246,11 +258,13 @@ abstract class ITELIC_DB_Base {
 
 		$row_key = $this->escape_value( $this->primary_key, $row_key );
 
-		if ( false === $this->wpdb->query( "DELETE FROM {$this->table_name} WHERE {$this->primary_key} = '$row_key'" ) ) {
-			return false;
+		$result = $this->wpdb->delete( $this->table_name, array( $this->primary_key => $row_key ) );
+
+		if ( $this->wpdb->last_error ) {
+			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
 		}
 
-		return true;
+		return (bool) $result;
 	}
 
 	/**
@@ -261,17 +275,18 @@ abstract class ITELIC_DB_Base {
 	 * @param $wheres array
 	 *
 	 * @return bool
+	 *
+	 * @throws ITELIC_DB_Exception
 	 */
 	public function delete_many( $wheres ) {
-		$where = $this->translate_where( $wheres );
 
-		$statement = "DELETE FROM {$this->table_name} WHERE $where";
+		$result = $this->wpdb->delete( $this->get_table_name(), $wheres );
 
-		if ( false === $this->wpdb->query( $statement ) ) {
-			return false;
+		if ( $this->wpdb->last_error ) {
+			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
 		}
 
-		return true;
+		return (bool) $result;
 	}
 
 	/**
@@ -318,8 +333,13 @@ abstract class ITELIC_DB_Base {
 		}
 
 		if ( $count !== null && $offset !== null ) {
+			$count  = intval( $count );
+			$offset = intval( $offset );
+
 			$statement .= " LIMIT $count, $offset";
 		} elseif ( $count !== null && $offset === null ) {
+			$count = intval( $count );
+
 			$statement .= " LIMIT $count";
 		}
 
@@ -351,10 +371,17 @@ abstract class ITELIC_DB_Base {
 	 * @param mixed  $value
 	 *
 	 * @return mixed
+	 *
+	 * @throws ITELIC_DB_Exception
 	 */
 	protected function escape_value( $column, $value ) {
 
-		$columns       = $this->get_columns();
+		$columns = $this->get_columns();
+
+		if ( ! isset( $columns[ $column ] ) ) {
+			throw new ITELIC_DB_Exception( "Invalid database column." );
+		}
+
 		$column_format = $columns[ $column ];
 
 		if ( $value[0] == '%' ) {
@@ -416,12 +443,18 @@ abstract class ITELIC_DB_Base {
 	 * @param array $orders [column => type (ASC|DESC)]
 	 *
 	 * @return string
+	 *
+	 * @throws ITELIC_DB_Exception
 	 */
 	public function translate_order_by( $orders ) {
 
 		$statements = array();
 
 		foreach ( $orders as $column => $order ) {
+
+			if ( ! in_array( $column, $this->get_columns() ) ) {
+				throw new ITELIC_DB_Exception( "Invalid Column used for Order By" );
+			}
 
 			$order = strtoupper( $order );
 
