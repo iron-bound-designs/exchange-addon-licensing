@@ -43,12 +43,22 @@ abstract class ITELIC_DB_Base {
 	protected $wpdb;
 
 	/**
+	 * @var bool
+	 */
+	protected $is_mysqli;
+
+	/**
 	 * Get things started
 	 *
 	 * @since 1.0
 	 */
 	public function __construct() {
 		$this->wpdb = $GLOBALS['wpdb'];
+
+		$r = new ReflectionObject( $this->wpdb );
+		$p = $r->getProperty( 'use_mysqli' );
+		$p->setAccessible( true );
+		$this->is_mysqli = (bool) $p->getValue( $this->wpdb );
 	}
 
 	/**
@@ -190,7 +200,7 @@ abstract class ITELIC_DB_Base {
 		$this->wpdb->show_errors( $prev );
 
 		if ( $this->wpdb->last_error ) {
-			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
+			throw $this->generate_exception_from_db_error();
 		}
 
 		return $this->wpdb->insert_id;
@@ -232,12 +242,12 @@ abstract class ITELIC_DB_Base {
 		$data_keys      = array_keys( $data );
 		$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
 
-		$prev = $this->wpdb->show_errors( false );
+		$prev   = $this->wpdb->show_errors( false );
 		$result = $this->wpdb->update( $this->table_name, $data, $where, $column_formats );
 		$this->wpdb->show_errors( $prev );
 
 		if ( $this->wpdb->last_error ) {
-			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
+			throw $this->generate_exception_from_db_error();
 		}
 
 		return (bool) $result;
@@ -262,12 +272,12 @@ abstract class ITELIC_DB_Base {
 
 		$row_key = $this->escape_value( $this->primary_key, $row_key );
 
-		$prev = $this->wpdb->show_errors( false );
+		$prev   = $this->wpdb->show_errors( false );
 		$result = $this->wpdb->delete( $this->table_name, array( $this->primary_key => $row_key ) );
 		$this->wpdb->show_errors( $prev );
 
 		if ( $this->wpdb->last_error ) {
-			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
+			throw $this->generate_exception_from_db_error();
 		}
 
 		return (bool) $result;
@@ -286,12 +296,12 @@ abstract class ITELIC_DB_Base {
 	 */
 	public function delete_many( $wheres ) {
 
-		$prev = $this->wpdb->show_errors( false );
+		$prev   = $this->wpdb->show_errors( false );
 		$result = $this->wpdb->delete( $this->get_table_name(), $wheres );
 		$this->wpdb->show_errors( $prev );
 
 		if ( $this->wpdb->last_error ) {
-			throw new ITELIC_DB_Exception( $this->wpdb->last_error );
+			throw $this->generate_exception_from_db_error();
 		}
 
 		return (bool) $result;
@@ -489,5 +499,47 @@ abstract class ITELIC_DB_Base {
 		} else {
 			return $values;
 		}
+	}
+
+	/**
+	 * Check if wpdb is using mysqli
+	 *
+	 * @return bool
+	 */
+	protected function is_mysqli() {
+		return $this->is_mysqli;
+	}
+
+	/**
+	 * Generate an Exception object from a DB error.
+	 *
+	 * @return ITELIC_DB_Exception
+	 */
+	protected function generate_exception_from_db_error() {
+
+		if ( ! $this->wpdb->last_error ) {
+			return null;
+		}
+
+		if ( $this->is_mysqli() ) {
+			$error_number = mysqli_errno( $this->get_dbh() );
+		} else {
+			$error_number = mysql_errno( $this->get_dbh() );
+		}
+
+		return new ITELIC_DB_Exception( $this->wpdb->last_error, $error_number );
+	}
+
+	/**
+	 * Get the mysql dbh
+	 *
+	 * @return mixed
+	 */
+	protected function get_dbh() {
+		$r = new ReflectionObject( $this->wpdb );
+		$p = $r->getProperty( 'dbh' );
+		$p->setAccessible( true );
+
+		return $p->getValue( $this->wpdb );
 	}
 }
