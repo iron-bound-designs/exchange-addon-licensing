@@ -70,7 +70,8 @@ class ITELIC_Key implements ITELIC_API_Serializable {
 	 *
 	 * @param object $data Data from the DB
 	 *
-	 * @throws InvalidArgumentException If an invalid transaction, product or customer.
+	 * @throws InvalidArgumentException If an invalid transaction, product or
+	 *                                  customer.
 	 */
 	public function __construct( $data ) {
 		$this->init( $data );
@@ -93,7 +94,13 @@ class ITELIC_Key implements ITELIC_API_Serializable {
 			$this->expires = new DateTime( $data->expires );
 		}
 
-		foreach ( array( 'transaction', 'product', 'customer' ) as $maybe_error ) {
+		foreach (
+			array(
+				'transaction',
+				'product',
+				'customer'
+			) as $maybe_error
+		) {
 			if ( ! $this->$maybe_error || is_wp_error( $this->$maybe_error ) ) {
 				throw new InvalidArgumentException( "Invalid $maybe_error" );
 			}
@@ -319,7 +326,12 @@ class ITELIC_Key implements ITELIC_API_Serializable {
 	 * @param string $status
 	 */
 	public function set_status( $status ) {
-		if ( ! in_array( $status, array( self::ACTIVE, self::EXPIRED, self::DISABLED ) ) ) {
+		if ( ! in_array( $status, array(
+			self::ACTIVE,
+			self::EXPIRED,
+			self::DISABLED
+		) )
+		) {
 			throw new InvalidArgumentException( __( "Invalid value for key status.", ITELIC::SLUG ) );
 		}
 
@@ -359,7 +371,10 @@ class ITELIC_Key implements ITELIC_API_Serializable {
 
 		$db = ITELIC_DB_Activations::instance();
 
-		return $db->count( array( 'lkey' => $this->get_key(), 'status' => ITELIC_Activation::ACTIVE ) );
+		return $db->count( array(
+			'lkey'   => $this->get_key(),
+			'status' => ITELIC_Activation::ACTIVE
+		) );
 	}
 
 	/**
@@ -409,6 +424,18 @@ class ITELIC_Key implements ITELIC_API_Serializable {
 		$res = $db->update( $this->get_key(), array( 'max' => absint( $max ) ) );
 
 		$this->refresh();
+	}
+
+	/**
+	 * Is this an online product, IE are activations tied to URLs.
+	 *
+	 * @since 1.0
+	 *
+	 * @return bool
+	 */
+	public function is_online_product() {
+		return (bool) it_exchange_get_product_feature( $this->get_product()->ID,
+			'licensing', array( 'field' => 'online-software' ) );
 	}
 
 	/**

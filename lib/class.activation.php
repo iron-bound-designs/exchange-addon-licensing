@@ -137,6 +137,10 @@ class ITELIC_Activation implements ITELIC_API_Serializable {
 			$status = self::ACTIVE;
 		}
 
+		if ( $key->is_online_product() ) {
+			$location = itelic_normalize_url( $location );
+		}
+
 		$data = array(
 			'lkey'         => $key->get_key(),
 			'location'     => $location,
