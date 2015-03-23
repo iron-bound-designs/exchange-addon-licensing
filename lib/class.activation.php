@@ -115,7 +115,7 @@ class ITELIC_Activation implements ITELIC_API_Serializable {
 	 *
 	 * @return ITELIC_Activation
 	 *
-	 * @throws Exception|ITELIC_DB_Exception
+	 * @throws LogicException|ITELIC_DB_Exception
 	 */
 	public static function create( $key, $location, DateTime $activation = null, $status = '' ) {
 
