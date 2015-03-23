@@ -43,22 +43,12 @@ abstract class ITELIC_DB_Base {
 	protected $wpdb;
 
 	/**
-	 * @var bool
-	 */
-	protected $is_mysqli;
-
-	/**
 	 * Get things started
 	 *
 	 * @since 1.0
 	 */
 	public function __construct() {
 		$this->wpdb = $GLOBALS['wpdb'];
-
-		$r = new ReflectionObject( $this->wpdb );
-		$p = $r->getProperty( 'use_mysqli' );
-		$p->setAccessible( true );
-		$this->is_mysqli = (bool) $p->getValue( $this->wpdb );
 	}
 
 	/**
@@ -507,7 +497,7 @@ abstract class ITELIC_DB_Base {
 	 * @return bool
 	 */
 	protected function is_mysqli() {
-		return $this->is_mysqli;
+		return $this->wpdb->use_mysqli;
 	}
 
 	/**
@@ -536,10 +526,6 @@ abstract class ITELIC_DB_Base {
 	 * @return mixed
 	 */
 	protected function get_dbh() {
-		$r = new ReflectionObject( $this->wpdb );
-		$p = $r->getProperty( 'dbh' );
-		$p->setAccessible( true );
-
-		return $p->getValue( $this->wpdb );
+		return $this->wpdb->dbh;
 	}
 }
