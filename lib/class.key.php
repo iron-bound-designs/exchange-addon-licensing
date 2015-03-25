@@ -94,7 +94,13 @@ class ITELIC_Key implements ITELIC_API_Serializable {
 			$this->expires = new DateTime( $data->expires );
 		}
 
-		foreach ( array( 'transaction', 'product', 'customer' ) as $maybe_error ) {
+		foreach (
+			array(
+				'transaction',
+				'product',
+				'customer'
+			) as $maybe_error
+		) {
 			if ( ! $this->$maybe_error || is_wp_error( $this->$maybe_error ) ) {
 				throw new InvalidArgumentException( "Invalid $maybe_error" );
 			}
@@ -259,7 +265,10 @@ class ITELIC_Key implements ITELIC_API_Serializable {
 			$wheres['status'] = $status;
 		}
 
-		$activations = ITELIC_DB_Activations::search( $wheres );
+		$db        = ITELIC_DB_Activations::instance();
+		$statement = $db->build_query( "*", $wheres, array( 'id' => 'ASC' ) );
+
+		$activations = $GLOBALS['wpdb']->get_results( $statement );
 
 		if ( ! is_array( $activations ) || empty( $activations ) ) {
 			return array();
