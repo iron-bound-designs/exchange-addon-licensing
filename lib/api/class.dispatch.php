@@ -2,7 +2,8 @@
 /**
  * API Dispatcher.
  *
- * @author Iron Bound Designs|WP API ( many methods are taken from the WP API server class ).
+ * @author Iron Bound Designs|WP API ( many methods are taken from the WP API
+ *         server class ).
  * @since  1.0
  */
 
@@ -67,11 +68,18 @@ class ITELIC_API_Dispatch {
 
 				if ( $endpoint instanceof ITELIC_API_Interface_Authenticatable ) {
 					if ( ! $this->handle_auth( $endpoint ) ) {
-						$this->send_response( $this->send_auth_missing( $endpoint ) );
+						$this->send_response( $this->generate_auth_missing( $endpoint ) );
 					}
 				}
 
-				$this->send_response( $endpoint->serve( new ArrayObject( $_GET ), new ArrayObject( $_POST ) ) );
+				try {
+					$response = $endpoint->serve( new ArrayObject( $_GET ), new ArrayObject( $_POST ) );
+				}
+				catch ( Exception $e ) {
+					$response = $this->generate_response_from_exception( $e );
+				}
+
+				$this->send_response( $response );
 			}
 		}
 	}
@@ -159,7 +167,7 @@ class ITELIC_API_Dispatch {
 	 *
 	 * @return ITELIC_API_Response
 	 */
-	protected function send_auth_missing( ITELIC_API_Interface_Authenticatable $endpoint ) {
+	protected function generate_auth_missing( ITELIC_API_Interface_Authenticatable $endpoint ) {
 		$response = new ITELIC_API_Response( array(
 			'success' => false,
 			'error'   => array(
@@ -185,6 +193,26 @@ class ITELIC_API_Dispatch {
 	}
 
 	/**
+	 * Generate a response object from an Exception.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Exception $e
+	 *
+	 * @return ITELIC_API_Response
+	 */
+	protected function generate_response_from_exception( Exception $e ) {
+
+		return new ITELIC_API_Response( array(
+			'success' => false,
+			'error'   => array(
+				'code'    => 00,
+				'message' => sprintf( __( "Unknown error %s with code %d", ITELIC::SLUG ), $e->getMessage(), $e->getCode() )
+			)
+		) );
+	}
+
+	/**
 	 * Convert a response to data to send
 	 *
 	 * @param ITELIC_API_Response $response Response object
@@ -199,7 +227,8 @@ class ITELIC_API_Dispatch {
 
 	/**
 	 * Returns if an error occurred during most recent JSON encode/decode
-	 * Strings to be translated will be in format like "Encoding error: Maximum stack depth exceeded"
+	 * Strings to be translated will be in format like "Encoding error: Maximum
+	 * stack depth exceeded"
 	 *
 	 * @return boolean|string Boolean false or string error message
 	 */
