@@ -344,7 +344,7 @@ abstract class ITELIC_DB_Base {
 			$count  = intval( $count );
 			$offset = intval( $offset );
 
-			$statement .= " LIMIT $count, $offset";
+			$statement .= " LIMIT $offset, $count";
 		} elseif ( $count !== null && $offset === null ) {
 			$count = intval( $count );
 
