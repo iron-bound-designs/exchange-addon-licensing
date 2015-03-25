@@ -460,8 +460,8 @@ abstract class ITELIC_DB_Base {
 
 		foreach ( $orders as $column => $order ) {
 
-			if ( ! in_array( $column, $this->get_columns() ) ) {
-				throw new ITELIC_DB_Exception( "Invalid Column used for Order By" );
+			if ( ! array_key_exists( $column, $this->get_columns() ) ) {
+				throw new ITELIC_DB_Exception( sprintf( "Invalid column, %s, used for order by", $column ) );
 			}
 
 			$order = strtoupper( $order );
