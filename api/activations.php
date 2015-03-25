@@ -33,6 +33,32 @@ function itelic_get_activation_from_data( stdClass $data ) {
 }
 
 /**
+ * Get an activation record by its location
+ *
+ * @since 1.0
+ *
+ * @param string     $location
+ * @param ITELIC_Key $key
+ *
+ * @return ITELIC_Activation|null
+ */
+function itelic_get_activation_by_location( $location, ITELIC_Key $key ) {
+
+	$args = array(
+		'location' => $location,
+		'lkey'     => $key->get_key()
+	);
+
+	$keys = ITELIC_DB_Activations::search( $args );
+
+	if ( empty( $keys ) ) {
+		return null;
+	}
+
+	return itelic_get_activation_from_data( reset( $keys ) );
+}
+
+/**
  * Check if a URL is a dev site.
  *
  * @since 1.0

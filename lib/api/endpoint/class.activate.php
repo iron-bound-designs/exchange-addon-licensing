@@ -23,6 +23,8 @@ class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC
 	 * @param ArrayAccess $post
 	 *
 	 * @return ITELIC_API_Response
+	 *
+	 * @throws Exception
 	 */
 	public function serve( ArrayAccess $get, ArrayAccess $post ) {
 
@@ -41,6 +43,13 @@ class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC
 		try {
 			$activation = ITELIC_Activation::create( $this->key->get_key(), $location );
 			$this->key->log_activation( $activation );
+		}
+		catch ( ITELIC_DB_Exception $e ) {
+			if ( $e->getCode() == 1062 ) {
+				itelic_get_activation_by_location( $location, $this->key )->reactivate();
+			} else {
+				throw $e;
+			}
 		}
 		catch ( LogicException $e ) {
 			return new ITELIC_API_Response( array(
