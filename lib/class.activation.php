@@ -186,11 +186,44 @@ class ITELIC_Activation implements ITELIC_API_Serializable {
 
 		$update = array(
 			'deactivation' => $date,
-			'status'       => 'deactivated'
+			'status'       => self::DEACTIVATED
 		);
 
 		$db = ITELIC_DB_Activations::instance();
 		$db->update( $this->get_id(), $update );
+
+		$this->refresh();
+	}
+
+	/**
+	 * Reactivate a previously deactivated activation.
+	 *
+	 * @since 1.0
+	 *
+	 * @param DateTime $date When was the record reactivated.
+	 *
+	 * @throws Exception If activation record isn't deactivated.
+	 */
+	public function reactivate( DateTime $date = null ) {
+
+		if ( $this->get_status() != self::DEACTIVATED ) {
+			throw new Exception( __( "Only deactivated activation records can be reactivated.", ITELIC::SLUG ) );
+		}
+
+		if ( $date === null ) {
+			$date = current_time( 'mysql' );
+		} else {
+			$date = $date->format( 'Y-m-d H:i:s' );
+		}
+
+		$data = array(
+			'deactivation' => null,
+			'activation'   => $date,
+			'status'       => self::ACTIVE
+		);
+
+		$db = ITELIC_DB_Activations::instance();
+		$db->update( $this->get_id(), $data );
 
 		$this->refresh();
 	}
