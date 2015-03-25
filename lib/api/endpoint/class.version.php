@@ -11,6 +11,9 @@
  */
 class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_API_Interface_Authenticatable {
 
+	const ACTIVATION_ID_REQUIRED = 6;
+	const INVALID_ACTIVATION = 7;
+
 	/**
 	 * @var ITELIC_Key
 	 */
@@ -25,6 +28,29 @@ class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_
 	 * @return ITELIC_API_Response
 	 */
 	public function serve( ArrayAccess $get, ArrayAccess $post ) {
+
+		if ( ! isset( $post['activation_id'] ) ) {
+			return new ITELIC_API_Response( array(
+				'success' => false,
+				'error'   => array(
+					'code'    => self::ACTIVATION_ID_REQUIRED,
+					'message' => __( "'activation_id' is a required parameter.", ITELIC::SLUG )
+				)
+			) );
+		}
+
+		$activation = itelic_get_activation( $post['activation_id'] );
+
+		if ( ! $activation || $activation->get_status() != ITELIC_Activation::ACTIVE ) {
+			return new ITELIC_API_Response( array(
+				'success' => false,
+				'error'   => array(
+					'code'    => self::INVALID_ACTIVATION,
+					'message' => __( "Invalid activation passed.", ITELIC::SLUG )
+				)
+			) );
+		}
+
 		$now     = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
 		$expires = $now->add( new DateInterval( "P1D" ) );
 
