@@ -29,7 +29,7 @@ class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_
 	 */
 	public function serve( ArrayAccess $get, ArrayAccess $post ) {
 
-		if ( ! isset( $post['activation_id'] ) ) {
+		if ( ! isset( $get['activation_id'] ) ) {
 			return new ITELIC_API_Response( array(
 				'success' => false,
 				'error'   => array(
@@ -39,7 +39,7 @@ class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_
 			) );
 		}
 
-		$activation = itelic_get_activation( $post['activation_id'] );
+		$activation = itelic_get_activation( $get['activation_id'] );
 
 		if ( ! $activation || $activation->get_status() != ITELIC_Activation::ACTIVE ) {
 			return new ITELIC_API_Response( array(
