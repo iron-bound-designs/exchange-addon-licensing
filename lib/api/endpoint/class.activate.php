@@ -46,7 +46,8 @@ class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC
 		}
 		catch ( ITELIC_DB_Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
-				itelic_get_activation_by_location( $location, $this->key )->reactivate();
+				$activation = itelic_get_activation_by_location( $location, $this->key );
+				$activation->reactivate();
 			} else {
 				throw $e;
 			}

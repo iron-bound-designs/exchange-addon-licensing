@@ -45,7 +45,7 @@ function itelic_get_activation_from_data( stdClass $data ) {
 function itelic_get_activation_by_location( $location, ITELIC_Key $key ) {
 
 	$args = array(
-		'location' => $location,
+		'location' => itelic_normalize_url( $location ),
 		'lkey'     => $key->get_key()
 	);
 
