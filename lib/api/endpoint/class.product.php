@@ -28,6 +28,17 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 
 		$readme = it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing-readme' );
 
+		if ( $readme['author'] ) {
+			$usernames = explode( ',', $readme['author'] );
+			$contributors          = array();
+
+			foreach ( $usernames as $username ) {
+				$contributors[ $username ] = "//profiles.wordpress.org/$username";
+			}
+		} else {
+			$contributors = array();
+		}
+
 		$product = array(
 			'id'              => $this->key->get_product()->ID,
 			'name'            => $this->key->get_product()->post_title,
@@ -35,7 +46,7 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 			'version'         => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'version' ) ),
 			'tested'          => $readme['tested'],
 			'requires'        => $readme['requires'],
-			'author'          => $readme['author'],
+			'contributors'    => $contributors,
 			'last_updated'    => empty( $readme['last_updated'] ) ? '' : $readme['last_updated']->format( DateTime::ISO8601 ),
 			'banner_low'      => $readme['banner_low'],
 			'banner_high'     => $readme['banner_high'],
