@@ -28,15 +28,14 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 
 		$readme = it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing-readme' );
 
+		$contributors = array();
+
 		if ( $readme['author'] ) {
 			$usernames = explode( ',', $readme['author'] );
-			$contributors          = array();
 
 			foreach ( $usernames as $username ) {
 				$contributors[ $username ] = "//profiles.wordpress.org/$username";
 			}
-		} else {
-			$contributors = array();
 		}
 
 		$product = array(
