@@ -28,7 +28,7 @@ interface ITELIC_API_Interface_Authenticatable {
 	 *
 	 * @return string One of MODE_VALID, MODE_ACTIVE
 	 */
-	public function get_mode();
+	public function get_auth_mode();
 
 	/**
 	 * Get the error message to be displayed if authentication is not provided.
@@ -37,7 +37,7 @@ interface ITELIC_API_Interface_Authenticatable {
 	 *
 	 * @return string
 	 */
-	public function get_error_message();
+	public function get_auth_error_message();
 
 	/**
 	 * Get the error code to be displayed if authentication is not provided.
@@ -46,7 +46,7 @@ interface ITELIC_API_Interface_Authenticatable {
 	 *
 	 * @return int
 	 */
-	public function get_error_code();
+	public function get_auth_error_code();
 
 	/**
 	 * Give a reference of the API key to this object.
@@ -55,6 +55,6 @@ interface ITELIC_API_Interface_Authenticatable {
 	 *
 	 * @param ITELIC_Key $key
 	 */
-	public function give_license_key( ITELIC_Key $key );
+	public function set_auth_license_key( ITELIC_Key $key );
 
 }

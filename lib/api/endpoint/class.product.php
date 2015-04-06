@@ -72,7 +72,7 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 	 *
 	 * @return string One of MODE_VALID, MODE_ACTIVE
 	 */
-	public function get_mode() {
+	public function get_auth_mode() {
 		return ITELIC_API_Interface_Authenticatable::MODE_EXISTS;
 	}
 
@@ -83,7 +83,7 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 	 *
 	 * @return string
 	 */
-	public function get_error_message() {
+	public function get_auth_error_message() {
 		return __( "A license key is required.", ITELIC::SLUG );
 	}
 
@@ -94,7 +94,7 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 	 *
 	 * @return int
 	 */
-	public function get_error_code() {
+	public function get_auth_error_code() {
 		return self::CODE_INVALID_KEY;
 	}
 
@@ -105,7 +105,7 @@ class ITELIC_API_Endpoint_Product extends ITELIC_API_Endpoint implements ITELIC_
 	 *
 	 * @param ITELIC_Key $key
 	 */
-	public function give_license_key( ITELIC_Key $key ) {
+	public function set_auth_license_key( ITELIC_Key $key ) {
 		$this->key = $key;
 	}
 }

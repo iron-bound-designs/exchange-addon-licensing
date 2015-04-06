@@ -149,9 +149,9 @@ class ITELIC_API_Dispatch {
 			return false;
 		}
 
-		$endpoint->give_license_key( $key );
+		$endpoint->set_auth_license_key( $key );
 
-		if ( $endpoint->get_mode() == ITELIC_API_Interface_Authenticatable::MODE_ACTIVE ) {
+		if ( $endpoint->get_auth_mode() == ITELIC_API_Interface_Authenticatable::MODE_ACTIVE ) {
 			return $key->get_status() == ITELIC_Key::ACTIVE;
 		} else {
 			return true;
@@ -171,12 +171,12 @@ class ITELIC_API_Dispatch {
 		$response = new ITELIC_API_Response( array(
 			'success' => false,
 			'error'   => array(
-				'code'    => $endpoint->get_error_code(),
-				'message' => $endpoint->get_error_message()
+				'code'    => $endpoint->get_auth_error_code(),
+				'message' => $endpoint->get_auth_error_message()
 			)
 		), 401 );
 
-		switch ( $endpoint->get_mode() ) {
+		switch ( $endpoint->get_auth_mode() ) {
 			case ITELIC_API_Interface_Authenticatable::MODE_ACTIVE:
 				$realm = __( "An active license key is required to access this resource, passed as the username. Leave password blank.", ITELIC::SLUG );
 				break;
