@@ -11,9 +11,6 @@
  */
 class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_API_Interface_Authenticatable {
 
-	const ACTIVATION_ID_REQUIRED = 6;
-	const INVALID_ACTIVATION = 7;
-
 	/**
 	 * @var ITELIC_Key
 	 */
@@ -33,7 +30,7 @@ class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_
 			return new ITELIC_API_Response( array(
 				'success' => false,
 				'error'   => array(
-					'code'    => self::ACTIVATION_ID_REQUIRED,
+					'code'    => self::CODE_ACTIVATION_ID_REQUIRED,
 					'message' => __( "'activation_id' is a required parameter.", ITELIC::SLUG )
 				)
 			) );
@@ -45,7 +42,7 @@ class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_
 			return new ITELIC_API_Response( array(
 				'success' => false,
 				'error'   => array(
-					'code'    => self::INVALID_ACTIVATION,
+					'code'    => self::CODE_INVALID_ACTIVATION,
 					'message' => __( "Invalid activation passed.", ITELIC::SLUG )
 				)
 			) );

@@ -8,9 +8,6 @@
  */
 class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC_API_Interface_Authenticatable {
 
-	const CODE_MAX_ACTIVATIONS = 1;
-	const CODE_NO_LOCATION = 3;
-
 	/**
 	 * @var ITELIC_Key
 	 */

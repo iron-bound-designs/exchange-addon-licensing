@@ -11,9 +11,6 @@
  */
 class ITELIC_API_Endpoint_Deactivate extends ITELIC_API_Endpoint implements ITELIC_API_Interface_Authenticatable {
 
-	const CODE_NO_LOCATION_ID = 4;
-	const CODE_INVALID_LOCATION = 5;
-
 	/**
 	 * @var ITELIC_Key
 	 */
