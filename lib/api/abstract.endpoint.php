@@ -54,7 +54,9 @@ abstract class ITELIC_API_Endpoint {
 	 *
 	 * @return ITELIC_API_Response
 	 *
-	 * @throws Exception
+	 * @throws ITELIC_API_Exception|Exception
+	 *         API Exceptions will be treated as expected errors, and will be displayed as such.
+	 *         All other exceptions will be treated as unexpected errors and will be displayed with error code 0.
 	 */
 	abstract public function serve( ArrayAccess $get, ArrayAccess $post );
 

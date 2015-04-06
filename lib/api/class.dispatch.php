@@ -205,11 +205,19 @@ class ITELIC_API_Dispatch {
 	 */
 	protected function generate_response_from_exception( Exception $e ) {
 
+		if ( $e instanceof ITELIC_API_Exception ) {
+			$code    = $e->getCode();
+			$message = $e->getMessage();
+		} else {
+			$code    = 0;
+			$message = sprintf( __( "Unknown error %s with code %d", ITELIC::SLUG ), $e->getMessage(), $e->getCode() );
+		}
+
 		return new ITELIC_API_Response( array(
 			'success' => false,
 			'error'   => array(
-				'code'    => 00,
-				'message' => sprintf( __( "Unknown error %s with code %d", ITELIC::SLUG ), $e->getMessage(), $e->getCode() )
+				'code'    => $code,
+				'message' => $message
 			)
 		) );
 	}

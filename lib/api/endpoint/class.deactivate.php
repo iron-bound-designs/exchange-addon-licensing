@@ -24,12 +24,12 @@ class ITELIC_API_Endpoint_Deactivate extends ITELIC_API_Endpoint implements ITEL
 	 *
 	 * @return ITELIC_API_Response
 	 *
-	 * @throws Exception
+	 * @throws ITELIC_API_Exception|Exception
 	 */
 	public function serve( ArrayAccess $get, ArrayAccess $post ) {
 
 		if ( ! isset( $post['id'] ) ) {
-			throw new Exception( __( "Activation ID is required.", ITELIC::SLUG ), self::CODE_NO_LOCATION_ID );
+			throw new ITELIC_API_Exception( __( "Activation ID is required.", ITELIC::SLUG ), self::CODE_NO_LOCATION_ID );
 		}
 
 		$location_id = absint( $post['id'] );
