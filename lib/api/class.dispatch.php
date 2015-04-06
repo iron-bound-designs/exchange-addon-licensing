@@ -68,15 +68,17 @@ class ITELIC_API_Dispatch {
 
 				if ( $endpoint instanceof ITELIC_API_Interface_Authenticatable ) {
 					if ( ! $this->handle_auth( $endpoint ) ) {
-						$this->send_response( $this->generate_auth_missing( $endpoint ) );
+						$response = $this->generate_auth_missing( $endpoint );
 					}
 				}
 
-				try {
-					$response = $endpoint->serve( new ArrayObject( $_GET ), new ArrayObject( $_POST ) );
-				}
-				catch ( Exception $e ) {
-					$response = $this->generate_response_from_exception( $e );
+				if ( ! isset( $response ) ) {
+					try {
+						$response = $endpoint->serve( new ArrayObject( $_GET ), new ArrayObject( $_POST ) );
+					}
+					catch ( Exception $e ) {
+						$response = $this->generate_response_from_exception( $e );
+					}
 				}
 
 				$this->send_response( $response );
@@ -283,8 +285,6 @@ class ITELIC_API_Dispatch {
 
 	/**
 	 * Prepares response data to be serialized to JSON
-	 *
-	 * This supports the JsonSerializable interface for PHP 5.2-5.3 as well.
 	 *
 	 * @param mixed $data Native representation
 	 *
