@@ -53,6 +53,8 @@ abstract class ITELIC_API_Endpoint {
 	 * @param ArrayAccess $post
 	 *
 	 * @return ITELIC_API_Response
+	 *
+	 * @throws Exception
 	 */
 	abstract public function serve( ArrayAccess $get, ArrayAccess $post );
 

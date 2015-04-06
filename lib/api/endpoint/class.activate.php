@@ -26,13 +26,7 @@ class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC
 	public function serve( ArrayAccess $get, ArrayAccess $post ) {
 
 		if ( ! isset( $post['location'] ) ) {
-			return new ITELIC_API_Response( array(
-				'success' => false,
-				'error'   => array(
-					'code'    => self::CODE_NO_LOCATION,
-					'message' => __( "Activation location is required.", ITELIC::SLUG )
-				)
-			), 400 );
+			throw new Exception( __( "Activation location is required.", ITELIC::SLUG ), self::CODE_NO_LOCATION );
 		}
 
 		$location = sanitize_text_field( $post['location'] );
@@ -50,13 +44,7 @@ class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC
 			}
 		}
 		catch ( LogicException $e ) {
-			return new ITELIC_API_Response( array(
-				'success' => false,
-				'error'   => array(
-					'code'    => self::CODE_MAX_ACTIVATIONS,
-					'message' => $e->getMessage()
-				)
-			) );
+			throw new Exception( $e->getMessage(), self::CODE_MAX_ACTIVATIONS, $e );
 		}
 
 		return new ITELIC_API_Response( array(

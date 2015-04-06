@@ -23,29 +23,19 @@ class ITELIC_API_Endpoint_Version extends ITELIC_API_Endpoint implements ITELIC_
 	 * @param ArrayAccess $post
 	 *
 	 * @return ITELIC_API_Response
+	 *
+	 * @throws Exception
 	 */
 	public function serve( ArrayAccess $get, ArrayAccess $post ) {
 
 		if ( ! isset( $get['activation_id'] ) ) {
-			return new ITELIC_API_Response( array(
-				'success' => false,
-				'error'   => array(
-					'code'    => self::CODE_ACTIVATION_ID_REQUIRED,
-					'message' => __( "'activation_id' is a required parameter.", ITELIC::SLUG )
-				)
-			) );
+			throw new Exception( __( "'activation_id' is a required parameter.", ITELIC::SLUG ), self::CODE_ACTIVATION_ID_REQUIRED );
 		}
 
 		$activation = itelic_get_activation( $get['activation_id'] );
 
 		if ( ! $activation || $activation->get_status() != ITELIC_Activation::ACTIVE ) {
-			return new ITELIC_API_Response( array(
-				'success' => false,
-				'error'   => array(
-					'code'    => self::CODE_INVALID_ACTIVATION,
-					'message' => __( "Invalid activation passed.", ITELIC::SLUG )
-				)
-			) );
+			throw new Exception( __( "Invalid activation passed.", ITELIC::SLUG ), self::CODE_INVALID_ACTIVATION );
 		}
 
 		$now     = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
