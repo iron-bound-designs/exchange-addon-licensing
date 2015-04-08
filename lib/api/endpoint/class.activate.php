@@ -32,8 +32,7 @@ class ITELIC_API_Endpoint_Activate extends ITELIC_API_Endpoint implements ITELIC
 		$location = sanitize_text_field( $post['location'] );
 
 		try {
-			$activation = ITELIC_Activation::create( $this->key->get_key(), $location );
-			$this->key->log_activation( $activation );
+			$activation = itelic_activate_license_key( $this->key, $location );
 		}
 		catch ( ITELIC_DB_Exception $e ) {
 			if ( $e->getCode() == 1062 ) {

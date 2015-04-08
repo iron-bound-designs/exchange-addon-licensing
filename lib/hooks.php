@@ -886,8 +886,7 @@ function itelic_account_licenses_activate() {
 	}
 
 	try {
-		$activation = ITELIC_Activation::create( $key->get_key(), $location );
-		$key->log_activation( $activation );
+		telic_activate_license_key( $key, $location );
 	}
 	catch ( Exception $e ) {
 		wp_send_json_error( array(

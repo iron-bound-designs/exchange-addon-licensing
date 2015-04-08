@@ -140,3 +140,25 @@ function itelic_normalize_url( $url ) {
 
 	return trailingslashit( esc_url_raw( $normalizer->normalize() ) );
 }
+
+/**
+ * Activate a license key.
+ *
+ * @since 1.0
+ *
+ * @param ITELIC_Key $key
+ * @param string     $location
+ * @param DateTime   $date
+ * @param string     $status
+ *
+ * @return ITELIC_Activation
+ *
+ * @throws LogicException|ITELIC_DB_Exception
+ */
+function itelic_activate_license_key( ITELIC_Key $key, $location, DateTime $date = null, $status = '' ) {
+
+	$record = ITELIC_Activation::create( $key, $location, $date, $status );
+	$key->log_activation( $record );
+
+	return $record;
+}

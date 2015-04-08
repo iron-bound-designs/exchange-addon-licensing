@@ -154,7 +154,7 @@ class ITELIC_Admin_Licenses_Controller_Single extends ITELIC_Admin_Licenses_Cont
 		}
 
 		try {
-			$record = ITELIC_Activation::create( $key, $location );
+			$record = itelic_activate_license_key( itelic_get_key( $key ), $location );
 		}
 		catch ( Exception $e ) {
 			wp_send_json_error( array(
