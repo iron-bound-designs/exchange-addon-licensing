@@ -69,7 +69,8 @@
 	display: block;
 }
 
-#it-exchange-license-details input[type="text"]:read-write {
+#it-exchange-license-details input[type="text"]:read-write,
+#it-exchange-license-details input[type="number"]:read-write {
 	background: #fff;
 	border: 1px solid #d6d6d6;
 	border-radius: 3px;
@@ -82,6 +83,15 @@
 	outline: 0;
 	-webkit-transition: .05s border-color ease-in-out;
 	transition: .05s border-color ease-in-out;
+}
+
+#it-exchange-license-details .misc-block input[type="text"]:read-write,
+#it-exchange-license-details .misc-block input[type="number"]:read-write {
+	width: 192px;
+}
+
+.ui-datepicker-trigger {
+	display: none;
 }
 
 /** -----------------------------------------------------:[ license status ]:---------- */

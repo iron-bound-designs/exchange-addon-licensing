@@ -17,6 +17,7 @@ jQuery(document).ready(function ($) {
 		showbuttons: false,
 		placement  : "top",
 		title      : ' ',
+		mode       : 'inline',
 		url        : function (params) {
 			return editable_ajax(params);
 		},
@@ -33,12 +34,17 @@ jQuery(document).ready(function ($) {
 		title      : ' ',
 		showbuttons: false,
 		clear      : false,
+		mode       : 'inline',
 		datepicker : {
 			prevText   : '',
 			nextText   : '',
 			minDate    : 0,
 			changeMonth: false,
-			changeYear : false
+			changeYear : false,
+			showOn     : 'both',
+			onSelect   : function () {
+				$('.expires input.hasDatepicker').focus();
+			}
 		},
 		viewformat : ITELIC.df,
 		url        : function (params) {
@@ -56,6 +62,8 @@ jQuery(document).ready(function ($) {
 		placement  : "bottom",
 		title      : ' ',
 		showbuttons: false,
+		mode       : 'inline',
+		clear      : false,
 		url        : function (params) {
 			return editable_ajax(params);
 		},
