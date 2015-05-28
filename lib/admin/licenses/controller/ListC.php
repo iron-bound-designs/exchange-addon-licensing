@@ -289,8 +289,6 @@ class ListC extends Controller {
 
 		$query = new Keys( $this->generate_get_key_args() );
 
-		error_log( $query->_get_sql() );
-
 		$this->table = new Table( $this->prepare_data( $query->get_results() ), $query->get_total_items() );
 	}
 
