@@ -6,6 +6,8 @@
  * @since  1.0
  */
 
-new ITELIC_Product_Feature_Base();
-new ITELIC_Product_Feature_Discount();
-new ITELIC_Product_Feature_Readme();
+namespace ITELIC\Product\Feature;
+
+new Base();
+new Discount();
+new Readme();

@@ -6,31 +6,15 @@
  * @since  1.0
  */
 
-/**
- * Create custom DB tables on upgrade or activate.
- *
- * @since 1.0
- */
-function itelic_create_tables() {
+namespace ITELIC\DB;
 
-	$activations = ITELIC_DB_Activations::instance();
+use ITELIC\DB\Table\Keys;
+use ITELIC\DB\Table\Activations;
+use ITELIC\DB\Table\Renewals;
 
-	if ( $activations->get_installed_version() != $activations->get_version() ) {
-		$activations->create();
-	}
+Manager::register( 'keys', new Keys() );
+Manager::register( 'activations', new Activations() );
+Manager::register( 'renewals', new Renewals() );
 
-	$keys = ITELIC_DB_Keys::instance();
-
-	if ( $keys->get_installed_version() != $keys->get_version() ) {
-		$keys->create();
-	}
-
-	$renewals = ITELIC_DB_Renewals::instance();
-
-	if ( $renewals->get_installed_version() != $renewals->get_version() ) {
-		$renewals->create();
-	}
-}
-
-add_action( 'itelic_upgrade', 'itelic_create_tables' );
-add_action( 'itelic_activate', 'itelic_create_tables' );
+add_action( 'itelic_activate', array( 'ITELIC\DB\Manager', 'initialize_tables' ) );
+add_action( 'itelic_upgrade', array( 'ITELIC\DB\Manager', 'initialize_tables' ) );

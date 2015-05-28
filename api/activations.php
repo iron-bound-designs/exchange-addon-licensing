@@ -13,10 +13,10 @@
  *
  * @param int $id
  *
- * @return ITELIC_Activation
+ * @return \ITELIC\Activation
  */
 function itelic_get_activation( $id ) {
-	return ITELIC_Activation::with_id( $id );
+	return \ITELIC\Activation::with_id( $id );
 }
 
 /**
@@ -26,10 +26,10 @@ function itelic_get_activation( $id ) {
  *
  * @param stdClass $data
  *
- * @return ITELIC_Activation
+ * @return \ITELIC\Activation
  */
 function itelic_get_activation_from_data( stdClass $data ) {
-	return new ITELIC_Activation( $data );
+	return new \ITELIC\Activation( $data );
 }
 
 /**
@@ -37,19 +37,19 @@ function itelic_get_activation_from_data( stdClass $data ) {
  *
  * @since 1.0
  *
- * @param string     $location
- * @param ITELIC_Key $key
+ * @param string      $location
+ * @param \ITELIC\Key $key
  *
- * @return ITELIC_Activation|null
+ * @return \ITELIC\Activation|null
  */
-function itelic_get_activation_by_location( $location, ITELIC_Key $key ) {
+function itelic_get_activation_by_location( $location, \ITELIC\Key $key ) {
 
-	$args = array(
+	$query = new \ITELIC_API\Query\Activations( array(
 		'location' => itelic_normalize_url( $location ),
-		'lkey'     => $key->get_key()
-	);
+		'key'      => $key->get_key()
+	) );
 
-	$keys = ITELIC_DB_Activations::search( $args );
+	$keys = $query->get_results();
 
 	if ( empty( $keys ) ) {
 		return null;
@@ -136,7 +136,7 @@ function itelic_normalize_url( $url ) {
 		return $url;
 	}
 
-	$normalizer = new URL_Normalizer( $url );
+	$normalizer = new URL\Normalizer( $url );
 
 	return trailingslashit( esc_url_raw( $normalizer->normalize() ) );
 }
@@ -146,18 +146,18 @@ function itelic_normalize_url( $url ) {
  *
  * @since 1.0
  *
- * @param ITELIC_Key $key
- * @param string     $location
- * @param DateTime   $date
- * @param string     $status
+ * @param \ITELIC\Key $key
+ * @param string      $location
+ * @param DateTime    $date
+ * @param string      $status
  *
- * @return ITELIC_Activation
+ * @return \ITELIC\Activation
  *
- * @throws LogicException|ITELIC_DB_Exception
+ * @throws LogicException|\ITELIC\DB\Exception
  */
-function itelic_activate_license_key( ITELIC_Key $key, $location, DateTime $date = null, $status = '' ) {
+function itelic_activate_license_key( \ITELIC\Key $key, $location, DateTime $date = null, $status = '' ) {
 
-	$record = ITELIC_Activation::create( $key, $location, $date, $status );
+	$record = \ITELIC\Activation::create( $key, $location, $date, $status );
 	$key->log_activation( $record );
 
 	return $record;

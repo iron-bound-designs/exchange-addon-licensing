@@ -17,7 +17,7 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 	private $_context = 'activation';
 
 	/**
-	 * @var ITELIC_Activation
+	 * @var \ITELIC\Activation
 	 */
 	private $activation;
 
@@ -60,7 +60,7 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 	public function location( $options = array() ) {
 		$defaults = array(
 			'format' => 'html',
-			'label'  => __( 'Location', ITELIC::SLUG )
+			'label'  => __( 'Location', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -98,7 +98,7 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 	public function status( $options = array() ) {
 		$defaults = array(
 			'format' => 'html',
-			'label'  => __( 'Status', ITELIC::SLUG )
+			'label'  => __( 'Status', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -136,7 +136,7 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 	public function id( $options = array() ) {
 		$defaults = array(
 			'format' => 'html',
-			'label'  => __( 'ID', ITELIC::SLUG )
+			'label'  => __( 'ID', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -175,7 +175,7 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 		$defaults = array(
 			'format' => 'html',
 			'df'     => str_replace( 'F', 'M', get_option( 'date_format' ) ),
-			'label'  => __( 'Activation', ITELIC::SLUG )
+			'label'  => __( 'Activation', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -214,7 +214,7 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 		$defaults = array(
 			'format' => 'html',
 			'df'     => str_replace( 'F', 'M', get_option( 'date_format' ) ),
-			'label'  => __( 'Deactivation', ITELIC::SLUG )
+			'label'  => __( 'Deactivation', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -256,8 +256,8 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 	public function deactivate_link( $options = array() ) {
 		$defaults = array(
 			'format'  => 'html',
-			'label'   => __( 'Deactivate', ITELIC::SLUG ),
-			'working' => __( "Deactivating", ITELIC::SLUG )
+			'label'   => __( 'Deactivate', ITELIC\Plugin::SLUG ),
+			'working' => __( "Deactivating", ITELIC\Plugin::SLUG )
 		);
 
 		$options = ITUtility::merge_defaults( $options, $defaults );

@@ -6,72 +6,84 @@
  * @since  1.0
  */
 
+namespace ITELIC;
+
 /**
  * Load the DBs
  */
-require_once( ITELIC::$dir . 'lib/db/load.php' );
+require_once( Plugin::$dir . 'lib/DB/load.php' );
 
 /**
  * Load key types API methods.
  */
-require_once( ITELIC::$dir . 'api/key-types.php' );
+require_once( Plugin::$dir . 'api/key-types.php' );
 
 /**
  * Load keys API methods.
  */
-require_once( ITELIC::$dir . 'api/keys.php' );
+require_once( Plugin::$dir . 'api/keys.php' );
 
 /**
  * Load activations API methods.
  */
-require_once( ITELIC::$dir . 'api/activations.php' );
+require_once( Plugin::$dir . 'api/activations.php' );
 
 /**
  * Load renewals API methods.
  */
-require_once( ITELIC::$dir . 'api/renewals.php' );
+require_once( Plugin::$dir . 'api/renewals.php' );
+
+/**
+ * Load the Theme API methods.
+ */
+require_once( Plugin::$dir . 'api/theme/load.php' );
 
 /**
  * Load the main plugin functions.
  */
-require_once( ITELIC::$dir . 'lib/functions.php' );
+require_once( Plugin::$dir . 'lib/functions.php' );
 
 /**
  * Load the main plugin hooks
  */
-require_once( ITELIC::$dir . 'lib/hooks.php' );
+require_once( Plugin::$dir . 'lib/hooks.php' );
 
 /**
- * Load the plugin settings page.
+ * Initialize the plugin settings.
  */
-require_once( ITELIC::$dir . 'lib/settings.php' );
+Settings::init();
 
 /**
  * Load the key types.
  */
-require_once( ITELIC::$dir . 'lib/key/load.php' );
+require_once( Plugin::$dir . 'lib/Key/load.php' );
 
 /**
  * Load the product features.
  */
-require_once( ITELIC::$dir . 'lib/product/feature/load.php' );
+require_once( Plugin::$dir . 'lib/Product/Feature/load.php' );
 
 /**
  * Load the admin.
  */
-require_once( ITELIC::$dir . 'lib/admin/load.php' );
+require_once( Plugin::$dir . 'lib/Admin/load.php' );
+
+/**
+ * Load the notifications suite.
+ */
+require_once( Plugin::$dir . 'lib/Notifications/load.php' );
 
 /**
  * Load the renewal reminders.
  */
-require_once( ITELIC::$dir . 'lib/renewal/load.php' );
+require_once( Plugin::$dir . 'lib/Renewal/load.php' );
 
 /**
  * Load the REST API.
  */
-require_once( ITELIC::$dir . 'lib/api/load.php' );
+require_once( Plugin::$dir . 'lib/API/load.php' );
 
 /**
  * Run the upgrade routine if necessary.
  */
-ITELIC::upgrade();
+Plugin::upgrade();

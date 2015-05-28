@@ -6,11 +6,20 @@
  * @since  1.0
  */
 
-new ITELIC_API_Dispatch();
+namespace ITELIC\API;
 
-ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Activate(), 'activate' );
-ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Deactivate(), 'deactivate' );
-ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Info(), 'info' );
-ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Version(), 'version' );
-ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Download(), 'download' );
-ITELIC_API_Dispatch::register_endpoint( new ITELIC_API_Endpoint_Product(), 'product' );
+use ITELIC\API\Endpoint\Activate;
+use ITELIC\API\Endpoint\Deactivate;
+use ITELIC\API\Endpoint\Download;
+use ITELIC\API\Endpoint\Info;
+use ITELIC\API\Endpoint\Product;
+use ITELIC\API\Endpoint\Version;
+
+new Dispatch();
+
+Dispatch::register_endpoint( new Activate(), 'activate' );
+Dispatch::register_endpoint( new Deactivate(), 'deactivate' );
+Dispatch::register_endpoint( new Info(), 'info' );
+Dispatch::register_endpoint( new Version(), 'version' );
+Dispatch::register_endpoint( new Download(), 'download' );
+Dispatch::register_endpoint( new Product(), 'product' );

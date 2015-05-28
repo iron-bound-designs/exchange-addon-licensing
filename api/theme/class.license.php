@@ -17,7 +17,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 	private $_context = 'license';
 
 	/**
-	 * @var ITELIC_Key
+	 * @var \ITELIC\Key
 	 */
 	private $license;
 
@@ -64,7 +64,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 	public function key( $options = array() ) {
 		$defaults = array(
 			'format' => 'html',
-			'label'  => __( 'License Key', ITELIC::SLUG )
+			'label'  => __( 'License Key', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -102,7 +102,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 	public function product_name( $options = array() ) {
 		$defaults = array(
 			'format' => 'html',
-			'label'  => __( 'Product', ITELIC::SLUG )
+			'label'  => __( 'Product', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -140,7 +140,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 	public function status( $options = array() ) {
 		$defaults = array(
 			'format' => 'html',
-			'label'  => __( 'Status', ITELIC::SLUG )
+			'label'  => __( 'Status', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -178,7 +178,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 	public function activation_count( $options = array() ) {
 		$defaults = array(
 			'format' => 'html',
-			'label'  => __( 'Active', ITELIC::SLUG )
+			'label'  => __( 'Active', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -218,13 +218,13 @@ class IT_Theme_API_License implements IT_Theme_API {
 		$defaults = array(
 			'format' => 'html',
 			'df'     => str_replace( 'F', 'M', get_option( 'date_format' ) ),
-			'label'  => __( 'Expires', ITELIC::SLUG )
+			'label'  => __( 'Expires', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
 		if ( $this->license ) {
 			if ( $this->license->get_expires() === null ) {
-				$value = __( "Never", ITELIC::SLUG );
+				$value = __( "Never", ITELIC\Plugin::SLUG );
 			} else {
 				$value = $this->license->get_expires()->format( $options['df'] );
 			}
@@ -298,7 +298,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 
 		$defaults = array(
 			'format' => 'html',
-			'label'  => __( "Manage", ITELIC::SLUG )
+			'label'  => __( "Manage", ITELIC\Plugin::SLUG )
 		);
 
 		$options = ITUtility::merge_defaults( $options, $defaults );
@@ -325,10 +325,10 @@ class IT_Theme_API_License implements IT_Theme_API {
 
 		$defaults = array(
 			'format'       => 'html',
-			'label'        => __( "Remote Activate", ITELIC::SLUG ),
-			'submit_label' => __( "Activate", ITELIC::SLUG ),
+			'label'        => __( "Remote Activate", ITELIC\Plugin::SLUG ),
+			'submit_label' => __( "Activate", ITELIC\Plugin::SLUG ),
 			'placeholder'  => 'http://www.example.com',
-			'description'  => __( 'Authorize a website for activation.', ITELIC::SLUG )
+			'description'  => __( 'Authorize a website for activation.', ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -363,7 +363,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 	public function renew_link( $options = array() ) {
 		$defaults = array(
 			'format' => 'html',
-			'label'  => __( "Renew this license key", ITELIC::SLUG )
+			'label'  => __( "Renew this license key", ITELIC\Plugin::SLUG )
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
@@ -417,11 +417,11 @@ class IT_Theme_API_License implements IT_Theme_API {
 	 *
 	 * @since 1.0
 	 *
-	 * @return ITELIC_Activation[]
+	 * @return \ITELIC\Activation[]
 	 */
 	protected function get_activations() {
 		if ( $this->license ) {
-			return $this->license->get_activations( ITELIC_Activation::ACTIVE );
+			return $this->license->get_activations( \ITELIC\Activation::ACTIVE );
 		} else {
 			return array();
 		}

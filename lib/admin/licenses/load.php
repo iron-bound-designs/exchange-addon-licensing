@@ -6,5 +6,10 @@
  * @since  1.0
  */
 
-ITELIC_Admin_Licenses_Dispatch::register_view( 'list', new ITELIC_Admin_Licenses_Controller_List() );
-ITELIC_Admin_Licenses_Dispatch::register_view( 'single', new ITELIC_Admin_Licenses_Controller_Single() );
+namespace ITELIC\Admin\Licenses;
+
+use ITELIC\Admin\Licenses\Controller\ListC;
+use ITELIC\Admin\Licenses\Controller\Single;
+
+Dispatch::register_view( 'list', new ListC() );
+Dispatch::register_view( 'single', new Single() );

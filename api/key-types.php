@@ -20,7 +20,7 @@
  * @return boolean
  */
 function itelic_register_key_type( $slug, $name, $class ) {
-	return ITELIC_Key_Types::register( $slug, $name, $class );
+	return \ITELIC\Key\Types::register( $slug, $name, $class );
 }
 
 /**
@@ -33,7 +33,7 @@ function itelic_register_key_type( $slug, $name, $class ) {
  * @return array
  */
 function itelic_get_key_types() {
-	return ITELIC_Key_Types::all();
+	return \ITELIC\Key\Types::all();
 }
 
 /**
@@ -49,7 +49,7 @@ function itelic_get_key_types() {
  */
 function itelic_get_key_type_name( $key_type ) {
 
-	$type = ITELIC_Key_Types::get( $key_type );
+	$type = \ITELIC\Key\Types::get( $key_type );
 
 	return is_array( $type ) ? $type['name'] : false;
 }
@@ -66,7 +66,7 @@ function itelic_get_key_type_name( $key_type ) {
  * @return string|bool
  */
 function itelic_get_key_type_class( $slug ) {
-	$key_type = ITELIC_Key_Types::get( $slug );
+	$key_type = \ITELIC\Key\Types::get( $slug );
 	$class    = is_array( $key_type ) ? $key_type['class'] : false;
 
 	/**

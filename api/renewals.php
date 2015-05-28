@@ -13,10 +13,10 @@
  *
  * @param int $id
  *
- * @return ITELIC_Renewal
+ * @return \ITELIC\Renewal
  */
 function itelic_get_renewal_record( $id ) {
-	return ITELIC_Renewal::from_id( $id );
+	return \ITELIC\Renewal::from_id( $id );
 }
 
 /**
@@ -24,11 +24,11 @@ function itelic_get_renewal_record( $id ) {
  *
  * @since 1.0
  *
- * @param ITELIC_Key $key
+ * @param \ITELIC\Key $key
  *
  * @return string
  */
-function itelic_generate_auto_renewal_url( ITELIC_Key $key ) {
+function itelic_generate_auto_renewal_url( \ITELIC\Key $key ) {
 
 	$product_link = get_permalink( $key->get_product()->ID );
 

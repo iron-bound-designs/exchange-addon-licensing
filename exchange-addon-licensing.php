@@ -11,22 +11,28 @@ Text Domain: ibd-exchange-addon-licensing
 Domain Path: /lang
 */
 
+namespace ITELIC;
+
 /**
  * Class ITELIC
  */
-class ITELIC {
+class Plugin {
+
 	/**
 	 * Plugin Version
 	 */
-	const VERSION = 1.0;
+	const VERSION = '1.0';
+
 	/**
 	 * Translation SLUG
 	 */
 	const SLUG = 'ibd-exchange-addon-licensing';
+
 	/**
 	 * @var string
 	 */
 	static $dir;
+
 	/**
 	 * @var string
 	 */
@@ -39,13 +45,13 @@ class ITELIC {
 		self::$dir = plugin_dir_path( __FILE__ );
 		self::$url = plugin_dir_url( __FILE__ );
 
-		spl_autoload_register( array( "ITELIC", "autoload" ) );
-
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts_and_styles' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'scripts_and_styles' ), 5 );
+
+		self::autoload();
 	}
 
 	/**
@@ -120,115 +126,77 @@ class ITELIC {
 	/**
 	 * Autoloader.
 	 *
-	 * If the class begins with ITECOM, then look for it by breaking the class into pieces by '_'.
-	 * Then look in the corresponding directory structure by concatenating the class parts. The filename is then
-	 * prefaced with either class, abstract, or interface.
-	 *
-	 * If the class doesn't begin with ITECOM, then look in the lib/classes, with a filename by replacing
-	 * underscores with dashes. Follows the same conventions for filename prefixes.
-	 *
 	 * @since 1.0
-	 *
-	 * @param $class_name string
 	 */
-	public static function autoload( $class_name ) {
-		if ( substr( $class_name, 0, 6 ) != "ITELIC" ) {
-			if ( substr( $class_name, 0, 12 ) == "IT_Theme_API" ) {
-				$path  = self::$dir . "api/theme";
-				$class = strtolower( substr( $class_name, 13 ) );
-				$name  = str_replace( "_", "-", $class );
-			} else {
-				$path  = self::$dir . "lib/classes";
-				$class = strtolower( $class_name );
-				$name  = str_replace( "_", "-", $class );
-			}
-		} else {
-			$path = self::$dir . "lib";
+	public static function autoload() {
 
-			$class = substr( $class_name, 6 );
-			$class = strtolower( $class );
+		require_once( self::$dir . 'autoloader.php' );
 
-			$parts = explode( "_", $class );
-			$name  = array_pop( $parts );
+		$autoloader = new Psr4AutoloaderClass();
+		$autoloader->addNamespace( 'ITELIC', self::$dir . 'lib' );
+		$autoloader->addNamespace( 'ITELIC_API', self::$dir . 'api' );
+		$autoloader->addNamespace( 'IBD', self::$dir . 'vendor/IBD' );
+		$autoloader->addNamespace( 'URL', self::$dir . 'vendor/URL' );
 
-			$path .= implode( "/", $parts );
-		}
-
-		$path .= "/class.$name.php";
-
-		if ( file_exists( $path ) ) {
-			require( $path );
-
-			return;
-		}
-		if ( file_exists( str_replace( "class.", "abstract.", $path ) ) ) {
-			require( str_replace( "class.", "abstract.", $path ) );
-
-			return;
-		}
-		if ( file_exists( str_replace( "class.", "interface.", $path ) ) ) {
-			require( str_replace( "class.", "interface.", $path ) );
-
-			return;
-		}
+		$autoloader->register();
 	}
 }
 
-new ITELIC();
+new Plugin();
 
 /**
  * This registers our add-on
  *
  * @since 1.0
  */
-function it_exchange_register_itelic_addon() {
+function register_addon() {
 	$options = array(
-		'name'              => __( 'Licensing', ITELIC::SLUG ),
-		'description'       => __( 'Sell licenses for your digital products.', ITELIC::SLUG ),
+		'name'              => __( 'Licensing', Plugin::SLUG ),
+		'description'       => __( 'Sell licenses for your digital products.', Plugin::SLUG ),
 		'author'            => 'Iron Bound Designs',
 		'author_url'        => 'http://www.ironbounddesigns.com',
 		'file'              => dirname( __FILE__ ) . '/init.php',
 		'category'          => 'other',
-		'settings-callback' => 'itelic_addon_settings',
+		'settings-callback' => array( 'ITELIC\Settings', 'display' ),
 		'basename'          => plugin_basename( __FILE__ ),
 		'labels'            => array(
-			'singular_name' => __( 'Licensing', ITELIC::SLUG ),
+			'singular_name' => __( 'Licensing', Plugin::SLUG ),
 		)
 	);
 	it_exchange_register_addon( 'licensing', $options );
 }
 
-add_action( 'it_exchange_register_addons', 'it_exchange_register_itelic_addon' );
+add_action( 'it_exchange_register_addons', 'ITELIC\register_addon' );
 
 /**
  * Loads the translation data for WordPress
  *
  * @since 1.0
  */
-function it_exchange_itelic_set_textdomain() {
-	load_plugin_textdomain( ITELIC::SLUG, false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
+function set_textdomain() {
+	load_plugin_textdomain( Plugin::SLUG, false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
 }
 
-add_action( 'plugins_loaded', 'it_exchange_itelic_set_textdomain' );
+add_action( 'plugins_loaded', 'ITELIC\set_textdomain' );
 
 /**
  * On activation, set a time, frequency and name of an action hook to be scheduled.
  *
  * @since 1.0
  */
-function itelic_activation() {
+function activation() {
 	wp_schedule_event( strtotime( 'Tomorrow 4AM' ), 'daily', 'it_exchange_itelic_daily_schedule' );
 }
 
-register_activation_hook( __FILE__, 'itelic_activation' );
+register_activation_hook( __FILE__, 'ITELIC\activation' );
 
 /**
  * On deactivation, remove all functions from the scheduled action hook.
  *
  * @since 1.0
  */
-function itelic_deactivation() {
+function deactivation() {
 	wp_clear_scheduled_hook( 'it_exchange_itelic_daily_schedule' );
 }
 
-register_deactivation_hook( __FILE__, 'itelic_deactivation' );
+register_deactivation_hook( __FILE__, 'ITELIC\deactivation' );

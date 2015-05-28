@@ -6,21 +6,25 @@
  * @since  1.0
  */
 
+namespace ITELIC\Admin;
+use ITELIC\Plugin;
+use ITELIC\Admin\Tab\Dispatch;
+
 /**
  * Register admin menus.
  *
  * @since 1.0
  */
-function itelic_register_admin_menus() {
+function register_admin_menus() {
 
-	add_submenu_page( 'it-exchange', __( "Licensing", ITELIC::SLUG ), __( "Licensing", ITELIC::SLUG ),
-		apply_filters( 'it_exchange_admin_menu_capability', 'manage_options' ), ITELIC_Admin_Tab_Dispatch::PAGE_SLUG, array(
-			new ITELIC_Admin_Tab_Dispatch(),
+	add_submenu_page( 'it-exchange', __( "Licensing", Plugin::SLUG ), __( "Licensing", Plugin::SLUG ),
+		apply_filters( 'it_exchange_admin_menu_capability', 'manage_options' ), Dispatch::PAGE_SLUG, array(
+			new Dispatch(),
 			'dispatch'
 		) );
 }
 
-add_action( 'admin_menu', 'itelic_register_admin_menus', 85 );
+add_action( 'admin_menu', 'ITELIC\Admin\register_admin_menus', 85 );
 
 
 /**
@@ -34,7 +38,7 @@ add_action( 'admin_menu', 'itelic_register_admin_menus', 85 );
  *
  * @return string|boolean
  */
-function itelic_save_licenses_per_page( $status, $option, $value ) {
+function save_licenses_per_page( $status, $option, $value ) {
 
 	if ( 'itelic_licenses_list_table_per_page' == $option ) {
 		return $value;
@@ -43,14 +47,14 @@ function itelic_save_licenses_per_page( $status, $option, $value ) {
 	return false;
 }
 
-add_filter( 'set-screen-option', 'itelic_save_licenses_per_page', 10, 3 );
+add_filter( 'set-screen-option', 'ITELIC\Admin\save_licenses_per_page', 10, 3 );
 
 /**
  * Load the tabs.
  */
-require_once( itelic::$dir . 'lib/admin/tab/load.php' );
+require_once( Plugin::$dir . 'lib/admin/tab/load.php' );
 
 /**
  * Load the licenses.
  */
-require_once( itelic::$dir . 'lib/admin/licenses/load.php' );
+require_once( Plugin::$dir . 'lib/admin/licenses/load.php' );

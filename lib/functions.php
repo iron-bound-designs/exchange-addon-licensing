@@ -6,17 +6,21 @@
  * @since  1.0
  */
 
+namespace ITELIC;
+use ITELIC\Key\Factory;
+use ITELIC\API\Dispatch;
+
 /**
  * Generate license keys for a transaction.
  *
  * @since 1.0
  *
- * @param IT_Exchange_Transaction $transaction
- * @param string                  $status Default ITELIC_Key::ACTIVE
+ * @param \IT_Exchange_Transaction $transaction
+ * @param string                   $status Default ITELIC_Key::ACTIVE
  *
- * @return boolean
+ * @return bool
  */
-function itelic_generate_keys_for_transaction( IT_Exchange_Transaction $transaction, $status = '' ) {
+function generate_keys_for_transaction( \IT_Exchange_Transaction $transaction, $status = '' ) {
 
 	$result = false;
 
@@ -30,7 +34,7 @@ function itelic_generate_keys_for_transaction( IT_Exchange_Transaction $transact
 
 			$product = it_exchange_get_product( $product['product_id'] );
 
-			if ( itelic_generate_key_for_transaction_product( $transaction, $product, $status ) ) {
+			if ( generate_key_for_transaction_product( $transaction, $product, $status ) ) {
 				$result = true;
 			} else {
 				$result = false;
@@ -46,17 +50,17 @@ function itelic_generate_keys_for_transaction( IT_Exchange_Transaction $transact
  *
  * @since 1.0
  *
- * @param IT_Exchange_Transaction $transaction
- * @param IT_Exchange_Product     $product
- * @param string                  $status
+ * @param \IT_Exchange_Transaction $transaction
+ * @param \IT_Exchange_Product     $product
+ * @param string                   $status
  *
- * @return ITELIC_Key
+ * @return Key
  */
-function itelic_generate_key_for_transaction_product( IT_Exchange_Transaction $transaction, IT_Exchange_Product $product, $status = '' ) {
+function generate_key_for_transaction_product( \IT_Exchange_Transaction $transaction, \IT_Exchange_Product $product, $status = '' ) {
 
 	$customer = it_exchange_get_transaction_customer( $transaction );
 
-	$factory = new ITELIC_Key_Factory( $product, $customer, $transaction );
+	$factory = new Factory( $product, $customer, $transaction );
 	$key     = $factory->make();
 
 	foreach ( $transaction->get_products() as $tran_product ) {
@@ -96,13 +100,13 @@ function itelic_generate_key_for_transaction_product( IT_Exchange_Transaction $t
 		$type  = it_exchange_get_product_feature( $product->ID, 'recurring-payments', array( 'setting' => 'interval' ) );
 		$count = it_exchange_get_product_feature( $product->ID, 'recurring-payments', array( 'setting' => 'interval-count' ) );
 
-		$interval = itelic_convert_rp_to_date_interval( $type, $count );
+		$interval = convert_rp_to_date_interval( $type, $count );
 
-		$expires = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
+		$expires = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
 		$expires->add( $interval );
 	}
 
-	ITELIC_Key::create( $key, $transaction, $product, $customer, $max, $expires, $status );
+	Key::create( $key, $transaction, $product, $customer, $max, $expires, $status );
 }
 
 /**
@@ -113,11 +117,11 @@ function itelic_generate_key_for_transaction_product( IT_Exchange_Transaction $t
  * @param string $type
  * @param int    $count
  *
- * @return DateInterval
+ * @return \DateInterval
  *
- * @throws Exception if invalid interval spec.
+ * @throws \Exception if invalid interval spec.
  */
-function itelic_convert_rp_to_date_interval( $type, $count ) {
+function convert_rp_to_date_interval( $type, $count ) {
 
 	$count = absint( $count );
 
@@ -154,7 +158,7 @@ function itelic_convert_rp_to_date_interval( $type, $count ) {
 		$interval_spec = apply_filters( 'itelic_convert_rp_to_date_interval_unknown_designator', null, $type, $count );
 	}
 
-	return new DateInterval( "P$interval_spec" );
+	return new \DateInterval( "P$interval_spec" );
 }
 
 /**
@@ -165,19 +169,21 @@ function itelic_convert_rp_to_date_interval( $type, $count ) {
  * @param int $transaction_id
  * @param int $product_id
  *
- * @return ITELIC_Key
+ * @return Key
  */
-function itelic_get_key_for_transaction_product( $transaction_id, $product_id ) {
-	$data = ITELIC_DB_Keys::search( array(
-		'transaction_id' => absint( $transaction_id ),
-		'product'        => absint( $product_id )
+function get_key_for_transaction_product( $transaction_id, $product_id ) {
+	$data = itelic_get_keys( array(
+		'transaction'         => absint( $transaction_id ),
+		'product'             => absint( $product_id ),
+		'items_per_page'      => 1,
+		'sql_calc_found_rows' => false
 	) );
 
 	if ( empty( $data ) ) {
 		return null;
 	}
 
-	return new ITELIC_Key( reset( $data ) );
+	return $data[0];
 }
 
 /* --------------------------------------------
@@ -191,10 +197,10 @@ function itelic_get_key_for_transaction_product( $transaction_id, $product_id ) 
  *
  * @return boolean
  */
-function itelic_purchase_requirement_renewal_met() {
+function purchase_requirement_renewal_met() {
 
-	$product_id = itelic_get_current_product_id();
-	$session    = itelic_get_purchase_requirement_renewal_session();
+	$product_id = get_current_product_id();
+	$session    = get_purchase_requirement_renewal_session();
 
 	// we are on checkout
 	if ( ! $product_id ) {
@@ -227,7 +233,7 @@ function itelic_purchase_requirement_renewal_met() {
  *
  * @return array
  */
-function itelic_get_purchase_requirement_renewal_session() {
+function get_purchase_requirement_renewal_session() {
 	return (array) it_exchange_get_session_data( 'itelic_renew_product' );
 }
 
@@ -236,12 +242,12 @@ function itelic_get_purchase_requirement_renewal_session() {
  *
  * @since 1.0
  *
- * @param IT_Exchange_Product $product
- * @param ITELIC_Key          $key
+ * @param \IT_Exchange_Product $product
+ * @param Key                  $key
  */
-function itelic_update_purchase_requirement_renewal_product( IT_Exchange_Product $product, ITELIC_Key $key = null ) {
+function update_purchase_requirement_renewal_product( \IT_Exchange_Product $product, Key $key = null ) {
 
-	$session = itelic_get_purchase_requirement_renewal_session();
+	$session = get_purchase_requirement_renewal_session();
 
 	if ( $key ) {
 		$session[ $product->ID ] = $key->get_key();
@@ -249,7 +255,7 @@ function itelic_update_purchase_requirement_renewal_product( IT_Exchange_Product
 		$session[ $product->ID ] = null;
 	}
 
-	itelic_update_purchase_requirement_renewal_session( $session );
+	update_purchase_requirement_renewal_session( $session );
 }
 
 /**
@@ -257,14 +263,14 @@ function itelic_update_purchase_requirement_renewal_product( IT_Exchange_Product
  *
  * @since 1.0
  *
- * @param IT_Exchange_Product $product
+ * @param \IT_Exchange_Product $product
  */
-function itelic_remove_purchase_requirement_renewal_product( IT_Exchange_Product $product ) {
-	$session = itelic_get_purchase_requirement_renewal_session();
+function remove_purchase_requirement_renewal_product( \IT_Exchange_Product $product ) {
+	$session = get_purchase_requirement_renewal_session();
 
 	unset( $session[ $product->ID ] );
 
-	itelic_update_purchase_requirement_renewal_session( $session );
+	update_purchase_requirement_renewal_session( $session );
 }
 
 /**
@@ -274,7 +280,7 @@ function itelic_remove_purchase_requirement_renewal_product( IT_Exchange_Product
  *
  * @param array $data
  */
-function itelic_update_purchase_requirement_renewal_session( array $data ) {
+function update_purchase_requirement_renewal_session( array $data ) {
 	it_exchange_update_session_data( 'itelic_renew_product', $data );
 }
 
@@ -283,7 +289,7 @@ function itelic_update_purchase_requirement_renewal_session( array $data ) {
  *
  * @since 1.0
  */
-function itelic_clear_purchase_requirement_renewal_session() {
+function clear_purchase_requirement_renewal_session() {
 	it_exchange_clear_session_data( 'itelic_renew_product' );
 }
 
@@ -294,7 +300,7 @@ function itelic_clear_purchase_requirement_renewal_session() {
  *
  * @return int
  */
-function itelic_get_current_product_id() {
+function get_current_product_id() {
 	if ( isset( $GLOBALS['it_exchange']['product'] ) ) {
 		$id = $GLOBALS['it_exchange']['product']->ID;
 	} elseif ( isset( $GLOBALS['post'] ) ) {
@@ -316,20 +322,20 @@ function itelic_get_current_product_id() {
  *
  * @since 1.0
  *
- * @param ITELIC_Key          $key
- * @param IT_Exchange_Product $product
+ * @param Key                  $key
+ * @param \IT_Exchange_Product $product
  *
  * @return string
  */
-function itelic_generate_download_link( ITELIC_Key $key, IT_Exchange_Product $product ) {
+function generate_download_link( Key $key, \IT_Exchange_Product $product ) {
 
-	$now     = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
-	$expires = $now->add( new DateInterval( "P1D" ) );
+	$now     = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
+	$expires = $now->add( new \DateInterval( "P1D" ) );
 
-	$args            = itelic_generate_download_query_args( $key, $expires );
+	$args            = generate_download_query_args( $key, $expires );
 	$args['product'] = $product->ID;
 
-	$download_ep = ITELIC_API_Dispatch::get_url( 'download' );
+	$download_ep = Dispatch::get_url( 'download' );
 
 	return add_query_arg( $args, $download_ep );
 }
@@ -339,12 +345,12 @@ function itelic_generate_download_link( ITELIC_Key $key, IT_Exchange_Product $pr
  *
  * @since 1.0
  *
- * @param ITELIC_Key $key
- * @param DateTime   $expires
+ * @param Key       $key
+ * @param \DateTime $expires
  *
  * @return array
  */
-function itelic_generate_download_query_args( ITELIC_Key $key, DateTime $expires ) {
+function generate_download_query_args( Key $key, \DateTime $expires ) {
 
 	$args = array(
 		'key'     => $key->get_key(),
@@ -369,7 +375,7 @@ function itelic_generate_download_query_args( ITELIC_Key $key, DateTime $expires
  *
  * @return bool
  */
-function itelic_validate_query_args( $query_args ) {
+function validate_query_args( $query_args ) {
 
 	if ( ! isset( $query_args['key'] ) || ! isset( $query_args['expires'] ) || ! isset( $query_args['token'] ) ) {
 		return false;
@@ -389,8 +395,8 @@ function itelic_validate_query_args( $query_args ) {
 		return false;
 	}
 
-	$now     = new DateTime( 'now', new DateTimeZone( get_option( 'timezone_string' ) ) );
-	$expires = new DateTime( "@{$args['expires']}", new DateTimeZone( get_option( 'timezone_string' ) ) );
+	$now     = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
+	$expires = new \DateTime( "@{$args['expires']}", new \DateTimeZone( get_option( 'timezone_string' ) ) );
 
 	return $now < $expires;
 }
@@ -404,7 +410,7 @@ function itelic_validate_query_args( $query_args ) {
  *
  * @return array
  */
-function itelic_page_rewrites( $page ) {
+function page_rewrites( $page ) {
 	$slug         = it_exchange_get_page_slug( $page );
 	$account_slug = it_exchange_get_page_slug( 'account' );
 

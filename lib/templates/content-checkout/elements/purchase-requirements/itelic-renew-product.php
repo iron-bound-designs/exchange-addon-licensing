@@ -3,12 +3,12 @@ if ( it_exchange_get_next_purchase_requirement_property( 'slug' ) != 'itelic-ren
 	return;
 }
 
-$session = itelic_get_purchase_requirement_renewal_session();
+$session = \ITELIC\get_purchase_requirement_renewal_session();
 ?>
 
 <form method="POST" action="<?php echo esc_attr( it_exchange_get_page_url( 'checkout' ) ); ?>" class="itelic-renew-keys-checkout">
 
-	<h3><?php echo _n( "Renew your license key", "Renew your license keys", count( $session ), ITELIC::SLUG ); ?></h3>
+	<h3><?php echo _n( "Renew your license key", "Renew your license keys", count( $session ), ITELIC\Plugin::SLUG ); ?></h3>
 
 	<ul>
 		<?php foreach ( $session as $product => $license ): ?>
@@ -37,5 +37,5 @@ $session = itelic_get_purchase_requirement_renewal_session();
 	</ul>
 
 	<?php wp_nonce_field( 'itelic-renew-keys-checkout' ); ?>
-	<input type="submit" name="itelic_renew_keys_checkout" value="<?php esc_attr_e( "Renew", ITELIC::SLUG ); ?>">
+	<input type="submit" name="itelic_renew_keys_checkout" value="<?php esc_attr_e( "Renew", ITELIC\Plugin::SLUG ); ?>">
 </form>
