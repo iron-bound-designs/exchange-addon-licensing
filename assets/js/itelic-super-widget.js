@@ -44,7 +44,7 @@ jQuery(document).ready(function ($) {
 
 		e.preventDefault();
 
-		var renew
+		var renew;
 
 		if ($(this).attr('name') == 'itelic_renew') {
 			renew = 1;

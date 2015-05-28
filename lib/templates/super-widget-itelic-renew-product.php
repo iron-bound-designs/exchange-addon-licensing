@@ -8,10 +8,12 @@
 
 $product = it_exchange_get_product( \ITELIC\get_current_product_id() );
 
-$keys = itelic_get_keys( array(
+$query = new \ITELIC_API\Query\Keys(array(
 	'customer' => it_exchange_get_current_customer_id(),
 	'product'  => $product->ID
-) );
+));
+
+$keys = $query->get_results();
 ?>
 
 <style type="text/css">

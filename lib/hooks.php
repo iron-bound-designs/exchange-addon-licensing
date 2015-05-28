@@ -215,7 +215,7 @@ function process_purchase_requirement_renewal_ajax() {
 		) );
 	}
 
-	if ( $key->get_product()->ID != $product->ID || it_exchange_get_current_customer_id() != $key->get_customer()->wp_user->ID ) {
+	if ( $key->get_product()->ID != $product->ID || it_exchange_get_current_customer_id() != $key->get_customer()->id ) {
 		wp_send_json_error( array(
 			'message' => __( "Invalid license key selected.", Plugin::SLUG )
 		) );
@@ -677,7 +677,7 @@ add_filter( 'it_exchange_get_transaction_product_feature', 'ITELIC\add_renewal_i
  *
  * @return string
  */
-function iteclic_modify_cart_item_title( $title ) {
+function modify_cart_item_title( $title ) {
 	$product = $GLOBALS['it_exchange']['cart-item'];
 	$session = get_purchase_requirement_renewal_session();
 
@@ -688,7 +688,7 @@ function iteclic_modify_cart_item_title( $title ) {
 	return $title;
 }
 
-add_filter( 'it_exchange_theme_api_cart-item_title', 'iteclic_modify_cart_item_title' );
+add_filter( 'it_exchange_theme_api_cart-item_title', 'ITELIC\modify_cart_item_title' );
 
 /* --------------------------------------------
 ============== Confirmation Email =============

@@ -185,11 +185,11 @@ class Keys extends Base {
 	 */
 	protected function parse_customer() {
 
-		if ( ! empty( $this->args['transaction'] ) ) {
-			$this->args['transaction__in'] = array( $this->args['transaction'] );
+		if ( ! empty( $this->args['customer'] ) ) {
+			$this->args['customer__in'] = array( $this->args['customer'] );
 		}
 
-		return $this->parse_in_or_not_in_query( 'transaction_id', $this->args['transaction__in'], $this->args['transaction__not_in'] );
+		return $this->parse_in_or_not_in_query( 'customer', $this->args['customer__in'], $this->args['customer__not_in'] );
 	}
 
 
