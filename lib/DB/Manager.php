@@ -50,7 +50,6 @@ final class Manager {
 		} else {
 			return null;
 		}
-
 	}
 
 	/**
@@ -85,7 +84,7 @@ final class Manager {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		foreach ( self::$tables as $table ) {
-			$installed = get_option( $table->get_table_name( $GLOBALS['wpdb'] ) . '_version', 0 );
+			$installed = (int) get_option( $table->get_table_name( $GLOBALS['wpdb'] ) . '_version', 0 );
 
 			if ( $installed < $table->get_version() ) {
 				dbDelta( $table->get_creation_sql( $GLOBALS['wpdb'] ) );

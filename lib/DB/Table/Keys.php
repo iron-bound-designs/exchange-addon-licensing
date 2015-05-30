@@ -112,7 +112,7 @@ class Keys implements Base {
 		PRIMARY KEY  (lkey),
 		KEY customer (customer),
 		KEY transaction_id (transaction_id),
-		KEY expires (expires),
+		KEY expires (expires)
 		) {$wpdb->get_charset_collate()};";
 	}
 
