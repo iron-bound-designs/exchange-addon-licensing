@@ -7,7 +7,9 @@
  */
 
 namespace ITELIC;
-use ITELIC\Renewal\Discount;
+
+use ITELIC\Purchase_Requirement\Base as Purchase_Requirement;
+use ITELIC\Purchase_Requirement\Renew_Key;
 
 /**
  * When a new transaction is created, generate necessary license keys if applicable.
@@ -74,302 +76,40 @@ add_action( 'wp_enqueue_scripts', 'ITELIC\scripts_and_styles' );
 ================== Renewals ===================
 ----------------------------------------------- */
 
-/**
- * Register purchase requirements.
- *
- * @since 1.0
- */
-function register_purchase_requirements() {
-
-	$trial_properties = array(
-		'priority'               => 2,
-		'requirement-met'        => 'ITELIC\purchase_requirement_renewal_met',
-		'sw-template-part'       => 'itelic-renew-product',
-		'checkout-template-part' => 'itelic-renew-product',
-		'notification'           => __( "You need to select a license key to renew.", Plugin::SLUG ),
-	);
-
-	it_exchange_register_purchase_requirement( 'itelic-renew-product', $trial_properties );
-}
-
-add_action( 'init', 'ITELIC\register_purchase_requirements' );
-
-/**
- * Force the renew product SW state.
- *
- * @since 1.0
- *
- * @param $valid_states array
- *
- * @return array
- */
-function force_sw_valid_states( $valid_states ) {
-	$valid_states[] = 'itelic-renew-product';
-
-	return $valid_states;
-}
-
-add_filter( 'it_exchange_super_widget_valid_states', 'ITELIC\force_sw_valid_states' );
-
-/**
- * Add the renew button to the super widget.
- *
- * @since 1.0
- */
-function add_renew_button_to_sw() {
+$purchase_req = new Renew_Key( 'itelic-renew-product', array(
+	'priority'               => 2,
+	'sw-template-part'       => 'itelic-renew-product',
+	'checkout-template-part' => 'itelic-renew-product',
+	'notification'           => __( "You need to select a license key to renew.", Plugin::SLUG ),
+), function ( Purchase_Requirement $req ) {
 
 	$product_id = get_current_product_id();
+	$session    = $req->get_cache_data();
 
+	// we are on checkout
 	if ( ! $product_id ) {
-		return;
-	}
+		foreach ( $session as $product => $key ) {
 
-	if ( ! it_exchange_product_has_feature( $product_id, 'licensing' ) || ! it_exchange_product_has_feature( $product_id, 'recurring-payments' ) ) {
-		return;
-	}
-
-	if ( is_user_logged_in() ) {
-		$keys = itelic_get_keys( array(
-			'product'  => $product_id,
-			'customer' => it_exchange_get_current_customer_id()
-		) );
-
-		if ( empty( $keys ) ) {
-			return;
-		}
-	}
-	?>
-
-	<form method="POST" class="it-exchange-sw-purchase-options it-exchange-sw-itelic-renew">
-		<input type="hidden" name="it-exchange-renew-product" value="<?php echo esc_attr( $product_id ); ?>">
-		<?php wp_nonce_field( 'itelic-renew-' . $product_id ); ?>
-		<input type="submit" value="<?php esc_attr_e( "Renew", Plugin::SLUG ); ?>" class="itelic-renew-button" style="width:100%;">
-	</form>
-
-	<?php
-}
-
-add_action( 'it_exchange_super_widget_product_end_purchase_options_element', 'ITELIC\add_renew_button_to_sw' );
-
-/**
- * Enter the renewal process when the renew button is pressed on the super widget.
- *
- * @since 1.0
- */
-function enter_renewal_process_sw() {
-
-	if ( ! isset( $_GET['sw-product'] ) || ! isset( $_GET['_wpnonce'] ) ) {
-		return;
-	}
-
-	$product = $_GET['sw-product'];
-
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], "itelic-renew-$product" ) ) {
-		it_exchange_add_message( 'error', __( "Something went wrong. Please refresh and try again.", Plugin::SLUG ) );
-
-		return;
-	}
-
-	it_exchange_add_product_to_shopping_cart( $product, 1 );
-
-	$keys = itelic_get_keys( array(
-		'product'  => $product,
-		'customer' => it_exchange_get_current_customer_id()
-	) );
-
-	if ( count( $keys ) == 1 ) {
-		$key = reset( $keys );
-	} else {
-		$key = null;
-	}
-
-	update_purchase_requirement_renewal_product( it_exchange_get_product( $product ), $key );
-
-	die( 1 );
-}
-
-add_action( 'it_exchange_processing_super_widget_ajax_renew_key', 'ITELIC\enter_renewal_process_sw' );
-
-
-/**
- * Process the AJAX call from the renew product purchase requirement.
- *
- * @since 1.0
- */
-function process_purchase_requirement_renewal_ajax() {
-
-	if ( ! isset( $_POST['nonce'] ) || ! isset( $_POST['key'] ) || ! isset( $_POST['product'] ) || ! isset( $_POST['renew'] ) ) {
-		wp_send_json_error( array(
-			'message' => __( "Invalid request format.", Plugin::SLUG )
-		) );
-	}
-
-	$nonce   = $_POST['nonce'];
-	$key     = itelic_get_key( $_POST['key'] );
-	$product = it_exchange_get_product( $_POST['product'] );
-	$renew   = (bool) $_POST['renew'];
-
-	if ( ! wp_verify_nonce( $nonce, 'itelic_renew_product_sw' ) ) {
-		wp_send_json_error( array(
-			'message' => __( "Sorry, this request has expired. Please refresh and try again.", Plugin::SLUG )
-		) );
-	}
-
-	if ( $key->get_product()->ID != $product->ID || it_exchange_get_current_customer_id() != $key->get_customer()->id ) {
-		wp_send_json_error( array(
-			'message' => __( "Invalid license key selected.", Plugin::SLUG )
-		) );
-	}
-
-	if ( $renew === true ) {
-		update_purchase_requirement_renewal_product( $product, $key );
-	} else {
-		remove_purchase_requirement_renewal_product( $product );
-	}
-
-	wp_send_json_success();
-}
-
-add_action( 'wp_ajax_itelic_renew_product_purchase_requirement', 'ITELIC\process_purchase_requirement_renewal_ajax' );
-
-/**
- * Process the renewal purchase requirement from the checkout screen.
- *
- * @since 1.0
- */
-function process_purchase_requirement_renewal_checkout() {
-
-	if ( ! isset( $_POST['itelic_renew_keys_checkout'] ) || ! isset( $_POST['_wpnonce'] ) || empty( $_POST['itelic_key'] ) ) {
-		return;
-	}
-
-	if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'itelic-renew-keys-checkout' ) ) {
-		it_exchange_add_message( 'error', __( "Sorry this request has expired. Please refresh and try again.", Plugin::SLUG ) );
-
-		return;
-	}
-
-	$session = get_purchase_requirement_renewal_session();
-	$keys    = $_POST['itelic_key'];
-
-	foreach ( $session as $product => $key ) {
-
-		if ( $key === null ) {
-			if ( isset( $keys[ $product ] ) ) {
-				$session[ $product ] = $keys[ $product ];
+			// so all products marked for renewal must have a key
+			if ( $key === null ) {
+				return false;
 			}
 		}
+
+		return true;
 	}
 
-	update_purchase_requirement_renewal_session( $session );
-}
+	// we are on a product page
 
-add_action( 'init', 'ITELIC\process_purchase_requirement_renewal_checkout' );
-
-/**
- * Apply the renewal discount.
- *
- * @since 1.0
- *
- * @param string|float $db_base_price
- * @param array        $product
- * @param bool         $format
- *
- * @return string|float
- */
-function apply_renewal_discount( $db_base_price, $product, $format ) {
-
-	if ( ! it_exchange_product_has_feature( $product['product_id'], 'licensing' ) ) {
-		return $db_base_price;
+	// if there is no record of this product in the session then the PR has been met
+	if ( ! array_key_exists( "p$product_id", $session ) ) {
+		return true;
 	}
 
-	$session = get_purchase_requirement_renewal_session();
+	return $session["p$product_id"] !== null;
+} );
 
-	if ( ! isset( $session[ $product['product_id'] ] ) || $session[ $product['product_id'] ] === null ) {
-		return $db_base_price;
-	}
-
-	$discount = new Discount( it_exchange_get_product( $product['product_id'] ) );
-
-	return $discount->get_discount_price( $format );
-}
-
-add_filter( 'it_exchange_get_cart_product_base_price', 'ITELIC\apply_renewal_discount', 10, 3 );
-
-/**
- * Save our renewal info with the transaction object.
- *
- * @since 1.0
- *
- * @param $products array
- * @param $key      string
- * @param $product  array
- *
- * @return object
- */
-function save_renewal_info_to_transaction_object( $products, $key, $product ) {
-
-	$session = get_purchase_requirement_renewal_session();
-
-	foreach ( $session as $renewed_product => $license_key ) {
-		if ( $renewed_product == $product['product_id'] ) {
-			$products[ $key ]['renewed_key'] = $license_key;
-		}
-	}
-
-	return $products;
-}
-
-add_filter( 'it_exchange_generate_transaction_object_products', 'ITELIC\save_renewal_info_to_transaction_object', 10, 3 );
-
-/**
- * Clear our renewal info data
- * after the transaction object has been generated
- *
- * @since 1.0
- *
- * @param $transaction_object object
- *
- * @return object
- */
-function clear_renewal_session_on_purchase( $transaction_object ) {
-	clear_purchase_requirement_renewal_session();
-
-	return $transaction_object;
-}
-
-add_filter( 'it_exchange_transaction_object', 'ITELIC\clear_renewal_session_on_purchase' );
-
-
-/**
- * Remove the renewal info, when a key is removed from the cart.
- *
- * @since 1.0
- *
- * @param int   $cart_product_id
- * @param array $products
- */
-function remove_renewal_info_on_cart_product_removal( $cart_product_id, $products ) {
-
-	$renew = get_purchase_requirement_renewal_session();
-
-	if ( $renew['product'] == $cart_product_id ) {
-		clear_purchase_requirement_renewal_session();
-	}
-}
-
-add_action( 'it_exchange_delete_cart_product', 'ITELIC\remove_renewal_info_on_cart_product_removal', 10, 2 );
-
-/**
- * Remove the renewal info when a cart is emptied.
- *
- * @since 1.0
- */
-function remove_renewal_info_on_cart_empty() {
-	clear_purchase_requirement_renewal_session();
-}
-
-add_action( 'it_exchange_empty_shopping_cart', 'ITELIC\remove_renewal_info_on_cart_empty' );
+$purchase_req->register();
 
 /**
  * When a renewal purchase is made, renew the renewed key.
@@ -453,63 +193,6 @@ function renew_key_on_update_expirations( $mid, $object_id, $meta_key, $_meta_va
 }
 
 add_action( 'updated_post_meta', 'ITELIC\renew_key_on_update_expirations', 10, 4 );
-
-/**
- * Listen for the auto renewal URL.
- *
- * @since 1.0
- */
-function listen_for_auto_renewal_url() {
-
-	if ( ! it_exchange_is_page( 'product' ) ) {
-		return;
-	}
-
-	if ( ! isset( $_GET['renew_key'] ) ) {
-		return;
-	}
-
-	if ( ! is_user_logged_in() ) {
-		return;
-	}
-
-	$key = itelic_get_key( $_GET['renew_key'] );
-
-	it_exchange_empty_shopping_cart();
-	it_exchange_add_product_to_shopping_cart( $key->get_product()->ID );
-	update_purchase_requirement_renewal_product( $key->get_product(), $key );
-}
-
-add_action( 'template_redirect', 'ITELIC\listen_for_auto_renewal_url', 0 );
-
-/**
- * On login, look for the renewal key query param.
- *
- * @since 1.0
- *
- * @param string   $login
- * @param \WP_User $user
- */
-function add_renewal_key_to_session_on_login( $login, $user ) {
-
-	if ( ! isset( $_GET['renew_key'] ) ) {
-		return;
-	}
-
-	$key = itelic_get_key( $_GET['renew_key'] );
-
-	it_exchange_empty_shopping_cart();
-	it_exchange_add_product_to_shopping_cart( $key->get_product()->ID );
-	update_purchase_requirement_renewal_product( $key->get_product(), $key );
-
-	if ( ! it_exchange_is_page( 'product' ) || ! is_page( $key->get_product()->ID ) ) {
-		wp_redirect( get_permalink( $key->get_product()->ID ) );
-		exit;
-	}
-}
-
-add_action( 'wp_login', 'ITELIC\add_renewal_key_to_session_on_login', 10, 2 );
-
 
 /* --------------------------------------------
 ============= Display License Key =============
@@ -668,27 +351,6 @@ function add_renewal_info_to_product_title_transaction_feature( $value, $product
 
 add_filter( 'it_exchange_get_transaction_product_feature', 'ITELIC\add_renewal_info_to_product_title_transaction_feature', 10, 3 );
 
-/**
- * Modify the cart item title to specify that it is a renewal.
- *
- * @since 1.0
- *
- * @param string $title
- *
- * @return string
- */
-function modify_cart_item_title( $title ) {
-	$product = $GLOBALS['it_exchange']['cart-item'];
-	$session = get_purchase_requirement_renewal_session();
-
-	if ( isset( $session['product'] ) && $session['product'] == $product['product_id'] ) {
-		$title .= __( " – Renewal", Plugin::SLUG );
-	}
-
-	return $title;
-}
-
-add_filter( 'it_exchange_theme_api_cart-item_title', 'ITELIC\modify_cart_item_title' );
 
 /* --------------------------------------------
 ============== Confirmation Email =============

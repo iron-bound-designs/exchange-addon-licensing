@@ -69,4 +69,12 @@ jQuery(document).ready(function ($) {
 			itExchangeGetSuperWidgetState('checkout', $('input[name="itelic_product"]').val());
 		});
 	});
+
+
+	function getParameterByName(name) {
+		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			results = regex.exec(location.search);
+		return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
 });

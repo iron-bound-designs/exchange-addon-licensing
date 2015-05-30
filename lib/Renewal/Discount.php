@@ -132,7 +132,7 @@ class Discount implements \Serializable {
 				$price -= $this->get_amount();
 				break;
 			case self::TYPE_PERCENT:
-				$price *= ( $this->get_amount() / 100 );
+				$price -= $price * ( $this->get_amount() / 100 );
 				break;
 		}
 

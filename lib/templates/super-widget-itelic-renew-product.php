@@ -6,13 +6,14 @@
  * @since  1.0
  */
 
-$product = it_exchange_get_product( \ITELIC\get_current_product_id() );
-
-$query = new \ITELIC_API\Query\Keys(array(
+$query = new \ITELIC_API\Query\Keys( array(
 	'customer' => it_exchange_get_current_customer_id(),
-	'product'  => $product->ID
-));
+	'product'  => \ITELIC\get_current_product_id()
+) );
 
+/**
+ * @var \ITELIC\Key[] $keys
+ */
 $keys = $query->get_results();
 ?>
 
@@ -46,7 +47,7 @@ $keys = $query->get_results();
 			</select>
 
 			<input type="hidden" name="itelic_nonce" value="<?php echo wp_create_nonce( 'itelic_renew_product_sw' ); ?>">
-			<input type="hidden" name="itelic_product" value="<?php echo esc_attr( $product->ID ); ?>">
+			<input type="hidden" name="itelic_product" value="<?php echo esc_attr( \ITELIC\get_current_product_id() ); ?>">
 			<input type="submit" class="itelic-submit" name="itelic_purchase_another" value="<?php esc_attr_e( "Purchase Another", ITELIC\Plugin::SLUG ); ?>">
 			<input type="submit" class="itelic-submit" name="itelic_renew" value="<?php esc_attr_e( "Renew", ITELIC\Plugin::SLUG ); ?>">
 		</div>
