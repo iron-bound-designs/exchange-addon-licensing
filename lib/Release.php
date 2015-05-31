@@ -296,9 +296,18 @@ class Release {
 	 *
 	 * @since 1.0
 	 *
+	 * @param bool $label
+	 *
 	 * @return string
 	 */
-	public function get_status() {
+	public function get_status( $label = false ) {
+
+		if ( $label ) {
+			$labels = self::get_statuses();
+
+			return $labels[ $this->status ];
+		}
+
 		return $this->status;
 	}
 
@@ -324,9 +333,18 @@ class Release {
 	 *
 	 * @since 1.0
 	 *
+	 * @param bool $label
+	 *
 	 * @return string
 	 */
-	public function get_type() {
+	public function get_type( $label = false ) {
+
+		if ( $label ) {
+			$labels = self::get_types();
+
+			return $labels[ $this->type ];
+		}
+
 		return $this->type;
 	}
 

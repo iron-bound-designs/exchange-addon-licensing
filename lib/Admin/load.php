@@ -52,9 +52,14 @@ add_filter( 'set-screen-option', 'ITELIC\Admin\save_licenses_per_page', 10, 3 );
 /**
  * Load the tabs.
  */
-require_once( Plugin::$dir . 'lib/admin/tab/load.php' );
+require_once( Plugin::$dir . 'lib/Admin/Tab/load.php' );
 
 /**
  * Load the licenses.
  */
-require_once( Plugin::$dir . 'lib/admin/licenses/load.php' );
+require_once( Plugin::$dir . 'lib/Admin/Licenses/load.php' );
+
+/**
+ * Load the releases.
+ */
+require_once( Plugin::$dir . 'lib/Admin/Releases/load.php' );
