@@ -130,6 +130,7 @@ class ListC extends Controller {
 		}
 
 		$data = array(
+			'ID'         => $release->get_ID(),
 			'product'    => $release->get_product()->post_title,
 			'version'    => $release->get_version(),
 			'status'     => $release->get_status( true ),

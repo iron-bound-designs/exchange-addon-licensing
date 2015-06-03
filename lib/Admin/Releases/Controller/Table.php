@@ -8,6 +8,7 @@
 
 namespace ITELIC\Admin\Releases\Controller;
 
+use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Plugin;
 
 if ( ! class_exists( '\WP_List_Table' ) ) {
@@ -90,6 +91,23 @@ class Table extends \WP_List_Table {
 		);
 	}
 
+	/**
+	 * Render the ID column.
+	 *
+	 * @param array $item
+	 *
+	 * @return string
+	 */
+	public function column_ID( $item ) {
+
+		$view_link = Dispatch::get_tab_link( 'releases' );
+		$view_link = add_query_arg( array(
+			'view' => 'single',
+			'ID'   => $item['ID']
+		), $view_link );
+
+		return "<a href=\"$view_link\">{$item['ID']}</a>";
+	}
 
 	/**
 	 * REQUIRED! This method dictates the table's columns and titles. This should
