@@ -114,10 +114,7 @@ class Base {
 	 * @param array $data
 	 */
 	public function update_cache_data( array $data ) {
-
 		$this->set_cache_data( wp_parse_args( $data, $this->cache_data ) );
-
-		$this->dirty = true;
 	}
 
 	/**
@@ -134,6 +131,7 @@ class Base {
 		}
 
 		$this->cache_data = $data;
+		$this->dirty = true;
 	}
 
 	/**
@@ -208,7 +206,7 @@ class Base {
 	 * @return bool
 	 */
 	public function persist() {
-		if ( $this->dirty ) {
+		if ( $this->is_dirty() ) {
 			it_exchange_add_session_data( "purchase_req_{$this->slug}", $this->cache_data );
 
 			return true;
