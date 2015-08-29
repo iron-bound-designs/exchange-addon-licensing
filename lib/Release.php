@@ -489,6 +489,6 @@ class Release extends Model {
 	 * @returns Table
 	 */
 	protected static function get_table() {
-		return Manager::make_simple_query_object( 'itelic-releases' );
+		return Manager::get( 'itelic-releases' );
 	}
 }
