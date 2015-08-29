@@ -10,6 +10,7 @@
 
 namespace IronBound\DB\Query;
 
+use IronBound\Cache\Cache;
 use IronBound\DB\Manager;
 use IronBound\DB\Model;
 use IronBound\DB\Query\Tag\Limit;
@@ -194,7 +195,11 @@ abstract class Complex_Query {
 			$records = array();
 
 			foreach ( $results as $result ) {
-				$records[ $result->{$this->table->get_primary_key()} ] = $this->make_object( $result );
+
+				$object = $this->make_object( $result );
+				Cache::update( $object );
+
+				$records[ $result->{$this->table->get_primary_key()} ] = $object;
 			}
 
 			return $records;

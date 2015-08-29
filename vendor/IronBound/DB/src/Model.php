@@ -212,7 +212,7 @@ abstract class Model implements Cacheable, \Serializable {
 	 * @return string
 	 */
 	public static function get_cache_group() {
-		return 'df-' . static::get_table()->get_slug();
+		return static::get_table()->get_slug();
 	}
 
 	/**

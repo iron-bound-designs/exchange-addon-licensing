@@ -376,6 +376,28 @@ class Activation extends Model implements API\Serializable {
 	}
 
 	/**
+	 * Get the data we'd like to cache.
+	 *
+	 * This is a bit magical. It iterates through all of the table columns,
+	 * and checks if a getter for that method exists. If so, it pulls in that
+	 * value. Otherwise, it will pull in the default value. If you'd like to
+	 * customize this you should override this function in your child model
+	 * class.
+	 *
+	 * @since 1.0
+	 *
+	 * @return array
+	 */
+	public function get_data_to_cache() {
+		$data = parent::get_data_to_cache();
+
+		unset( $data['key'] );
+		$data['lkey'] = $this->get_key();
+
+		return $data;
+	}
+
+	/**
 	 * Get the table object for this model.
 	 *
 	 * @since 1.0

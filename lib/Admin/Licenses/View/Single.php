@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\Admin\Licenses\View;
+
 use ITELIC\Activation;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Key;
@@ -68,8 +69,8 @@ class Single extends View {
 				<div class="key-block">
 					<p>
 						<label for="license-key" class="screen-reader-text"><?php _e( "License Key", Plugin::SLUG ); ?></label>
-						<input type="text" id="license-key" size="<?php echo esc_attr( strlen( $this->key->get_key() ) ); ?>"
-						       readonly value="<?php echo $this->key->get_key(); ?>">
+						<input type="text" id="license-key" size="<?php echo strlen( $this->key->get_key() ); ?>"
+						       readonly value="<?php echo esc_attr( $this->key->get_key() ); ?>">
 					</p>
 				</div>
 			</div>
@@ -136,7 +137,7 @@ class Single extends View {
 			</div>
 		</div>
 
-	<?php
+		<?php
 	}
 
 	/**

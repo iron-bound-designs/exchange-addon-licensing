@@ -12,6 +12,7 @@ use IronBound\Cache\Cache;
 use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
+use IronBound\DB\Exception as DB_Exception;
 
 /**
  * Class Upgrade
@@ -72,7 +73,7 @@ class Upgrade extends Model {
 	 * @param \DateTime  $upgrade_date
 	 *
 	 * @return Upgrade|null
-	 * @throws DB\Exception
+	 * @throws DB_Exception
 	 */
 	public static function create( Activation $activation, Release $release, \DateTime $upgrade_date = null ) {
 
