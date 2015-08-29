@@ -6,11 +6,11 @@
  * @since  1.0
  */
 
-namespace ITELIC\Notifications\Template;
+namespace IronBound\WP_Notifications\Template;
 
 /**
  * Class Null_Listener
- * @package ITELIC\Notifications\Template
+ * @package IronBound\WP_Notifications\Template
  */
 class Null_Listener extends Listener {
 

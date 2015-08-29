@@ -6,7 +6,7 @@
  * @since  1.0
  */
 
-namespace IBD;
+namespace IronBound;
 
 /**
  * Class Date_Interval

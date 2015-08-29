@@ -10,11 +10,11 @@ namespace ITELIC\Renewal\Reminder;
 
 use ITELIC\DB\Manager;
 use ITELIC\Key;
-use ITELIC\Notifications\Notification;
-use ITELIC\Notifications\Queue\Manager as Queue_Manager;
-use ITELIC\Notifications\Strategy\WP_Mail;
-use ITELIC\Notifications\Template\Factory;
-use ITELIC\Notifications\Template\Manager as Template_Manager;
+use IronBound\WP_Notifications\Notification;
+use IronBound\WP_Notifications\Queue\Manager as Queue_Manager;
+use IronBound\WP_Notifications\Strategy\WP_Mail;
+use IronBound\WP_Notifications\Template\Factory;
+use IronBound\WP_Notifications\Template\Manager as Template_Manager;
 use ITELIC\Renewal\Discount;
 use ITELIC\Renewal\Reminder;
 

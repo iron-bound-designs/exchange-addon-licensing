@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC;
+use IronBound\WP_Notifications\Template\Listener;
 use ITELIC\Key\Factory;
 use ITELIC\API\Dispatch;
 
@@ -184,6 +185,39 @@ function get_key_for_transaction_product( $transaction_id, $product_id ) {
 	}
 
 	return $data[0];
+}
+
+/* --------------------------------------------
+================= Notifications ===============
+----------------------------------------------- */
+
+/**
+ * Get tags that are shared between managers.
+ *
+ * @since 1.0
+ *
+ * @return Listener[]
+ */
+function get_shared_tags() {
+	return array(
+		new Listener( 'full_customer_name', function ( \IT_Exchange_Customer $customer ) {
+			return $customer->wp_user->first_name . " " . $customer->wp_user->last_name;
+		} ),
+		new Listener( 'customer_first_name', function ( \IT_Exchange_Customer $customer ) {
+			return $customer->wp_user->first_name;
+		} ),
+		new Listener( 'customer_last_name', function ( \IT_Exchange_Customer $customer ) {
+			return $customer->wp_user->last_name;
+		} ),
+		new Listener( 'customer_email', function ( \IT_Exchange_Customer $customer ) {
+			return $customer->wp_user->user_email;
+		} ),
+		new Listener( 'store_name', function () {
+			$settings = it_exchange_get_option( 'settings_general' );
+
+			return $settings['company-name'];
+		} )
+	);
 }
 
 /* --------------------------------------------

@@ -4,13 +4,16 @@
  *
  * @author Iron Bound Designs
  * @since  1.0
+ *
+ * @copyright   Copyright (c) 2015, Iron Bound Designs, Inc.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License v2 or later
  */
 
-namespace ITELIC\Notifications\Template;
+namespace IronBound\WP_Notifications\Template;
 
 /**
  * Class Listener
- * @package ITELIC\Notifications\Template
+ * @package IronBound\WP_Notifications\Template
  */
 class Listener {
 
@@ -53,7 +56,7 @@ class Listener {
 	}
 
 	/**
-	 * Render the shortcode.
+	 * Render the template tag.
 	 *
 	 * @since 1.0
 	 *

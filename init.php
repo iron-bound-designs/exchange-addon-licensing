@@ -69,11 +69,6 @@ require_once( Plugin::$dir . 'lib/Product/Feature/load.php' );
 require_once( Plugin::$dir . 'lib/Admin/load.php' );
 
 /**
- * Load the notifications suite.
- */
-require_once( Plugin::$dir . 'lib/Notifications/load.php' );
-
-/**
  * Load the renewal reminders.
  */
 require_once( Plugin::$dir . 'lib/Renewal/load.php' );

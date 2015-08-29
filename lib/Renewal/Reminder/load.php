@@ -9,8 +9,8 @@
 namespace ITELIC\Renewal\Reminder;
 
 use ITELIC\Key;
-use ITELIC\Notifications\Template\Listener;
-use ITELIC\Notifications\Template\Manager;
+use IronBound\WP_Notifications\Template\Listener;
+use IronBound\WP_Notifications\Template\Manager;
 use ITELIC\Renewal\Discount;
 
 new CPT();
@@ -25,7 +25,7 @@ new Sender();
  */
 function register_listeners( Manager $manager ) {
 
-	$shared = \ITELIC\Notifications\get_shared_tags();
+	$shared = \ITELIC\get_shared_tags();
 
 	foreach ( $shared as $listener ) {
 		$manager->listen( $listener );
@@ -59,4 +59,4 @@ function register_listeners( Manager $manager ) {
 	} ) );
 }
 
-add_action( 'itelic_notifications_template_manager_renewal-reminder', 'ITELIC\Renewal\Reminder\register_listeners' );
+add_action( 'ibd_wp_notifications_template_manager_itelic-renewal-reminder', 'ITELIC\Renewal\Reminder\register_listeners' );

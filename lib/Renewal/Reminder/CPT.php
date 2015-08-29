@@ -8,8 +8,6 @@
 
 namespace ITELIC\Renewal\Reminder;
 
-use ITELIC\Notifications\Template\Editor;
-use ITELIC\Notifications\Template\Factory;
 use ITELIC\Plugin;
 use ITELIC\Renewal\Reminder;
 

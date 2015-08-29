@@ -4,13 +4,16 @@
  *
  * @author Iron Bound Designs
  * @since  1.0
+ *
+ * @copyright   Copyright (c) 2015, Iron Bound Designs, Inc.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License v2 or later
  */
 
-namespace ITELIC\Notifications\Queue;
+namespace IronBound\WP_Notifications\Queue;
 
 /**
  * Class Manager
- * @package ITELIC\Notifications\Queue
+ * @package IronBound\WP_Notifications\Queue
  */
 final class Manager {
 
@@ -38,7 +41,7 @@ final class Manager {
 	 *
 	 * @param string $slug
 	 *
-	 * @return Queue
+	 * @return Queue|null
 	 */
 	public static function get( $slug ) {
 		return isset( self::$queues[ $slug ] ) ? self::$queues[ $slug ] : null;

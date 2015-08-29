@@ -9,8 +9,8 @@
 namespace ITELIC\Admin\Tab\View;
 
 use ITELIC\Admin\Tab\View;
-use ITELIC\Notifications\Template\Editor;
-use ITELIC\Notifications\Template\Factory;
+use IronBound\WP_Notifications\Template\Editor;
+use IronBound\WP_Notifications\Template\Factory;
 use ITELIC\Plugin;
 
 /**
@@ -24,10 +24,18 @@ class Reminders extends View {
 	 */
 	public function __construct() {
 
-		$editor = new Editor( Factory::make( 'renewal-reminder' ) );
+		$editor = new Editor( Factory::make( 'itelic-renewal-reminder' ), array(
+			'mustSelectItem'    => __( "You must select an item", Plugin::SLUG ),
+			'selectTemplateTag' => __( "Select Template Tag", Plugin::SLUG ),
+			'templateTag'       => __( "Template Tag", Plugin::SLUG ),
+			'selectATag'        => __( "Select a tag", Plugin::SLUG ),
+			'insertTag'         => __( "Insert", Plugin::SLUG ),
+			'cancel'            => __( "Cancel", Plugin::SLUG ),
+			'insertTemplateTag' => __( "Insert Template Tag", Plugin::SLUG )
+		) );
 
 		add_action( 'admin_footer', function () use ( $editor ) {
-			$editor->shortcode_popup();
+			$editor->thickbox();
 			unset( $editor );
 		} );
 	}

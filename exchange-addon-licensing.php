@@ -135,7 +135,8 @@ class Plugin {
 		$autoloader = new Psr4AutoloaderClass();
 		$autoloader->addNamespace( 'ITELIC', self::$dir . 'lib' );
 		$autoloader->addNamespace( 'ITELIC_API', self::$dir . 'api' );
-		$autoloader->addNamespace( 'IBD', self::$dir . 'vendor/IBD' );
+		$autoloader->addNamespace( 'IronBound', self::$dir . 'vendor/IronBound' );
+		$autoloader->addNamespace( 'IronBound\\WP_Notifications', self::$dir . 'vendor/IronBound/WP_Notifications/src' );
 		$autoloader->addNamespace( 'URL', self::$dir . 'vendor/URL' );
 
 		$autoloader->register();

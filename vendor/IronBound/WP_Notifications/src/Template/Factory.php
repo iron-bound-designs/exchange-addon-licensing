@@ -4,13 +4,16 @@
  *
  * @author Iron Bound Designs
  * @since  1.0
+ *
+ * @copyright   Copyright (c) 2015, Iron Bound Designs, Inc.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License v2 or later
  */
 
-namespace ITELIC\Notifications\Template;
+namespace IronBound\WP_Notifications\Template;
 
 /**
  * Class Factory
- * @package ITELIC\Notifications\Template
+ * @package IronBound\WP_Notifications\Template
  */
 class Factory {
 
@@ -33,7 +36,7 @@ class Factory {
 		 *
 		 * @param Manager $manager
 		 */
-		do_action( "itelic_notifications_template_manager_$type", $manager );
+		do_action( "ibd_wp_notifications_template_manager_$type", $manager );
 
 		return $manager;
 	}
