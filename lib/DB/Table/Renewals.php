@@ -7,12 +7,13 @@
  */
 
 namespace ITELIC\DB\Table;
+use IronBound\DB\Table\Table;
 
 /**
  * Class Renewals
  * @package ITELIC\DB\Table
  */
-class Renewals implements Base {
+class Renewals implements Table {
 
 	/**
 	 * Columns in the table.
@@ -71,7 +72,7 @@ class Renewals implements Base {
 	 * @return string
 	 */
 	public function get_slug() {
-		return 'renewals';
+		return 'itelic-renewals';
 	}
 
 	/**

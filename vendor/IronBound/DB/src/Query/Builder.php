@@ -6,12 +6,12 @@
  * @since  1.0
  */
 
-namespace ITELIC\DB\Query;
-use ITELIC\DB\Query\Tag\Generic;
+namespace IronBound\DB\Query;
+use IronBound\DB\Query\Tag\Generic;
 
 /**
  * Class Builder
- * @package ITELIC\DB\Query
+ * @package IronBound\DB\Query
  */
 final class Builder {
 

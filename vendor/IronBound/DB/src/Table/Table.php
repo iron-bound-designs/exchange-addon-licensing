@@ -2,17 +2,19 @@
 /**
  * Used as a base for all custom DB tables.
  *
- * @author Iron Bound Designs
- * @since  1.0
+ * @author      Iron Bound Designs
+ * @since       1.0
+ * @copyright   2015 (c) Iron Bound Designs.
+ * @license     GPLv2
  */
 
-namespace ITELIC\DB\Table;
+namespace IronBound\DB\Table;
 
 /**
  * Interface Base
- * @package ITELIC\DB\Table
+ * @package IronBound\DB\Table
  */
-interface Base {
+interface Table {
 
 	/**
 	 * Retrieve the name of the database table.

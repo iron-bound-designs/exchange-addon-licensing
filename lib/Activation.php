@@ -8,8 +8,11 @@
 
 namespace ITELIC;
 
-use ITELIC\DB\Manager;
-use ITELIC\DB\Exception as DB_Exception;
+use IronBound\Cache\Cache;
+use IronBound\DB\Model;
+use IronBound\DB\Table\Table;
+use IronBound\DB\Manager;
+use IronBound\DB\Exception as DB_Exception;
 
 /**
  * Class ITELIC_Activation
@@ -18,7 +21,7 @@ use ITELIC\DB\Exception as DB_Exception;
  *
  * @since 1.0
  */
-class Activation implements API\Serializable {
+class Activation extends Model implements API\Serializable {
 
 	/**
 	 * Represents when this site is active.
@@ -79,9 +82,9 @@ class Activation implements API\Serializable {
 	/**
 	 * Initialize this object.
 	 *
-	 * @param object $data
+	 * @param \stdClass $data
 	 */
-	protected function init( $data ) {
+	protected function init( \stdClass $data ) {
 		$this->id         = $data->id;
 		$this->key        = Key::with_key( $data->lkey );
 		$this->location   = $data->location;
@@ -101,14 +104,7 @@ class Activation implements API\Serializable {
 	 * @return Activation
 	 */
 	public static function with_id( $id ) {
-		$db   = Manager::make_query_object( 'activations' );
-		$data = $db->get( $id );
-
-		if ( empty( $id ) ) {
-			return null;
-		}
-
-		return new Activation( $data );
+		return self::get( $id );
 	}
 
 	/**
@@ -155,7 +151,7 @@ class Activation implements API\Serializable {
 			'status'       => $status
 		);
 
-		$db = Manager::make_query_object( 'activations' );
+		$db = Manager::make_simple_query_object( 'itelic-activations' );
 
 		try {
 			$id = $db->insert( $data );
@@ -169,8 +165,14 @@ class Activation implements API\Serializable {
 			}
 		}
 
+		if ( ! $id ) {
+			return null;
+		}
+
 		$activation = self::with_id( $id );
 		$activation->get_key()->log_activation( $activation );
+
+		Cache::add( $activation );
 
 		return $activation;
 	}
@@ -217,20 +219,21 @@ class Activation implements API\Serializable {
 	}
 
 	/**
-	 * Delete an activation record.
+	 * Get the unique pk for this record.
 	 *
 	 * @since 1.0
+	 *
+	 * @return mixed (generally int, but not necessarily).
 	 */
-	public function delete() {
-		$db = Manager::make_query_object( 'activations' );
-		$db->delete( $this->get_id() );
+	public function get_pk() {
+		return $this->id;
 	}
 
 	/**
 	 * @return int
 	 */
 	public function get_id() {
-		return $this->id;
+		return $this->get_pk();
 	}
 
 	/**
@@ -278,7 +281,7 @@ class Activation implements API\Serializable {
 
 		$this->status = $status;
 
-		$this->update_value( 'status', $status );
+		$this->update( 'status', $status );
 	}
 
 	/**
@@ -318,7 +321,7 @@ class Activation implements API\Serializable {
 			$val = null;
 		}
 
-		$this->update_value( 'activation', $val );
+		$this->update( 'activation', $val );
 	}
 
 	/**
@@ -343,7 +346,7 @@ class Activation implements API\Serializable {
 			$val = null;
 		}
 
-		$this->update_value( 'deactivation', $val );
+		$this->update( 'deactivation', $val );
 	}
 
 	/**
@@ -373,22 +376,15 @@ class Activation implements API\Serializable {
 	}
 
 	/**
-	 * Update a particular value.
+	 * Get the table object for this model.
 	 *
 	 * @since 1.0
 	 *
-	 * @param string $key
-	 * @param mixed  $value
-	 *
-	 * @throws \RuntimeException|DB\Exception
+	 * @returns Table
 	 */
-	protected function update_value( $key, $value ) {
-
-		$data = array(
-			$key => $value
-		);
-
-		$db = Manager::make_query_object( 'activations' );
-		$db->update( $this->get_id(), $data );
+	protected static function get_table() {
+		return Manager::get( 'itelic-activations' );
 	}
+
+
 }

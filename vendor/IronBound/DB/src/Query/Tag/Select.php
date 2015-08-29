@@ -2,15 +2,18 @@
 /**
  * Select tag.
  *
- * @author Iron Bound Designs
- * @since  1.0
+ * @author      Iron Bound Designs
+ * @since       1.0
+ * @copyright   2015 (c) Iron Bound Designs.
+ * @license     GPLv2
  */
 
-namespace ITELIC\DB\Query\Tag;
+namespace IronBound\DB\Query\Tag;
 
 /**
  * Class Select
- * @package ITELIC\DB\Query\Tag
+ *
+ * @package IronBound\DB\Query\Tag
  */
 class Select extends Generic {
 
@@ -28,6 +31,11 @@ class Select extends Generic {
 	 * @var bool
 	 */
 	private $all_columns;
+
+	/**
+	 * @var string
+	 */
+	private $all_as;
 
 	/**
 	 * @var bool
@@ -49,6 +57,7 @@ class Select extends Generic {
 
 		if ( $column == self::ALL ) {
 			$this->all_columns = true;
+			$this->all_as      = $as;
 		} elseif ( $column !== null ) {
 			$this->columns[ $column ] = $as;
 		}
@@ -140,7 +149,11 @@ class Select extends Generic {
 		}
 
 		if ( $this->all_columns ) {
-			$query .= '*';
+			if ( $this->all_as ) {
+				$query .= "{$this->all_as}.*";
+			} else {
+				$query .= '*';
+			}
 		} else {
 
 			foreach ( $this->columns as $column => $as ) {

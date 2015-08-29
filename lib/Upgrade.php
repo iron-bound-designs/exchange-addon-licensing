@@ -8,13 +8,16 @@
 
 namespace ITELIC;
 
-use ITELIC\DB\Manager;
+use IronBound\Cache\Cache;
+use IronBound\DB\Model;
+use IronBound\DB\Table\Table;
+use IronBound\DB\Manager;
 
 /**
  * Class Upgrade
  * @package ITELIC
  */
-class Upgrade {
+class Upgrade extends Model {
 
 	/**
 	 * @var int
@@ -42,32 +45,21 @@ class Upgrade {
 	 * @param \stdClass $data
 	 */
 	public function __construct( \stdClass $data ) {
+		$this->init( $data );
+	}
 
+	/**
+	 * Init an object.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \stdClass $data
+	 */
+	protected function init( \stdClass $data ) {
 		$this->ID           = $data->ID;
 		$this->activation   = itelic_get_activation( $data->activation );
 		$this->release      = new Release( $data->release_id );
 		$this->upgrade_date = new \DateTime( $data->upgrade_date );
-	}
-
-	/**
-	 * Retrieve an Upgrade object.
-	 *
-	 * @since 1.0
-	 *
-	 * @param int $ID
-	 *
-	 * @return Upgrade|null
-	 */
-	public static function get( $ID ) {
-
-		$db   = Manager::make_query_object( 'upgrades' );
-		$data = $db->get( $ID );
-
-		if ( $data ) {
-			return new Upgrade( $data );
-		} else {
-			return null;
-		}
 	}
 
 	/**
@@ -94,10 +86,27 @@ class Upgrade {
 			'upgrade_date' => $upgrade_date->format( "Y-m-d H:i:s" )
 		);
 
-		$db = Manager::make_query_object( 'upgrades' );
+		$db = Manager::make_simple_query_object( 'itelic-upgrades' );
 		$ID = $db->insert( $data );
 
-		return self::get( $ID );
+		$upgrade = self::get( $ID );
+
+		if ( $upgrade ) {
+			Cache::add( $upgrade );
+		}
+
+		return $upgrade;
+	}
+
+	/**
+	 * Get the unique pk for this record.
+	 *
+	 * @since 1.0
+	 *
+	 * @return mixed (generally int, but not necessarily).
+	 */
+	public function get_pk() {
+		return $this->ID;
 	}
 
 	/**
@@ -108,7 +117,7 @@ class Upgrade {
 	 * @return int
 	 */
 	public function get_ID() {
-		return $this->ID;
+		return $this->get_pk();
 	}
 
 	/**
@@ -164,5 +173,16 @@ class Upgrade {
 	 */
 	public function get_customer() {
 		return $this->get_activation()->get_key()->get_customer();
+	}
+
+	/**
+	 * Get the table object for this model.
+	 *
+	 * @since 1.0
+	 *
+	 * @return Table
+	 */
+	protected static function get_table() {
+		return Manager::get( 'itelic-upgrades' );
 	}
 }

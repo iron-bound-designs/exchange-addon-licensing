@@ -7,12 +7,13 @@
  */
 
 namespace ITELIC\DB\Table;
+use IronBound\DB\Table\Table;
 
 /**
  * Class Releases
  * @package ITELIC\DB\Table
  */
-class Releases implements Base {
+class Releases implements Table {
 
 	/**
 	 * Retrieve the name of the database table.
@@ -35,7 +36,7 @@ class Releases implements Base {
 	 * @return string
 	 */
 	public function get_slug() {
-		return 'releases';
+		return 'itelic-releases';
 	}
 
 	/**

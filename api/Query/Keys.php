@@ -8,20 +8,22 @@
 
 namespace ITELIC_API\Query;
 
-use ITELIC\DB\Query\Builder;
-use ITELIC\DB\Query\Tag\From;
-use ITELIC\DB\Query\Tag\Join;
-use ITELIC\DB\Query\Tag\Where;
-use ITELIC\DB\Query\Tag\Where_Date;
-use ITELIC\DB\Query\Tag\Where_Raw;
+use IronBound\DB\Model;
+use IronBound\DB\Query\Complex_Query;
+use IronBound\DB\Query\Builder;
+use IronBound\DB\Query\Tag\From;
+use IronBound\DB\Query\Tag\Join;
+use IronBound\DB\Query\Tag\Where;
+use IronBound\DB\Query\Tag\Where_Date;
+use IronBound\DB\Query\Tag\Where_Raw;
 use ITELIC\Key;
-use ITELIC\DB\Manager;
+use IronBound\DB\Manager;
 
 /**
  * Class Keys
  * @package ITELIC_API\Query
  */
-class Keys extends Base {
+class Keys extends Complex_Query {
 
 	/**
 	 * Constructor.
@@ -29,7 +31,7 @@ class Keys extends Base {
 	 * @param array $args
 	 */
 	public function __construct( array $args = array() ) {
-		parent::__construct( Manager::get( 'keys' ), $args );
+		parent::__construct( Manager::get( 'itelic-keys' ), $args );
 	}
 
 	/**
@@ -76,9 +78,9 @@ class Keys extends Base {
 	 *
 	 * @param \stdClass $data
 	 *
-	 * @return object
+	 * @return Model
 	 */
-	protected function make_object( $data ) {
+	protected function make_object( \stdClass $data ) {
 		return new Key( $data );
 	}
 

@@ -7,12 +7,13 @@
  */
 
 namespace ITELIC\DB\Table;
+use IronBound\DB\Table\Table;
 
 /**
  * Class Keys
  * @package ITELIC\DB\Table
  */
-class Keys implements Base {
+class Keys implements Table {
 
 	/**
 	 * Columns in the table.
@@ -75,7 +76,7 @@ class Keys implements Base {
 	 * @return string
 	 */
 	public function get_slug() {
-		return 'keys';
+		return 'itelic-keys';
 	}
 
 	/**

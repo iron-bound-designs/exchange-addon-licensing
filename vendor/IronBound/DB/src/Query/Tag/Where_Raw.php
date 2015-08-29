@@ -2,15 +2,17 @@
 /**
  * Allows for Raw where statements.
  *
- * @author Iron Bound Designs
- * @since  1.0
+ * @author      Iron Bound Designs
+ * @since       1.0
+ * @copyright   2015 (c) Iron Bound Designs.
+ * @license     GPLv2
  */
 
-namespace ITELIC\DB\Query\Tag;
+namespace IronBound\DB\Query\Tag;
 
 /**
  * Class Where_Raw
- * @package ITELIC\DB\Query\Tag
+ * @package IronBound\DB\Query\Tag
  */
 class Where_Raw extends Where {
 

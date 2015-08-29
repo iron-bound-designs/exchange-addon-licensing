@@ -8,7 +8,10 @@
 
 namespace ITELIC;
 
-use ITELIC\DB\Manager;
+use IronBound\Cache\Cache;
+use IronBound\DB\Model;
+use IronBound\DB\Table\Table;
+use IronBound\DB\Manager;
 use ITELIC_API\Query\Activations;
 
 /**
@@ -18,7 +21,7 @@ use ITELIC_API\Query\Activations;
  *
  * @since 1.0
  */
-class Key implements API\Serializable, \Serializable {
+class Key extends Model implements API\Serializable, \Serializable {
 
 	/**
 	 * Represents when this license is active.
@@ -85,9 +88,9 @@ class Key implements API\Serializable, \Serializable {
 	/**
 	 * Initialize this object.
 	 *
-	 * @param object $data
+	 * @param \stdClass $data
 	 */
-	protected function init( $data ) {
+	protected function init( \stdClass $data ) {
 		$this->key         = $data->lkey;
 		$this->transaction = it_exchange_get_transaction( $data->transaction_id );
 		$this->product     = it_exchange_get_product( $data->product );
@@ -120,15 +123,7 @@ class Key implements API\Serializable, \Serializable {
 	 * @return Key
 	 */
 	public static function with_key( $key ) {
-
-		$db   = Manager::make_query_object( 'keys' );
-		$data = $db->get( $key );
-
-		if ( $data ) {
-			return new Key( $data );
-		} else {
-			return null;
-		}
+		return self::get( $key );
 	}
 
 	/**
@@ -162,10 +157,16 @@ class Key implements API\Serializable, \Serializable {
 			'expires'        => isset( $expires ) ? $expires->format( "Y-m-d H:i:s" ) : null
 		);
 
-		$db = Manager::make_query_object( 'keys' );
+		$db = Manager::make_simple_query_object( 'itelic-keys' );
 		$db->insert( $data );
 
-		return self::with_key( $key );
+		$key = self::with_key( $key );
+
+		if ( $key ) {
+			Cache::add( $key );
+		}
+
+		return $key;
 	}
 
 	/**
@@ -284,10 +285,21 @@ class Key implements API\Serializable, \Serializable {
 	}
 
 	/**
+	 * Get the unique pk for this record.
+	 *
+	 * @since 1.0
+	 *
+	 * @return mixed (generally int, but not necessarily).
+	 */
+	public function get_pk() {
+		return $this->key;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function get_key() {
-		return $this->key;
+		return $this->get_pk();
 	}
 
 	/**
@@ -342,7 +354,7 @@ class Key implements API\Serializable, \Serializable {
 		}
 
 		$this->status = $status;
-		$this->update_value( 'status', $this->get_status() );
+		$this->update( 'status', $this->get_status() );
 	}
 
 	/**
@@ -365,7 +377,7 @@ class Key implements API\Serializable, \Serializable {
 	 */
 	public function get_active_count() {
 
-		$db = Manager::make_query_object( 'activations' );
+		$db = Manager::make_simple_query_object( 'itelic-activations' );
 
 		return $db->count( array(
 			'lkey'   => $this->get_key(),
@@ -397,7 +409,7 @@ class Key implements API\Serializable, \Serializable {
 			$val = null;
 		}
 
-		$this->update_value( 'expires', $val );
+		$this->update( 'expires', $val );
 	}
 
 	/**
@@ -417,7 +429,7 @@ class Key implements API\Serializable, \Serializable {
 	public function set_max( $max ) {
 
 		$this->max = absint( $max );
-		$this->update_value( 'max', $this->get_max() );
+		$this->update( 'max', $this->get_max() );
 	}
 
 	/**
@@ -470,34 +482,13 @@ class Key implements API\Serializable, \Serializable {
 	 * Delete the license key.
 	 */
 	public function delete() {
-		$keys = Manager::make_query_object( 'keys' );
-		$keys->delete( $this->get_key() );
+		parent::delete();
 
-		$activations = Manager::make_query_object( 'activations' );
+		$activations = Manager::make_simple_query_object( 'itelic-activations' );
 		$activations->delete_many( array( 'lkey' => $this->get_key() ) );
 
-		$renewals = Manager::make_query_object( 'renewals' );
+		$renewals = Manager::make_simple_query_object( 'itelic-renewals' );
 		$renewals->delete_many( array( 'lkey' => $this->get_key() ) );
-	}
-
-	/**
-	 * Update a particular value.
-	 *
-	 * @since 1.0
-	 *
-	 * @param string $key
-	 * @param mixed  $value
-	 *
-	 * @throws \RuntimeException|DB\Exception
-	 */
-	protected function update_value( $key, $value ) {
-
-		$data = array(
-			$key => $value
-		);
-
-		$db = Manager::make_query_object( 'keys' );
-		$db->update( $this->get_key(), $data );
 	}
 
 	/**
@@ -525,10 +516,20 @@ class Key implements API\Serializable, \Serializable {
 	 */
 	public function unserialize( $serialized ) {
 
-		$db   = Manager::make_query_object( 'keys' );
+		$db   = Manager::make_simple_query_object( 'itelic-keys' );
 		$data = $db->get( $serialized['key'] );
 
 		$this->init( $data );
 	}
 
+	/**
+	 * Get the table object for this model.
+	 *
+	 * @since 1.0
+	 *
+	 * @returns Table
+	 */
+	protected static function get_table() {
+		return Manager::get( 'itelic-keys' );
+	}
 }

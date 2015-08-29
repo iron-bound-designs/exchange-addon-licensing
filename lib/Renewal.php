@@ -7,12 +7,16 @@
  */
 
 namespace ITELIC;
-use ITELIC\DB\Manager;
+
+use IronBound\Cache\Cache;
+use IronBound\DB\Model;
+use IronBound\DB\Table\Table;
+use IronBound\DB\Manager;
 
 /**
  * Class Renewal
  */
-class Renewal {
+class Renewal extends Model {
 
 	/**
 	 * @var int
@@ -47,19 +51,15 @@ class Renewal {
 	 * @throws \InvalidArgumentException
 	 */
 	public function __construct( $data ) {
-		if ( ! is_object( $data ) ) {
-			throw new \InvalidArgumentException( __( "Passed data must be an object.", Plugin::SLUG ) );
-		}
-
 		$this->init( $data );
 	}
 
 	/**
 	 * Initialize this object.
 	 *
-	 * @param object $data
+	 * @param \stdClass $data
 	 */
-	protected function init( $data ) {
+	protected function init( \stdClass $data ) {
 		$this->id               = $data->id;
 		$this->key              = itelic_get_key( $data->lkey );
 		$this->renewal_date     = new \DateTime( $data->renewal_date );
@@ -81,15 +81,7 @@ class Renewal {
 	 * @return Renewal
 	 */
 	public static function from_id( $id ) {
-
-		$db   = Manager::make_query_object( 'renewals' );
-		$data = $db->get( $id );
-
-		if ( $data ) {
-			return new Renewal( $data );
-		} else {
-			return null;
-		}
+		return self::get( $id );
 	}
 
 	/**
@@ -117,10 +109,27 @@ class Renewal {
 			'transaction_id'   => $transaction->ID
 		);
 
-		$db = Manager::make_query_object( 'renewals' );
+		$db = Manager::make_simple_query_object( 'itelic-renewals' );
 		$id = $db->insert( $data );
 
-		return self::from_id( $id );
+		$renewal = self::from_id( $id );
+
+		if ( $renewal ) {
+			Cache::add( $renewal );
+		}
+
+		return $renewal;
+	}
+
+	/**
+	 * Get the unique pk for this record.
+	 *
+	 * @since 1.0
+	 *
+	 * @return mixed (generally int, but not necessarily).
+	 */
+	public function get_pk() {
+		return $this->id;
 	}
 
 	/**
@@ -131,7 +140,7 @@ class Renewal {
 	 * @return int
 	 */
 	public function get_id() {
-		return $this->id;
+		return $this->get_pk();
 	}
 
 	/**
@@ -183,5 +192,16 @@ class Renewal {
 	 */
 	public function __toString() {
 		return $this->get_key() . ' – ' . $this->get_renewal_date()->format( get_option( 'date_format' ) );
+	}
+
+	/**
+	 * Get the table object for this model.
+	 *
+	 * @since 1.0
+	 *
+	 * @returns Table
+	 */
+	protected static function get_table() {
+		return Manager::get( 'itelic-renewals' );
 	}
 }

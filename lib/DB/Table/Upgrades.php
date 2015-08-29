@@ -7,12 +7,13 @@
  */
 
 namespace ITELIC\DB\Table;
+use IronBound\DB\Table\Table;
 
 /**
  * Class Upgrades
  * @package ITELIC\DB\Table
  */
-class Upgrades implements Base {
+class Upgrades implements Table {
 
 	/**
 	 * Retrieve the name of the database table.
@@ -35,7 +36,7 @@ class Upgrades implements Base {
 	 * @return string
 	 */
 	public function get_slug() {
-		return 'upgrades';
+		return 'itelic-upgrades';
 	}
 
 	/**

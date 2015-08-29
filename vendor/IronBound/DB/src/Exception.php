@@ -6,7 +6,7 @@
  * @since  1.0
  */
 
-namespace ITELIC\DB;
+namespace IronBound\DB;
 
 /**
  * Class Exception

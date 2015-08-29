@@ -8,18 +8,20 @@
 
 namespace ITELIC_API\Query;
 
+use IronBound\DB\Model;
+use IronBound\DB\Query\Complex_Query;
 use ITELIC\Activation;
-use ITELIC\DB\Query\Builder;
-use ITELIC\DB\Query\Tag\From;
-use ITELIC\DB\Query\Tag\Where;
-use ITELIC\DB\Query\Tag\Where_Date;
-use ITELIC\DB\Manager;
+use IronBound\DB\Query\Builder;
+use IronBound\DB\Query\Tag\From;
+use IronBound\DB\Query\Tag\Where;
+use IronBound\DB\Query\Tag\Where_Date;
+use IronBound\DB\Manager;
 
 /**
  * Class Activations
  * @package ITELIC_API\Query
  */
-class Activations extends Base {
+class Activations extends Complex_Query {
 
 	/**
 	 * Constructor.
@@ -27,7 +29,7 @@ class Activations extends Base {
 	 * @param array $args
 	 */
 	public function __construct( array $args = array() ) {
-		parent::__construct( Manager::get( 'activations' ), $args );
+		parent::__construct( Manager::get( 'itelic-activations' ), $args );
 	}
 
 	/**
@@ -63,9 +65,9 @@ class Activations extends Base {
 	 *
 	 * @param \stdClass $data
 	 *
-	 * @return object
+	 * @return Model
 	 */
-	protected function make_object( $data ) {
+	protected function make_object( \stdClass $data ) {
 		return new Activation( $data );
 	}
 

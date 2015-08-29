@@ -1,25 +1,29 @@
 <?php
 /**
- * Base query object for other queries.
+ * API for making complex queries.
  *
- * @author Iron Bound Designs
- * @since  1.0
+ * @author      Iron Bound Designs
+ * @since       1.0
+ * @copyright   2015 (c) Iron Bound Designs.
+ * @license     GPLv2
  */
 
-namespace ITELIC_API\Query;
+namespace IronBound\DB\Query;
 
-use ITELIC\DB\Manager;
-use ITELIC\DB\Query\Tag\Limit;
-use ITELIC\DB\Query\Tag\Order;
-use ITELIC\DB\Query\Tag\Select;
-use ITELIC\DB\Query\Tag\Where;
-use ITELIC\DB\Table\Base as Table;
+use IronBound\DB\Manager;
+use IronBound\DB\Model;
+use IronBound\DB\Query\Tag\Limit;
+use IronBound\DB\Query\Tag\Order;
+use IronBound\DB\Query\Tag\Select;
+use IronBound\DB\Query\Tag\Where;
+use IronBound\DB\Table\Table as Table;
 
 /**
  * Class Base
- * @package ITELIC\API\Query
+ *
+ * @package IronBound\DB\Query
  */
-abstract class Base {
+abstract class Complex_Query {
 
 	/**
 	 * @var array
@@ -27,7 +31,7 @@ abstract class Base {
 	protected $args = array();
 
 	/**
-	 * @var \ITELIC\DB\Query\Query|null
+	 * @var \IronBound\DB\Query\Simple_Query|null
 	 */
 	protected $db_query;
 
@@ -60,7 +64,7 @@ abstract class Base {
 	public function __construct( Table $table, array $args = array() ) {
 
 		$this->table    = $table;
-		$this->db_query = Manager::make_query_object( $table->get_slug() );
+		$this->db_query = Manager::make_simple_query_object( $table->get_slug() );
 
 		$this->args = wp_parse_args( $args, $this->get_default_args() );
 
@@ -91,7 +95,7 @@ abstract class Base {
 	 *
 	 * @since 1.0
 	 *
-	 * @return object[]|\stdClass[]|mixed[]
+	 * @return Model[]|\stdClass[]|mixed[]
 	 */
 	public function get_results() {
 		return $this->results;
@@ -161,8 +165,22 @@ abstract class Base {
 			$this->total_items = $count_results[0]->COUNT;
 		}
 
+		$this->results = $this->parse_results( $results );
+	}
+
+	/**
+	 * Parse the results returned from the DB.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $results
+	 *
+	 * @return array
+	 */
+	protected function parse_results( $results ) {
+
 		if ( is_array( $this->args['return_value'] ) ) {
-			$this->results = $results;
+			return $results;
 		} elseif ( $this->args['return_value'] != 'object' ) {
 			$values = array();
 			$field  = $this->args['return_value'];
@@ -171,7 +189,7 @@ abstract class Base {
 				$values[] = $result->$field;
 			}
 
-			$this->results = $values;
+			return $values;
 		} else {
 			$records = array();
 
@@ -179,7 +197,7 @@ abstract class Base {
 				$records[ $result->{$this->table->get_primary_key()} ] = $this->make_object( $result );
 			}
 
-			$this->results = $records;
+			return $records;
 		}
 	}
 
@@ -199,29 +217,31 @@ abstract class Base {
 	 *
 	 * @param \stdClass $data
 	 *
-	 * @return object
+	 * @return Model
 	 */
-	protected abstract function make_object( $data );
+	protected abstract function make_object( \stdClass $data );
 
 	/**
 	 * Build the select query.
 	 *
 	 * @since 1.0
 	 *
+	 * @param string $alias
+	 *
 	 * @return Select
 	 */
-	protected function parse_select() {
+	protected function parse_select( $alias = 'q' ) {
 
 		if ( is_array( $this->args['return_value'] ) ) {
 			$select = new Select( null );
 
 			foreach ( $this->args['return_value'] as $column ) {
-				$select->also( "q.$column" );
+				$select->also( "$alias.$column" );
 			}
 		} elseif ( $this->args['return_value'] != 'object' ) {
-			$select = new Select( 'q.' . $this->args['return_value'] );
+			$select = new Select( "$alias." . $this->args['return_value'] );
 		} else {
-			$select = new Select( 'q.*' );
+			$select = new Select( "$alias.*" );
 		}
 
 		if ( $this->args['sql_calc_found_rows'] ) {
@@ -284,9 +304,11 @@ abstract class Base {
 	 *
 	 * @since 1.0
 	 *
+	 * @param string $alias
+	 *
 	 * @return Order
 	 */
-	protected function parse_order() {
+	protected function parse_order( $alias = 'q' ) {
 
 		if ( ! is_array( $this->args['order'] ) && $this->args['order'] === 'rand' ) {
 			return new Order( Order::RAND );
@@ -310,6 +332,8 @@ abstract class Base {
 				throw new \InvalidArgumentException( "Invalid order column $column." );
 			}
 
+			$column = "{$alias}.$column";
+
 			if ( ! isset( $order ) ) {
 				$order = new Order( $column, $direction );
 			} else {
@@ -320,7 +344,7 @@ abstract class Base {
 		if ( isset( $order ) ) {
 			return $order;
 		} else {
-			return new Order( $this->table->get_primary_key(), Order::ASC );
+			return new Order( "{$alias}.{$this->table->get_primary_key()}", Order::ASC );
 		}
 	}
 
@@ -363,5 +387,4 @@ abstract class Base {
 
 		return new Limit( $count, $offset );
 	}
-
 }

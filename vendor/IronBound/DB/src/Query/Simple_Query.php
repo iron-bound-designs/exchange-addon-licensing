@@ -6,19 +6,19 @@
  * @since  1.0
  */
 
-namespace ITELIC\DB\Query;
+namespace IronBound\DB\Query;
 
-use ITELIC\DB\Exception;
-use ITELIC\DB\Query\Tag\From;
-use ITELIC\DB\Query\Tag\Select;
-use ITELIC\DB\Query\Tag\Where;
-use ITELIC\DB\Table\Base;
+use IronBound\DB\Exception;
+use IronBound\DB\Query\Tag\From;
+use IronBound\DB\Query\Tag\Select;
+use IronBound\DB\Query\Tag\Where;
+use IronBound\DB\Table\Table;
 
 /**
  * Class Query
- * @package ITELIC\DB
+ * @package IronBound\DB
  */
-class Query {
+class Simple_Query {
 
 	/**
 	 * @var \wpdb
@@ -26,7 +26,7 @@ class Query {
 	protected $wpdb;
 
 	/**
-	 * @var Base
+	 * @var Table
 	 */
 	protected $table;
 
@@ -34,9 +34,9 @@ class Query {
 	 * Constructor.
 	 *
 	 * @param \wpdb $wpdb
-	 * @param Base  $table
+	 * @param Table  $table
 	 */
-	public function __construct( \wpdb $wpdb, Base $table ) {
+	public function __construct( \wpdb $wpdb, Table $table ) {
 		$this->wpdb  = $wpdb;
 		$this->table = $table;
 	}
@@ -209,6 +209,7 @@ class Query {
 
 		// White list columns
 		$data = array_intersect_key( $data, $column_formats );
+		unset( $data[ $this->table->get_primary_key() ] );
 
 		// Reorder $column_formats to match the order of columns given in $data
 		$data_keys      = array_keys( $data );

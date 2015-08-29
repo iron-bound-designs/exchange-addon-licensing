@@ -2,15 +2,17 @@
 /**
  * WP_Date_Query where tag.
  *
- * @author Iron Bound Designs
- * @since  1.0
+ * @author      Iron Bound Designs
+ * @since       1.0
+ * @copyright   2015 (c) Iron Bound Designs.
+ * @license     GPLv2
  */
 
-namespace ITELIC\DB\Query\Tag;
+namespace IronBound\DB\Query\Tag;
 
 /**
  * Class Where_Date
- * @package ITELIC\DB\Query\Tag
+ * @package IronBound\DB\Query\Tag
  */
 class Where_Date extends Where_Raw {
 

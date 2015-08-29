@@ -8,17 +8,18 @@
 
 namespace ITELIC\DB;
 
+use IronBound\DB\Manager;
 use ITELIC\DB\Table\Keys;
 use ITELIC\DB\Table\Activations;
 use ITELIC\DB\Table\Releases;
 use ITELIC\DB\Table\Renewals;
 use ITELIC\DB\Table\Upgrades;
 
-Manager::register( 'keys', new Keys() );
-Manager::register( 'activations', new Activations() );
-Manager::register( 'renewals', new Renewals() );
-Manager::register( 'releases', new Releases() );
-Manager::register( 'upgrades', new Upgrades() );
+Manager::register( new Keys() );
+Manager::register( new Activations() );
+Manager::register( new Renewals() );
+Manager::register( new Releases() );
+Manager::register( new Upgrades() );
 
-add_action( 'itelic_activate', array( 'ITELIC\DB\Manager', 'initialize_tables' ) );
-add_action( 'itelic_upgrade', array( 'ITELIC\DB\Manager', 'initialize_tables' ) );
+add_action( 'itelic_activate', array( 'IronBound\DB\Manager', 'maybe_install_table' ) );
+add_action( 'itelic_upgrade', array( 'IronBound\DB\Manager', 'maybe_install_table' ) );

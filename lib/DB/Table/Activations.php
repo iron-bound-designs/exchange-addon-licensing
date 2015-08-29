@@ -9,12 +9,13 @@
  */
 
 namespace ITELIC\DB\Table;
+use IronBound\DB\Table\Table;
 
 /**
  * Class Activations
  * @package ITELIC\DB\Table
  */
-class Activations implements Base {
+class Activations implements Table {
 
 	/**
 	 * Columns in the table.
@@ -75,7 +76,7 @@ class Activations implements Base {
 	 * @return string
 	 */
 	public function get_slug() {
-		return 'activations';
+		return 'itelic-activations';
 	}
 
 	/**

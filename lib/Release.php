@@ -8,13 +8,17 @@
 
 namespace ITELIC;
 
-use ITELIC\DB\Manager;
+use IronBound\Cache\Cache;
+use IronBound\DB\Model;
+use IronBound\DB\Table\Table;
+use IronBound\DB\Manager;
+use IronBound\DB\Exception as DB_Exception;
 
 /**
  * Class Release
  * @package ITELIC
  */
-class Release {
+class Release extends Model {
 
 	/**
 	 * Major releases. 1.5 -> 1.6
@@ -107,7 +111,17 @@ class Release {
 	 * @param \stdClass $data
 	 */
 	public function __construct( \stdClass $data ) {
+		$this->init( $data );
+	}
 
+	/**
+	 * Init an object.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \stdClass $data
+	 */
+	protected function init( \stdClass $data ) {
 		$this->ID      = $data->ID;
 		$this->product = it_exchange_get_product( $data->product );
 
@@ -147,15 +161,7 @@ class Release {
 	 * @return Release|null
 	 */
 	public static function with_id( $id ) {
-
-		$db   = Manager::make_query_object( 'releases' );
-		$data = $db->get( $id );
-
-		if ( $data ) {
-			return new Release( $data );
-		} else {
-			return null;
-		}
+		return self::get( $id );
 	}
 
 	/**
@@ -173,7 +179,7 @@ class Release {
 	 * @param string               $changelog
 	 *
 	 * @return Release|null
-	 * @throws DB\Exception
+	 * @throws DB_Exception
 	 */
 	public static function create( \IT_Exchange_Product $product, $download, $version, $type, $status = '', $changelog = '' ) {
 
@@ -210,10 +216,27 @@ class Release {
 			$data['start_date'] = current_time( 'mysql' );
 		}
 
-		$db = Manager::make_query_object( 'releases' );
+		$db = Manager::make_simple_query_object( 'itelic-releases' );
 		$ID = $db->insert( $data );
 
-		return self::with_id( $ID );
+		$release = self::get( $ID );
+
+		if ( $release ) {
+			Cache::add( $release );
+		}
+
+		return $release;
+	}
+
+	/**
+	 * Get the unique pk for this record.
+	 *
+	 * @since 1.0
+	 *
+	 * @return mixed (generally int, but not necessarily).
+	 */
+	public function get_pk() {
+		return $this->ID;
 	}
 
 	/**
@@ -224,7 +247,7 @@ class Release {
 	 * @return int
 	 */
 	public function get_ID() {
-		return $this->ID;
+		return $this->get_pk();
 	}
 
 	/**
@@ -264,7 +287,7 @@ class Release {
 
 		$this->download = $download;
 
-		$this->update_value( 'download', $download );
+		$this->update( 'download', $download );
 	}
 
 	/**
@@ -288,7 +311,7 @@ class Release {
 	public function set_version( $version ) {
 		$this->version = $version;
 
-		$this->update_value( 'version', $version );
+		$this->update( 'version', $version );
 	}
 
 	/**
@@ -325,7 +348,7 @@ class Release {
 		}
 
 		$this->status = $status;
-		$this->update_value( 'status', $status );
+		$this->update( 'status', $status );
 	}
 
 	/**
@@ -362,7 +385,7 @@ class Release {
 		}
 
 		$this->type = $type;
-		$this->update_value( 'type', $type );
+		$this->update( 'type', $type );
 	}
 
 	/**
@@ -392,7 +415,7 @@ class Release {
 			$this->changelog = $changelog;
 		}
 
-		$this->update_value( 'changelog', $this->changelog );
+		$this->update( 'changelog', $this->changelog );
 	}
 
 	/**
@@ -422,27 +445,7 @@ class Release {
 			$val = null;
 		}
 
-		$this->update_value( 'start_date', $val );
-	}
-
-	/**
-	 * Update a particular value.
-	 *
-	 * @since 1.0
-	 *
-	 * @param string $key
-	 * @param mixed  $value
-	 *
-	 * @throws \RuntimeException|DB\Exception
-	 */
-	protected function update_value( $key, $value ) {
-
-		$data = array(
-			$key => $value
-		);
-
-		$db = Manager::make_query_object( 'releases' );
-		$db->update( $this->get_ID(), $data );
+		$this->update( 'start_date', $val );
 	}
 
 	/**
@@ -476,5 +479,16 @@ class Release {
 			self::TYPE_PRERELEASE => __( "Pre-release", Plugin::SLUG ),
 			self::TYPE_RESTRICTED => __( "Restricted Release", Plugin::SLUG )
 		);
+	}
+
+	/**
+	 * Get the table object for this model.
+	 *
+	 * @since 1.0
+	 *
+	 * @returns Table
+	 */
+	protected static function get_table() {
+		return Manager::make_simple_query_object( 'itelic-releases' );
 	}
 }
