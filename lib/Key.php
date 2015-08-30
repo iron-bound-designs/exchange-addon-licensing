@@ -507,8 +507,8 @@ class Key extends Model implements API\Serializable {
 	public function get_data_to_cache() {
 		$data = parent::get_data_to_cache();
 
-		unset( $data['key'] );
 		$data['lkey'] = $this->get_key();
+		$data['transaction_id'] = $this->get_transaction()->ID;
 
 		return $data;
 	}
