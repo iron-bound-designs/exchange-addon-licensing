@@ -109,7 +109,6 @@ class Single extends View {
 				<table id="activations-table" class="widefat">
 					<thead>
 					<tr>
-						<th><?php _e( "ID", Plugin::SLUG ); ?></th>
 						<th><?php _e( "Location", Plugin::SLUG ); ?></th>
 						<th><?php _e( "Status", Plugin::SLUG ); ?></th>
 						<th><?php _e( "Activation", Plugin::SLUG ); ?></th>
@@ -156,7 +155,6 @@ class Single extends View {
 		?>
 
 		<tr>
-			<td><?php echo $activation->get_id(); ?></td>
 			<td><?php echo $activation->get_location(); ?></td>
 			<td><?php echo $activation->get_status( true ); ?></td>
 			<td><?php echo $activation->get_activation()->format( $this->get_short_df() ); ?></td>
