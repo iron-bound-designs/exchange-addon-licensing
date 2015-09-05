@@ -27,15 +27,15 @@ class Add_New extends View {
 
 		?>
 
-		<div class="main-editor" style="opacity: 1">
+		<div class="main-editor" style="opacity: 0">
 
 			<div class="row row-one">
 
-				<div class="product-select">
+				<div class="product-select-container">
 					<?php $this->render_product_select(); ?>
 				</div>
 
-				<div class="version-number">
+				<div class="version-number-container">
 					<?php $this->render_version_number(); ?>
 				</div>
 			</div>
@@ -43,6 +43,18 @@ class Add_New extends View {
 			<div class="row row-two">
 				<div class="upload-container">
 					<?php $this->render_upload(); ?>
+				</div>
+			</div>
+
+			<div class="row row-three">
+				<div class="whats-changed-container">
+					<?php $this->render_whats_changed(); ?>
+				</div>
+			</div>
+
+			<div class="row row-four">
+				<div class="buttons">
+					<?php $this->render_buttons(); ?>
 				</div>
 			</div>
 
@@ -147,6 +159,30 @@ class Add_New extends View {
 		</div>
 
 		<?php
+	}
+
+	/**
+	 * Render the whats changed editor.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_whats_changed() {
+
+		?><label for="whats-changed"><?php _e( "What's Changed", Plugin::SLUG ); ?></label> <?php
+
+		wp_editor( '', 'whats-changed', array(
+			'media_buttons' => false,
+			'teeny'         => true,
+			'textarea_rows' => 5,
+		) );
+	}
+
+	/**
+	 * Render the action buttons.
+	 */
+	protected function render_buttons() {
+		submit_button( __( "Save for Later", Plugin::SLUG ), 'secondary large', 'draft', false );
+		submit_button( __( "Release", Plugin::SLUG ), 'primary large', 'release', false );
 	}
 
 	/**

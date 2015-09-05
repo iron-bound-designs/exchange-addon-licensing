@@ -71,6 +71,14 @@
 	clear: both;
 }
 
+.main-editor .row {
+	margin-bottom: 20px;
+}
+
+.main-editor div:last-of-type {
+	margin-bottom: 0;
+}
+
 .main-editor label {
 	margin: 0 0 5px 0;
 	font-size: 16px;
@@ -99,12 +107,12 @@
 	font-style: oblique;
 }
 
-.product-select {
+.product-select-container {
 	float: left;
 	width: 47.5%;
 }
 
-.version-number {
+.version-number-container {
 	float: left;
 	width: 47.5%;
 	margin-left: 5%;
@@ -119,7 +127,6 @@
 
 .upload-container {
 	padding: 50px;
-	margin-top: 20px;
 	border: 2px dashed #ccc;
 	border-radius: 5px;
 }
@@ -137,4 +144,16 @@
 	display: block;
 	margin: 5px auto 0 auto;
 	width: 181px;
+}
+
+.buttons {
+	float: right;
+}
+
+.buttons input[type="submit"] {
+	margin-left: 15px;
+}
+
+.buttons input:first-of-type {
+	margin-left: 0;
 }
