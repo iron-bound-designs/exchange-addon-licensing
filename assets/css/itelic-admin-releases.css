@@ -146,6 +146,29 @@
 	padding: 50px;
 	border: 2px dashed #ccc;
 	border-radius: 5px;
+	position: relative;
+}
+
+.trash-file {
+	color: #9a9a9a;
+	position: absolute;
+	top: 7px;
+	right: 7px;
+	visibility: hidden;
+	text-decoration: none;
+	cursor: pointer;
+	-webkit-transition-duration: 0.3s;
+	transition-duration: 0.3s;
+	-webkit-transition-property: color;
+	transition-property: color;
+}
+
+.upload-container:hover .trash-file {
+	visibility: visible;
+}
+
+.trash-file:hover {
+	color: #dd3d36;
 }
 
 .upload-inputs {
@@ -155,12 +178,6 @@
 
 .upload-inputs label {
 	text-align: center;
-}
-
-.upload-inputs input {
-	display: block;
-	margin: 5px auto 0 auto;
-	width: 181px;
 }
 
 .buttons {

@@ -48,7 +48,12 @@ class Add_New extends Controller {
 		wp_enqueue_style( 'itelic-admin-releases' );
 		wp_enqueue_script( 'itelic-admin-releases' );
 		wp_localize_script( 'itelic-admin-releases', 'ITELIC', array(
-			'prevVersion' => __( "Previous version: %s", Plugin::SLUG )
+			'prevVersion'  => __( "Previous version: %s", Plugin::SLUG ),
+			'uploadTitle'  => __( "Choose Software File", Plugin::SLUG ),
+			'uploadButton' => __( "Select File", Plugin::SLUG ),
+			'uploadLabel'  => __( "Upload File", Plugin::SLUG )
 		) );
+
+		wp_enqueue_media();
 	}
 }

@@ -27,7 +27,7 @@ class Add_New extends View {
 
 		?>
 
-		<div class="main-editor" style="opacity: 0">
+		<div class="main-editor" style="opacity: 1">
 
 			<div class="row row-one">
 
@@ -160,9 +160,13 @@ class Add_New extends View {
 		?>
 
 		<div class="upload-inputs">
-			<label for="file"><?php _e( "Upload File", Plugin::SLUG ); ?></label>
-			<input type="file" name="file" id="file">
+			<a href="javascript:">
+				<label for="file"><?php _e( "Upload File", Plugin::SLUG ); ?></label>
+			</a>
+			<input type="hidden" name="upload-file" id="upload-file">
 		</div>
+
+		<a class="trash-file dashicons dashicons-trash"></a>
 
 		<?php
 	}
