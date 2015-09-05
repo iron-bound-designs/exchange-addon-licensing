@@ -52,7 +52,6 @@
 
 .main-editor {
 	width: 687px;
-	height: 500px;
 	padding: 2em;
 	background: white;
 	border: #ccc solid 1px;
@@ -116,4 +115,26 @@
 	transition-duration: 0.3s;
 	-webkit-transition-property: opacity;
 	transition-property: opacity;
+}
+
+.upload-container {
+	padding: 50px;
+	margin-top: 20px;
+	border: 2px dashed #ccc;
+	border-radius: 5px;
+}
+
+.upload-inputs {
+	margin: 0 auto;
+	vertical-align: middle;
+}
+
+.upload-inputs label {
+	text-align: center;
+}
+
+.upload-inputs input {
+	display: block;
+	margin: 5px auto 0 auto;
+	width: 181px;
 }

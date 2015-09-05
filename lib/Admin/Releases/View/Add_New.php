@@ -27,7 +27,7 @@ class Add_New extends View {
 
 		?>
 
-		<div class="main-editor" style="opacity: 0">
+		<div class="main-editor" style="opacity: 1">
 
 			<div class="row row-one">
 
@@ -37,6 +37,12 @@ class Add_New extends View {
 
 				<div class="version-number">
 					<?php $this->render_version_number(); ?>
+				</div>
+			</div>
+
+			<div class="row row-two">
+				<div class="upload-container">
+					<?php $this->render_upload(); ?>
 				</div>
 			</div>
 
@@ -124,6 +130,23 @@ class Add_New extends View {
 
 		<?php
 
+	}
+
+	/**
+	 * Render the upload form.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_upload() {
+
+		?>
+
+		<div class="upload-inputs">
+			<label for="file"><?php _e( "Upload File", Plugin::SLUG ); ?></label>
+			<input type="file" name="file" id="file">
+		</div>
+
+		<?php
 	}
 
 	/**
