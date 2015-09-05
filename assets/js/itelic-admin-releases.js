@@ -65,6 +65,7 @@
 
 		$(".upload-inputs label").text(ITELIC.uploadLabel);
 		$("#upload-file").val('');
+		$(".trash-file").css('display', 'none');
 	});
 
 	/**
@@ -114,6 +115,7 @@
 
 			$("#upload-file").val(image_data.id);
 			$(".upload-inputs label").text(image_data.filename);
+			$(".trash-file").css('display', 'inline');
 
 
 			/*for (var image_property in image_data) {

@@ -154,17 +154,17 @@
 	position: absolute;
 	top: 7px;
 	right: 7px;
-	visibility: hidden;
+	opacity: 0;
 	text-decoration: none;
 	cursor: pointer;
 	-webkit-transition-duration: 0.3s;
 	transition-duration: 0.3s;
-	-webkit-transition-property: color;
-	transition-property: color;
+	-webkit-transition-property: color, opacity;
+	transition-property: color, opacity;
 }
 
 .upload-container:hover .trash-file {
-	visibility: visible;
+	opacity: 1;
 }
 
 .trash-file:hover {
