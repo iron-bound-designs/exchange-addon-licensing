@@ -342,6 +342,8 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 		$prev_values = it_exchange_get_product_feature( $product_id, $this->slug );
 		$values      = \ITUtility::merge_defaults( $new_value, $prev_values );
 
+		update_post_meta( $product_id, '_it_exchange_itelic_enabled', $values['enabled'] );
+
 		return update_post_meta( $product_id, '_it_exchange_itelic_feature', $values );
 	}
 

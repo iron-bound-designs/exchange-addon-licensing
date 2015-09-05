@@ -24,6 +24,26 @@ class Add_New extends View {
 	public function render() {
 
 		$this->render_types_tab();
+
+		?>
+
+		<div class="main-editor" style="opacity: 0">
+
+			<div class="row row-one">
+
+				<div class="product-select">
+					<?php $this->render_product_select(); ?>
+				</div>
+
+				<div class="version-number">
+					<?php $this->render_version_number(); ?>
+				</div>
+			</div>
+
+		</div>
+
+		<?php
+
 	}
 
 	/**
@@ -42,12 +62,65 @@ class Add_New extends View {
 			<?php foreach ( Release::get_types( true ) as $type => $label ): ?>
 
 				<li data-type="<?php echo $type; ?>" class="<?php echo $type == $selected ? 'selected' : ''; ?>">
-					<i class="dashicons-before <?php echo $this->get_icon_for_type( $type ); ?>"></i>
-					<?php echo $label; ?>
+					<input type="radio" name="type-select" id="type-select-<?php echo $type; ?>">
+					<label for="type-select-<?php echo $type; ?>">
+						<span class="dashicons <?php echo $this->get_icon_for_type( $type ); ?>"></span>
+						<span class="type-description"><?php echo $label; ?></span>
+					</label>
 				</li>
 
 			<?php endforeach; ?>
 		</ul>
+
+		<?php
+
+	}
+
+	/**
+	 * Render the product select dropdown.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int $selected
+	 */
+	protected function render_product_select( $selected = 0 ) {
+
+		$products = itelic_get_products_with_licensing_enabled();
+
+		?>
+
+		<label for="product"><?php _e( "Select a Product", Plugin::SLUG ); ?></label>
+		<select id="product" name="product">
+
+			<option value="">– <?php _e( "Select", Plugin::SLUG ); ?> –</option>
+
+			<?php foreach ( $products as $product ): ?>
+				<?php $version = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'version' ) ); ?>
+				<option value="<?php echo $product->ID; ?>" data-version="<?php echo esc_attr( $version ); ?>"
+					<?php selected( $selected, $product->ID ); ?>>
+					<?php echo $product->post_title; ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+
+		<?php
+
+	}
+
+	/**
+	 * Render the version number input.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int $current
+	 */
+	protected function render_version_number( $current = 0 ) {
+
+		?>
+
+		<label for="version"><?php _e( "Version Number", Plugin::SLUG ); ?></label>
+		<input type="text" id="version" name="version" value="<?php echo empty( $current ) ? '' : $current; ?>">
+		<p class="description" id="prev-version" style="opacity: 0;"></p>
 
 		<?php
 
@@ -85,7 +158,6 @@ class Add_New extends View {
 				 */
 				return apply_filters( 'itelic_get_icon_for_release_type', $type );
 		}
-
 	}
 
 	/**
