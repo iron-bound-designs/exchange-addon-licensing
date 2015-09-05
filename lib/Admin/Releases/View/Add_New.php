@@ -138,7 +138,7 @@ class Add_New extends View {
 
 		<label for="version"><?php _e( "Version Number", Plugin::SLUG ); ?></label>
 		<input type="text" id="version" name="version" value="<?php echo empty( $current ) ? '' : $current; ?>">
-		<p class="description" id="prev-version" style="opacity: 0;"></p>
+		<p class="description" id="prev-version" style="opacity: 0;">&nbsp;</p>
 
 		<?php
 
