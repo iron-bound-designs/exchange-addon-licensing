@@ -123,7 +123,7 @@ class Plugin {
 		wp_register_script( 'itelic-account-licenses', self::$url . 'assets/js/itelic-account-licenses.js', array( 'jquery' ), self::VERSION );
 
 		wp_register_style( 'itelic-admin-releases', self::$url . 'assets/css/itelic-admin-releases.css', array(), self::VERSION );
-		wp_register_script( 'itelic-admin-releases', self::$url . 'assets/js/itelic-admin-releases.js', array( 'jquery' ), self::VERSION );
+		wp_register_script( 'itelic-admin-releases', self::$url . 'assets/js/itelic-admin-releases.js', array( 'jquery-effects-slide' ), self::VERSION );
 	}
 
 	/**

@@ -52,6 +52,12 @@ class Add_New extends View {
 				</div>
 			</div>
 
+			<div class="row row-five hidden" id="security-message-row">
+				<div class="security-message">
+					<?php $this->render_security_message(); ?>
+				</div>
+			</div>
+
 			<div class="row row-four">
 				<div class="buttons">
 					<?php $this->render_buttons(); ?>
@@ -79,8 +85,8 @@ class Add_New extends View {
 
 			<?php foreach ( Release::get_types( true ) as $type => $label ): ?>
 
-				<li data-type="<?php echo $type; ?>" class="<?php echo $type == $selected ? 'selected' : ''; ?>">
-					<input type="radio" name="type-select" id="type-select-<?php echo $type; ?>">
+				<li class="<?php echo $type == $selected ? 'selected' : ''; ?>">
+					<input type="radio" name="type-select" id="type-select-<?php echo $type; ?>" data-type="<?php echo $type; ?>">
 					<label for="type-select-<?php echo $type; ?>">
 						<span class="dashicons <?php echo $this->get_icon_for_type( $type ); ?>"></span>
 						<span class="type-description"><?php echo $label; ?></span>
@@ -175,6 +181,26 @@ class Add_New extends View {
 			'teeny'         => true,
 			'textarea_rows' => 5,
 		) );
+	}
+
+	/**
+	 * Optionally displayed when the release type is a security release.
+	 *
+	 * Allows for displaying a security message on the upgrade page.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_security_message() {
+
+		?>
+
+		<label for="security-message"><?php _e( "Security Message", Plugin::SLUG ); ?></label>
+		<textarea id="security-message" name="security-message" maxlength="200" rows="3"></textarea>
+		<p class="description">
+			<?php _e( "Optionally display a security message on the software update page, alerting your customer to the urgency of the issue.", Plugin::SLUG ); ?>
+		</p>
+
+		<?php
 	}
 
 	/**

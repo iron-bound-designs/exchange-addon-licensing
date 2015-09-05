@@ -5,8 +5,23 @@ jQuery(document).ready(function ($) {
 	 */
 	$(".release-types input").change(function () {
 
+		var $main = $(".main-editor");
+		var $securityMessage = $("#security-message-row");
+
 		if ($(this).is(':checked')) {
-			$(".main-editor").css({
+
+			if ($(this).data('type') == 'security') {
+
+				if ($main.css('opacity') == 0) {
+					$securityMessage.show();
+				} else {
+					$securityMessage.slideDown();
+				}
+			} else {
+				$securityMessage.slideUp();
+			}
+
+			$main.css({
 				opacity: 1
 			});
 		}
