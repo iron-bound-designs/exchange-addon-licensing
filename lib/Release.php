@@ -469,9 +469,22 @@ class Release extends Model {
 	 *
 	 * @since 1.0
 	 *
+	 * @param bool $short
+	 *
 	 * @return array
 	 */
-	public static function get_types() {
+	public static function get_types( $short = false ) {
+
+		if ( $short ) {
+			return array(
+				self::TYPE_MAJOR      => __( "Major", Plugin::SLUG ),
+				self::TYPE_MINOR      => __( "Minor", Plugin::SLUG ),
+				self::TYPE_SECURITY   => __( "Security", Plugin::SLUG ),
+				self::TYPE_PRERELEASE => __( "Pre-release", Plugin::SLUG ),
+				self::TYPE_RESTRICTED => __( "Restricted", Plugin::SLUG )
+			);
+		}
+
 		return array(
 			self::TYPE_MAJOR      => __( "Major Release", Plugin::SLUG ),
 			self::TYPE_MINOR      => __( "Minor Release", Plugin::SLUG ),
