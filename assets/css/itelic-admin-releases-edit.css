@@ -65,10 +65,6 @@
 	border-top: 1px solid #DFDFDF;
 }
 
-#release-details label {
-	display: block;
-}
-
 #release-details input[type="text"]:read-write,
 #release-details input[type="number"]:read-write {
 	background: #fff;
@@ -192,7 +188,8 @@
 
 /** -----------------------------------------------------:[ release misc ]:---------- */
 
-#release-details .misc-block h4 {
+#release-details .misc-block h4,
+#release-details label {
 	margin: 0;
 	font-size: 16px;
 	color: #666666;
@@ -229,4 +226,17 @@
 #release-details .expires h3,
 #release-details .max-activations h3 {
 	cursor: pointer;
+}
+
+/** -----------------------------------------------------:[ replace file ]:---------- */
+
+.replace-file-container {
+	display: inline-block;
+	width: 100%;
+	text-align: center;
+}
+
+.replace-file-container .button {
+	vertical-align: middle;
+	margin-left: 5px;
 }

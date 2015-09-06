@@ -116,24 +116,6 @@
 			$("#upload-file").val(image_data.id);
 			$(".upload-inputs label").text(image_data.filename);
 			$(".trash-file").css('display', 'inline');
-
-
-			/*for (var image_property in image_data) {
-
-			 /!**
-			 * Here, you have access to all of the properties
-			 * provided by WordPress to the selected image.
-			 *
-			 * This is generally where you take the data and so whatever
-			 * it is that you want to do.
-			 *
-			 * For purposes of example, we're just going to dump the
-			 * properties into the console.
-			 *!/
-			 console.log(image_property + ': ' + image_data[image_property]);
-
-			 }*/
-
 		});
 
 		// Now display the actual file_frame

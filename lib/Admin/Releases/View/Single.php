@@ -84,10 +84,40 @@ class Single extends View {
 					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>"><?php echo $this->release->get_version(); ?></h3>
 				</div>
 			</div>
+
+			<?php if ( $this->release->get_status() == Release::STATUS_DRAFT ): ?>
+				<?php $this->render_replace_file_section(); ?>
+			<?php endif; ?>
 		</div>
 
 		<?php
 
+	}
+
+	/**
+	 * Render the replace file section.
+	 *
+	 * Only visible on draft views.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_replace_file_section() {
+
+		?>
+
+		<div class="spacing-wrapper bottom-border">
+
+			<span class="replace-file-container">
+				<label>
+					<?php
+					$info = get_post_meta( $this->release->get_download(), '_it-exchange-download-info', true );
+					echo basename( $info['source'] );
+					?>
+				</label>
+				<a href="javascript:" class="button" id="replace-file"><?php _e( "Replace", Plugin::SLUG ); ?></a>
+			</span>
+		</div>
+		<?php
 	}
 
 	/**

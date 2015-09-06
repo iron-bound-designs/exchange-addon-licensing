@@ -59,7 +59,7 @@ class Single extends Controller {
 		wp_localize_script( 'itelic-admin-releases-edit', 'ITELIC', array(
 			'prevVersion'  => __( "Previous version: %s", Plugin::SLUG ),
 			'uploadTitle'  => __( "Choose Software File", Plugin::SLUG ),
-			'uploadButton' => __( "Select File", Plugin::SLUG ),
+			'uploadButton' => __( "Replace File", Plugin::SLUG ),
 			'uploadLabel'  => __( "Upload File", Plugin::SLUG )
 		) );
 
