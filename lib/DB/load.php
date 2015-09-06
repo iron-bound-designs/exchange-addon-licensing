@@ -21,5 +21,19 @@ Manager::register( new Renewals() );
 Manager::register( new Releases() );
 Manager::register( new Upgrades() );
 
-add_action( 'itelic_activate', array( 'IronBound\DB\Manager', 'maybe_install_table' ) );
-add_action( 'itelic_upgrade', array( 'IronBound\DB\Manager', 'maybe_install_table' ) );
+/**
+ * Install custom DB tables.
+ *
+ * @since 1.0
+ */
+function itelic_install_tables() {
+
+	Manager::maybe_install_table( new Keys() );        
+	Manager::maybe_install_table( new Activations() );
+        Manager::maybe_install_table( new Renewals() );
+        Manager::maybe_install_table( new Releases() );
+        Manager::maybe_install_table( new Upgrades() );
+}
+
+add_action( 'itelic_activate', __NAMESPACE__ . '\\itelic_install_tables' );
+add_action( 'itelic_upgrade', __NAMESPACE__ . '\\itelic_install_tables' );
