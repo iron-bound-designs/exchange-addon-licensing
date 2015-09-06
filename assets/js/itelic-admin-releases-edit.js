@@ -3,6 +3,8 @@
 
 	var file_frame, image_data;
 
+
+
 	/**
 	 * When the upload inputs link is clicked, launch the media uploader.
 	 */

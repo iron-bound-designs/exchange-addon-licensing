@@ -91,6 +91,7 @@ class Single extends View {
 			<?php endif; ?>
 
 			<?php $this->render_whats_changed(); ?>
+			<?php $this->render_upgrades_bar(); ?>
 		</div>
 
 		<?php
@@ -144,6 +145,39 @@ class Single extends View {
 
 		<?php
 
+	}
+
+	/**
+	 * Render the upgrades completion bar.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_upgrades_bar() {
+
+		$updated           = $this->release->get_total_updated();
+		$total_activations = $this->release->get_total_active_activations();
+
+		$percent = $updated / $total_activations * 100;
+
+		?>
+
+		<div class="spacing-wrapper bottom-border">
+
+			<h4><?php _e( "Upgrades", Plugin::SLUG ); ?></h4>
+
+			<div class="progress-container" data-percent="<?php echo $percent; ?>">
+
+				<progress value="<?php echo esc_attr( $updated ); ?>" max="<?php echo esc_attr( $total_activations ); ?>">
+					<div class="progress-bar">
+						<span style="width: <?php echo $percent; ?>%;">Progress: <?php echo $percent; ?>%</span>
+					</div>
+				</progress>
+
+				<a href="javascript:" class="button" id="notify-button"><?php _e( "Notify", Plugin::SLUG ); ?></a>
+			</div>
+		</div>
+
+		<?php
 	}
 
 	/**

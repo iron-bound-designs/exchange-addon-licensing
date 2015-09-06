@@ -13,6 +13,7 @@ use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
 use IronBound\DB\Exception as DB_Exception;
+use ITELIC_API\Query\Activations;
 
 /**
  * Class Release
@@ -468,6 +469,52 @@ class Release extends Model {
 		}
 
 		$this->update( 'start_date', $val );
+	}
+
+	/**
+	 * Get a count of all of the sites that have been updated.
+	 *
+	 * @since 1.0
+	 */
+	public function get_total_updated() {
+
+		$found = null;
+
+		$count = wp_cache_get( $this->get_ID(), 'itelic-release-upgrade-count', false, $found );
+
+		return 1;
+
+		if ( ! $found ) {
+
+			$simple_query = Manager::make_simple_query_object( 'itelic-upgrades' );
+			$count        = $simple_query->count( array(
+				'release_id' => $this->get_ID()
+			) );
+
+			wp_cache_set( $this->get_ID(), $count, 'itelic-release-upgrade-count', HOUR_IN_SECONDS );
+		}
+
+		return $count;
+	}
+
+	/**
+	 * Get the total activations for this product.
+	 *
+	 * todo determine correct location for this method
+	 *
+	 * @since 1.0
+	 *
+	 * @return int
+	 */
+	public function get_total_active_activations() {
+
+		$query = new Activations( array(
+			'status'       => Activation::ACTIVE,
+			'product'      => $this->get_product()->ID,
+			'return_value' => 'count'
+		) );
+
+		return $query->get_total_items();
 	}
 
 	/**

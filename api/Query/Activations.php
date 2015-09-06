@@ -10,6 +10,8 @@ namespace ITELIC_API\Query;
 
 use IronBound\DB\Model;
 use IronBound\DB\Query\Complex_Query;
+use IronBound\DB\Query\Tag\Join;
+use IronBound\DB\Query\Tag\Where_Raw;
 use ITELIC\Activation;
 use IronBound\DB\Query\Builder;
 use IronBound\DB\Query\Tag\From;
@@ -53,6 +55,7 @@ class Activations extends Complex_Query {
 			'status'           => 'any',
 			'activation'       => '',
 			'deactivation'     => '',
+			'product'          => ''
 		);
 
 		return wp_parse_args( $new, $existing );
@@ -111,6 +114,10 @@ class Activations extends Complex_Query {
 		$limit = $this->parse_pagination();
 
 		$builder->append( $select )->append( $from );
+
+		if ( ( $product = $this->parse_product() ) !== null ) {
+			$builder->append( $product );
+		}
 
 		$builder->append( $where );
 		$builder->append( $order );
@@ -190,7 +197,7 @@ class Activations extends Complex_Query {
 				}
 			}
 
-			return new Where( 'status', true, (array) $this->args['status'] );
+			return new Where( 'q.status', true, (array) $this->args['status'] );
 		}
 	}
 
@@ -226,6 +233,26 @@ class Activations extends Complex_Query {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Parse the product query.
+	 *
+	 * @since 1.0
+	 *
+	 * @return Join|null
+	 */
+	protected function parse_product() {
+
+		if ( empty( $this->args['product'] ) ) {
+			return null;
+		}
+
+		$on = new Where_Raw( 'k.lkey = q.lkey' );
+
+		$on->qAnd( new Where( 'k.product', true, absint( $this->args['product'] ) ) );
+
+		return new Join( new From( Manager::get( 'itelic-keys' )->get_table_name( $GLOBALS['wpdb'] ), 'k' ), $on );
 	}
 
 	/**

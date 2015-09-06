@@ -164,6 +164,8 @@ abstract class Complex_Query {
 
 			$count_results     = $GLOBALS['wpdb']->get_results( "SELECT FOUND_ROWS() AS COUNT" );
 			$this->total_items = $count_results[0]->COUNT;
+		} elseif ( $this->args['return_value'] == 'count' ) {
+			$this->total_items = $results[0]->COUNT;
 		}
 
 		$this->results = $this->parse_results( $results );
@@ -182,6 +184,8 @@ abstract class Complex_Query {
 
 		if ( is_array( $this->args['return_value'] ) ) {
 			return $results;
+		} elseif ( $this->args['return_value'] == 'count' ) {
+			return $results[0]->COUNT;
 		} elseif ( $this->args['return_value'] != 'object' ) {
 			$values = array();
 			$field  = $this->args['return_value'];
@@ -243,6 +247,8 @@ abstract class Complex_Query {
 			foreach ( $this->args['return_value'] as $column ) {
 				$select->also( "$alias.$column" );
 			}
+		} elseif ( $this->args['return_value'] == 'count' ) {
+			$select = new Select( 'COUNT(1)', 'COUNT' );
 		} elseif ( $this->args['return_value'] != 'object' ) {
 			$select = new Select( "$alias." . $this->args['return_value'] );
 		} else {
@@ -277,7 +283,7 @@ abstract class Complex_Query {
 				$in[ $key ] = $this->db_query->escape_value( $column, $value );
 			}
 
-			$in_where = new Where( $column, true, $in );
+			$in_where = new Where( "q.$column", true, $in );
 		}
 
 		if ( ! empty( $not_in ) ) {
@@ -286,7 +292,7 @@ abstract class Complex_Query {
 				$not_in[ $key ] = $this->db_query->escape_value( $column, $value );
 			}
 
-			$not_where = new Where( $column, false, $not_in );
+			$not_where = new Where( "q.$column", false, $not_in );
 
 			if ( isset( $in_where ) ) {
 				$in_where->qAnd( $not_where );

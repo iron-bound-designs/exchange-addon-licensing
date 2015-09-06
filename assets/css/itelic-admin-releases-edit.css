@@ -247,3 +247,72 @@
 	list-style: square;
 	margin-left: 25px;
 }
+
+/** -----------------------------------------------------:[ upgrade progress ]:---------- */
+
+#release-details .progress-container {
+	position: relative;
+}
+
+#release-details progress[value],
+#release-details .progress-bar {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	border: none;
+
+	width: 90%;
+	height: 25px;
+	margin-top: 10px;
+	display: inline-block;
+	float: left;
+
+	/* For IE10 */
+	color: #8cc53e;
+}
+
+#release-details .progress-bar > span {
+	background-color: #8cc53e;
+	border-radius: 2px;
+
+	display: block;
+	text-indent: -9999px;
+}
+
+#release-details progress[value]::-webkit-progress-bar {
+	background-color: #eee;
+	border-radius: 2px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+#release-details .progress-container::before {
+	content: attr(data-percent) '%';
+	position: absolute;
+	top: 13px;
+	right: 80px;
+	color: rgb(94, 94, 94);
+	opacity: 0;
+	-webkit-transition-duration: 0.3s;
+	transition-duration: 0.3s;
+	-webkit-transition-property: opacity;
+	transition-property: opacity;
+}
+
+#release-details .progress-container:hover::before {
+	opacity: 1;
+}
+
+#release-details progress[value]::-webkit-progress-value {
+	background: #8cc53e;
+	border-radius: 2px;
+	background-size: 35px 20px, 100% 100%, 100% 100%;
+}
+
+#notify-button {
+	width: 8%;
+	display: inline-block;
+	float: left;
+	margin-top: 8px;
+	margin-left: 2%;
+	text-align: center;
+}
