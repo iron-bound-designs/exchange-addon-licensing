@@ -8,6 +8,7 @@
 
 namespace ITELIC\Admin\Releases\View;
 
+use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 use ITELIC\Release;
@@ -23,48 +24,54 @@ class Add_New extends View {
 	 */
 	public function render() {
 
-		$this->render_types_tab();
-
 		?>
+		<form method="POST" action="<?php echo esc_attr( add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'releases' ) ) ); ?>">
+			<?php $this->render_types_tab(); ?>
 
-		<div class="main-editor" style="opacity: 0">
 
-			<div class="row row-one">
+			<div class="main-editor" style="opacity: 0">
 
-				<div class="product-select-container">
-					<?php $this->render_product_select(); ?>
+				<div class="row row-one">
+
+					<div class="product-select-container">
+						<?php $this->render_product_select(); ?>
+					</div>
+
+					<div class="version-number-container">
+						<?php $this->render_version_number(); ?>
+					</div>
 				</div>
 
-				<div class="version-number-container">
-					<?php $this->render_version_number(); ?>
+				<div class="row row-two">
+					<div class="upload-container">
+						<?php $this->render_upload(); ?>
+					</div>
 				</div>
+
+				<div class="row row-three">
+					<div class="whats-changed-container">
+						<?php $this->render_whats_changed(); ?>
+					</div>
+				</div>
+
+				<div class="row row-five hidden" id="security-message-row">
+					<div class="security-message">
+						<?php $this->render_security_message(); ?>
+					</div>
+				</div>
+
+				<div class="row row-four">
+					<div class="buttons">
+						<?php $this->render_buttons(); ?>
+					</div>
+				</div>
+
 			</div>
 
-			<div class="row row-two">
-				<div class="upload-container">
-					<?php $this->render_upload(); ?>
-				</div>
-			</div>
+			<input type="hidden" name="itelic-action" value="add-new-release">
 
-			<div class="row row-three">
-				<div class="whats-changed-container">
-					<?php $this->render_whats_changed(); ?>
-				</div>
-			</div>
-
-			<div class="row row-five hidden" id="security-message-row">
-				<div class="security-message">
-					<?php $this->render_security_message(); ?>
-				</div>
-			</div>
-
-			<div class="row row-four">
-				<div class="buttons">
-					<?php $this->render_buttons(); ?>
-				</div>
-			</div>
-
-		</div>
+			<?php wp_nonce_field( 'itelic-add-new-release' ); ?>
+		</form>
 
 		<?php
 
@@ -86,7 +93,7 @@ class Add_New extends View {
 			<?php foreach ( Release::get_types( true ) as $type => $label ): ?>
 
 				<li class="<?php echo $type == $selected ? 'selected' : ''; ?>">
-					<input type="radio" name="type-select" id="type-select-<?php echo $type; ?>" data-type="<?php echo $type; ?>">
+					<input type="radio" name="type-select" id="type-select-<?php echo $type; ?>" value="<?php echo $type; ?>">
 					<label for="type-select-<?php echo $type; ?>">
 						<span class="dashicons <?php echo $this->get_icon_for_type( $type ); ?>"></span>
 						<span class="type-description"><?php echo $label; ?></span>
@@ -215,7 +222,6 @@ class Add_New extends View {
 	protected function render_restricted_keys() {
 
 		?>
-
 
 
 		<?php

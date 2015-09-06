@@ -13,7 +13,7 @@
 
 		if ($(this).is(':checked')) {
 
-			if ($(this).data('type') == 'security') {
+			if ($(this).val() == 'security') {
 
 				if ($main.css('opacity') == 0) {
 					$securityMessage.show();

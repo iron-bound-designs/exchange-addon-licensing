@@ -229,6 +229,28 @@ class Release extends Model {
 	}
 
 	/**
+	 * Convert an attachment in the media library into an Exchange download for a product.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \WP_Post             $attachment
+	 * @param \IT_Exchange_Product $product
+	 *
+	 * @return \WP_Post
+	 */
+	public static function convert_attachment_to_download( \WP_Post $attachment, \IT_Exchange_Product $product ) {
+
+
+		$download_id = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'update-file' ) );
+
+		$download_data           = get_post_meta( $download_id, '_it-exchange-download-info', true );
+		$download_data['source'] = wp_get_attachment_url( $attachment->ID );
+		update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
+
+		return get_post( $download_id );
+	}
+
+	/**
 	 * Get the unique pk for this record.
 	 *
 	 * @since 1.0
