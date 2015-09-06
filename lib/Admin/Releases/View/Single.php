@@ -88,6 +88,8 @@ class Single extends View {
 			<?php if ( $this->release->get_status() == Release::STATUS_DRAFT ): ?>
 				<?php $this->render_replace_file_section(); ?>
 			<?php endif; ?>
+
+			<?php $this->render_whats_changed(); ?>
 		</div>
 
 		<?php
@@ -118,6 +120,29 @@ class Single extends View {
 			</span>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render the what's changed section.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_whats_changed() {
+
+		?>
+
+		<div class="spacing-wrapper bottom-border">
+
+			<h4><?php _e( "What's Changed", Plugin::SLUG ); ?></h4>
+
+			<div class="whats-changed">
+				<?php echo $this->release->get_changelog(); ?>
+			</div>
+
+		</div>
+
+		<?php
+
 	}
 
 	/**

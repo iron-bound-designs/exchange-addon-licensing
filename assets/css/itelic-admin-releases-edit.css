@@ -188,7 +188,7 @@
 
 /** -----------------------------------------------------:[ release misc ]:---------- */
 
-#release-details .misc-block h4,
+#release-details h4,
 #release-details label {
 	margin: 0;
 	font-size: 16px;
@@ -239,4 +239,11 @@
 .replace-file-container .button {
 	vertical-align: middle;
 	margin-left: 5px;
+}
+
+/** -----------------------------------------------------:[ whats changed ]:---------- */
+
+.whats-changed ul li {
+	list-style: square;
+	margin-left: 25px;
 }
