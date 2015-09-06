@@ -95,6 +95,7 @@ class Single extends View {
 			<?php $this->render_whats_changed(); ?>
 			<?php $this->render_upgrades_bar(); ?>
 			<?php $this->render_notification_editor(); ?>
+			<?php $this->render_notify_button_section(); ?>
 		</div>
 
 		<?php
@@ -166,7 +167,10 @@ class Single extends View {
 
 		<div class="spacing-wrapper bottom-border upgrade-progress-block">
 
-			<h4><?php _e( "Upgrades", Plugin::SLUG ); ?></h4>
+			<h4>
+				<?php _e( "Upgrades", Plugin::SLUG ); ?>
+				<a href="javascript:" id="more-upgrades-link"><?php _e( "More", Plugin::SLUG ); ?></a>
+			</h4>
 
 			<div class="progress-container" data-percent="<?php echo $percent; ?>">
 
@@ -178,6 +182,24 @@ class Single extends View {
 
 				<a href="javascript:" class="button" id="notify-button"><?php _e( "Notify", Plugin::SLUG ); ?></a>
 			</div>
+		</div>
+
+		<?php
+	}
+
+	/**
+	 * Render the full-width notify button section.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_notify_button_section() {
+
+		?>
+
+		<div class="spacing-wrapper bottom-border full-notify-button hidden">
+			<a href="javascript:" class="button" id="notify-button-full">
+				<?php _e( "Notify Outdated Customers", Plugin::SLUG ); ?>
+			</a>
 		</div>
 
 		<?php

@@ -256,6 +256,12 @@
 
 /** -----------------------------------------------------:[ upgrade progress ]:---------- */
 
+#more-upgrades-link {
+	font-size: .7em;
+	text-decoration: none;
+	margin-left: 4px;
+}
+
 #release-details .progress-container {
 	position: relative;
 }
@@ -304,6 +310,10 @@
 	transition-property: opacity;
 }
 
+#release-details .full-upgrade-details .progress-container::before {
+	right: 15px;
+}
+
 #release-details .progress-container:hover::before {
 	opacity: 1;
 }
@@ -323,6 +333,8 @@
 	text-align: center;
 }
 
+/** -----------------------------------------------------:[ notification editor ]:---------- */
+
 #release-details #notification-subject {
 	width: 100%;
 	margin: 5px 0 20px 0;
@@ -330,4 +342,14 @@
 
 #release-details .notification-buttons {
 	float: right;
+}
+
+/** -----------------------------------------------------:[ upgrade details ]:---------- */
+
+
+/** -----------------------------------------------------:[ notify button block ]:---------- */
+
+#notify-button-full {
+	width: 100%;
+	text-align: center;
 }

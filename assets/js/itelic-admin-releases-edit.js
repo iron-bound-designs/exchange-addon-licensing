@@ -9,9 +9,15 @@
 	var changelog = $(".changelog-block");
 	var upgrades = $(".upgrade-progress-block");
 	var notifications = $(".notifications-editor");
+	var full_notify_button_block = $(".full-notify-button");
+
+	var notify_button = $("#notify-button");
+	var full_notify_button = $("#notify-button-full");
+
+	var upgrade_details_showing = false;
 
 
-	$("#notify-button").click(function () {
+	notify_button.click(function () {
 
 		misc.slideUp();
 		changelog.slideUp();
@@ -29,6 +35,51 @@
 			changelog.slideDown();
 			upgrades.slideDown();
 		});
+	});
+
+	$("#more-upgrades-link").click(function () {
+
+		if (upgrade_details_showing) {
+
+			full_notify_button_block.slideUp(400, function () {
+
+				misc.slideDown();
+				changelog.slideDown();
+			});
+
+			$(".progress-container progress").animate({
+				width: '90%'
+			}, function () {
+				notify_button.fadeIn(100);
+			});
+
+			upgrades.removeClass('full-upgrade-details');
+
+			$(this).text(ITELIC.moreUpgrade);
+
+			upgrade_details_showing = false;
+
+		} else {
+
+			misc.slideUp();
+			changelog.slideUp(400, function () {
+
+				full_notify_button_block.slideDown();
+			});
+
+			notify_button.fadeOut(100, function () {
+
+				$(".progress-container progress").animate({
+					width: '100%'
+				});
+			});
+
+			upgrades.addClass('full-upgrade-details');
+
+			$(this).text(ITELIC.lessUpgrade);
+
+			upgrade_details_showing = true;
+		}
 	});
 
 	/**

@@ -60,7 +60,9 @@ class Single extends Controller {
 			'prevVersion'  => __( "Previous version: %s", Plugin::SLUG ),
 			'uploadTitle'  => __( "Choose Software File", Plugin::SLUG ),
 			'uploadButton' => __( "Replace File", Plugin::SLUG ),
-			'uploadLabel'  => __( "Upload File", Plugin::SLUG )
+			'uploadLabel'  => __( "Upload File", Plugin::SLUG ),
+			'lessUpgrade'  => __( "Less", Plugin::SLUG ),
+			'moreUpgrade'  => __( "More", Plugin::SLUG )
 		) );
 
 		wp_enqueue_media();
