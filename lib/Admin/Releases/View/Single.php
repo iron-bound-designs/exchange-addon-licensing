@@ -8,6 +8,7 @@
 
 namespace ITELIC\Admin\Releases\View;
 
+use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 use ITELIC\Release;
@@ -152,5 +153,18 @@ class Single extends View {
 	 */
 	protected function get_title() {
 		return __( "Manage Release", Plugin::SLUG );
+	}
+
+	/**
+	 * Override title display to show an add new button.
+	 *
+	 * @since 1.0
+	 */
+	public function title() {
+		echo '<h2>' . $this->get_title() . ' ';
+		echo '<a href="' . add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'releases' ) ) . '" class="add-new-h2">';
+		echo __( "Add New", Plugin::SLUG );
+		echo '</a>';
+		echo '</h2>';
 	}
 }
