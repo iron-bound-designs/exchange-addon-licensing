@@ -208,6 +208,20 @@ class Add_New extends View {
 	}
 
 	/**
+	 * Render the controls for entering keys that can access a restricted release.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_restricted_keys() {
+
+		?>
+
+
+
+		<?php
+	}
+
+	/**
 	 * Render the action buttons.
 	 */
 	protected function render_buttons() {
