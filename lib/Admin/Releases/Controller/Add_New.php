@@ -161,9 +161,9 @@ class Add_New extends Controller {
 	 * @since 1.0
 	 */
 	private function enqueue() {
-		wp_enqueue_style( 'itelic-admin-releases' );
-		wp_enqueue_script( 'itelic-admin-releases' );
-		wp_localize_script( 'itelic-admin-releases', 'ITELIC', array(
+		wp_enqueue_style( 'itelic-admin-releases-new' );
+		wp_enqueue_script( 'itelic-admin-releases-new' );
+		wp_localize_script( 'itelic-admin-releases-new', 'ITELIC', array(
 			'prevVersion'  => __( "Previous version: %s", Plugin::SLUG ),
 			'uploadTitle'  => __( "Choose Software File", Plugin::SLUG ),
 			'uploadButton' => __( "Select File", Plugin::SLUG ),

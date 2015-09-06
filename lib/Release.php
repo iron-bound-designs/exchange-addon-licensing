@@ -385,7 +385,7 @@ class Release extends Model {
 	public function get_type( $label = false ) {
 
 		if ( $label ) {
-			$labels = self::get_types();
+			$labels = self::get_types( true );
 
 			return $labels[ $this->type ];
 		}
