@@ -3,7 +3,33 @@
 
 	var file_frame, image_data;
 
+	var header = $(".header-block");
+	var misc = $(".misc-block");
+	var replace_file = $(".replace-file-block");
+	var changelog = $(".changelog-block");
+	var upgrades = $(".upgrade-progress-block");
+	var notifications = $(".notifications-editor");
 
+
+	$("#notify-button").click(function () {
+
+		misc.slideUp();
+		changelog.slideUp();
+		upgrades.slideUp(400, function () {
+
+			notifications.slideDown();
+		});
+	});
+
+	$("#cancel-notification").click(function () {
+
+		notifications.slideUp(400, function () {
+
+			misc.slideDown();
+			changelog.slideDown();
+			upgrades.slideDown();
+		});
+	});
 
 	/**
 	 * When the upload inputs link is clicked, launch the media uploader.

@@ -8,6 +8,8 @@
 
 namespace ITELIC\Admin\Releases\View;
 
+use IronBound\WP_Notifications\Template\Editor;
+use IronBound\WP_Notifications\Template\Factory;
 use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
@@ -92,6 +94,7 @@ class Single extends View {
 
 			<?php $this->render_whats_changed(); ?>
 			<?php $this->render_upgrades_bar(); ?>
+			<?php $this->render_notification_editor(); ?>
 		</div>
 
 		<?php
@@ -109,7 +112,7 @@ class Single extends View {
 
 		?>
 
-		<div class="spacing-wrapper bottom-border">
+		<div class="spacing-wrapper bottom-border replace-file-block">
 
 			<span class="replace-file-container">
 				<label>
@@ -133,7 +136,7 @@ class Single extends View {
 
 		?>
 
-		<div class="spacing-wrapper bottom-border">
+		<div class="spacing-wrapper bottom-border changelog-block">
 
 			<h4><?php _e( "What's Changed", Plugin::SLUG ); ?></h4>
 
@@ -161,7 +164,7 @@ class Single extends View {
 
 		?>
 
-		<div class="spacing-wrapper bottom-border">
+		<div class="spacing-wrapper bottom-border upgrade-progress-block">
 
 			<h4><?php _e( "Upgrades", Plugin::SLUG ); ?></h4>
 
@@ -175,6 +178,60 @@ class Single extends View {
 
 				<a href="javascript:" class="button" id="notify-button"><?php _e( "Notify", Plugin::SLUG ); ?></a>
 			</div>
+		</div>
+
+		<?php
+	}
+
+	/**
+	 * Render the notification editor.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_notification_editor() {
+
+		$editor = new Editor( Factory::make( 'itelic-renewal-reminder' ), array(
+			'mustSelectItem'    => __( "You must select an item", Plugin::SLUG ),
+			'selectTemplateTag' => __( "Select Template Tag", Plugin::SLUG ),
+			'templateTag'       => __( "Template Tag", Plugin::SLUG ),
+			'selectATag'        => __( "Select a tag", Plugin::SLUG ),
+			'insertTag'         => __( "Insert", Plugin::SLUG ),
+			'cancel'            => __( "Cancel", Plugin::SLUG ),
+			'insertTemplateTag' => __( "Insert Template Tag", Plugin::SLUG )
+		) );
+		$editor->thickbox();
+
+		?>
+
+		<div class="spacing-wrapper hidden notifications-editor">
+
+			<h4><?php _e( "Send Upgrade Reminders", Plugin::SLUG ); ?></h4>
+
+			<p class="description">
+				<?php printf(
+					__( "Email your customers who have not yet upgrade to version %s of your software.", Plugin::SLUG ),
+					$this->release->get_version()
+				); ?>
+			</p>
+
+			<input type="text" id="notification-subject" placeholder="<?php esc_attr_e( "Enter your subject", Plugin::SLUG ); ?>">
+
+			<?php $editor->display_template_tag_button(); ?>
+
+			<?php wp_editor( '', 'notification-body', array(
+				'teeny'         => true,
+				'media_buttons' => false,
+				'editor_height' => '250px'
+			) ); ?>
+
+			<p class="clearfix notification-buttons">
+				<a href="javascript:" class="button button-secondary" id="cancel-notification">
+					<?php _e( "Cancel", Plugin::SLUG ); ?>
+				</a>
+				<a href="javascript:" class="button button-primary" id="send-notification">
+					<?php _e( "Send", Plugin::SLUG ); ?>
+				</a>
+			</p>
 		</div>
 
 		<?php

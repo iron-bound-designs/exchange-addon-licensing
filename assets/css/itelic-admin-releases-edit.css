@@ -14,6 +14,12 @@
 	box-sizing: border-box;
 }
 
+#release-details .wp-editor-wrap * {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
+
 #release-details .left {
 	float: left;
 }
@@ -190,14 +196,14 @@
 
 #release-details h4,
 #release-details label {
-	margin: 0;
+	margin: 0 0 5px 0;
 	font-size: 16px;
 	color: #666666;
 	font-weight: 300;
 }
 
 #release-details .misc-block h3 {
-	margin: .75em 0 .4em 0;
+	margin: .60em 0 .4em 0;
 	font-size: 22px;
 	font-weight: 400;
 }
@@ -308,11 +314,20 @@
 	background-size: 35px 20px, 100% 100%, 100% 100%;
 }
 
-#notify-button {
+#release-details #notify-button {
 	width: 8%;
 	display: inline-block;
 	float: left;
 	margin-top: 8px;
 	margin-left: 2%;
 	text-align: center;
+}
+
+#release-details #notification-subject {
+	width: 100%;
+	margin: 5px 0 20px 0;
+}
+
+#release-details .notification-buttons {
+	float: right;
 }
