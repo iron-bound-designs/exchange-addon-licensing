@@ -178,7 +178,7 @@ class Single extends Controller {
 			GROUP BY previous_version ORDER BY c DESC LIMIT 5",
 			$id ) );
 
-		$chart = new Chart\Pie( 698, 300, array(
+		$chart = new Chart\Pie( 698, 200, array(
 			'ibdLoadOn'     => 'loadVersionsChart'
 		) );
 

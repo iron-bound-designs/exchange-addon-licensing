@@ -71,7 +71,7 @@
 			misc.slideUp();
 			changelog.slideUp(400, function () {
 
-				line_graph.fadeIn(400, function () {
+				line_graph.slideDown(400, function () {
 
 					if (!loaded_progress_chart) {
 						$('body').trigger('loadProgressChart');
@@ -80,7 +80,7 @@
 					}
 				});
 
-				pie_chart.fadeIn(400, function () {
+				pie_chart.slideDown(400, function () {
 
 					if (!loaded_versions_chart) {
 						$('body').trigger('loadVersionsChart');
