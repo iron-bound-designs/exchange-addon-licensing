@@ -98,6 +98,14 @@ class Single extends Controller {
 					$release->set_status( $val );
 					break;
 
+				case 'type':
+					$release->set_type( $val );
+					break;
+
+				case 'version':
+					$release->set_version($val);
+					break;
+
 				case 'download':
 					$release->set_download( $val );
 					break;
@@ -134,6 +142,7 @@ class Single extends Controller {
 			'moreUpgrade'  => __( "More", Plugin::SLUG ),
 			'ibdLoadOn'    => 'loadCharts',
 			'statuses'     => Release::get_statuses(),
+			'types'        => Release::get_types( true ),
 			'release'      => $_GET['ID'],
 			'update_nonce' => wp_create_nonce( 'itelic-update-release-' . $_GET['ID'] )
 		) );

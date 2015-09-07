@@ -245,6 +245,49 @@
 		status_span.data('value', params.newValue);
 	});
 
+	if (status_span.data('value') == 'draft') {
+
+		$(".type h3").editable({
+			type       : 'select',
+			pk         : ITELIC.release,
+			name       : 'type',
+			source     : ITELIC.types,
+			sourceCache: true,
+			showbuttons: false,
+			placement  : "top",
+			title      : ' ',
+			mode       : 'inline',
+			url        : function (params) {
+				return editable_ajax(params);
+			},
+			success    : function (response, newValue) {
+				return editable_success_callback(response, newValue);
+			}
+		});
+
+		var version = $(".version h3");
+
+		version.editable({
+			type       : 'text',
+			pk         : ITELIC.release,
+			name       : 'version',
+			showbuttons: false,
+			placement  : "top",
+			title      : ' ',
+			mode       : 'inline',
+			url        : function (params) {
+				return editable_ajax(params);
+			},
+			success    : function (response, newValue) {
+				return editable_success_callback(response, newValue);
+			}
+		});
+
+		version.on('save', function (e, params) {
+			$(".version-name").text(params.newValue);
+		});
+	}
+
 	/**
 	 * When the upload inputs link is clicked, launch the media uploader.
 	 */

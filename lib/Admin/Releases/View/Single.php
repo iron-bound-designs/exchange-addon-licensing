@@ -81,7 +81,7 @@ class Single extends View {
 				<div class="third type">
 					<h4><?php _e( "Type", Plugin::SLUG ); ?></h4>
 
-					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>">
+					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>" data-value="<?php echo $this->release->get_type(); ?>">
 						<?php echo $this->release->get_type( true ); ?>
 					</h3>
 				</div>
@@ -99,7 +99,9 @@ class Single extends View {
 				<div class="third version">
 					<h4><?php _e( "Version", Plugin::SLUG ); ?></h4>
 
-					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>"><?php echo $this->release->get_version(); ?></h3>
+					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>" data-value="<?php echo $this->release->get_version(); ?>">
+						<?php echo $this->release->get_version(); ?>
+					</h3>
 				</div>
 			</div>
 
