@@ -20,11 +20,6 @@ abstract class Base {
 	protected $data_sets = array();
 
 	/**
-	 * @var string
-	 */
-	private $id;
-
-	/**
 	 * @var int
 	 */
 	private $width;
@@ -50,6 +45,11 @@ abstract class Base {
 	private $load_on = '';
 
 	/**
+	 * @var int
+	 */
+	private static $count = 0;
+
+	/**
 	 * @var bool
 	 */
 	private static $scripts_loaded = false;
@@ -68,7 +68,7 @@ abstract class Base {
 	 * @param array  $options
 	 */
 	protected function __construct( $width, $height, $type = 'Line', $options = array() ) {
-		$this->id = md5( rand() );
+		self::$count++;
 
 		$types = array( 'Line', 'Bar', 'Radar', 'PolarArea', 'Pie', 'Doughnut' );
 
@@ -135,15 +135,14 @@ abstract class Base {
 			$globals = self::$global_options;
 		}
 
+		$id = 'itelic-chart-' . self::$count;
 		?>
 
-		<canvas id="<?php echo esc_attr( $this->id ); ?>" width="<?php echo esc_attr( $this->width ); ?>"
+		<canvas id="<?php echo esc_attr( $id); ?>" width="<?php echo esc_attr( $this->width ); ?>"
 		        height="<?php echo esc_attr( $this->height ); ?>"></canvas>
 
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
-
-				var ctx = $("#<?php echo ($this->id); ?>").get(0).getContext("2d");
 
 				var globals = <?php echo wp_json_encode($globals); ?>
 
@@ -151,22 +150,20 @@ abstract class Base {
 						Chart.defaults.global[index] = value;
 					});
 
-				var data =
-				<?php echo wp_json_encode($data); ?>
+				var data = <?php echo wp_json_encode($data); ?>
 
-				var options =
-					<?php echo wp_json_encode($options); ?>
+				var options = <?php echo wp_json_encode($options); ?>
 
-					<?php if ( $this->load_on ): ?>
+				<?php if ( $this->load_on ): ?>
 
-					$(document).bind('<?php echo esc_js($this->load_on); ?>', function () {
-
-						var chart = new Chart(ctx).<?php echo $this->type; ?>(data, options);
+					$('body').bind('<?php echo esc_js($this->load_on); ?>', function () {
+						var ctx = $("#<?php echo ($id); ?>").get(0).getContext("2d");
+						new Chart(ctx).<?php echo $this->type; ?>(data, options);
 					});
 
 				<?php else: ?>
-
-				var chart = new Chart(ctx).<?php echo $this->type; ?>(data, options);
+					var ctx = $("#<?php echo ($id); ?>").get(0).getContext("2d");
+					new Chart(ctx).<?php echo $this->type; ?>(data, options);
 				<?php endif; ?>
 
 			});
@@ -186,13 +183,6 @@ abstract class Base {
 
 			self::$scripts_loaded = true;
 		}
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function is_empty() {
-		return count( $this->labels ) == 0;
 	}
 
 	/**

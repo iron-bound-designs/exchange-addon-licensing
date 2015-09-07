@@ -10,6 +10,7 @@
 	var upgrades = $(".upgrade-progress-block");
 	var notifications = $(".notifications-editor");
 	var line_graph = $(".progress-line-chart");
+	var pie_chart = $(".versions-pie-chart");
 	var full_notify_button_block = $(".full-notify-button");
 
 	var notify_button = $("#notify-button");
@@ -17,7 +18,8 @@
 
 	var upgrade_details_showing = false;
 
-	var loaded_graphs = false;
+	var loaded_progress_chart = false;
+	var loaded_versions_chart = false;
 
 	notify_button.click(function () {
 
@@ -44,6 +46,7 @@
 		if (upgrade_details_showing) {
 
 			line_graph.slideUp();
+			pie_chart.slideUp();
 
 			full_notify_button_block.slideUp(400, function () {
 
@@ -68,14 +71,25 @@
 			misc.slideUp();
 			changelog.slideUp(400, function () {
 
-				line_graph.slideDown();
+				line_graph.fadeIn(400, function () {
+
+					if (!loaded_progress_chart) {
+						$('body').trigger('loadProgressChart');
+
+						loaded_progress_chart = true;
+					}
+				});
+
+				pie_chart.fadeIn(400, function () {
+
+					if (!loaded_versions_chart) {
+						$('body').trigger('loadVersionsChart');
+
+						loaded_versions_chart = true;
+					}
+				});
+
 				full_notify_button_block.slideDown();
-
-				if (!loaded_graphs) {
-					$.event.trigger(ITELIC.ibdLoadOn);
-
-					loaded_graphs = true;
-				}
 			});
 
 			notify_button.fadeOut(100, function () {

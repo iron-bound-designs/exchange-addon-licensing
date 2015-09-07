@@ -449,7 +449,11 @@ class Release extends Model {
 	 * @return \DateTime|null
 	 */
 	public function get_start_date() {
-		return new \DateTimeImmutable( $this->start_date->format( \DateTime::ISO8601 ) );
+		if ( $this->start_date ) {
+			return new \DateTimeImmutable( $this->start_date->format( \DateTime::ISO8601 ) );
+		}
+
+		return $this->start_date;
 	}
 
 	/**

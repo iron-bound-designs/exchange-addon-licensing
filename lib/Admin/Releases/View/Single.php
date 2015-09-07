@@ -33,14 +33,21 @@ class Single extends View {
 	protected $progress;
 
 	/**
+	 * @var Chart\Base $version
+	 */
+	protected $version;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Release    $release
 	 * @param Chart\Base $progress
+	 * @param Chart\Base $version
 	 */
-	public function __construct( Release $release = null, Chart\Base $progress = null ) {
+	public function __construct( Release $release = null, Chart\Base $progress = null, Chart\Base $version = null ) {
 		$this->release  = $release;
 		$this->progress = $progress;
+		$this->version  = $version;
 	}
 
 	/**
@@ -104,6 +111,7 @@ class Single extends View {
 			<?php $this->render_upgrades_bar(); ?>
 			<?php $this->render_notification_editor(); ?>
 			<?php $this->render_progress_line_chart(); ?>
+			<?php $this->render_versions_pie_chart(); ?>
 			<?php $this->render_notify_button_section(); ?>
 		</div>
 
@@ -228,6 +236,25 @@ class Single extends View {
 			<h4><?php _e( "Upgrades over the first 14 days", Plugin::SLUG ); ?></h4>
 
 			<?php $this->progress->graph(); ?>
+		</div>
+
+		<?php
+	}
+
+	/**
+	 * Render the versions pie chart.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_versions_pie_chart() {
+
+		?>
+
+		<div class="spacing-wrapper bottom-border versions-pie-chart hidden">
+
+			<h4><?php _e( "Top 5 versions upgraded from", Plugin::SLUG ); ?></h4>
+
+			<?php $this->version->graph(); ?>
 		</div>
 
 		<?php

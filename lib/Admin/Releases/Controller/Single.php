@@ -38,7 +38,7 @@ class Single extends Controller {
 
 		$this->enqueue();
 
-		$view = new Single_View( $release, $this->get_progress_chart( $release ) );
+		$view = new Single_View( $release, $this->get_progress_chart( $release ), $this->get_version_chart( $release ) );
 
 		$view->begin();
 		$view->title();
@@ -78,7 +78,7 @@ class Single extends Controller {
 	 *
 	 * @param Release $release
 	 *
-	 * @return Chart
+	 * @return Chart\Base
 	 */
 	private function get_progress_chart( Release $release ) {
 
@@ -142,7 +142,7 @@ class Single extends Controller {
 		$chart = new Chart\Line( $labels, 698, 200, array(
 			'pointHitDetectionRadius' => 5,
 			'scaleIntegersOnly'       => true,
-			'ibdLoadOn'               => 'loadCharts',
+			'ibdLoadOn'               => 'loadProgressChart',
 			'animation'               => false
 		) );
 		$chart->add_data_set( array_values( $data ), '', array(
@@ -153,6 +153,56 @@ class Single extends Controller {
 			'pointHighlightFill'   => "#fff",
 			'pointHighlightStroke' => "rgba(151,187,205,1)",
 		) );
+
+		return $chart;
+	}
+
+	/**
+	 * Get the chart for displaying the previous version being upgrade from.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Release $release
+	 *
+	 * @return Chart\Base
+	 */
+	private function get_version_chart( Release $release ) {
+
+		/** @var $wpdb \wpdb */
+		global $wpdb;
+
+		$tn = Manager::get( 'itelic-upgrades' )->get_table_name( $wpdb );
+
+		$id = $release->get_ID();
+
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"SELECT previous_version AS v, COUNT(ID) AS c FROM $tn WHERE release_id = %d
+			GROUP BY previous_version ORDER BY c DESC LIMIT 5",
+			$id ) );
+
+		$chart = new Chart\Pie( '698', 300, array(
+			'ibdLoadOn'     => 'loadVersionsChart',
+			'animateRotate' => false
+		) );
+
+		$colors = array(
+			array(
+				'color'     => '#F7464A',
+				'highlight' => '#FF5A5E'
+			),
+			array(
+				'color'     => '#46BFBD',
+				'highlight' => '#5AD3D1'
+			),
+			array(
+				'color'     => '#FDB45C',
+				'highlight' => '#FFC870'
+			),
+		);
+
+		foreach ( $results as $i => $result ) {
+			$chart->add_data_set( $result->c, "v{$result->v}", $colors[ $i ] );
+		}
 
 		return $chart;
 	}
