@@ -140,8 +140,8 @@ class Single extends Controller {
 		}, array_keys( $data ) );
 
 		$chart = new Chart\Line( $labels, 698, 200, array(
-			'scaleIntegersOnly'       => true,
-			'ibdLoadOn'               => 'loadProgressChart'
+			'scaleIntegersOnly' => true,
+			'ibdLoadOn'         => 'loadProgressChart'
 		) );
 		$chart->add_data_set( array_values( $data ), '', array(
 			'fillColor'            => "rgba(151,187,205,0.2)",
@@ -179,14 +179,13 @@ class Single extends Controller {
 			$id ) );
 
 		$chart = new Chart\Pie( 698, 200, array(
-			'ibdLoadOn'     => 'loadVersionsChart'
+			'ibdLoadOn'       => 'loadVersionsChart',
+			'ibdShowLegend'   => '#pie-chart-legend',
+			'tooltipTemplate' => '<%= value %> install<%if (value != 1){%>s<%}%>'
 		) );
 
 		$colors = array(
-			array(
-				'color'     => '#EDDDD4',
-				'highlight' => '#D4C4BB'
-			),
+
 			array(
 				'color'     => '#E94F37',
 				'highlight' => '#FF6951'
@@ -202,6 +201,10 @@ class Single extends Controller {
 			array(
 				'color'     => '#44BBA4',
 				'highlight' => '#5ED5BE'
+			),
+			array(
+				'color'     => '#EDDDD4',
+				'highlight' => '#D4C4BB'
 			),
 		);
 

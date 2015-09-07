@@ -255,6 +255,8 @@ class Single extends View {
 			<h4><?php printf( __( "Top %d versions upgraded from", Plugin::SLUG ), $this->version->get_total_items() ); ?></h4>
 
 			<?php $this->version->graph(); ?>
+
+			<div id="pie-chart-legend" class="chart-js-legend"></div>
 		</div>
 
 		<?php

@@ -96,6 +96,13 @@
 	display: none;
 }
 
+.chart-js-legend li span {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin-right: 5px;
+}
+
 /** -----------------------------------------------------:[ release status ]:---------- */
 
 #release-details .header-block {
@@ -356,6 +363,21 @@
 .versions-pie-chart h4 {
 	text-align: center;
 	margin-bottom: 15px !important;
+}
+
+#pie-chart-legend ul {
+	text-align: center;
+	margin-bottom: 0;
+}
+
+#pie-chart-legend li {
+	display: inline-block;
+	margin-right: 10px;
+	margin-bottom: 0;
+}
+
+#pie-chart-legend li:last-of-type {
+	margin-right: 0;
 }
 
 /** -----------------------------------------------------:[ notify button block ]:---------- */

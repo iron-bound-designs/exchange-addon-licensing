@@ -50,6 +50,11 @@ abstract class Base {
 	private $load_on = '';
 
 	/**
+	 * @var string
+	 */
+	private $show_legend = '';
+
+	/**
 	 * @var int
 	 */
 	private static $count = 0;
@@ -88,6 +93,12 @@ abstract class Base {
 			$this->load_on = $options['ibdLoadOn'];
 
 			unset( $options['ibdLoadOn'] );
+		}
+
+		if ( isset( $options['ibdShowLegend'] ) ) {
+			$this->show_legend = $options['ibdShowLegend'];
+
+			unset( $options['ibdShowLegend'] );
 		}
 
 		$this->options = $options;
@@ -174,14 +185,22 @@ abstract class Base {
 
 					$('body').bind('<?php echo esc_js($this->load_on); ?>', function () {
 						var ctx = $("#<?php echo ($id); ?>").get(0).getContext("2d");
-						new Chart(ctx).<?php echo $this->type; ?>(data, options);
+						var chart = new Chart(ctx).<?php echo $this->type; ?>(data, options);
+
+						<?php if ( $this->show_legend ): ?>
+						$("<?php echo $this->show_legend; ?>").html( chart.generateLegend() );
+						<?php endif; ?>
 					});
 
 				<?php else: ?>
 					$(document).ready(function() {
 
 						var ctx = $("#<?php echo ($id); ?>").get(0).getContext("2d");
-						new Chart(ctx).<?php echo $this->type; ?>(data, options);
+						var chart = new Chart(ctx).<?php echo $this->type; ?>(data, options);
+
+						<?php if ( $this->show_legend ): ?>
+						$("<?php echo $this->show_legend; ?>").innerHTML = chart.generateLegend();
+						<?php endif; ?>
 					});
 				<?php endif; ?>
 
