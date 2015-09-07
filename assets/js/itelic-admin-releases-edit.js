@@ -155,7 +155,8 @@
 				'-webkit-border-radius': '10px',
 				'-moz-border-radius'   : '10px',
 				opacity                : .5,
-				color                  : '#fff'
+				color                  : '#fff',
+				'z-index'              : '99999'
 			}
 		});
 
@@ -176,6 +177,41 @@
 				changelog_text.html(text);
 				changelog_text.show();
 				changelog_editor.hide();
+			}
+		});
+	});
+
+	$("#send-notification").click(function () {
+
+		var data = {
+			action : 'itelic_admin_releases_send_notification',
+			release: ITELIC.release,
+			subject: $("#notification-subject").val(),
+			message: window.tinyMCE.activeEditor.getContent(),
+			nonce  : ITELIC.update_nonce
+		};
+
+		$.blockUI({
+			message: 'Sending',
+			css    : {
+				border                 : 'none',
+				padding                : '15px',
+				backgroundColor        : '#000',
+				'-webkit-border-radius': '10px',
+				'-moz-border-radius'   : '10px',
+				opacity                : .5,
+				color                  : '#fff'
+			}
+		});
+
+		$.post(ajaxurl, data, function (response) {
+
+			$.unblockUI();
+
+			if (!response.success) {
+				alert(response.data.message);
+			} else {
+				//alert(response.data.message);
 			}
 		});
 	});
@@ -407,4 +443,38 @@
 		file_frame.open();
 
 	});
+
+	window.send_to_editor = function (html) {
+		var editor,
+			hasTinymce = typeof tinymce !== 'undefined',
+			hasQuicktags = typeof QTags !== 'undefined';
+
+		if (!wpActiveEditor) {
+			if (hasTinymce && tinymce.activeEditor) {
+				editor = tinymce.activeEditor;
+				wpActiveEditor = editor.id;
+			} else if (!hasQuicktags) {
+				return false;
+			}
+		} else if (hasTinymce) {
+			editor = tinymce.get(wpActiveEditor);
+		}
+
+		if (editor && !editor.isHidden()) {
+			editor.execCommand('mceInsertContent', false, html);
+		} else if (hasQuicktags) {
+			QTags.insertContent(html);
+		} else {
+			document.getElementById(wpActiveEditor).value += html;
+		}
+
+		// If the old thickbox remove function exists, call it
+		if (window.tb_remove) {
+			try {
+				window.tb_remove();
+			} catch (e) {
+			}
+		}
+	};
+
 })(jQuery);

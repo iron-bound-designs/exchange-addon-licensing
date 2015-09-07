@@ -9,12 +9,21 @@
 namespace ITELIC\Admin\Releases\Controller;
 
 use IronBound\DB\Manager;
+use IronBound\WP_Notifications\Notification;
+use IronBound\WP_Notifications\Queue\Storage\Options;
+use IronBound\WP_Notifications\Queue\WP_Cron;
+use IronBound\WP_Notifications\Strategy\iThemes_Exchange;
+use IronBound\WP_Notifications\Template\Factory;
+use IronBound\WP_Notifications\Template\Listener;
+use IronBound\WP_Notifications\Template\Manager as Template_Manager;
+use ITELIC\Activation;
 use ITELIC\Admin\Chart;
 use ITELIC\Admin\Releases\Controller;
 use ITELIC\Admin\Releases\View\Single as Single_View;
 use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Plugin;
 use ITELIC\Release;
+use ITELIC_API\Query\Activations;
 
 /**
  * Class Single
@@ -30,6 +39,16 @@ class Single extends Controller {
 		add_action( 'wp_ajax_itelic_admin_releases_single_update', array(
 			$this,
 			'handle_ajax_update'
+		) );
+
+		add_action( 'ibd_wp_notifications_template_manager_itelic-outdated-customers', array(
+			$this,
+			'outdated_customers_manager'
+		) );
+
+		add_action( 'wp_ajax_itelic_admin_releases_send_notification', array(
+			$this,
+			'send_notification'
 		) );
 	}
 
@@ -127,6 +146,134 @@ class Single extends Controller {
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Setup the template manager for the notification sent to outdated customers.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Template_Manager $manager
+	 */
+	public function outdated_customers_manager( Template_Manager $manager ) {
+
+		$shared = \ITELIC\get_shared_tags();
+
+		foreach ( $shared as $listener ) {
+			$manager->listen( $listener );
+		}
+
+		$manager->listen( new Listener( 'product_name', function ( Release $release ) {
+			return $release->get_product()->post_title;
+		} ) );
+
+		$manager->listen( new Listener( 'version', function ( Release $release ) {
+			return $release->get_version();
+		} ) );
+
+		$manager->listen( new Listener( 'changelog', function ( Release $release ) {
+			return $release->get_changelog();
+		} ) );
+
+		$manager->listen( new Listener( 'install_list', function ( Release $release, \WP_User $to ) {
+
+			$query = new Activations( array(
+				'status'          => Activation::ACTIVE,
+				'product'         => $release->get_product()->ID,
+				'customer'        => $to->ID,
+				'version__not_in' => array( $release->get_version() )
+			) );
+
+			$activations = array_filter( $query->get_results(), function ( Activation $activation ) use ( $release ) {
+
+				if ( ! $activation->get_version() ) {
+					return true;
+				}
+
+				return version_compare( $activation->get_version(), $release->get_version(), '<' );
+			} );
+
+			$html = '<ul>';
+
+			/** @var Activation $activation */
+			foreach ( $activations as $activation ) {
+				$html .= '<li>' . "{$activation->get_location()} – v{$activation->get_version()}" . '</li>';
+			}
+
+			$html .= '</ul>';
+
+			return $html;
+		} ) );
+	}
+
+	/**
+	 * Handles the ajax callback for sending the notifications to outdated customers.
+	 *
+	 * @since 1.0
+	 */
+	public function send_notification() {
+
+		if ( ! isset( $_POST['release'] ) || ! isset( $_POST['subject'] ) || ! isset( $_POST['message'] ) || ! isset( $_POST['nonce'] ) ) {
+			return;
+		}
+
+		$release = intval( $_POST['release'] );
+		$subject = sanitize_text_field( $_POST['subject'] );
+		$message = wp_unslash( $_POST['message'] );
+		$nonce   = wp_unslash( $_POST['nonce'] );
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-update-release-$release" ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Request expired. Please refresh and try again.", Plugin::SLUG )
+			) );
+		}
+
+		/** @var Release $release */
+		$release = Release::get( $release );
+
+		/** @var $wpdb \wpdb */
+		global $wpdb;
+
+		$atn = Manager::get( 'itelic-activations' )->get_table_name( $wpdb );
+		$ktn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
+
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"SELECT DISTINCT k.customer FROM $atn a
+			JOIN $ktn k ON (a.lkey = k.lkey AND k.product = %d)
+			WHERE a.status = %s AND a.version != %d",
+			$release->get_product()->ID, Activation::ACTIVE, $release->get_version() ) );
+
+		if ( empty( $results ) ) {
+			wp_send_json_error( array(
+				'message' => __( "All customers have upgraded.", Plugin::SLUG )
+			) );
+		}
+
+		$notifications = array();
+
+		foreach ( $results as $result ) {
+
+			$to = get_user_by( 'id', $result->customer );
+
+			$notification = new Notification( $to, Factory::make( 'itelic-outdated-customers' ), $message, $subject );
+			$notification->add_data_source( $release );
+
+			$notifications[] = $notification;
+		}
+
+		try {
+			$cron = new WP_Cron( new Options( 'itelic-outdated-customers' ) );
+			$cron->process( $notifications, new iThemes_Exchange() );
+		}
+		catch ( \Exception $e ) {
+			wp_send_json_error( array(
+				'message' => $e->getMessage()
+			) );
+		}
+
+		wp_send_json_success( array(
+			'message' => sprintf( __( "Notifications to %d customers have been queued for sending", Plugin::SLUG ), count( $results ) )
+		) );
 	}
 
 	/**

@@ -50,6 +50,8 @@ class Options implements Contract {
 
 		$all = get_option( $this->bucket, array() );
 
+		$found = empty( $all ) ? false : true;
+
 		if ( empty( $notifications ) ) {
 			return $this->clear_notifications( $queue_id );
 		}
@@ -62,7 +64,11 @@ class Options implements Contract {
 			$all[ $queue_id ]['strategy'] = $strategy;
 		}
 
-		return update_option( $this->bucket, $all );
+		if ( $found ) {
+			return update_option( $this->bucket, $all );
+		} else {
+			return add_option( $this->bucket, $all, '', 'no' );
+		}
 	}
 
 	/**

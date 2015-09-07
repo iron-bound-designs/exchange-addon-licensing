@@ -55,7 +55,11 @@ class Activations extends Complex_Query {
 			'status'           => 'any',
 			'activation'       => '',
 			'deactivation'     => '',
-			'product'          => ''
+			'version'          => '',
+			'version__in'      => array(),
+			'version__not_in'  => array(),
+			'product'          => '',
+			'customer'         => ''
 		);
 
 		return wp_parse_args( $new, $existing );
@@ -110,13 +114,17 @@ class Activations extends Complex_Query {
 			$where->qAnd( $deactivation );
 		}
 
+		if ( ( $version = $this->parse_version() ) !== null ) {
+			$where->qAnd( $version );
+		}
+
 		$order = $this->parse_order();
 		$limit = $this->parse_pagination();
 
 		$builder->append( $select )->append( $from );
 
-		if ( ( $product = $this->parse_product() ) !== null ) {
-			$builder->append( $product );
+		if ( ( $join = $this->parse_join() ) !== null ) {
+			$builder->append( $join );
 		}
 
 		$builder->append( $where );
@@ -236,21 +244,43 @@ class Activations extends Complex_Query {
 	}
 
 	/**
+	 * Parse the version query.
+	 *
+	 * @since 1.0
+	 *
+	 * @return Where|null
+	 */
+	protected function parse_version() {
+
+		if ( ! empty( $this->args['version'] ) ) {
+			$this->args['version__in'] = array( $this->args['version'] );
+		}
+
+		return $this->parse_in_or_not_in_query( 'version', $this->args['version__in'], $this->args['version__not_in'] );
+	}
+
+	/**
 	 * Parse the product query.
 	 *
 	 * @since 1.0
 	 *
 	 * @return Join|null
 	 */
-	protected function parse_product() {
+	protected function parse_join() {
 
-		if ( empty( $this->args['product'] ) ) {
+		if ( empty( $this->args['product'] ) && empty( $this->args['customer'] ) ) {
 			return null;
 		}
 
 		$on = new Where_Raw( 'k.lkey = q.lkey' );
 
-		$on->qAnd( new Where( 'k.product', true, absint( $this->args['product'] ) ) );
+		if ( ! empty( $this->args['product'] ) ) {
+			$on->qAnd( new Where( 'k.product', true, absint( $this->args['product'] ) ) );
+		}
+
+		if ( ! empty( $this->args['customer'] ) ) {
+			$on->qAnd( new Where( 'k.customer', true, absint( $this->args['customer'] ) ) );
+		}
 
 		return new Join( new From( Manager::get( 'itelic-keys' )->get_table_name( $GLOBALS['wpdb'] ), 'k' ), $on );
 	}

@@ -265,9 +265,9 @@ class Notification implements Contract {
 			'recipient'    => $this->recipient->ID,
 			'message'      => $this->message,
 			'subject'      => $this->subject,
-			'strategy'     => serialize( $this->strategy ),
+			'strategy'     => $this->strategy,
 			'manager'      => $this->manager->get_type(),
-			'data_sources' => serialize( $this->data_sources )
+			'data_sources' => $this->data_sources
 		);
 	}
 
@@ -303,9 +303,9 @@ class Notification implements Contract {
 		$this->message   = $data['message'];
 		$this->subject   = $data['subject'];
 		$this->manager   = Factory::make( $data['manager'] );
-		$this->strategy  = unserialize( $data['strategy'] );
+		$this->strategy  = $data['strategy'];
 
-		$this->data_sources = unserialize( $data['data_sources'] );
+		$this->data_sources = $data['data_sources'];
 		$this->tags         = $this->generate_rendered_tags();
 	}
 }

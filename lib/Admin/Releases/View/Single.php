@@ -205,7 +205,7 @@ class Single extends View {
 		$updated           = $this->release->get_total_updated();
 		$total_activations = $this->release->get_total_active_activations();
 
-		$percent = $updated / $total_activations * 100;
+		$percent = number_format( $updated / $total_activations * 100, 2 );
 
 		?>
 
@@ -304,7 +304,7 @@ class Single extends View {
 	 */
 	protected function render_notification_editor() {
 
-		$editor = new Editor( Factory::make( 'itelic-renewal-reminder' ), array(
+		$editor = new Editor( Factory::make( 'itelic-outdated-customers' ), array(
 			'mustSelectItem'    => __( "You must select an item", Plugin::SLUG ),
 			'selectTemplateTag' => __( "Select Template Tag", Plugin::SLUG ),
 			'templateTag'       => __( "Template Tag", Plugin::SLUG ),
@@ -328,24 +328,27 @@ class Single extends View {
 				); ?>
 			</p>
 
-			<input type="text" id="notification-subject" placeholder="<?php esc_attr_e( "Enter your subject", Plugin::SLUG ); ?>">
+			<div class="notification-editor-fields-container">
 
-			<?php $editor->display_template_tag_button(); ?>
+				<input type="text" id="notification-subject" placeholder="<?php esc_attr_e( "Enter your subject", Plugin::SLUG ); ?>">
 
-			<?php wp_editor( '', 'notification-body', array(
-				'teeny'         => true,
-				'media_buttons' => false,
-				'editor_height' => '250px'
-			) ); ?>
+				<?php $editor->display_template_tag_button(); ?>
 
-			<p class="clearfix notification-buttons">
-				<a href="javascript:" class="button button-secondary" id="cancel-notification">
-					<?php _e( "Cancel", Plugin::SLUG ); ?>
-				</a>
-				<a href="javascript:" class="button button-primary" id="send-notification">
-					<?php _e( "Send", Plugin::SLUG ); ?>
-				</a>
-			</p>
+				<?php wp_editor( '', 'notification-body', array(
+					'teeny'         => true,
+					'media_buttons' => false,
+					'editor_height' => '250px'
+				) ); ?>
+
+				<p class="clearfix notification-buttons">
+					<a href="javascript:" class="button button-secondary" id="cancel-notification">
+						<?php _e( "Cancel", Plugin::SLUG ); ?>
+					</a>
+					<a href="javascript:" class="button button-primary" id="send-notification">
+						<?php _e( "Send", Plugin::SLUG ); ?>
+					</a>
+				</p>
+			</div>
 		</div>
 
 		<?php

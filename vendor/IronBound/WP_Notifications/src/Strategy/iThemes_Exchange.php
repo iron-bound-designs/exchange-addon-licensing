@@ -36,6 +36,8 @@ class iThemes_Exchange implements Strategy {
 		$subject = str_replace( array_keys( $template_parts ), array_values( $template_parts ), $subject );
 
 		do_action( 'it_exchange_send_email_notification', $recipient->ID, $subject, $message );
+
+		return true;
 	}
 
 	/**

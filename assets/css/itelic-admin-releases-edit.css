@@ -363,6 +363,14 @@
 	float: right;
 }
 
+.blockUI.blockMsg.blockPage {
+	z-index: 9999 !important;
+}
+
+.blockUI.blockOverlay {
+	z-index: 9991 !important;
+}
+
 /** -----------------------------------------------------:[ upgrade line chart ]:---------- */
 
 .progress-line-chart h4 {

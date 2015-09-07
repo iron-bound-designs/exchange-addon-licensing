@@ -61,7 +61,7 @@ class WP_Cron implements Queue {
 			throw new \Exception( "Unable to store notifications." );
 		}
 
-		self::cron_callback( $hash );
+		$this->cron_callback( $hash );
 	}
 
 	/**
@@ -95,7 +95,7 @@ class WP_Cron implements Queue {
 		$rate = $strategy->get_suggested_rate();
 
 		if ( count( $notifications ) > $rate ) {
-			$to_process = array_slice( $notifications, 0, $rate );
+			$to_process = array_slice( $notifications, 0, $rate, true );
 		} else {
 			$to_process = $notifications;
 		}
@@ -110,7 +110,7 @@ class WP_Cron implements Queue {
 			 * double check that this notification hasn't already been sent.
 			 */
 			if ( $notification->was_sent() ) {
-				unset( $notifications[ array_search( $notification, $notifications ) ] );
+				unset( $notifications[ $key ] );
 
 				continue;
 			}
@@ -120,7 +120,7 @@ class WP_Cron implements Queue {
 				$notification->set_strategy( $strategy );
 
 				if ( $notification->send() ) {
-					unset( $notifications[ array_search( $notification, $notifications ) ] );
+					unset( $notifications[ $key ] );
 				}
 
 			}
@@ -129,6 +129,13 @@ class WP_Cron implements Queue {
 			}
 		}
 
-		$this->storage->store_notifications( $hash, $notifications );
+		if ( empty( $notifications ) ) {
+			$this->storage->clear_notifications( $hash );
+		} else {
+			$this->storage->store_notifications( $hash, $notifications );
+
+			// we pass along a garbage uniquid to prevent WP Cron from denying our event since it is less than 10 minutes since the last
+			wp_schedule_single_event( self::get_next_event_time(), self::CRON_ACTION, array( $hash, uniqid() ) );
+		}
 	}
 }
