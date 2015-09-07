@@ -59,13 +59,18 @@ class Single extends View {
 		$tf  = get_option( 'time_format' );
 		$dtf = "$df $tf";
 
+		if ( $this->release->get_status() == Release::STATUS_DRAFT ) {
+			$click_edit = ' title="' . __( "Click to Edit", Plugin::SLUG ) . '"';
+		} else {
+			$click_edit = '';
+		}
 		?>
 
 		<div id="release-details">
 			<div class="spacing-wrapper bottom-border header-block">
 
 				<div class="status status-<?php echo esc_attr( $this->release->get_status() ); ?>">
-					<span data-value="<?php echo esc_attr( $this->release->get_status() ); ?>" title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>">
+					<span data-value="<?php echo esc_attr( $this->release->get_status() ); ?>"<?php echo $click_edit; ?>>
 						<?php echo $this->release->get_status( true ); ?>
 					</span>
 				</div>
@@ -81,7 +86,7 @@ class Single extends View {
 				<div class="third type">
 					<h4><?php _e( "Type", Plugin::SLUG ); ?></h4>
 
-					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>" data-value="<?php echo $this->release->get_type(); ?>">
+					<h3 data-value="<?php echo $this->release->get_type(); ?>"<?php echo $click_edit; ?>>
 						<?php echo $this->release->get_type( true ); ?>
 					</h3>
 				</div>
@@ -99,7 +104,7 @@ class Single extends View {
 				<div class="third version">
 					<h4><?php _e( "Version", Plugin::SLUG ); ?></h4>
 
-					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>" data-value="<?php echo $this->release->get_version(); ?>">
+					<h3 data-value="<?php echo $this->release->get_version(); ?>"<?php echo $click_edit; ?>>
 						<?php echo $this->release->get_version(); ?>
 					</h3>
 				</div>
