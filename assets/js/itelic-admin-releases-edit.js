@@ -9,6 +9,7 @@
 	var changelog = $(".changelog-block");
 	var upgrades = $(".upgrade-progress-block");
 	var notifications = $(".notifications-editor");
+	var line_graph = $(".progress-line-chart");
 	var full_notify_button_block = $(".full-notify-button");
 
 	var notify_button = $("#notify-button");
@@ -16,6 +17,7 @@
 
 	var upgrade_details_showing = false;
 
+	var loaded_graphs = false;
 
 	notify_button.click(function () {
 
@@ -41,6 +43,8 @@
 
 		if (upgrade_details_showing) {
 
+			line_graph.slideUp();
+
 			full_notify_button_block.slideUp(400, function () {
 
 				misc.slideDown();
@@ -64,7 +68,14 @@
 			misc.slideUp();
 			changelog.slideUp(400, function () {
 
+				line_graph.slideDown();
 				full_notify_button_block.slideDown();
+
+				if (!loaded_graphs) {
+					$.event.trigger(ITELIC.ibdLoadOn);
+
+					loaded_graphs = true;
+				}
 			});
 
 			notify_button.fadeOut(100, function () {

@@ -94,6 +94,9 @@ class Plugin {
 	 * @since 1.0
 	 */
 	public function scripts_and_styles() {
+
+		wp_register_script( 'ithemes-chartjs', self::$url . 'assets/vendor/chartjs/js/Chart.min.js', array( 'jquery' ), '1.0.2', true );
+
 		wp_register_style( 'jqueryui-editable', self::$url . 'assets/vendor/jqueryui-editable/css/jqueryui-editable.css', array(), '1.5.1' );
 		wp_register_script( 'jqueryui-editable', self::$url . 'assets/vendor/jqueryui-editable/js/jqueryui-editable.js', array(
 			'jquery-ui-core',

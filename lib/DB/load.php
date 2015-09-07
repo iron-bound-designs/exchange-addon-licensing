@@ -28,11 +28,11 @@ Manager::register( new Upgrades() );
  */
 function itelic_install_tables() {
 
-	Manager::maybe_install_table( new Keys() );        
+	Manager::maybe_install_table( new Keys() );
 	Manager::maybe_install_table( new Activations() );
-        Manager::maybe_install_table( new Renewals() );
-        Manager::maybe_install_table( new Releases() );
-        Manager::maybe_install_table( new Upgrades() );
+	Manager::maybe_install_table( new Renewals() );
+	Manager::maybe_install_table( new Releases() );
+	Manager::maybe_install_table( new Upgrades() );
 }
 
 add_action( 'itelic_activate', __NAMESPACE__ . '\\itelic_install_tables' );

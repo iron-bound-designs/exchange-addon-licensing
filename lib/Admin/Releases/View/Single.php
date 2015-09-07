@@ -10,6 +10,7 @@ namespace ITELIC\Admin\Releases\View;
 
 use IronBound\WP_Notifications\Template\Editor;
 use IronBound\WP_Notifications\Template\Factory;
+use ITELIC\Admin\Chart;
 use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
@@ -27,12 +28,19 @@ class Single extends View {
 	protected $release;
 
 	/**
+	 * @var Chart
+	 */
+	protected $progress;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Release $release
+	 * @param Chart   $progress
 	 */
-	public function __construct( Release $release = null ) {
-		$this->release = $release;
+	public function __construct( Release $release = null, Chart $progress = null ) {
+		$this->release  = $release;
+		$this->progress = $progress;
 	}
 
 	/**
@@ -95,6 +103,7 @@ class Single extends View {
 			<?php $this->render_whats_changed(); ?>
 			<?php $this->render_upgrades_bar(); ?>
 			<?php $this->render_notification_editor(); ?>
+			<?php $this->render_progress_line_chart(); ?>
 			<?php $this->render_notify_button_section(); ?>
 		</div>
 
@@ -200,6 +209,25 @@ class Single extends View {
 			<a href="javascript:" class="button" id="notify-button-full">
 				<?php _e( "Notify Outdated Customers", Plugin::SLUG ); ?>
 			</a>
+		</div>
+
+		<?php
+	}
+
+	/**
+	 * Render the progress line chart.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_progress_line_chart() {
+
+		?>
+
+		<div class="spacing-wrapper bottom-border progress-line-chart hidden">
+
+			<h4><?php _e( "Upgrades over the first 14 days", Plugin::SLUG ); ?></h4>
+
+			<?php $this->progress->graph(); ?>
 		</div>
 
 		<?php

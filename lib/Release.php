@@ -449,7 +449,7 @@ class Release extends Model {
 	 * @return \DateTime|null
 	 */
 	public function get_start_date() {
-		return $this->start_date;
+		return new \DateTimeImmutable( $this->start_date->format( \DateTime::ISO8601 ) );
 	}
 
 	/**
@@ -481,8 +481,6 @@ class Release extends Model {
 		$found = null;
 
 		$count = wp_cache_get( $this->get_ID(), 'itelic-release-upgrade-count', false, $found );
-
-		return 1;
 
 		if ( ! $found ) {
 
