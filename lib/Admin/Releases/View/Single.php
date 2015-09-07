@@ -175,6 +175,10 @@ class Single extends View {
 	 */
 	protected function render_upgrades_bar() {
 
+		if ( $this->release->get_status() == Release::STATUS_DRAFT ) {
+			return;
+		}
+
 		$updated           = $this->release->get_total_updated();
 		$total_activations = $this->release->get_total_active_activations();
 
@@ -229,6 +233,10 @@ class Single extends View {
 	 */
 	protected function render_progress_line_chart() {
 
+		if ( ! $this->progress ) {
+			return;
+		}
+
 		?>
 
 		<div class="spacing-wrapper bottom-border progress-line-chart hidden">
@@ -247,6 +255,10 @@ class Single extends View {
 	 * @since 1.0
 	 */
 	protected function render_versions_pie_chart() {
+
+		if ( ! $this->version ) {
+			return;
+		}
 
 		?>
 

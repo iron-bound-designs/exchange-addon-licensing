@@ -168,6 +168,10 @@
 	background: #ffba00;
 }
 
+#release-details .header-block .status-paused span {
+	color: #fff;
+}
+
 #release-details .header-block .status-expired span {
 	color: #fafafa;
 }

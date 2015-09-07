@@ -23,6 +23,17 @@ use ITELIC\Release;
 class Single extends Controller {
 
 	/**
+	 * Single constructor.
+	 */
+	public function __construct() {
+
+		add_action( 'wp_ajax_itelic_admin_releases_single_update', array(
+			$this,
+			'handle_ajax_update'
+		) );
+	}
+
+	/**
 	 * Render the view for this controller.
 	 *
 	 * @return void
@@ -51,6 +62,58 @@ class Single extends Controller {
 	}
 
 	/**
+	 * Handle the AJAX request for updating information about this license key.
+	 */
+	public function handle_ajax_update() {
+
+		if ( ! isset( $_POST['release'] ) || ! isset( $_POST['prop'] ) || ! isset( $_POST['val'] ) || ! isset( $_POST['nonce'] ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Invalid request format.", Plugin::SLUG )
+			) );
+		}
+
+		$release = intval( $_POST['release'] );
+		$prop    = sanitize_text_field( $_POST['prop'] );
+		$val     = sanitize_text_field( $_POST['val'] );
+		$nonce   = sanitize_text_field( $_POST['nonce'] );
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-update-release-$release" ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG )
+			) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array(
+				'message' => __( "Sorry, you don't have permission to do this.", Plugin::SLUG )
+			) );
+		}
+
+		/** @var Release $release */
+		$release = Release::get( $release );
+
+		try {
+			switch ( $prop ) {
+				case 'status':
+					$release->set_status( $val );
+					break;
+
+				default:
+					wp_send_json_error( array(
+						'message' => __( "Invalid request format.", Plugin::SLUG )
+					) );
+			}
+		}
+		catch ( \Exception $e ) {
+			wp_send_json_error( array(
+				'message' => $e->getMessage()
+			) );
+		}
+
+		wp_send_json_success();
+	}
+
+	/**
 	 * Enqueue scripts and styles.
 	 *
 	 * @since 1.0
@@ -65,7 +128,10 @@ class Single extends Controller {
 			'uploadLabel'  => __( "Upload File", Plugin::SLUG ),
 			'lessUpgrade'  => __( "Less", Plugin::SLUG ),
 			'moreUpgrade'  => __( "More", Plugin::SLUG ),
-			'ibdLoadOn'    => 'loadCharts'
+			'ibdLoadOn'    => 'loadCharts',
+			'statuses'     => Release::get_statuses(),
+			'release'      => $_GET['ID'],
+			'update_nonce' => wp_create_nonce( 'itelic-update-release-' . $_GET['ID'] )
 		) );
 
 		wp_enqueue_media();
@@ -81,6 +147,10 @@ class Single extends Controller {
 	 * @return Chart\Base
 	 */
 	private function get_progress_chart( Release $release ) {
+
+		if ( $release->get_status() == Release::STATUS_DRAFT ) {
+			return null;
+		}
 
 		/** @var $wpdb \wpdb */
 		global $wpdb;
@@ -165,6 +235,10 @@ class Single extends Controller {
 	 * @return Chart\Base
 	 */
 	private function get_version_chart( Release $release ) {
+
+		if ( $release->get_status() == Release::STATUS_DRAFT ) {
+			return null;
+		}
 
 		/** @var $wpdb \wpdb */
 		global $wpdb;

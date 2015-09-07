@@ -59,12 +59,12 @@ class Release extends Model {
 	/**
 	 * A paused release.
 	 */
-	const STATUS_PAUSED = 'partial';
+	const STATUS_PAUSED = 'paused';
 
 	/**
 	 * An archived release.
 	 */
-	const STATUS_ARCHIVED = 'complete';
+	const STATUS_ARCHIVED = 'archived';
 
 	/**
 	 * @var int

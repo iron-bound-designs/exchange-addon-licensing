@@ -18,7 +18,6 @@
 	var prev_notify_view;
 
 	var upgrade_details_showing = false;
-
 	var loaded_progress_chart = false;
 	var loaded_versions_chart = false;
 
@@ -128,6 +127,122 @@
 
 			upgrade_details_showing = true;
 		}
+	});
+
+	/**
+	 * Editable Implementation
+	 *
+	 * @return {object}
+	 */
+	function get_status_options_for_status() {
+
+		console.log(status_span);
+		var current = status_span.data('value');
+
+		var all = ITELIC.statuses;
+
+		var selected = {};
+
+		switch (current) {
+			case 'draft':
+				selected['draft'] = all.draft;
+				selected['active'] = all.active;
+				break;
+
+			case 'active':
+				selected['active'] = all.active;
+				selected['paused'] = all.paused;
+				selected['archived'] = all.archived;
+				break;
+
+			case 'paused':
+				selected['paused'] = all.paused;
+				selected['active'] = all.active;
+				break;
+
+			case 'archived':
+				selected['archived'] = all.archived;
+		}
+
+		return selected;
+	}
+
+	/**
+	 * Callback function that parses the WP Ajax response.
+	 *
+	 * @param response
+	 * @param newValue
+	 * @returns {*}
+	 */
+	function editable_success_callback(response, newValue) {
+
+		if (!response.success) {
+			alert(response.data.message);
+			return false;
+		} else {
+			return {"newValue": newValue};
+		}
+	}
+
+	/**
+	 * Callback function that processes a change from editable
+	 * and posts it to a WP Ajax handle.
+	 *
+	 * @param params
+	 * @returns {$.promise|*}
+	 */
+	function editable_ajax(params) {
+		var data = {
+			action : 'itelic_admin_releases_single_update',
+			release: ITELIC.release,
+			prop   : params.name,
+			val    : params.value,
+			nonce  : ITELIC.update_nonce
+		};
+
+		return $.post(ajaxurl, data);
+	}
+
+	var status_span = $(".status span");
+
+	status_span.editable({
+		type       : 'select',
+		pk         : ITELIC.release,
+		name       : 'status',
+		source     : function () {
+			return get_status_options_for_status();
+		},
+		sourceCache: false,
+		showbuttons: false,
+		placement  : "top",
+		title      : ' ',
+		mode       : 'inline',
+		url        : function (params) {
+			return editable_ajax(params);
+		},
+		success    : function (response, newValue) {
+			return editable_success_callback(response, newValue);
+		}
+	});
+
+	status_span.on('shown', function (e, editable) {
+		$(this).closest('.status').addClass('status-hovered');
+	});
+
+	status_span.on('hidden', function (e, editable) {
+		$(this).closest('.status').removeClass('status-hovered');
+	});
+
+	status_span.on('save', function (e, params) {
+		var container = $(this).closest('.status');
+
+		$.each(ITELIC.statuses, function (key, value) {
+			container.removeClass('status-' + key);
+		});
+
+		container.addClass('status-' + params.newValue);
+
+		status_span.data('value', params.newValue);
 	});
 
 	/**
