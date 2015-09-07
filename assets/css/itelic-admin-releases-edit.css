@@ -265,6 +265,14 @@
 	margin-left: 25px;
 }
 
+.whats-changed-editor {
+	display: none;
+}
+
+.whats-changed-editor p {
+	float: right;
+}
+
 /** -----------------------------------------------------:[ upgrade progress ]:---------- */
 
 #more-upgrades-link {

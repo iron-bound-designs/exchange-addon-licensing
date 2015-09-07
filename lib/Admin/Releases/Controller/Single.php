@@ -74,7 +74,7 @@ class Single extends Controller {
 
 		$release = intval( $_POST['release'] );
 		$prop    = sanitize_text_field( $_POST['prop'] );
-		$val     = sanitize_text_field( $_POST['val'] );
+		$val     = $_POST['val'];
 		$nonce   = sanitize_text_field( $_POST['nonce'] );
 
 		if ( ! wp_verify_nonce( $nonce, "itelic-update-release-$release" ) ) {
@@ -103,11 +103,15 @@ class Single extends Controller {
 					break;
 
 				case 'version':
-					$release->set_version($val);
+					$release->set_version( sanitize_text_field( $val ) );
 					break;
 
 				case 'download':
-					$release->set_download( $val );
+					$release->set_download( intval( $val ) );
+					break;
+
+				case 'changelog':
+					$release->set_changelog( $val );
 					break;
 
 				default:
@@ -140,6 +144,7 @@ class Single extends Controller {
 			'uploadLabel'  => __( "Upload File", Plugin::SLUG ),
 			'lessUpgrade'  => __( "Less", Plugin::SLUG ),
 			'moreUpgrade'  => __( "More", Plugin::SLUG ),
+			'saving'       => __( "Saving", Plugin::SLUG ),
 			'ibdLoadOn'    => 'loadCharts',
 			'statuses'     => Release::get_statuses(),
 			'types'        => Release::get_types( true ),

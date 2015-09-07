@@ -21,6 +21,9 @@
 	var loaded_progress_chart = false;
 	var loaded_versions_chart = false;
 
+	var changelog_text = $(".whats-changed");
+	var changelog_editor = $(".whats-changed-editor");
+
 	notify_button.click(function () {
 
 		misc.slideUp();
@@ -129,6 +132,54 @@
 		}
 	});
 
+	changelog_text.click(function () {
+
+		changelog_editor.show();
+		changelog_text.hide();
+	});
+
+	$("#cancel-changelog-editor").click(function () {
+
+		changelog_text.show();
+		changelog_editor.hide()
+	});
+
+	$("#save-changelog-editor").click(function () {
+
+		changelog_editor.block({
+			message: ITELIC.saving,
+			css    : {
+				border                 : 'none',
+				padding                : '15px',
+				backgroundColor        : '#000',
+				'-webkit-border-radius': '10px',
+				'-moz-border-radius'   : '10px',
+				opacity                : .5,
+				color                  : '#fff'
+			}
+		});
+
+		var text = tinyMCE.activeEditor.getContent();
+
+		editable_ajax({
+			name : 'changelog',
+			value: text
+		}).done(function (response) {
+
+			if (!response.success) {
+
+				alert(response.data.message);
+
+				changelog_editor.unblock();
+			} else {
+				changelog_editor.unblock();
+				changelog_text.html(text);
+				changelog_text.show();
+				changelog_editor.hide();
+			}
+		});
+	});
+
 	/**
 	 * Editable Implementation
 	 *
@@ -136,7 +187,6 @@
 	 */
 	function get_status_options_for_status() {
 
-		console.log(status_span);
 		var current = status_span.data('value');
 
 		var all = ITELIC.statuses;

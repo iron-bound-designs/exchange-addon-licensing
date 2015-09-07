@@ -105,6 +105,8 @@ class Plugin {
 			'jquery-ui-datepicker'
 		), '1.5.1' );
 
+		wp_register_script( 'jquery-blockUI', self::$url . 'assets/vendor/blockUI/js/jquery.blockUI.js', array( 'jquery' ), '2.70.0' );
+
 		wp_register_style( 'itelic-add-edit-product', self::$url . 'assets/css/itelic-add-edit-product.css', array(), self::VERSION );
 		wp_register_script( 'itelic-add-edit-product', self::$url . 'assets/js/itelic-add-edit-product.js', array( 'jquery' ), self::VERSION );
 
@@ -137,7 +139,8 @@ class Plugin {
 		), self::VERSION );
 		wp_register_script( 'itelic-admin-releases-edit', self::$url . 'assets/js/itelic-admin-releases-edit.js', array(
 			'jquery-effects-slide',
-			'jqueryui-editable'
+			'jqueryui-editable',
+			'jquery-blockUI'
 		), self::VERSION );
 	}
 

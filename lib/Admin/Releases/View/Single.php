@@ -157,8 +157,27 @@ class Single extends View {
 
 			<h4><?php _e( "What's Changed", Plugin::SLUG ); ?></h4>
 
-			<div class="whats-changed">
+			<div class="whats-changed" title="<?php _e( "Click to Edit", Plugin::SLUG ); ?>">
 				<?php echo $this->release->get_changelog(); ?>
+			</div>
+
+			<div class="whats-changed-editor">
+
+				<?php wp_editor( $this->release->get_changelog(), 'whats-changed-input', array(
+					'teeny'         => true,
+					'editor_height' => '150px',
+					'media_buttons' => false
+				) ); ?>
+
+				<p>
+					<a href="javascript:" class="button" id="cancel-changelog-editor">
+						<?php _e( "Cancel", Plugin::SLUG ); ?>
+					</a>
+
+					<a href="javascript:" class="button button-primary" id="save-changelog-editor">
+						<?php _e( "Save", Plugin::SLUG ); ?>
+					</a>
+				</p>
 			</div>
 
 		</div>
