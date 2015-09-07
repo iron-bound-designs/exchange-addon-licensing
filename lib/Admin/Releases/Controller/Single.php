@@ -140,7 +140,6 @@ class Single extends Controller {
 		}, array_keys( $data ) );
 
 		$chart = new Chart\Line( $labels, 698, 200, array(
-			'pointHitDetectionRadius' => 5,
 			'scaleIntegersOnly'       => true,
 			'ibdLoadOn'               => 'loadProgressChart',
 			'animation'               => false
@@ -180,7 +179,7 @@ class Single extends Controller {
 			GROUP BY previous_version ORDER BY c DESC LIMIT 5",
 			$id ) );
 
-		$chart = new Chart\Pie( '698', 300, array(
+		$chart = new Chart\Pie( 698, 300, array(
 			'ibdLoadOn'     => 'loadVersionsChart',
 			'animateRotate' => false
 		) );

@@ -22,7 +22,7 @@ class Polar extends Integrated_Labels {
 	 * @param array $options
 	 */
 	public function __construct( $width, $height, $options = array() ) {
-		parent::__construct( $width, $height, 'Polar', $options );
+		parent::__construct( $width, $height, 'PolarArea', $options );
 	}
 
 }

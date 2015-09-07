@@ -20,6 +20,11 @@ abstract class Base {
 	protected $data_sets = array();
 
 	/**
+	 * @var string
+	 */
+	private $id;
+
+	/**
 	 * @var int
 	 */
 	private $width;
@@ -86,6 +91,7 @@ abstract class Base {
 		}
 
 		$this->options = $options;
+		$this->id = 'itelic-chart-' . self::$count;
 	}
 
 	/**
@@ -135,14 +141,15 @@ abstract class Base {
 			$globals = self::$global_options;
 		}
 
-		$id = 'itelic-chart-' . self::$count;
+		$id = $this->id;
 		?>
 
-		<canvas id="<?php echo esc_attr( $id); ?>" width="<?php echo esc_attr( $this->width ); ?>"
+		<canvas id="<?php echo esc_attr( $id ); ?>" width="<?php echo esc_attr( $this->width ); ?>"
 		        height="<?php echo esc_attr( $this->height ); ?>"></canvas>
 
 		<script type="text/javascript">
-			jQuery(document).ready(function ($) {
+			(function ($) {
+				'use strict';
 
 				var globals = <?php echo wp_json_encode($globals); ?>
 
@@ -162,11 +169,14 @@ abstract class Base {
 					});
 
 				<?php else: ?>
-					var ctx = $("#<?php echo ($id); ?>").get(0).getContext("2d");
-					new Chart(ctx).<?php echo $this->type; ?>(data, options);
+					$(document).ready(function() {
+
+						var ctx = $("#<?php echo ($id); ?>").get(0).getContext("2d");
+						new Chart(ctx).<?php echo $this->type; ?>(data, options);
+					});
 				<?php endif; ?>
 
-			});
+			})(jQuery);
 		</script>
 
 		<?php

@@ -355,7 +355,7 @@
 
 .versions-pie-chart h4 {
 	text-align: center;
-	margin-bottom: 10px;
+	margin-bottom: 15px !important;
 }
 
 /** -----------------------------------------------------:[ notify button block ]:---------- */
