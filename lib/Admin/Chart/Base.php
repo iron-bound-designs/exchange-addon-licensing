@@ -106,6 +106,15 @@ abstract class Base {
 	}
 
 	/**
+	 * Get the total items displayed in the chart.
+	 *
+	 * @since 1.0
+	 *
+	 * @return int
+	 */
+	public abstract function get_total_items();
+
+	/**
 	 * Add a line of data to this graph.
 	 *
 	 * @param array  $points

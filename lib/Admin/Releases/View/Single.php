@@ -252,7 +252,7 @@ class Single extends View {
 
 		<div class="spacing-wrapper bottom-border versions-pie-chart hidden">
 
-			<h4><?php _e( "Top 5 versions upgraded from", Plugin::SLUG ); ?></h4>
+			<h4><?php printf( __( "Top %d versions upgraded from", Plugin::SLUG ), $this->version->get_total_items() ); ?></h4>
 
 			<?php $this->version->graph(); ?>
 		</div>

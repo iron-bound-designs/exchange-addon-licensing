@@ -39,6 +39,17 @@ abstract class Integrated_Labels extends Base {
 	}
 
 	/**
+	 * Get the total items displayed in the chart.
+	 *
+	 * @since 1.0
+	 *
+	 * @return int
+	 */
+	public function get_total_items() {
+		return count( $this->data_sets );
+	}
+
+	/**
 	 * Build the data to be passed to the Chart.
 	 *
 	 * @since 1.0

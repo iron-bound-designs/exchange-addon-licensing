@@ -36,6 +36,17 @@ abstract class Separated_Labels extends Base {
 	}
 
 	/**
+	 * Get the total items displayed in the chart.
+	 *
+	 * @since 1.0
+	 *
+	 * @return int
+	 */
+	public function get_total_items() {
+		return count( $this->labels );
+	}
+
+	/**
 	 * Add a line of data to this graph.
 	 *
 	 * @param array  $points
