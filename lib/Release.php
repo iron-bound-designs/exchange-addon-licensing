@@ -57,14 +57,14 @@ class Release extends Model {
 	const STATUS_ACTIVE = 'active';
 
 	/**
-	 * Partially complete releases.
+	 * A paused release.
 	 */
-	const STATUS_PARTIAL = 'partial';
+	const STATUS_PAUSED = 'partial';
 
 	/**
-	 * Complete releases where everyone has been upgraded.
+	 * An archived release.
 	 */
-	const STATUS_COMPLETE = 'complete';
+	const STATUS_ARCHIVED = 'complete';
 
 	/**
 	 * @var int
@@ -530,8 +530,8 @@ class Release extends Model {
 		return array(
 			self::STATUS_DRAFT    => __( "Draft", Plugin::SLUG ),
 			self::STATUS_ACTIVE   => __( "Active", Plugin::SLUG ),
-			self::STATUS_PARTIAL  => __( "Partial", Plugin::SLUG ),
-			self::STATUS_COMPLETE => __( "Complete", Plugin::SLUG )
+			self::STATUS_PAUSED   => __( "Paused", Plugin::SLUG ),
+			self::STATUS_ARCHIVED => __( "Archived", Plugin::SLUG )
 		);
 	}
 
