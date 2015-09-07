@@ -184,16 +184,24 @@ class Single extends Controller {
 
 		$colors = array(
 			array(
-				'color'     => '#F7464A',
-				'highlight' => '#FF5A5E'
+				'color'     => '#EDDDD4',
+				'highlight' => '#D4C4BB'
 			),
 			array(
-				'color'     => '#46BFBD',
-				'highlight' => '#5AD3D1'
+				'color'     => '#E94F37',
+				'highlight' => '#FF6951'
 			),
 			array(
-				'color'     => '#FDB45C',
-				'highlight' => '#FFC870'
+				'color'     => '#393E41',
+				'highlight' => '#53585B'
+			),
+			array(
+				'color'     => '#3F88C5',
+				'highlight' => '#59A2DF'
+			),
+			array(
+				'color'     => '#44BBA4',
+				'highlight' => '#5ED5BE'
 			),
 		);
 
