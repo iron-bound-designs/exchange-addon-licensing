@@ -139,7 +139,7 @@ class Single extends Controller {
 			return $day->format( $df );
 		}, array_keys( $data ) );
 
-		$chart = new Chart( $labels, 698, 200, 'Line', array(
+		$chart = new Chart\Line( $labels, 698, 200, array(
 			'pointHitDetectionRadius' => 5,
 			'scaleIntegersOnly'       => true,
 			'ibdLoadOn'               => 'loadCharts',

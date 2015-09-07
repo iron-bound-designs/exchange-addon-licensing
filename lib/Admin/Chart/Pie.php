@@ -1,0 +1,28 @@
+<?php
+/**
+ * Pie chart.
+ *
+ * @author Iron Bound Designs
+ * @since  1.0
+ */
+
+namespace ITELIC\Admin\Chart;
+
+/**
+ * Class Pie
+ * @package ITELIC\Admin\Chart
+ */
+class Pie extends Integrated_Labels {
+
+	/**
+	 * Constructor.
+	 *
+	 * @param int   $width
+	 * @param int   $height
+	 * @param array $options
+	 */
+	public function __construct( $width, $height, $options = array() ) {
+		parent::__construct( $width, $height, 'Pie', $options );
+	}
+
+}

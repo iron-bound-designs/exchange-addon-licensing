@@ -28,17 +28,17 @@ class Single extends View {
 	protected $release;
 
 	/**
-	 * @var Chart
+	 * @var Chart\Base
 	 */
 	protected $progress;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Release $release
-	 * @param Chart   $progress
+	 * @param Release    $release
+	 * @param Chart\Base $progress
 	 */
-	public function __construct( Release $release = null, Chart $progress = null ) {
+	public function __construct( Release $release = null, Chart\Base $progress = null ) {
 		$this->release  = $release;
 		$this->progress = $progress;
 	}

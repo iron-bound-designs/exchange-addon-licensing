@@ -6,23 +6,18 @@
  * @since  1.0
  */
 
-namespace ITELIC\Admin;
+namespace ITELIC\Admin\Chart;
 
 /**
  * Class Chart
  * @package ITELIC\Admin
  */
-class Chart {
+abstract class Base {
 
 	/**
 	 * @var array
 	 */
-	private $data_sets = array();
-
-	/**
-	 * @var array
-	 */
-	private $labels = array();
+	protected $data_sets = array();
 
 	/**
 	 * @var string
@@ -67,15 +62,13 @@ class Chart {
 	/**
 	 * Constructor.
 	 *
-	 * @param array  $labels
 	 * @param int    $width
 	 * @param int    $height
 	 * @param string $type
 	 * @param array  $options
 	 */
-	public function __construct( $labels, $width, $height, $type = 'Line', $options = array() ) {
-		$this->labels = $labels;
-		$this->id     = md5( rand() );
+	protected function __construct( $width, $height, $type = 'Line', $options = array() ) {
+		$this->id = md5( rand() );
 
 		$types = array( 'Line', 'Bar', 'Radar', 'PolarArea', 'Pie', 'Doughnut' );
 
@@ -96,6 +89,17 @@ class Chart {
 	}
 
 	/**
+	 * Get the type of this graph.
+	 *
+	 * @since 1.0
+	 *
+	 * @return string
+	 */
+	public function get_type() {
+		return $this->type;
+	}
+
+	/**
 	 * Add a line of data to this graph.
 	 *
 	 * @param array  $points
@@ -104,20 +108,16 @@ class Chart {
 	 *
 	 * @throws \UnexpectedValueException
 	 */
-	public function add_data_set( $points, $label = '', $options = array() ) {
+	public abstract function add_data_set( $points, $label = '', $options = array() );
 
-		if ( count( $points ) !== count( $this->labels ) ) {
-			throw new \UnexpectedValueException( 'usage: count($points) == count($labels)' );
-		}
-
-		$defaults = array(
-			'data'  => $points,
-			'label' => $label
-		);
-
-		$this->data_sets[] = \ITUtility::merge_defaults( $options, $defaults );
-	}
-
+	/**
+	 * Build the data to be passed to the Chart.
+	 *
+	 * @since 1.0
+	 *
+	 * @return object
+	 */
+	protected abstract function build_data();
 
 	/**
 	 * Render the Graph to the page.
@@ -125,10 +125,7 @@ class Chart {
 	public function graph() {
 		$this->load_scripts();
 
-		$data = (object) array(
-			'labels'   => $this->labels,
-			'datasets' => $this->data_sets
-		);
+		$data = $this->build_data();
 
 		$options = $this->options;
 
@@ -158,18 +155,18 @@ class Chart {
 				<?php echo wp_json_encode($data); ?>
 
 				var options =
-				<?php echo wp_json_encode($options); ?>
+					<?php echo wp_json_encode($options); ?>
 
-				<?php if ( $this->load_on ): ?>
+					<?php if ( $this->load_on ): ?>
 
-					$(document).bind('<?php echo esc_js($this->load_on); ?>', function() {
+					$(document).bind('<?php echo esc_js($this->load_on); ?>', function () {
 
 						var chart = new Chart(ctx).<?php echo $this->type; ?>(data, options);
 					});
 
 				<?php else: ?>
 
-					var chart = new Chart(ctx).<?php echo $this->type; ?>(data, options);
+				var chart = new Chart(ctx).<?php echo $this->type; ?>(data, options);
 				<?php endif; ?>
 
 			});
