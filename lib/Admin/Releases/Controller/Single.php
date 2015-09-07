@@ -141,8 +141,7 @@ class Single extends Controller {
 
 		$chart = new Chart\Line( $labels, 698, 200, array(
 			'scaleIntegersOnly'       => true,
-			'ibdLoadOn'               => 'loadProgressChart',
-			'animation'               => false
+			'ibdLoadOn'               => 'loadProgressChart'
 		) );
 		$chart->add_data_set( array_values( $data ), '', array(
 			'fillColor'            => "rgba(151,187,205,0.2)",
@@ -180,8 +179,7 @@ class Single extends Controller {
 			$id ) );
 
 		$chart = new Chart\Pie( 698, 300, array(
-			'ibdLoadOn'     => 'loadVersionsChart',
-			'animateRotate' => false
+			'ibdLoadOn'     => 'loadVersionsChart'
 		) );
 
 		$colors = array(
