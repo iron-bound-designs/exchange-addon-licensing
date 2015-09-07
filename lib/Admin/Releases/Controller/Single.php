@@ -181,7 +181,7 @@ class Single extends Controller {
 		$chart = new Chart\Pie( 698, 200, array(
 			'ibdLoadOn'       => 'loadVersionsChart',
 			'ibdShowLegend'   => '#pie-chart-legend',
-			'tooltipTemplate' => '<%= value %> install<%if (value != 1){%>s<%}%>'
+			'tooltipTemplate' => '<%= value %> install<%if (value != 1){%>s<%}%>',
 		) );
 
 		$colors = array(
