@@ -98,6 +98,10 @@ class Single extends Controller {
 					$release->set_status( $val );
 					break;
 
+				case 'download':
+					$release->set_download( $val );
+					break;
+
 				default:
 					wp_send_json_error( array(
 						'message' => __( "Invalid request format.", Plugin::SLUG )

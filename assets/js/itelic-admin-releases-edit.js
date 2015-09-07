@@ -290,11 +290,24 @@
 
 			image_data = file_frame.state().get('selection').first().toJSON();
 
-			$(".replace-file-container label").text(image_data.filename);
+			var label = $(".replace-file-container label");
 
-			// todo send new file to server
+			label.data('prev', label.text());
+			label.text(image_data.filename);
 
-			console.log(image_data.id);
+			var promise = editable_ajax({
+				name : 'download',
+				value: image_data.id
+			});
+
+			promise.done(function (response) {
+
+				if (!response.success) {
+					label.text(label.data('prev'));
+
+					alert(response.data.message);
+				}
+			});
 		});
 
 		// Now display the actual file_frame

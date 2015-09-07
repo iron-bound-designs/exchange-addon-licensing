@@ -87,7 +87,7 @@ class Table extends \WP_List_Table {
 	 */
 	public function column_cb( $item ) {
 		return sprintf(
-			'<input type="checkbox" name="key[]" value="%s" />', $item['key']
+			'<input type="checkbox" name="ID[]" value="%s" />', $item['ID']
 		);
 	}
 

@@ -134,10 +134,7 @@ class Single extends View {
 
 			<span class="replace-file-container">
 				<label>
-					<?php
-					$info = get_post_meta( $this->release->get_download(), '_it-exchange-download-info', true );
-					echo basename( $info['source'] );
-					?>
+					<?php echo basename( get_attached_file( $this->release->get_download() ) ); ?>
 				</label>
 				<a href="javascript:" class="button" id="replace-file"><?php _e( "Replace", Plugin::SLUG ); ?></a>
 			</span>

@@ -304,7 +304,7 @@ class Release extends Model {
 	 */
 	public function set_download( $download ) {
 
-		if ( get_post( $download ) != 'it_exchange_download' ) {
+		if ( get_post_type( $download ) != 'attachment' ) {
 			throw new \InvalidArgumentException( "Invalid post type for download." );
 		}
 
