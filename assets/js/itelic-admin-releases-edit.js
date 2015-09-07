@@ -15,6 +15,7 @@
 
 	var notify_button = $("#notify-button");
 	var full_notify_button = $("#notify-button-full");
+	var prev_notify_view;
 
 	var upgrade_details_showing = false;
 
@@ -27,6 +28,8 @@
 		changelog.slideUp();
 		upgrades.slideUp(400, function () {
 
+			prev_notify_view = 'main';
+
 			notifications.slideDown();
 		});
 	});
@@ -35,9 +38,29 @@
 
 		notifications.slideUp(400, function () {
 
-			misc.slideDown();
-			changelog.slideDown();
-			upgrades.slideDown();
+			if (prev_notify_view == 'main') {
+				misc.slideDown();
+				changelog.slideDown();
+				upgrades.slideDown();
+			} else {
+				upgrades.slideDown();
+				line_graph.slideDown();
+				pie_chart.slideDown();
+				full_notify_button_block.slideDown();
+			}
+		});
+	});
+
+	full_notify_button.click(function () {
+
+		upgrades.slideUp();
+		line_graph.slideUp();
+		pie_chart.slideUp();
+		full_notify_button_block.slideUp(400, function () {
+
+			prev_notify_view = 'upgrades';
+
+			notifications.slideDown();
 		});
 	});
 
