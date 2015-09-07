@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\API\Endpoint;
+
 use ITELIC\API\Endpoint;
 use ITELIC\API\Contracts\Authenticatable;
 use ITELIC\Key;
@@ -44,9 +45,9 @@ class Activate extends Endpoint implements Authenticatable {
 		$location = sanitize_text_field( $post['location'] );
 
 		try {
-			$activation = itelic_activate_license_key( $this->key, $location );
+			$activation = itelic_activate_license_key( $this->key, $location, null, '', isset( $post['version'] ) ? $post['version'] : '' );
 		}
-		catch ( \ITELIC\DB\Exception $e ) {
+		catch ( \IronBound\DB\Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
 				$activation = itelic_get_activation_by_location( $location, $this->key );
 				$activation->reactivate();

@@ -41,6 +41,11 @@ class Upgrade extends Model {
 	private $upgrade_date;
 
 	/**
+	 * @var string
+	 */
+	private $previous_version;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param \stdClass $data
@@ -57,10 +62,11 @@ class Upgrade extends Model {
 	 * @param \stdClass $data
 	 */
 	protected function init( \stdClass $data ) {
-		$this->ID           = $data->ID;
-		$this->activation   = itelic_get_activation( $data->activation );
-		$this->release      = new Release( $data->release_id );
-		$this->upgrade_date = new \DateTime( $data->upgrade_date );
+		$this->ID               = $data->ID;
+		$this->activation       = itelic_get_activation( $data->activation );
+		$this->release          = new Release( $data->release_id );
+		$this->upgrade_date     = new \DateTime( $data->upgrade_date );
+		$this->previous_version = $data->previous_version;
 	}
 
 	/**
@@ -71,20 +77,26 @@ class Upgrade extends Model {
 	 * @param Activation $activation
 	 * @param Release    $release
 	 * @param \DateTime  $upgrade_date
+	 * @param string     $previous_version
 	 *
 	 * @return Upgrade|null
 	 * @throws DB_Exception
 	 */
-	public static function create( Activation $activation, Release $release, \DateTime $upgrade_date = null ) {
+	public static function create( Activation $activation, Release $release, \DateTime $upgrade_date = null, $previous_version = '' ) {
 
 		if ( $upgrade_date === null ) {
 			$upgrade_date = new \DateTime();
 		}
 
+		if ( empty( $previous_version ) ) {
+			$previous_version = $activation->get_version();
+		}
+
 		$data = array(
-			'activation'   => $activation->get_id(),
-			'release_id'   => $release->get_ID(),
-			'upgrade_date' => $upgrade_date->format( "Y-m-d H:i:s" )
+			'activation'       => $activation->get_id(),
+			'release_id'       => $release->get_ID(),
+			'upgrade_date'     => $upgrade_date->format( "Y-m-d H:i:s" ),
+			'previous_version' => $previous_version
 		);
 
 		$db = Manager::make_simple_query_object( 'itelic-upgrades' );
@@ -174,6 +186,17 @@ class Upgrade extends Model {
 	 */
 	public function get_customer() {
 		return $this->get_activation()->get_key()->get_customer();
+	}
+
+	/**
+	 * Get the previous version the customer upgrade from.
+	 *
+	 * @since 1.0
+	 *
+	 * @return string
+	 */
+	public function get_previous_version() {
+		return $this->previous_version;
 	}
 
 	/**

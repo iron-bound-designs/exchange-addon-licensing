@@ -9,6 +9,7 @@
  */
 
 namespace ITELIC\DB\Table;
+
 use IronBound\DB\Table\Table;
 
 /**
@@ -33,7 +34,8 @@ class Activations implements Table {
 			'location'     => '%s',
 			'status'       => '%s',
 			'activation'   => '%s',
-			'deactivation' => '%s'
+			'deactivation' => '%s',
+			'version'      => '%s',
 		);
 	}
 
@@ -51,7 +53,8 @@ class Activations implements Table {
 			'location'     => '',
 			'status'       => 'active',
 			'activation'   => '',
-			'deactivation' => ''
+			'deactivation' => '',
+			'version'      => '',
 		);
 	}
 
@@ -110,6 +113,7 @@ class Activations implements Table {
 		activation DATETIME NOT NULL,
 		deactivation DATETIME,
 		status VARCHAR(255) NOT NULL,
+		version VARCHAR(20) NOT NULL,
 		PRIMARY KEY  (id),
 		KEY lkey (lkey),
 		UNIQUE KEY key__location (lkey,location)

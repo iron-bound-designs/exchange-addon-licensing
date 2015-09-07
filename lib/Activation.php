@@ -71,6 +71,11 @@ class Activation extends Model implements API\Serializable {
 	private $deactivation = null;
 
 	/**
+	 * @var string
+	 */
+	private $version;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param object $data
@@ -94,6 +99,8 @@ class Activation extends Model implements API\Serializable {
 		if ( ! empty( $data->deactivation ) && $data->deactivation != '0000-00-00 00:00:00' ) {
 			$this->deactivation = new \DateTime( $data->deactivation );
 		}
+
+		$this->version = $data->version;
 	}
 
 	/**
@@ -114,12 +121,13 @@ class Activation extends Model implements API\Serializable {
 	 * @param string    $location
 	 * @param \DateTime $activation
 	 * @param string    $status
+	 * @param string    $version
 	 *
 	 * @return Activation
 	 *
 	 * @throws \LogicException|DB_Exception
 	 */
-	public static function create( Key $key, $location, \DateTime $activation = null, $status = '' ) {
+	public static function create( Key $key, $location, \DateTime $activation = null, $status = '', $version = '' ) {
 
 		if ( empty( $key ) || empty( $location ) ) {
 			throw new \InvalidArgumentException( __( "The license key and install location are required.", Plugin::SLUG ) );
@@ -143,12 +151,19 @@ class Activation extends Model implements API\Serializable {
 			$location = itelic_normalize_url( $location );
 		}
 
+		if ( ! $version ) {
+			$version = it_exchange_get_product_feature( $key->get_product()->ID, 'licensing', array( 'field' => 'version' ) );
+		} else {
+			$version = sanitize_text_field( $version );
+		}
+
 		$data = array(
 			'lkey'         => $key->get_key(),
 			'location'     => $location,
 			'activation'   => $activation,
 			'deactivation' => null,
-			'status'       => $status
+			'status'       => $status,
+			'version'      => $version
 		);
 
 		$db = Manager::make_simple_query_object( 'itelic-activations' );
@@ -347,6 +362,31 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		$this->update( 'deactivation', $val );
+	}
+
+	/**
+	 * Get the currently installed version at this location.
+	 *
+	 * @since 1.0
+	 *
+	 * @return string
+	 */
+	public function get_version() {
+		return $this->version;
+	}
+
+	/**
+	 * Set the current version installed on this location.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $version
+	 */
+	public function set_version( $version ) {
+
+		$this->version = sanitize_text_field( $version );
+
+		$this->update( 'version', $this->version );
 	}
 
 	/**

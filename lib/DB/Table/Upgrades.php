@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\DB\Table;
+
 use IronBound\DB\Table\Table;
 
 /**
@@ -50,10 +51,11 @@ class Upgrades implements Table {
 	 */
 	public function get_columns() {
 		return array(
-			'ID'           => '%d',
-			'activation'   => '%d',
-			'release_id'   => '%d',
-			'upgrade_date' => '%s'
+			'ID'               => '%d',
+			'activation'       => '%d',
+			'release_id'       => '%d',
+			'previous_version' => '%s',
+			'upgrade_date'     => '%s',
 		);
 	}
 
@@ -66,10 +68,11 @@ class Upgrades implements Table {
 	 */
 	public function get_column_defaults() {
 		return array(
-			'ID'           => '',
-			'activation'   => '',
-			'release_id'   => '',
-			'upgrade_date' => ''
+			'ID'               => '',
+			'activation'       => '',
+			'release_id'       => '',
+			'previous_version' => '',
+			'upgrade_date'     => '',
 		);
 	}
 
@@ -102,6 +105,7 @@ class Upgrades implements Table {
 		ID BIGINT(20) NOT NULL AUTO_INCREMENT,
 		activation BIGINT(20) UNSIGNED NOT NULL,
 		release_id BIGINT(20) UNSIGNED NOT NULL,
+		previous_version VARCHAR(20) NOT NULL,
 		upgrade_date DATETIME DEFAULT NULL,
 		PRIMARY KEY  (ID)
 		) {$wpdb->get_charset_collate()};";

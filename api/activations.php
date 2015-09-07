@@ -150,14 +150,15 @@ function itelic_normalize_url( $url ) {
  * @param string      $location
  * @param DateTime    $date
  * @param string      $status
+ * @param string      $version
  *
  * @return \ITELIC\Activation
  *
- * @throws LogicException|\ITELIC\DB\Exception
+ * @throws LogicException|\IronBound\DB\Exception
  */
-function itelic_activate_license_key( \ITELIC\Key $key, $location, DateTime $date = null, $status = '' ) {
+function itelic_activate_license_key( \ITELIC\Key $key, $location, DateTime $date = null, $status = '', $version ) {
 
-	$record = \ITELIC\Activation::create( $key, $location, $date, $status );
+	$record = \ITELIC\Activation::create( $key, $location, $date, $status, $version );
 	$key->log_activation( $record );
 
 	return $record;
