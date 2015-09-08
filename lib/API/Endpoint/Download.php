@@ -33,7 +33,7 @@ class Download extends Endpoint {
 	 */
 	public function serve( \ArrayAccess $get, \ArrayAccess $post ) {
 
-		if ( ! itelic_validate_query_args( $get ) ) {
+		if ( ! \ITELIC\validate_query_args( $get ) ) {
 			status_header( 403 );
 
 			_e( "This download link is invalid or has expired.", Plugin::SLUG );
