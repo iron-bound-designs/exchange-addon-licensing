@@ -143,6 +143,10 @@ class Key extends Model implements API\Serializable {
 	 */
 	public static function create( $key, \IT_Exchange_Transaction $transaction, \IT_Exchange_Product $product, \IT_Exchange_Customer $customer, $max, \DateTime $expires = null, $status = '' ) {
 
+		if ( empty( $key ) ) {
+			throw new \InvalidArgumentException( "\$key must not be empty." );
+		}
+
 		if ( empty( $status ) ) {
 			$status = self::ACTIVE;
 		}
@@ -507,7 +511,7 @@ class Key extends Model implements API\Serializable {
 	public function get_data_to_cache() {
 		$data = parent::get_data_to_cache();
 
-		$data['lkey'] = $this->get_key();
+		$data['lkey']           = $this->get_key();
 		$data['transaction_id'] = $this->get_transaction()->ID;
 
 		return $data;

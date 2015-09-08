@@ -21,9 +21,16 @@ class Random extends Generator {
 	 *
 	 * @since 1.0
 	 *
-	 * @param int $length
+	 * @param array $options
 	 */
-	public function __construct( $length = 64 ) {
+	public function __construct( $options = array() ) {
+
+		if ( empty( $options['length'] ) ) {
+			throw new \InvalidArgumentException( "Length is required to generate a key based on the random strategy." );
+		}
+
+		$length = $options['length'];
+
 		parent::__construct( $length );
 	}
 

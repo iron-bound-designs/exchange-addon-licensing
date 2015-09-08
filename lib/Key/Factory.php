@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\Key;
+
 use ITELIC\Key\Generator\Pattern;
 use ITELIC\Key\Generator\Random;
 
@@ -60,28 +61,19 @@ class Factory {
 
 		$options = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => "type.$type" ) );
 
-		switch ( $class ) {
-			case 'ITELIC_Key_Generator_Random':
-				$generator = new Random( $options['length'] );
-				break;
-			case 'ITELIC_Key_Generator_Pattern':
-				$generator = new Pattern( $options['pattern'] );
-				break;
-			default:
+		if ( class_exists( $class ) ) {
 
-				/**
-				 * Filter used when the factory doesn't know how to construct the desired class.
-				 *
-				 * @since 1.0
-				 *
-				 * @param Generator $generator
-				 * @param Factory   $this
-				 */
-				$generator = apply_filters( "it_exchange_itelic_key_factory_make_$class", null, $this );
-				break;
+			/**
+			 * @var Generator $generator
+			 */
+			$generator = new $class( $options );
+		} else {
+			throw new \UnexpectedValueException( "Invalid key type $type" );
 		}
 
-		return $generator->generate();
+		$return = $generator->generate();
+
+		return $return;
 	}
 
 	/**

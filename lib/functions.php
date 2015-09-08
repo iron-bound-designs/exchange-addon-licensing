@@ -108,7 +108,7 @@ function generate_key_for_transaction_product( \IT_Exchange_Transaction $transac
 		$expires->add( $interval );
 	}
 
-	Key::create( $key, $transaction, $product, $customer, $max, $expires, $status );
+	return Key::create( $key, $transaction, $product, $customer, $max, $expires, $status );
 }
 
 /**

@@ -209,7 +209,6 @@ class Simple_Query {
 
 		// White list columns
 		$data = array_intersect_key( $data, $column_formats );
-		unset( $data[ $this->table->get_primary_key() ] );
 
 		// Reorder $column_formats to match the order of columns given in $data
 		$data_keys      = array_keys( $data );

@@ -15,10 +15,10 @@ use ITELIC\Plugin;
  * @since 1.0
  */
 function register_key_pattern_type() {
-	itelic_register_key_type( 'pattern', __( "Pattern", Plugin::SLUG ), 'ITELIC_Key_Generator_Pattern' );
+	itelic_register_key_type( 'pattern', __( "Pattern", Plugin::SLUG ), 'ITELIC\\Key\\Generator\\Pattern' );
 }
 
-add_action( 'it_exchange_itelic_register_key_types', 'ITELIC\Key\register_key_pattern_type' );
+add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_pattern_type' );
 
 /**
  * Register the 'random' key type.
@@ -26,10 +26,10 @@ add_action( 'it_exchange_itelic_register_key_types', 'ITELIC\Key\register_key_pa
  * @since 1.0
  */
 function register_key_random_type() {
-	itelic_register_key_type( 'random', __( "Random", Plugin::SLUG ), 'ITELIC_Key_Generator_Random' );
+	itelic_register_key_type( 'random', __( "Random", Plugin::SLUG ), 'ITELIC\\Key\\Generator\\Random' );
 }
 
-add_action( 'it_exchange_itelic_register_key_types', 'ITELIC\Key\register_key_random_type' );
+add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_random_type' );
 
 /**
  * Fires when key types should be registered.
@@ -80,7 +80,7 @@ function render_key_type_pattern_settings( $product, $prefix, $values = array() 
 
 }
 
-add_action( 'it_exchange_itelic_render_key_type_pattern_settings', 'ITELIC\Key\render_key_type_pattern_settings', 10, 3 );
+add_action( 'it_exchange_itelic_render_key_type_pattern_settings', __NAMESPACE__ . '\\render_key_type_pattern_settings', 10, 3 );
 
 /**
  * Output the settings form for the 'random' key type.
@@ -110,4 +110,4 @@ function render_key_type_random_settings( $product, $prefix, $values = array() )
 
 }
 
-add_action( 'it_exchange_itelic_render_key_type_random_settings', 'ITELIC\Key\render_key_type_random_settings', 10, 3 );
+add_action( 'it_exchange_itelic_render_key_type_random_settings', __NAMESPACE__ . '\\render_key_type_random_settings', 10, 3 );

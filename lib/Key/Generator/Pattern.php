@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\Key\Generator;
+
 use ITELIC\Key\Generator;
 
 /**
@@ -30,11 +31,15 @@ class Pattern extends Generator {
 	 *
 	 * @since 1.0
 	 *
-	 * @param string $pattern
+	 * @param array $options
 	 */
-	public function __construct( $pattern ) {
+	public function __construct( $options = array() ) {
 
-		$this->pattern = $pattern;
+		if ( empty( $options['pattern'] ) ) {
+			throw new \InvalidArgumentException( "Pattern is required to generate a key based on the pattern strategy." );
+		}
+
+		$this->pattern = $options['pattern'];
 
 		$this->char_map['X'] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$this->char_map['x'] = 'abcdefghijklmnopqrstuvwxyz';
