@@ -8,7 +8,7 @@
 
 namespace ITELIC\Renewal\Reminder;
 
-use ITELIC\DB\Manager;
+use IronBound\DB\Manager;
 use ITELIC\Key;
 use IronBound\WP_Notifications\Notification;
 use IronBound\WP_Notifications\Queue\Manager as Queue_Manager;
@@ -50,7 +50,7 @@ class Sender {
 
 		$date_to_reminder = array();
 
-		$table = Manager::get( 'keys' );
+		$table = Manager::get( 'itelic-keys' );
 		$tn    = $table->get_table_name( $GLOBALS['wpdb'] );
 
 		// retrieve key information and just the date value ( no time ) of when the key expires
@@ -90,13 +90,13 @@ class Sender {
 		}
 
 		$notifications = array();
-		$manager       = Factory::make( 'renewal-reminder' );
+		$manager       = Factory::make( 'itelic-renewal-reminder' );
 
 		foreach ( $expire_to_key as $expire => $key ) {
 			$notifications[] = $this->make_notification( $date_to_reminder[ $expire ], $key, $manager );
 		}
 
-		$queue = Queue_Manager::get( 'wp-cron' );
+		$queue = Queue_Manager::get( 'itelic-wp-cron' );
 		$queue->process( $notifications, new WP_Mail() );
 	}
 
@@ -114,7 +114,7 @@ class Sender {
 	protected function make_notification( Reminder $reminder, Key $key, Template_Manager $manager ) {
 
 		$template     = $reminder->get_post();
-		$notification = new Notification( $key->get_customer(), $manager, $template->post_content, $template->post_title );
+		$notification = new Notification( $key->get_customer()->wp_user, $manager, $template->post_content, $template->post_title );
 
 		$notification->add_data_source( $key );
 		$notification->add_data_source( new Discount( $key->get_product() ) );
