@@ -343,7 +343,7 @@ class Single extends Controller {
 
 		$diff = $release->get_start_date()->diff( $now );
 
-		$days = min( 14, max( $diff->days, 1 ) );
+		$days = min( 14, max( $diff->days + 1, 1 ) );
 
 		$data = array();
 
@@ -375,6 +375,7 @@ class Single extends Controller {
 
 		$chart = new Chart\Line( $labels, 698, 200, array(
 			'scaleIntegersOnly' => true,
+			'scaleBeginAtZero'  => true,
 			'ibdLoadOn'         => 'loadProgressChart'
 		) );
 		$chart->add_data_set( array_values( $data ), '', array(

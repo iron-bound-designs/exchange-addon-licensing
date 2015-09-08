@@ -273,7 +273,7 @@ class Single extends View {
 
 			<?php else: ?>
 
-				<h4><?php _e( "Upgrades over the first 14 days", Plugin::SLUG ); ?></h4>
+				<h4><?php printf( __( "Upgrades over the first %d days", Plugin::SLUG ), $this->progress->get_total_items() ); ?></h4>
 
 				<?php $this->progress->graph(); ?>
 
