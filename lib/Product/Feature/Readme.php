@@ -99,7 +99,7 @@ class Readme extends \IT_Exchange_Product_Feature_Abstract {
 		}
 
 		$data           = $_POST['itelic_readme'];
-		$data['enable'] = it_exchange_str_true( $data['enable'] );
+		$data['enable'] = isset( $data['enable'] ) ? it_exchange_str_true( $data['enable'] ) : false;
 
 		$last_updated         = new \DateTime( $data['last_updated'] );
 		$data['last_updated'] = $last_updated->getTimestamp();
