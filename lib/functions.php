@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC;
+
 use IronBound\WP_Notifications\Template\Listener;
 use ITELIC\Key\Factory;
 use ITELIC\API\Dispatch;
@@ -184,7 +185,7 @@ function get_key_for_transaction_product( $transaction_id, $product_id ) {
 		return null;
 	}
 
-	return $data[0];
+	return reset( $data );
 }
 
 /* --------------------------------------------

@@ -195,7 +195,7 @@ function renew_key_on_update_expirations( $mid, $object_id, $meta_key, $_meta_va
 		return;
 	}
 
-	$key = $data[0];
+	$key = reset( $data );
 
 	$args = array(
 		'post_parent' => $key->get_transaction()->ID,

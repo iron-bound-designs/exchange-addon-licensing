@@ -5,6 +5,7 @@
  * @author Iron Bound Designs
  * @since  1.0
  */
+use ITELIC\Key;
 
 /**
  * Class IT_Theme_API_Licenses
@@ -71,7 +72,7 @@ class IT_Theme_API_Licenses implements IT_Theme_API {
 	 *
 	 * @since 1.0
 	 *
-	 * @return ITELIC_Key[]
+	 * @return Key[]
 	 */
 	protected function get_licenses() {
 
