@@ -95,7 +95,11 @@ class Single extends View {
 					<h4><?php _e( "Released", Plugin::SLUG ); ?></h4>
 
 					<h3>
-						<?php if ( null === $this->release->get_start_date() ): ?>                            –                        <?php else: ?><?php echo $this->release->get_start_date()->format( $df ); ?><?php endif; ?>
+						<?php if ( null === $this->release->get_start_date() ): ?>
+							–
+						<?php else: ?>
+							<?php echo $this->release->get_start_date()->format( $df ); ?>
+						<?php endif; ?>
 					</h3>
 				</div>
 				<div class="third version">
@@ -200,7 +204,7 @@ class Single extends View {
 		$total_activations = $this->release->get_total_active_activations();
 		$total_activations = max( 1, $total_activations );
 
-		$percent = number_format( $updated / $total_activations * 100, 2 );
+		$percent = number_format( $updated / $total_activations * 100, 0 );
 
 		if ( $this->release->get_status() == Release::STATUS_DRAFT ) {
 			$hidden = ' hidden';
