@@ -315,7 +315,7 @@ class Release extends Model {
 		$download_id             = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => 'update-file' ) );
 		$download_data           = get_post_meta( $download_id, '_it-exchange-download-info', true );
 		$download_data['source'] = $prev_download;
-		update_post_meta( $download_id, '_it-exchange-download-info', $prev_download );
+		update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
 
 		it_exchange_update_product_feature( $this->get_product()->ID, 'licensing', array(
 			'version' => $prev_version
