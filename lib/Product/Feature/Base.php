@@ -63,7 +63,12 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 		$settings = it_exchange_get_option( 'addon_itelic' );
 
 		$downloads = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, 'downloads' );
-		$data      = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, $this->slug );
+
+		if ( ! is_array( $downloads ) ) {
+			$downloads = array();
+		}
+
+		$data = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, $this->slug );
 
 		$hidden          = $data['enabled'] ? '' : ' hide-if-js';
 		$hidden_variants = $data['enabled_variant_activations'] ? '' : ' hide-if-js';
