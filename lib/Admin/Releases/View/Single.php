@@ -18,6 +18,7 @@ use ITELIC\Release;
 
 /**
  * Class Single
+ *
  * @package ITELIC\Admin\Releases\View
  */
 class Single extends View {
@@ -94,11 +95,7 @@ class Single extends View {
 					<h4><?php _e( "Released", Plugin::SLUG ); ?></h4>
 
 					<h3>
-						<?php if ( null === $this->release->get_start_date() ): ?>
-							–
-						<?php else: ?>
-							<?php echo $this->release->get_start_date()->format( $df ); ?>
-						<?php endif; ?>
+						<?php if ( null === $this->release->get_start_date() ): ?>                            –                        <?php else: ?><?php echo $this->release->get_start_date()->format( $df ); ?><?php endif; ?>
 					</h3>
 				</div>
 				<div class="third version">
@@ -110,9 +107,7 @@ class Single extends View {
 				</div>
 			</div>
 
-			<?php if ( $this->release->get_status() == Release::STATUS_DRAFT ): ?>
-				<?php $this->render_replace_file_section(); ?>
-			<?php endif; ?>
+			<?php if ( $this->release->get_status() == Release::STATUS_DRAFT ): ?><?php $this->render_replace_file_section(); ?><?php endif; ?>
 
 			<?php $this->render_whats_changed(); ?>
 			<?php $this->render_upgrades_bar(); ?>
@@ -145,8 +140,7 @@ class Single extends View {
 				</label>
 				<a href="javascript:" class="button" id="replace-file"><?php _e( "Replace", Plugin::SLUG ); ?></a>
 			</span>
-		</div>
-		<?php
+		</div>        <?php
 	}
 
 	/**
@@ -264,9 +258,20 @@ class Single extends View {
 
 		<div class="spacing-wrapper bottom-border progress-line-chart hidden">
 
-			<h4><?php _e( "Upgrades over the first 14 days", Plugin::SLUG ); ?></h4>
 
-			<?php $this->progress->graph(); ?>
+			<?php if ( $this->release->get_total_updated() == 0 ): ?>
+
+				<p class="description" style="text-align: center">
+					<?php _e( "No one has updated to the latest version yet. Sit tight!", Plugin::SLUG ); ?>
+				</p>
+
+			<?php else: ?>
+
+				<h4><?php _e( "Upgrades over the first 14 days", Plugin::SLUG ); ?></h4>
+
+				<?php $this->progress->graph(); ?>
+			<?php endif; ?>
+
 		</div>
 
 		<?php
@@ -279,15 +284,16 @@ class Single extends View {
 	 */
 	protected function render_versions_pie_chart() {
 
-		if ( ! $this->version ) {
+		if ( ! $this->version || $this->release->get_total_updated() == 0 ) {
 			return;
 		}
 
+		$total = $this->version->get_total_items();
 		?>
 
 		<div class="spacing-wrapper bottom-border versions-pie-chart hidden">
 
-			<h4><?php printf( __( "Top %d versions upgraded from", Plugin::SLUG ), $this->version->get_total_items() ); ?></h4>
+			<h4><?php printf( __( "Top %d versions upgraded from", Plugin::SLUG ), $total ); ?></h4>
 
 			<?php $this->version->graph(); ?>
 

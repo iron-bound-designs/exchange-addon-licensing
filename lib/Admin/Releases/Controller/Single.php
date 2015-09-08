@@ -27,6 +27,7 @@ use ITELIC_API\Query\Activations;
 
 /**
  * Class Single
+ *
  * @package ITELIC\Admin\Releases\Controller
  */
 class Single extends Controller {
@@ -149,7 +150,8 @@ class Single extends Controller {
 	}
 
 	/**
-	 * Setup the template manager for the notification sent to outdated customers.
+	 * Setup the template manager for the notification sent to outdated
+	 * customers.
 	 *
 	 * @since 1.0
 	 *
@@ -207,7 +209,8 @@ class Single extends Controller {
 	}
 
 	/**
-	 * Handles the ajax callback for sending the notifications to outdated customers.
+	 * Handles the ajax callback for sending the notifications to outdated
+	 * customers.
 	 *
 	 * @since 1.0
 	 */
@@ -340,11 +343,7 @@ class Single extends Controller {
 
 		$diff = $release->get_start_date()->diff( $now );
 
-		if ( $diff->days <= 14 ) {
-			$days = $diff->days;
-		} else {
-			$days = 14;
-		}
+		$days = min( 14, max( $diff->days, 1 ) );
 
 		$data = array();
 
