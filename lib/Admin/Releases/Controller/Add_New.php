@@ -83,7 +83,6 @@ class Add_New extends Controller {
 		}
 
 		$attachment = get_post( $_POST['upload-file'] );
-		$download   = Release::convert_attachment_to_download( $attachment, $product );
 
 		$changelog = empty( $_POST['whats-changed'] ) ? '' : $_POST['whats-changed'];
 
@@ -94,7 +93,7 @@ class Add_New extends Controller {
 
 		try {
 
-			$release = Release::create( $product, $download->ID, $version, $type, $status, $changelog );
+			$release = Release::create( $product, $attachment, $version, $type, $status, $changelog );
 
 			if ( $release ) {
 				$url = add_query_arg( array(

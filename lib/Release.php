@@ -17,6 +17,7 @@ use ITELIC_API\Query\Activations;
 
 /**
  * Class Release
+ *
  * @package ITELIC
  */
 class Release extends Model {
@@ -168,12 +169,13 @@ class Release extends Model {
 	/**
 	 * Create a new release record.
 	 *
-	 * If status is set to active, the start date will automatically be set to now.
+	 * If status is set to active, the start date will automatically be set to
+	 * now.
 	 *
 	 * @since 1.0
 	 *
 	 * @param \IT_Exchange_Product $product
-	 * @param int                  $download
+	 * @param \WP_Post             $file Attachment of the download
 	 * @param string               $version
 	 * @param string               $type
 	 * @param string               $status
@@ -182,7 +184,7 @@ class Release extends Model {
 	 * @return Release|null
 	 * @throws DB_Exception
 	 */
-	public static function create( \IT_Exchange_Product $product, $download, $version, $type, $status = '', $changelog = '' ) {
+	public static function create( \IT_Exchange_Product $product, \WP_Post $file, $version, $type, $status = '', $changelog = '' ) {
 
 		if ( empty( $status ) ) {
 			$status = self::STATUS_DRAFT;
@@ -196,8 +198,8 @@ class Release extends Model {
 			throw new \InvalidArgumentException( "Invalid type." );
 		}
 
-		if ( get_post_type( $download ) != 'it_exchange_download' ) {
-			throw new \InvalidArgumentException( "Invalid download ID." );
+		if ( get_post_type( $file ) != 'attachment' ) {
+			throw new \InvalidArgumentException( "Invalid update file." );
 		}
 
 		if ( ! it_exchange_product_has_feature( $product->ID, 'licensing' ) ) {
@@ -206,7 +208,7 @@ class Release extends Model {
 
 		$data = array(
 			'product'   => $product->ID,
-			'download'  => $download,
+			'download'  => $file->ID,
 			'version'   => $version,
 			'type'      => $type,
 			'status'    => $status,
@@ -223,6 +225,9 @@ class Release extends Model {
 		$release = self::get( $ID );
 
 		if ( $release ) {
+
+			self::do_activation( $product, $file, $version );
+
 			Cache::add( $release );
 		}
 
@@ -230,25 +235,100 @@ class Release extends Model {
 	}
 
 	/**
-	 * Convert an attachment in the media library into an Exchange download for a product.
+	 * Perform the activation.
+	 *
+	 * Updates the version in product meta, and store the previous version.
+	 * Updates the file in the download meta, and store the previous file.
 	 *
 	 * @since 1.0
 	 *
-	 * @param \WP_Post             $attachment
 	 * @param \IT_Exchange_Product $product
-	 *
-	 * @return \WP_Post
+	 * @param \WP_Post             $file
+	 * @param string               $version
 	 */
-	public static function convert_attachment_to_download( \WP_Post $attachment, \IT_Exchange_Product $product ) {
+	protected static function do_activation( \IT_Exchange_Product $product, \WP_Post $file, $version ) {
 
+		$download_id   = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'update-file' ) );
+		$download_data = get_post_meta( $download_id, '_it-exchange-download-info', true );
 
-		$download_id = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'update-file' ) );
+		// save the previous download URL in case we pause
+		update_post_meta( $product->ID, '_itelic_prev_download', $download_data['source'] );
 
-		$download_data           = get_post_meta( $download_id, '_it-exchange-download-info', true );
-		$download_data['source'] = wp_get_attachment_url( $attachment->ID );
+		// update the download url
+		$download_data['source'] = wp_get_attachment_url( $file->ID );
+
+		// save the new download
 		update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
 
-		return get_post( $download_id );
+		// save the previous version of the software
+		update_post_meta( $product->ID, '_itelic_prev_version',
+			it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'version' ) ) );
+
+		it_exchange_update_product_feature( $product->ID, 'licensing', array(
+			'version' => $version
+		) );
+	}
+
+	/**
+	 * Activate this release.
+	 *
+	 * @since 1.0
+	 */
+	public function activate() {
+
+		if ( $this->status != self::STATUS_ACTIVE ) {
+			$this->status = self::STATUS_ACTIVE;
+			$this->update( 'status', self::STATUS_ACTIVE );
+		}
+
+		if ( ! $this->get_start_date() ) {
+			$this->set_start_date( new \DateTime() );
+		}
+
+		self::do_activation( $this->get_product(), $this->get_download(), $this->get_version() );
+
+		/**
+		 * Fires when a release is activated.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Release $this
+		 */
+		do_action( 'itelic_activate_release', $this );
+	}
+
+	/**
+	 * Pause this release.
+	 *
+	 * @since 1.0
+	 */
+	public function pause() {
+
+		if ( $this->status != self::STATUS_PAUSED ) {
+			$this->status = self::STATUS_PAUSED;
+			$this->update( 'status', self::STATUS_PAUSED );
+		}
+
+		$prev_download = get_post_meta( $this->product->ID, '_itelic_prev_download', true );
+		$prev_version  = get_post_meta( $this->product->ID, '_itelic_prev_version', true );
+
+		$download_id             = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => 'update-file' ) );
+		$download_data           = get_post_meta( $download_id, '_it-exchange-download-info', true );
+		$download_data['source'] = $prev_download;
+		update_post_meta( $download_id, '_it-exchange-download-info', $prev_download );
+
+		it_exchange_update_product_feature( $this->get_product()->ID, 'licensing', array(
+			'version' => $prev_version
+		) );
+
+		/**
+		 * Fires when a release is paused.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Release $this
+		 */
+		do_action( 'itelic_pause_release', $this );
 	}
 
 	/**
@@ -285,14 +365,14 @@ class Release extends Model {
 	}
 
 	/**
-	 * Get the ID of the download.
+	 * Get the attachment file post.
 	 *
 	 * @since 1.0
 	 *
-	 * @return int
+	 * @return \WP_Post
 	 */
 	public function get_download() {
-		return $this->download;
+		return get_post( $this->download );
 	}
 
 	/**
@@ -370,6 +450,14 @@ class Release extends Model {
 			throw new \InvalidArgumentException( "Invalid status." );
 		}
 
+		if ( $this->status == self::STATUS_DRAFT || $this->status == self::STATUS_PAUSED && $status == self::STATUS_ACTIVE ) {
+			$this->activate();
+		}
+
+		if ( $this->status == self::STATUS_ACTIVE && $status == self::STATUS_PAUSED ) {
+			$this->pause();
+		}
+
 		$this->status = $status;
 		$this->update( 'status', $status );
 	}
@@ -428,7 +516,8 @@ class Release extends Model {
 	 * @since 1.0
 	 *
 	 * @param string $changelog
-	 * @param string $mode If replace, replaces changelog. If append, appends to changelog. Default replace.
+	 * @param string $mode If replace, replaces changelog. If append, appends
+	 *                     to changelog. Default replace.
 	 */
 	public function set_changelog( $changelog, $mode = 'replace' ) {
 

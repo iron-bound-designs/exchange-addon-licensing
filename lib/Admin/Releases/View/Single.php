@@ -136,7 +136,7 @@ class Single extends View {
 
 			<span class="replace-file-container">
 				<label>
-					<?php echo basename( get_attached_file( $this->release->get_download() ) ); ?>
+					<?php echo basename( get_attached_file( $this->release->get_download()->ID ) ); ?>
 				</label>
 				<a href="javascript:" class="button" id="replace-file"><?php _e( "Replace", Plugin::SLUG ); ?></a>
 			</span>
@@ -198,6 +198,7 @@ class Single extends View {
 
 		$updated           = $this->release->get_total_updated();
 		$total_activations = $this->release->get_total_active_activations();
+		$total_activations = max( 1, $total_activations );
 
 		$percent = number_format( $updated / $total_activations * 100, 2 );
 
@@ -269,8 +270,7 @@ class Single extends View {
 
 				<h4><?php _e( "Upgrades over the first 14 days", Plugin::SLUG ); ?></h4>
 
-				<?php $this->progress->graph(); ?>
-			<?php endif; ?>
+				<?php $this->progress->graph(); ?><?php endif; ?>
 
 		</div>
 
