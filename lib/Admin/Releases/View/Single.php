@@ -107,7 +107,11 @@ class Single extends View {
 				</div>
 			</div>
 
-			<?php if ( $this->release->get_status() == Release::STATUS_DRAFT ): ?><?php $this->render_replace_file_section(); ?><?php endif; ?>
+			<?php if ( $this->release->get_status() == Release::STATUS_DRAFT ): ?>
+
+				<?php $this->render_replace_file_section(); ?>
+
+			<?php endif; ?>
 
 			<?php $this->render_whats_changed(); ?>
 			<?php $this->render_upgrades_bar(); ?>
@@ -192,19 +196,21 @@ class Single extends View {
 	 */
 	protected function render_upgrades_bar() {
 
-		if ( $this->release->get_status() == Release::STATUS_DRAFT ) {
-			return;
-		}
-
 		$updated           = $this->release->get_total_updated();
 		$total_activations = $this->release->get_total_active_activations();
 		$total_activations = max( 1, $total_activations );
 
 		$percent = number_format( $updated / $total_activations * 100, 2 );
 
+		if ( $this->release->get_status() == Release::STATUS_DRAFT ) {
+			$hidden = ' hidden';
+		} else {
+			$hidden = '';
+		}
+
 		?>
 
-		<div class="spacing-wrapper bottom-border upgrade-progress-block">
+		<div class="spacing-wrapper bottom-border upgrade-progress-block<?php echo $hidden; ?>">
 
 			<h4>
 				<?php _e( "Upgrades", Plugin::SLUG ); ?>
@@ -251,14 +257,9 @@ class Single extends View {
 	 */
 	protected function render_progress_line_chart() {
 
-		if ( ! $this->progress ) {
-			return;
-		}
-
 		?>
 
 		<div class="spacing-wrapper bottom-border progress-line-chart hidden">
-
 
 			<?php if ( $this->release->get_total_updated() == 0 ): ?>
 
@@ -270,7 +271,9 @@ class Single extends View {
 
 				<h4><?php _e( "Upgrades over the first 14 days", Plugin::SLUG ); ?></h4>
 
-				<?php $this->progress->graph(); ?><?php endif; ?>
+				<?php $this->progress->graph(); ?>
+
+			<?php endif; ?>
 
 		</div>
 

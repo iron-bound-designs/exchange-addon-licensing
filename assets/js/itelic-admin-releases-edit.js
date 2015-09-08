@@ -322,6 +322,8 @@
 	status_span.on('save', function (e, params) {
 		var container = $(this).closest('.status');
 
+		var old = status_span.data('value');
+
 		$.each(ITELIC.statuses, function (key, value) {
 			container.removeClass('status-' + key);
 		});
@@ -329,6 +331,13 @@
 		container.addClass('status-' + params.newValue);
 
 		status_span.data('value', params.newValue);
+
+        if (old == 'draft') {
+            replace_file.slideUp(400, function() {
+
+                upgrades.slideDown();
+            });
+        }
 	});
 
 	if (status_span.data('value') == 'draft') {
