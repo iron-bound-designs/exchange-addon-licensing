@@ -42,7 +42,7 @@ class ListC extends Controller {
 	public function add_screen_options() {
 		if ( Dispatch::is_current_view( 'list' ) ) {
 			add_screen_option( 'per_page', array(
-				'label'   => __( "Keys", Plugin::SLUG ),
+				'label'   => __( "Releases", Plugin::SLUG ),
 				'default' => 20,
 				'option'  => 'itelic_releases_list_table_per_page'
 			) );

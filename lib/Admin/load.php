@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\Admin;
+
 use ITELIC\Plugin;
 use ITELIC\Admin\Tab\Dispatch;
 
@@ -26,7 +27,6 @@ function register_admin_menus() {
 
 add_action( 'admin_menu', 'ITELIC\Admin\register_admin_menus', 85 );
 
-
 /**
  * Save the per page option for the licenses list table.
  *
@@ -38,16 +38,20 @@ add_action( 'admin_menu', 'ITELIC\Admin\register_admin_menus', 85 );
  *
  * @return string|boolean
  */
-function save_licenses_per_page( $status, $option, $value ) {
+function save_items_per_page( $status, $option, $value ) {
 
 	if ( 'itelic_licenses_list_table_per_page' == $option ) {
 		return $value;
 	}
 
-	return false;
+	if ( 'itelic_releases_list_table_per_page' == $option ) {
+		return $value;
+	}
+
+	return $status;
 }
 
-add_filter( 'set-screen-option', 'ITELIC\Admin\save_licenses_per_page', 10, 3 );
+add_filter( 'set-screen-option', __NAMESPACE__ . '\\save_items_per_page', 10, 3 );
 
 /**
  * Load the tabs.
