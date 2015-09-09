@@ -375,12 +375,12 @@
      * @type {string}
      */
     $.fn.editableform.buttons =
-			'<button class="editable-submit button button-primary">' +
-				ITELIC.ok +
-			'</button>' +
 			'<button class="editable-submit button">' +
                 ITELIC.cancel +
-            '</button>';
+            '</button>' +
+			'<button class="editable-submit button button-primary">' +
+			ITELIC.ok +
+			'</button>';
 
     // This is the span that is revealed on rollover
 	var status_span = $(".status span");

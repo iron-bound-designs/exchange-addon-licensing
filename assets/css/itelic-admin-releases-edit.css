@@ -293,6 +293,7 @@
 #release-details .security-message-block .editable-buttons {
     display: block !important;
     margin-left: 0 !important;
+	text-align: right;
 }
 
 #release-details .security-message-block .editable-buttons button.ui-button-icon-only {
@@ -301,7 +302,7 @@
 }
 
 #release-details .security-message-block .editable-buttons button.button-primary {
-    margin-right: 5px;
+	margin-left: 5px;
 }
 
 /** -----------------------------------------------------:[ upgrade progress ]:---------- */
