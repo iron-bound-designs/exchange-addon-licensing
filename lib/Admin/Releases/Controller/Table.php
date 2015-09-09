@@ -17,7 +17,7 @@ if ( ! class_exists( '\WP_List_Table' ) ) {
 
 /**
  * Class Table
- * @package ITELIC\Admin\Licenses\Controller
+ * @package ITELIC\Admin\Releases\Controller
  */
 class Table extends \WP_List_Table {
 
@@ -98,7 +98,7 @@ class Table extends \WP_List_Table {
 	 *
 	 * @return string
 	 */
-	public function column_ID( $item ) {
+	public function column_release( $item ) {
 
 		$view_link = Dispatch::get_tab_link( 'releases' );
 		$view_link = add_query_arg( array(
@@ -106,7 +106,18 @@ class Table extends \WP_List_Table {
 			'ID'   => $item['ID']
 		), $view_link );
 
-		return "<a href=\"$view_link\">{$item['ID']}</a>";
+		//Build row actions
+		$actions = array(
+			'view'   => sprintf( '<a href="%1$s">%2$s</a>', $view_link, __( "View", Plugin::SLUG ) ),
+		);
+
+		//Return the title contents
+		return sprintf( '%1$s %2$s',
+			/*$1%s*/
+			$item['release'],
+			/*$2%s*/
+			$this->row_actions( $actions )
+		);
 	}
 
 	/**
@@ -127,6 +138,11 @@ class Table extends \WP_List_Table {
 		$columns['cb'] = '<input type="checkbox" />';
 
 		foreach ( $this->keys[0] as $key => $value ) {
+
+			if ( $key == 'ID' ) {
+				continue;
+			}
+
 			$columns[ $key ] = ucwords( str_replace( "_", " ", $key ) );
 		}
 
@@ -147,6 +163,7 @@ class Table extends \WP_List_Table {
 		}
 
 		unset( $sortable_columns['cb'] );
+		unset( $sortable_columns['release'] );
 
 		return $sortable_columns;
 	}

@@ -674,6 +674,17 @@ class Release extends Model {
 	}
 
 	/**
+	 * The __toString method allows a class to decide how it will react when it
+	 * is converted to a string.
+	 *
+	 * @return string
+	 * @link http://php.net/manual/en/language.oop5.magic.php#language.oop5.magic.tostring
+	 */
+	public function __toString() {
+		return sprintf( '%1$s – v%2$s', $this->get_product()->post_title, $this->get_version() );
+	}
+
+	/**
 	 * Get a list of the various statuses.
 	 *
 	 * @since 1.0

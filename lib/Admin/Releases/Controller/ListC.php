@@ -131,8 +131,7 @@ class ListC extends Controller {
 
 		$data = array(
 			'ID'         => $release->get_ID(),
-			'product'    => $release->get_product()->post_title,
-			'version'    => $release->get_version(),
+			'release'    => (string) $release,
 			'status'     => $release->get_status( true ),
 			'type'       => $release->get_type( true ),
 			'start_date' => $start_date
