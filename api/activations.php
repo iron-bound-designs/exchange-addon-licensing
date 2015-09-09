@@ -156,7 +156,7 @@ function itelic_normalize_url( $url ) {
  *
  * @throws LogicException|\IronBound\DB\Exception
  */
-function itelic_activate_license_key( \ITELIC\Key $key, $location, DateTime $date = null, $status = '', $version ) {
+function itelic_activate_license_key( \ITELIC\Key $key, $location, DateTime $date = null, $status = '', $version = '' ) {
 
 	$record = \ITELIC\Activation::create( $key, $location, $date, $status, $version );
 	$key->log_activation( $record );
