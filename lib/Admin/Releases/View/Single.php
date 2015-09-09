@@ -95,11 +95,7 @@ class Single extends View {
 					<h4><?php _e( "Released", Plugin::SLUG ); ?></h4>
 
 					<h3>
-						<?php if ( null === $this->release->get_start_date() ): ?>
-							–
-						<?php else: ?>
-							<?php echo $this->release->get_start_date()->format( $df ); ?>
-						<?php endif; ?>
+						<?php if ( null === $this->release->get_start_date() ): ?>                            –                        <?php else: ?><?php echo $this->release->get_start_date()->format( $df ); ?><?php endif; ?>
 					</h3>
 				</div>
 				<div class="third version">
@@ -118,6 +114,7 @@ class Single extends View {
 			<?php endif; ?>
 
 			<?php $this->render_whats_changed(); ?>
+			<?php $this->render_security_message(); ?>
 			<?php $this->render_upgrades_bar(); ?>
 			<?php $this->render_notification_editor(); ?>
 			<?php $this->render_progress_line_chart(); ?>
@@ -191,6 +188,29 @@ class Single extends View {
 
 		<?php
 
+	}
+
+	/**
+	 * Render the security message section.
+	 *
+	 * @since 1.0
+	 */
+	protected function render_security_message() {
+
+		$hidden = $this->release->get_type() != Release::TYPE_SECURITY ? ' hidden' : '';
+
+		$m = $this->release->get_meta( 'security-message', true) ;
+		?>
+
+		<div class="spacing-wrapper bottom-border security-message-block<?php echo $hidden; ?>">
+
+			<h4><?php _e( "Security Message", Plugin::SLUG ); ?></h4>
+
+			<p class="security-message" title="<?php _e( "Click to Edit", Plugin::SLUG ); ?>"><?php echo $m; ?></p>
+
+		</div>
+
+		<?php
 	}
 
 	/**

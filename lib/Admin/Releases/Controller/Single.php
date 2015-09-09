@@ -134,6 +134,10 @@ class Single extends Controller {
 					$release->set_changelog( $val );
 					break;
 
+				case 'security-message':
+					$release->update_meta( 'security-message', sanitize_text_field( $val ) );
+					break;
+
 				default:
 					wp_send_json_error( array(
 						'message' => __( "Invalid request format.", Plugin::SLUG )
@@ -299,7 +303,9 @@ class Single extends Controller {
 			'statuses'     => Release::get_statuses(),
 			'types'        => Release::get_types( true ),
 			'release'      => $_GET['ID'],
-			'update_nonce' => wp_create_nonce( 'itelic-update-release-' . $_GET['ID'] )
+			'update_nonce' => wp_create_nonce( 'itelic-update-release-' . $_GET['ID'] ),
+			'ok'           => __( "Ok", Plugin::SLUG ),
+			'cancel'       => __( "Cancel", Plugin::SLUG )
 		) );
 
 		wp_enqueue_media();

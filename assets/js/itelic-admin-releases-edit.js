@@ -7,6 +7,7 @@
 	var misc = $(".misc-block");
 	var replace_file = $(".replace-file-block");
 	var changelog = $(".changelog-block");
+    var security_message = $('.security-message-block');
 	var upgrades = $(".upgrade-progress-block");
 	var notifications = $(".notifications-editor");
 	var line_graph = $(".progress-line-chart");
@@ -24,10 +25,13 @@
 	var changelog_text = $(".whats-changed");
 	var changelog_editor = $(".whats-changed-editor");
 
+    var type_span = $(".type h3");
+
 	notify_button.click(function () {
 
 		misc.slideUp();
 		changelog.slideUp();
+        security_message.slideUp();
 		upgrades.slideUp(400, function () {
 
 			prev_notify_view = 'main';
@@ -44,6 +48,11 @@
 				misc.slideDown();
 				changelog.slideDown();
 				upgrades.slideDown();
+
+                if (type_span.data('value') == 'security') {
+                    security_message.slideDown();
+                }
+
 			} else {
 				upgrades.slideDown();
 				line_graph.slideDown();
@@ -77,6 +86,10 @@
 
 				misc.slideDown();
 				changelog.slideDown();
+
+                if (type_span.data('value') == 'security') {
+                    security_message.slideDown();
+                }
 			});
 
 			$(".progress-container progress").animate({
@@ -94,6 +107,7 @@
 		} else {
 
 			misc.slideUp();
+            security_message.slideUp();
 			changelog.slideUp(400, function () {
 
 				line_graph.slideDown(400, function () {
@@ -289,6 +303,14 @@
 		return $.post(ajaxurl, data);
 	}
 
+    $.fn.editableform.buttons =
+			'<button class="editable-submit button button-primary">' +
+				ITELIC.ok +
+			'</button>' +
+			'<button class="editable-submit button">' +
+                ITELIC.cancel +
+            '</button>';
+
 	var status_span = $(".status span");
 
 	status_span.editable({
@@ -340,9 +362,44 @@
         }
 	});
 
+    var security_message_editor = $(".security-message");
+
+    security_message_editor.editable({
+        type       : 'textarea',
+        pk         : ITELIC.release,
+        name       : 'security-message',
+        showbuttons: true,
+        placement  : "top",
+        title      : ' ',
+        mode       : 'inline',
+        rows       : 3,
+        maxlength  : 200,
+        url        : function (params) {
+            return editable_ajax(params);
+        },
+        success    : function (response, newValue) {
+            return editable_success_callback(response, newValue);
+        }
+    });
+
+    type_span.on('save', function (e, params) {
+
+        var old = type_span.data('value');
+
+        type_span.data('value', params.newValue);
+
+        if (old == 'security') {
+            security_message.slideUp();
+        }
+
+        if (params.newValue == 'security') {
+            security_message.slideDown();
+        }
+    });
+
 	if (status_span.data('value') == 'draft') {
 
-		$(".type h3").editable({
+		type_span.editable({
 			type       : 'select',
 			pk         : ITELIC.release,
 			name       : 'type',

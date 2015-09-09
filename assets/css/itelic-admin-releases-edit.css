@@ -72,7 +72,8 @@
 }
 
 #release-details input[type="text"]:read-write,
-#release-details input[type="number"]:read-write {
+#release-details input[type="number"]:read-write,
+#release-details textarea {
 	background: #fff;
 	border: 1px solid #d6d6d6;
 	border-radius: 3px;
@@ -271,6 +272,36 @@
 
 .whats-changed-editor p {
 	float: right;
+}
+
+/** -----------------------------------------------------:[ security message ]:---------- */
+
+#release-details .editable-container.editable-inline {
+	width: 100%;
+}
+
+#release-details .editable-input {
+	width: 100%;
+}
+
+#release-details .security-message-block textarea {
+	width: 100%;
+	resize: vertical;
+	font-size: 16px;
+}
+
+#release-details .security-message-block .editable-buttons {
+    display: block !important;
+    margin-left: 0 !important;
+}
+
+#release-details .security-message-block .editable-buttons button.ui-button-icon-only {
+    height: 28px;
+    width: auto !important;
+}
+
+#release-details .security-message-block .editable-buttons button.button-primary {
+    margin-right: 5px;
 }
 
 /** -----------------------------------------------------:[ upgrade progress ]:---------- */
