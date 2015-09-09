@@ -368,7 +368,7 @@ class ListC extends Controller {
 		}
 
 		if ( isset( $_GET['paged'] ) && $_GET['paged'] > 1 ) {
-			$args['offset'] = $args['count'] * ( absint( $_GET['paged'] ) - 1 );
+			$args['offset'] = $args['items_per_page'] * ( absint( $_GET['paged'] ) - 1 );
 		}
 
 		if ( isset( $_GET['s'] ) ) {
