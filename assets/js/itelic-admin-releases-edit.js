@@ -27,6 +27,11 @@
 
     var type_span = $(".type h3");
 
+    /**
+     * When the notify button next to the upgrade progress bar is clicked
+     * launch the notifications editor, and hide the main views. This leaves
+     * only the header block visible.
+     */
 	notify_button.click(function () {
 
 		misc.slideUp();
@@ -40,6 +45,11 @@
 		});
 	});
 
+    /**
+     * When the cancel notification button is clicked, hide the notifications
+     * editor and show the last viewed UI. This is either the upgrades view,
+     * or the main view.
+     */
 	$("#cancel-notification").click(function () {
 
 		notifications.slideUp(400, function () {
@@ -62,6 +72,10 @@
 		});
 	});
 
+    /**
+     * When the full-width notify button in the upgrades view, load the
+     * notification editor and hide the upgrades view.
+     */
 	full_notify_button.click(function () {
 
 		upgrades.slideUp();
@@ -75,29 +89,42 @@
 		});
 	});
 
+    /**
+     * When the more upgrades link is clicked, which is displayed near the
+     * upgrade progress bar, toggle the state of the advanced upgrades UI.
+     */
 	$("#more-upgrades-link").click(function () {
 
+        // we are viewing the detailed view, go back to main
 		if (upgrade_details_showing) {
 
+            // first hide the charts
 			line_graph.slideUp();
 			pie_chart.slideUp();
 
+            // lastly hide the full with notify button
 			full_notify_button_block.slideUp(400, function () {
 
+                // when this is completed, reveal the main UI view
 				misc.slideDown();
 				changelog.slideDown();
 
+                // if this release is a security release, also show the
+                // security message block
                 if (type_span.data('value') == 'security') {
                     security_message.slideDown();
                 }
 			});
 
+            // animate the progress bar back to 90% width and add back in the
+            // small notify button
 			$(".progress-container progress").animate({
 				width: '90%'
 			}, function () {
 				notify_button.fadeIn(100);
 			});
 
+            // remove class designating that we in the detail view
 			upgrades.removeClass('full-upgrade-details');
 
 			$(this).text(ITELIC.moreUpgrade);
@@ -106,12 +133,21 @@
 
 		} else {
 
+            // hide the main sections on the main view.
 			misc.slideUp();
             security_message.slideUp();
+
+            // when the changelog is hidden, load in the detail view
 			changelog.slideUp(400, function () {
 
+                // slide down the line graph
 				line_graph.slideDown(400, function () {
 
+                    // if we haven't loaded the progress chart yet
+                    // load it now. This is done here because Chart JS can't
+                    // render elements that are display: none on initial site load
+                    // this will animate the charts on the first view toggle
+                    // but won't on any subsequent views
 					if (!loaded_progress_chart) {
 						$('body').trigger('loadProgressChart');
 
@@ -119,6 +155,7 @@
 					}
 				});
 
+                // same thing as the line chart
 				pie_chart.slideDown(400, function () {
 
 					if (!loaded_versions_chart) {
@@ -128,38 +165,57 @@
 					}
 				});
 
+                // finally show the full width notify button
 				full_notify_button_block.slideDown();
 			});
 
+            // fade out the small notify button
 			notify_button.fadeOut(100, function () {
 
+                // then make the progress bar full width
+                // trying to do this simultaneously causes awful height changes
 				$(".progress-container progress").animate({
 					width: '100%'
 				});
 			});
 
+            // make note that we are in the details view
 			upgrades.addClass('full-upgrade-details');
 
+            // change the More link to say Less
 			$(this).text(ITELIC.lessUpgrade);
 
 			upgrade_details_showing = true;
 		}
 	});
 
+    /**
+     * When the changelog text is clicked, display the WP tinyMCE editor
+     * and hide the changelog div
+     */
 	changelog_text.click(function () {
 
 		changelog_editor.show();
 		changelog_text.hide();
 	});
 
+    /**
+     * When the cancel button is clicked from the changelog editor,
+     * hide the tinyMCE editor, and show the changelog div.
+     */
 	$("#cancel-changelog-editor").click(function () {
 
 		changelog_text.show();
 		changelog_editor.hide()
 	});
 
+    /**
+     * When the save button is clicked from the changelog editor,
+     * persist the user's changes to the server.
+     */
 	$("#save-changelog-editor").click(function () {
 
+        // block the user from interacting with tinyMCE
 		changelog_editor.block({
 			message: ITELIC.saving,
 			css    : {
@@ -195,6 +251,12 @@
 		});
 	});
 
+    /**
+     * When the send notification button is clicked,
+     * send the notification. This is done over AJAX.
+     *
+     * todo provide better completion UI
+     */
 	$("#send-notification").click(function () {
 
 		var data = {
@@ -205,6 +267,9 @@
 			nonce  : ITELIC.update_nonce
 		};
 
+        // block the entire admin area. This might not be strictly necessary,
+        // but if the notification queue fails to be saved, we can show the
+        // user if they are still on this page.
 		$.blockUI({
 			message: 'Sending',
 			css    : {
@@ -303,6 +368,12 @@
 		return $.post(ajaxurl, data);
 	}
 
+    /**
+     * Override the buttons UI provided by the editable implementation,
+     * and add the WP button classes instead.
+     *
+     * @type {string}
+     */
     $.fn.editableform.buttons =
 			'<button class="editable-submit button button-primary">' +
 				ITELIC.ok +
@@ -311,15 +382,24 @@
                 ITELIC.cancel +
             '</button>';
 
+    // This is the span that is revealed on rollover
 	var status_span = $(".status span");
 
+    /**
+     * Launch the editable UI on the status span.
+     */
 	status_span.editable({
 		type       : 'select',
 		pk         : ITELIC.release,
 		name       : 'status',
 		source     : function () {
+
+            // the options are dynamic based on the current status
+            // so we can't provide a simple list
 			return get_status_options_for_status();
 		},
+
+        // don't cache the source results, so they are recalled when the status changes
 		sourceCache: false,
 		showbuttons: false,
 		placement  : "top",
@@ -333,19 +413,31 @@
 		}
 	});
 
+    /**
+     * When the status span is displayed,
+     * add a class for css targeting and animating.
+     */
 	status_span.on('shown', function (e, editable) {
 		$(this).closest('.status').addClass('status-hovered');
 	});
 
+    /**
+     * When the status is hidden, remove that class.
+     */
 	status_span.on('hidden', function (e, editable) {
 		$(this).closest('.status').removeClass('status-hovered');
 	});
 
+    /**
+     * Fires when editable finishes saving the new status via AJAX.
+     */
 	status_span.on('save', function (e, params) {
 		var container = $(this).closest('.status');
 
 		var old = status_span.data('value');
 
+        // remove all old status classes,
+        // so the CSS doesn't get confused about coloring
 		$.each(ITELIC.statuses, function (key, value) {
 			container.removeClass('status-' + key);
 		});
@@ -355,6 +447,9 @@
 		status_span.data('value', params.newValue);
 
         if (old == 'draft') {
+
+            // if we are activating a release
+            // hide the replace file UI and show the upgrades UI
             replace_file.slideUp(400, function() {
 
                 upgrades.slideDown();
@@ -362,18 +457,28 @@
         }
 	});
 
+    // Editor for the security message. Only shown when type is security
     var security_message_editor = $(".security-message");
 
+    /**
+     * Launch the editor for the security message.
+     *
+     * This is a simple content area, no HTML is supported,
+     * so we haven't loaded tinyMCE in this case.
+     */
     security_message_editor.editable({
         type       : 'textarea',
         pk         : ITELIC.release,
         name       : 'security-message',
+
+        // we need the lib's buttons because hitting "enter" in a textarea
+        // just makes a newline instead of saving
         showbuttons: true,
         placement  : "top",
         title      : ' ',
         mode       : 'inline',
-        rows       : 3,
-        maxlength  : 200,
+        rows       : 3, // limit the rows to 3
+        maxlength  : 200, // currently not implemented by editable
         url        : function (params) {
             return editable_ajax(params);
         },
@@ -382,28 +487,38 @@
         }
     });
 
+    /**
+     * Fires when the type of the release is changed.
+     */
     type_span.on('save', function (e, params) {
 
         var old = type_span.data('value');
 
         type_span.data('value', params.newValue);
 
+        // if the previous type is security,
+        // then this new type doesn't need the security message editor
         if (old == 'security') {
             security_message.slideUp();
         }
 
+        // but if this is now a security release, display the message editor
         if (params.newValue == 'security') {
             security_message.slideDown();
         }
     });
 
+    // we can only edit the release type and version when the release is in draft mode
 	if (status_span.data('value') == 'draft') {
 
+        /**
+         * Launch the editable UI for changing the release's type
+         */
 		type_span.editable({
 			type       : 'select',
 			pk         : ITELIC.release,
 			name       : 'type',
-			source     : ITELIC.types,
+			source     : ITELIC.types, // this is a static list
 			sourceCache: true,
 			showbuttons: false,
 			placement  : "top",
@@ -419,6 +534,9 @@
 
 		var version = $(".version h3");
 
+        /**
+         * Launch the editable UI for changing the version number
+         */
 		version.editable({
 			type       : 'text',
 			pk         : ITELIC.release,
@@ -472,6 +590,8 @@
 				text: ITELIC.uploadButton
 			},
 			multiple: false,
+
+            // limit the mime type to zips
 			library : {
 				type: 'application/zip,application/octet-stream'
 			}
@@ -487,9 +607,11 @@
 
 			var label = $(".replace-file-container label");
 
+            // store the previous file label in case of error
 			label.data('prev', label.text());
 			label.text(image_data.filename);
 
+            // send the new image ID to WP
 			var promise = editable_ajax({
 				name : 'download',
 				value: image_data.id
@@ -498,6 +620,8 @@
 			promise.done(function (response) {
 
 				if (!response.success) {
+
+                    // revert file label and alert() the user
 					label.text(label.data('prev'));
 
 					alert(response.data.message);
@@ -510,6 +634,12 @@
 
 	});
 
+    /**
+     * We have to provide this for ourselves for use by the WP_Notifications package
+     *
+     * @param html
+     * @returns {boolean}
+     */
 	window.send_to_editor = function (html) {
 		var editor,
 			hasTinymce = typeof tinymce !== 'undefined',
