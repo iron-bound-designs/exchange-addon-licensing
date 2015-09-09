@@ -16,6 +16,7 @@ use ITELIC\Release;
 
 /**
  * Class Add_New
+ *
  * @package ITELIC\Admin\Releases\Controller
  */
 class Add_New extends Controller {
@@ -95,6 +96,10 @@ class Add_New extends Controller {
 
 			$release = Release::create( $product, $attachment, $version, $type, $status, $changelog );
 
+			if ( $security_message ) {
+				$release->add_meta( 'security-message', $security_message, true );
+			}
+
 			if ( $release ) {
 				$url = add_query_arg( array(
 					'ID'   => $release->get_ID(),
@@ -142,7 +147,6 @@ class Add_New extends Controller {
 		if ( count( $this->errors ) == 0 ) {
 			return;
 		}
-
 
 		?>
 

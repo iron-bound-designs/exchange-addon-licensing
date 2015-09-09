@@ -565,6 +565,71 @@ class Release extends Model {
 	}
 
 	/**
+	 * Add metadata to this release.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $key    Metadata key
+	 * @param mixed  $value  Metadata value. Must be serializable if
+	 *                       non-scalar.
+	 * @param bool   $unique Optional, default is false. Whether the meta key
+	 *                       should be unique for this release.
+	 *
+	 * @return false|int The meta ID on success, false on failure.
+	 */
+	public function add_meta( $key, $value, $unique = false ) {
+		return add_metadata( 'itelic_release', $this->get_ID(), $key, $value, $unique );
+	}
+
+	/**
+	 * Retrieve metadata for this release..
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param string $key     Optional. The meta key to retrieve. By default,
+	 *                        returns data for all keys. Default empty.
+	 * @param bool   $single  Optional. Whether to return a single value.
+	 *                        Default false.
+	 *
+	 * @return mixed Will be an array if $single is false. Will be value of
+	 *               meta data field if $single is true.
+	 */
+	public function get_meta( $key = '', $single = false ) {
+		return get_metadata( 'itelic_release', $this->get_ID(), $key, $single );
+	}
+
+	/**
+	 * Update metadata for this release.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $key        Metadata key.
+	 * @param mixed  $value      Metadata value. Must be serializable if
+	 *                           non-scalar.
+	 * @param string $prev_value Optional. Previous value to check before
+	 *                           removing. Default empty.
+	 *
+	 * @return bool|int Meta ID if the key didn't exist, true on successful
+	 *                  update, false on failure.
+	 */
+	public function update_meta( $key, $value, $prev_value = '' ) {
+		return update_metadata( 'itelic_release', $this->get_ID(), $key, $value, $prev_value );
+	}
+
+	/**
+	 * Remove metadata from this release.
+	 *
+	 * @param string $key   Metadata key.
+	 * @param mixed  $value Optional. Metadata value. Must be serializable if
+	 *                      non-scalar. Default empty.
+	 *
+	 * @return bool
+	 */
+	public function delete_meta( $key, $value = '' ) {
+		return delete_metadata( 'itelic_release', $this->get_ID(), $key, $value );
+	}
+
+	/**
 	 * Get a count of all of the sites that have been updated.
 	 *
 	 * @since 1.0
