@@ -135,6 +135,17 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
+
+	$("#itelic-upgrade-enable").click(function () {
+		var options = $(".itelic-upgrade-settings");
+
+		if ($(this).attr('checked') == 'checked') {
+			options.removeClass('hide-if-js').show();
+		} else {
+			options.hide();
+		}
+	});
+
 	$("#itelic-readme-last-updated").datepicker({
 		prevText  : '',
 		nextText  : '',

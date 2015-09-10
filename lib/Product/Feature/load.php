@@ -11,3 +11,4 @@ namespace ITELIC\Product\Feature;
 new Base();
 new Discount();
 new Readme();
+new Upgrades();
