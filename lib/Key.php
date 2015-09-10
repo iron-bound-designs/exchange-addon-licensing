@@ -98,7 +98,7 @@ class Key extends Model implements API\Serializable {
 		$this->status      = $data->status;
 		$this->max         = $data->max;
 
-		if ( ! empty( $data->expires ) ) {
+		if ( ! empty( $data->expires ) && $data->expires != '0000-00-00 00:00:00' ) {
 			$this->expires = new \DateTime( $data->expires );
 		}
 
