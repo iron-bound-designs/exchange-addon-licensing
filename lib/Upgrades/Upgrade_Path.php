@@ -193,7 +193,11 @@ class Upgrade_Path {
 		}
 
 		if ( isset( $prorate ) && isset( $flat ) ) {
-			return new Chained( $key, $this->get_upgrade_product(), $this->get_upgrade_variant_hash() );
+			$chained = new Chained( $key, $this->get_upgrade_product(), $this->get_upgrade_variant_hash() );
+			$chained->chain( $prorate );
+			$chained->chain( $flat );
+
+			return $chained;
 		}
 
 		if ( isset( $prorate ) ) {
