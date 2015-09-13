@@ -8,7 +8,7 @@
  * @license     GPLv2
  */
 
-namespace ITELIC\Upgrade_Paths\Discount;
+namespace ITELIC\Upgrades\Discount;
 
 use ITELIC\Key;
 
@@ -67,6 +67,24 @@ abstract class Discount implements I_Discount {
 
 		$discount = $this->get_discount();
 
+		$base_price = $this->get_original_price();
+
+		$upgrade_price = $base_price - $discount;
+
+		return $format ? it_exchange_format_price( $upgrade_price ) : $upgrade_price;
+	}
+
+	/**
+	 * Get the original price before any discounts are applied.
+	 *
+	 * @since 1.0
+	 *
+	 * @param bool $format
+	 *
+	 * @return float|string
+	 */
+	public function get_original_price( $format = false ) {
+
 		$base_price = it_exchange_get_product_feature( $this->upgrade_product->ID, 'base-price' );
 
 		if ( ! empty( $this->variant_hash ) ) {
@@ -78,9 +96,7 @@ abstract class Discount implements I_Discount {
 			}
 		}
 
-		$upgrade_price = $base_price - $discount;
-
-		return $format ? it_exchange_format_price( $upgrade_price ) : $upgrade_price;
+		return $format ? it_exchange_format_price( $base_price ) : $base_price;
 	}
 
 	/**

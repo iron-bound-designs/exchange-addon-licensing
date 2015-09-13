@@ -8,7 +8,7 @@
  * @license     GPLv2
  */
 
-namespace ITELIC\Upgrade_Paths\Discount;
+namespace ITELIC\Upgrades\Discount;
 
 /**
  * Interface I_Discount
@@ -38,6 +38,17 @@ interface I_Discount {
 	 * @return float|string
 	 */
 	public function get_upgrade_price( $format = false );
+
+	/**
+	 * Get the original price before any discounts are applied.
+	 *
+	 * @since 1.0
+	 *
+	 * @param bool $format
+	 *
+	 * @return float|string
+	 */
+	public function get_original_price( $format = false );
 
 	/**
 	 * Get the upgrade price formatted.

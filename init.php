@@ -79,6 +79,11 @@ require_once( Plugin::$dir . 'lib/Admin/load.php' );
 require_once( Plugin::$dir . 'lib/Renewal/load.php' );
 
 /**
+ * Load the upgrades.
+ */
+require_once( Plugin::$dir . 'lib/Upgrades/load.php' );
+
+/**
  * Load the REST API.
  */
 require_once( Plugin::$dir . 'lib/API/load.php' );

@@ -8,7 +8,7 @@
  * @license     GPLv2
  */
 
-namespace ITELIC\Upgrade_Paths\Discount;
+namespace ITELIC\Upgrades\Discount;
 
 use ITELIC\Key;
 
