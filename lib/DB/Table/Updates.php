@@ -14,7 +14,7 @@ use IronBound\DB\Table\Table;
  * Class Upgrades
  * @package ITELIC\DB\Table
  */
-class Upgrades implements Table {
+class Updates implements Table {
 
 	/**
 	 * Retrieve the name of the database table.
@@ -26,7 +26,7 @@ class Upgrades implements Table {
 	 * @return string
 	 */
 	public function get_table_name( \wpdb $wpdb ) {
-		return $wpdb->prefix . 'itelic_upgrades';
+		return $wpdb->prefix . 'itelic_updates';
 	}
 
 	/**
@@ -37,7 +37,7 @@ class Upgrades implements Table {
 	 * @return string
 	 */
 	public function get_slug() {
-		return 'itelic-upgrades';
+		return 'itelic-updates';
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Upgrades implements Table {
 			'activation'       => '%d',
 			'release_id'       => '%d',
 			'previous_version' => '%s',
-			'upgrade_date'     => '%s',
+			'update_date'     => '%s',
 		);
 	}
 
@@ -106,7 +106,7 @@ class Upgrades implements Table {
 		activation BIGINT(20) UNSIGNED NOT NULL,
 		release_id BIGINT(20) UNSIGNED NOT NULL,
 		previous_version VARCHAR(20) NOT NULL,
-		upgrade_date DATETIME DEFAULT NULL,
+		update_date DATETIME DEFAULT NULL,
 		PRIMARY KEY  (ID)
 		) {$wpdb->get_charset_collate()};";
 	}

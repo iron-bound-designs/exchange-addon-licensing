@@ -18,7 +18,7 @@ use IronBound\DB\Exception as DB_Exception;
  * Class Upgrade
  * @package ITELIC
  */
-class Upgrade extends Model {
+class Update extends Model {
 
 	/**
 	 * @var int
@@ -38,7 +38,7 @@ class Upgrade extends Model {
 	/**
 	 * @var \DateTime
 	 */
-	private $upgrade_date;
+	private $update_date;
 
 	/**
 	 * @var string
@@ -65,7 +65,7 @@ class Upgrade extends Model {
 		$this->ID               = $data->ID;
 		$this->activation       = itelic_get_activation( $data->activation );
 		$this->release          = new Release( $data->release_id );
-		$this->upgrade_date     = new \DateTime( $data->upgrade_date );
+		$this->update_date      = new \DateTime( $data->update_date );
 		$this->previous_version = $data->previous_version;
 	}
 
@@ -79,7 +79,7 @@ class Upgrade extends Model {
 	 * @param \DateTime  $upgrade_date
 	 * @param string     $previous_version
 	 *
-	 * @return Upgrade|null
+	 * @return Update|null
 	 * @throws DB_Exception
 	 */
 	public static function create( Activation $activation, Release $release, \DateTime $upgrade_date = null, $previous_version = '' ) {
@@ -95,11 +95,11 @@ class Upgrade extends Model {
 		$data = array(
 			'activation'       => $activation->get_id(),
 			'release_id'       => $release->get_ID(),
-			'upgrade_date'     => $upgrade_date->format( "Y-m-d H:i:s" ),
+			'update_date'      => $upgrade_date->format( "Y-m-d H:i:s" ),
 			'previous_version' => $previous_version
 		);
 
-		$db = Manager::make_simple_query_object( 'itelic-upgrades' );
+		$db = Manager::make_simple_query_object( 'itelic-updates' );
 		$ID = $db->insert( $data );
 
 		$upgrade = self::get( $ID );
@@ -162,8 +162,8 @@ class Upgrade extends Model {
 	 *
 	 * @return \DateTime
 	 */
-	public function get_upgrade_date() {
-		return $this->upgrade_date;
+	public function get_update_date() {
+		return $this->update_date;
 	}
 
 	/**
@@ -207,6 +207,6 @@ class Upgrade extends Model {
 	 * @return Table
 	 */
 	protected static function get_table() {
-		return Manager::get( 'itelic-upgrades' );
+		return Manager::get( 'itelic-updates' );
 	}
 }

@@ -329,14 +329,14 @@ class Single extends Controller {
 		/** @var $wpdb \wpdb */
 		global $wpdb;
 
-		$tn = Manager::get( 'itelic-upgrades' )->get_table_name( $wpdb );
+		$tn = Manager::get( 'itelic-updates' )->get_table_name( $wpdb );
 
 		$id       = $release->get_ID();
 		$end_date = $release->get_start_date()->add( new \DateInterval( 'P14D' ) );
 
 		$results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT Date(upgrade_date) AS d, COUNT(ID) AS c FROM $tn WHERE release_id = %d AND upgrade_date < %s
-			GROUP BY Day(d) ORDER BY upgrade_date ASC",
+			"SELECT Date(update_date) AS d, COUNT(ID) AS c FROM $tn WHERE release_id = %d AND update_date < %s
+			GROUP BY Day(d) ORDER BY update_date ASC",
 			$id, $end_date->format( 'Y-m-d H:i:s' ) ) );
 
 		$raw = array();
@@ -414,7 +414,7 @@ class Single extends Controller {
 		/** @var $wpdb \wpdb */
 		global $wpdb;
 
-		$tn = Manager::get( 'itelic-upgrades' )->get_table_name( $wpdb );
+		$tn = Manager::get( 'itelic-updates' )->get_table_name( $wpdb );
 
 		$id = $release->get_ID();
 

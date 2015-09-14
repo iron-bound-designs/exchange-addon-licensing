@@ -14,13 +14,13 @@ use ITELIC\DB\Table\Activations;
 use ITELIC\DB\Table\Release_Meta;
 use ITELIC\DB\Table\Releases;
 use ITELIC\DB\Table\Renewals;
-use ITELIC\DB\Table\Upgrades;
+use ITELIC\DB\Table\Updates;
 
 Manager::register( new Keys() );
 Manager::register( new Activations() );
 Manager::register( new Renewals() );
 Manager::register( new Releases() );
-Manager::register( new Upgrades() );
+Manager::register( new Updates() );
 Manager::register( new Release_Meta() );
 
 global $wpdb;
@@ -48,7 +48,7 @@ function itelic_install_tables() {
 	Manager::maybe_install_table( new Activations() );
 	Manager::maybe_install_table( new Renewals() );
 	Manager::maybe_install_table( new Releases() );
-	Manager::maybe_install_table( new Upgrades() );
+	Manager::maybe_install_table( new Updates() );
 	Manager::maybe_install_table( new Release_Meta() );
 }
 

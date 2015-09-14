@@ -642,7 +642,7 @@ class Release extends Model {
 
 		if ( ! $found ) {
 
-			$simple_query = Manager::make_simple_query_object( 'itelic-upgrades' );
+			$simple_query = Manager::make_simple_query_object( 'itelic-updates' );
 			$count        = $simple_query->count( array(
 				'release_id' => $this->get_ID()
 			) );
