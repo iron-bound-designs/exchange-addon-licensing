@@ -184,30 +184,25 @@ class Upgrade_Path {
 	 */
 	public function get_discounts_for_key( Key $key ) {
 
+		$chained = new Chained();
+
 		if ( $this->is_prorated_discount() ) {
-			$prorate = new Simple_Prorate( $key, $this->get_upgrade_product(), $this->get_upgrade_variant_hash() );
+			$chained->chain(
+				new Simple_Prorate( $key, $this->get_upgrade_product(),
+					$this->get_upgrade_variant_hash()
+				)
+			);
 		}
 
 		if ( $this->is_flat_discount() ) {
-			$flat = new Flat( $this->get_flat_discount(), $key, $this->get_upgrade_product(), $this->get_upgrade_variant_hash() );
+			$chained->chain(
+				new Flat( $this->get_flat_discount(), $key,
+					$this->get_upgrade_product(),
+					$this->get_upgrade_variant_hash()
+				)
+			);
 		}
 
-		if ( isset( $prorate ) && isset( $flat ) ) {
-			$chained = new Chained( $key, $this->get_upgrade_product(), $this->get_upgrade_variant_hash() );
-			$chained->chain( $prorate );
-			$chained->chain( $flat );
-
-			return $chained;
-		}
-
-		if ( isset( $prorate ) ) {
-			return $prorate;
-		}
-
-		if ( isset( $flat ) ) {
-			return $flat;
-		}
-
-		return null;
+		return $chained;
 	}
 }
