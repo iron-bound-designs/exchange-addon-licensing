@@ -204,9 +204,6 @@ class Simple_Query {
 		// Initialise column format array
 		$column_formats = $this->table->get_columns();
 
-		// Force fields to lower case
-		$data = array_change_key_case( $data );
-
 		// White list columns
 		$data = array_intersect_key( $data, $column_formats );
 
@@ -250,9 +247,6 @@ class Simple_Query {
 
 		// Initialise column format array
 		$column_formats = $this->table->get_columns();
-
-		// Force fields to lower case
-		$data = array_change_key_case( $data );
 
 		// White list columns
 		$data = array_intersect_key( $data, $column_formats );
