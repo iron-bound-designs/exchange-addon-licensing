@@ -354,7 +354,7 @@ class Simple_Query {
 			$value = $value . '%';
 		}
 
-		return sprintf( $column_format, $value );
+		return esc_sql( sprintf( $column_format, $value ) );
 	}
 
 	/**
