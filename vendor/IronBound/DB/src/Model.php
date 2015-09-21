@@ -189,6 +189,10 @@ abstract class Model implements Cacheable, \Serializable {
 						$val = $val->ID;
 					} else if ( isset( $val->id ) ) {
 						$val = $val->id;
+					} else if ( isset( $val->term_id ) ) {
+						$val = $val->term_id;
+					} else if ( isset( $val->comment_ID ) ) {
+						$val = $val->comment_ID;
 					}
 				}
 
