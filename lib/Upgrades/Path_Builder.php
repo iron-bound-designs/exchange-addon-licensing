@@ -138,5 +138,7 @@ class Path_Builder {
 		if ( $this->flat > 0 ) {
 			update_post_meta( $ID, '_itelic_discount_flat', $this->flat );
 		}
+
+		return Upgrade_Path::get( $ID );
 	}
 }
