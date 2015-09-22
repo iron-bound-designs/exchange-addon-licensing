@@ -134,6 +134,26 @@ class Upgrade_Path {
 	}
 
 	/**
+	 * Get the variant title.
+	 *
+	 * @since 1.0
+	 *
+	 * @return string
+	 */
+	public function get_variant_title() {
+
+		if ( ! $this->has_variant() ) {
+			return '';
+		}
+
+		$controller = it_exchange_variants_addon_get_product_feature_controller( $this->get_product()->ID, 'base-price', array(
+			'setting' => 'variants'
+		) );
+
+		return $controller->post_meta[ $this->get_upgrade_variant_hash() ]['combos_title'];
+	}
+
+	/**
 	 * Check if this upgrade path is prorated.
 	 *
 	 * @since 1.0

@@ -11,6 +11,8 @@
 namespace ITELIC\Product\Feature;
 
 use ITELIC\Plugin;
+use ITELIC\Upgrades\Path_Builder;
+use ITELIC\Upgrades\Upgrade_Path;
 
 /**
  * Class Upgrades
@@ -25,7 +27,7 @@ class Upgrades extends \IT_Exchange_Product_Feature_Abstract {
 	public function __construct() {
 		$args = array(
 			'slug'          => 'licensing-upgrades',
-			'description'   => __( "Manage this WordPress Product's Upgrade Paths.", Plugin::SLUG ),
+			'description'   => __( "Upgrade paths allow your customers to change their license type at any time.", Plugin::SLUG ),
 			'metabox_title' => __( "Licensing Upgrades", Plugin::SLUG ),
 			'product_types' => array( 'digital-downloads-product-type' )
 		);
@@ -41,8 +43,17 @@ class Upgrades extends \IT_Exchange_Product_Feature_Abstract {
 	 * @param \WP_Post $post
 	 */
 	function print_metabox( $post ) {
+
+		$product = it_exchange_get_product( $post );
+
 		$data   = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, $this->slug );
 		$hidden = $data['enable'] ? '' : ' hide-if-js';
+
+		if ( empty( $data['base_path'] ) ) {
+			$path = $this->create_base_upgrade_path( $product );
+		} else {
+			$path = Upgrade_Path::get( $data['base_path'] );
+		}
 		?>
 
 		<p><?php echo $this->description; ?></p>
@@ -54,10 +65,135 @@ class Upgrades extends \IT_Exchange_Product_Feature_Abstract {
 
 		<div class="itelic-upgrade-settings<?php echo esc_attr( $hidden ); ?>">
 
-
+			<?php echo $this->render_upgrade_path_html( $path ); ?>
 
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render the HTML for a single upgrade path.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Upgrade_Path $path
+	 *
+	 * @return string
+	 */
+	protected function render_upgrade_path_html( Upgrade_Path $path ) {
+
+		ob_start();
+		?>
+
+		<div class="upgrade-path">
+
+			<span class="upgrade-path-product-title"><?php echo $path->get_product()->post_title; ?></span>
+
+			<span class="upgrade-path-variant-title"><?php echo $path->get_variant_title(); ?></span>
+
+			<span class="upgrade-path-activation-limit">
+				<?php echo it_exchange_get_product_feature( $path->get_product()->ID, 'licensing', array(
+					'field'    => 'limit',
+					'for_hash' => $path->get_upgrade_variant_hash()
+				) ); ?>
+			</span>
+		</div>
+
+		<?php
+
+		return ob_get_clean();
+
+	}
+
+	/**
+	 * Get the first variant. The one with the last activations.
+	 *
+	 * @param \IT_Exchange_Product $product
+	 *
+	 * @return Upgrade_Path
+	 */
+	protected function create_base_upgrade_path( \IT_Exchange_Product $product ) {
+
+		$controller = $this->get_variants_controller( $product->ID );
+
+		$activation_limits = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'activation_variant' ) );
+
+		$min      = null;
+		$min_hash = null;
+
+		foreach ( $controller->post_meta as $hash => $meta ) {
+
+			$limit = isset( $activation_limits[ $hash ] ) ? (int) $activation_limits[ $hash ] : 0;
+
+			if ( $min === null && $limit !== 0 ) {
+				$min      = $limit;
+				$min_hash = $hash;
+			} elseif ( $min !== null && $limit !== 0 && $limit < $min ) {
+				$min      = $limit;
+				$min_hash = $hash;
+			}
+		}
+
+		$path_builder = new Path_Builder( $product );
+		$path_builder->upgrade_to( $product, $min_hash );
+
+		$path = $path_builder->create();
+
+		it_exchange_update_product_feature( $product->ID, 'licensing-upgrades', array(
+			'base_path' => $path->get_ID()
+		) );
+
+		return $path;
+	}
+
+	/**
+	 * Convert a combo to a hash.
+	 *
+	 * @since 1.0
+	 *
+	 * @param $combo array
+	 *
+	 * @return null|string
+	 */
+	protected function combo_to_hash( $combo ) {
+		if ( function_exists( 'it_exchange_variants_addon_get_selected_variants_id_hash' ) ) {
+
+			$variants_to_hash = array();
+
+			foreach ( $combo as $id ) {
+				if ( $variant = it_exchange_variants_addon_get_variant( $id ) ) {
+					$variants_to_hash[ empty( $variant->post_parent ) ? $id : $variant->post_parent ] = $id;
+				}
+			}
+
+			$hash = it_exchange_variants_addon_get_selected_variants_id_hash( $variants_to_hash );
+		} else {
+			$hash = null;
+		}
+
+		return $hash;
+	}
+
+	/**
+	 * Get the variants controller.
+	 *
+	 * @since 1.0
+	 *
+	 * @param $product_id int
+	 *
+	 * @return \IT_Exchange_Variants_Addon_Product_Feature_Combos|null
+	 */
+	protected function get_variants_controller( $product_id ) {
+
+		if ( function_exists( 'it_exchange_variants_addon_get_product_feature_controller' ) ) {
+			$controller = it_exchange_variants_addon_get_product_feature_controller( $product_id, 'base-price', array(
+				'setting' => 'variants'
+			) );
+		} else {
+			$controller = null;
+		}
+
+		return $controller;
 	}
 
 	/**
@@ -112,7 +248,8 @@ class Upgrades extends \IT_Exchange_Product_Feature_Abstract {
 	 */
 	public function get_feature( $existing, $product_id, $options = array() ) {
 		$defaults = array(
-			'enable'       => false
+			'enable'    => false,
+			'base_path' => ''
 		);
 
 		$values   = get_post_meta( $product_id, '_it_exchange_itelic_upgrade', true );
