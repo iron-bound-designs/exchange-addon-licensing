@@ -157,14 +157,14 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 						<div class="itelic-activation-limit-variant-header-cell itelic-activation-limit-variant-input-cell"><?php _e( "Limit", Plugin::SLUG ); ?></div>
 					</div>
 
-					<?php foreach ( $controller->all_variant_combos_for_product as $combo ): ?>
-						<?php $hash = $this->combo_to_hash( $combo ); ?>
+					<?php foreach ( $controller->post_meta as $hash => $variant ): ?>
 						<div class="itelic-activation-limit-variant-row">
 
-							<div class="itelic-activation-limit-variant-cell"><?php echo $controller->generate_title_from_combos( $combo ); ?></div>
+							<div class="itelic-activation-limit-variant-cell"><?php echo $variant['combos_title'] ?></div>
 
 							<div class="itelic-activation-limit-variant-cell itelic-activation-limit-variant-input-cell">
-								<input class="itelic-activation-limit-variant-input" name="itelic[activation_variant][<?php echo esc_attr( $hash ); ?>]" type="number" min="0" value="<?php echo isset( $hashes[ $hash ] ) ? $hashes[ $hash ] : ''; ?>">
+								<input class="itelic-activation-limit-variant-input" name="itelic[activation_variant][<?php echo esc_attr( $hash ); ?>]"
+								       type="number" min="0" value="<?php echo isset( $hashes[ $hash ] ) ? $hashes[ $hash ] : ''; ?>">
 							</div>
 						</div>
 					<?php endforeach; ?>
@@ -189,8 +189,9 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 	protected function get_variants_controller( $product_id ) {
 
 		if ( function_exists( 'it_exchange_variants_addon_get_product_feature_controller' ) ) {
-			$controller                                 = it_exchange_variants_addon_get_product_feature_controller( $product_id, $this->slug, array() );
-			$controller->all_variant_combos_for_product = it_exchange_variants_addon_get_all_variant_combos_for_product( $product_id, false );
+			$controller = it_exchange_variants_addon_get_product_feature_controller( $product_id, 'base-price', array(
+				'setting' => 'variants'
+			) );
 		} else {
 			$controller = null;
 		}
@@ -397,6 +398,17 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 			if ( isset( $raw_meta['activation_variant'][ $hash ] ) ) {
 				return $raw_meta['activation_variant'][ $hash ];
 			} else {
+
+				$atts       = it_exchange_get_variant_combo_attributes_from_hash( $product_id, $hash );
+				$alt_hashes = it_exchange_addon_get_selected_variant_alts( $atts['combo'], $product_id );
+
+				foreach ( $alt_hashes as $alt_hash ) {
+
+					if ( isset( $raw_meta['activation_variant'][ $alt_hash ] ) ) {
+						return $raw_meta['activation_variant'][ $alt_hash ];
+					}
+				}
+
 				return null;
 			}
 		}
