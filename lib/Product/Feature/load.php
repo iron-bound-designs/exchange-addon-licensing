@@ -11,4 +11,7 @@ namespace ITELIC\Product\Feature;
 new Base();
 new Discount();
 new Readme();
-new Upgrades();
+
+if ( function_exists( 'it_exchange_register_variants_addon' ) ) {
+	new Upgrades();
+}
