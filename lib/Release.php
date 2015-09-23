@@ -206,6 +206,12 @@ class Release extends Model {
 			throw new \InvalidArgumentException( "Product given does not have the licensing feature enabled." );
 		}
 
+		$current_version = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field', 'version' ) );
+
+		if ( version_compare( $version, $current_version, '<=' ) ) {
+			throw new \InvalidArgumentException( "New release version must be greater than the current product's version." );
+		}
+
 		$data = array(
 			'product'   => $product->ID,
 			'download'  => $file->ID,
@@ -412,6 +418,13 @@ class Release extends Model {
 	 * @param string $version
 	 */
 	public function set_version( $version ) {
+
+		$current_version = it_exchange_get_product_feature( $this->get_product()->ID, 'licensing', array( 'field' => 'version' ) );
+
+		if ( version_compare( $version, $current_version, '<=' ) ) {
+			throw new \InvalidArgumentException( "New release version must be greater than the current product's version." );
+		}
+
 		$this->version = $version;
 
 		$this->update( 'version', $version );
