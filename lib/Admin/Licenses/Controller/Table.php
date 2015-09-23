@@ -250,6 +250,10 @@ class Table extends \WP_List_Table {
 	 */
 	protected function extra_tablenav( $which ) {
 
+		if ( $which !== 'top' ) {
+			return;
+		}
+
 		$selected_product = isset( $_GET['prod'] ) ? absint( $_GET['prod'] ) : 0;
 		?>
 
@@ -259,7 +263,7 @@ class Table extends \WP_List_Table {
 
 		<select name="prod" id="filter-by-product" style="width: 150px;">
 
-			<option value=""><?php _e( "All products", Plugin::SLUG ); ?></option>
+			<option value="-1"><?php _e( "All products", Plugin::SLUG ); ?></option>
 
 			<?php foreach ( $this->products as $product ): ?>
 

@@ -407,6 +407,10 @@ class ListC extends Controller {
 			$args['customer_search'] = "%{$_GET['s']}%";
 		}
 
+		if ( isset( $_GET['prod'] ) ) {
+			$args['product'] = absint( $_GET['prod'] );
+		}
+
 		return $args;
 	}
 
