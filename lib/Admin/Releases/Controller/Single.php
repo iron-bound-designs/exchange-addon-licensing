@@ -21,6 +21,7 @@ use ITELIC\Admin\Chart;
 use ITELIC\Admin\Releases\Controller;
 use ITELIC\Admin\Releases\View\Single as Single_View;
 use ITELIC\Admin\Tab\Dispatch;
+use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 use ITELIC\Release;
 use ITELIC_API\Query\Activations;
@@ -73,6 +74,17 @@ class Single extends Controller {
 
 		$view->begin();
 		$view->title();
+
+		$current = it_exchange_get_product_feature( $release->get_product()->ID, 'licensing', array( 'field' => 'version' ) );
+		$new     = $release->get_version();
+
+		if ( $release->get_status() == Release::STATUS_DRAFT && version_compare( $new, $current, '<=' ) ) {
+			$view->notice(
+				__( "The version number of this release is less than the current version.", Plugin::SLUG ) . '&nbsp;' .
+				sprintf( __( "This release's version must be greater than %s in order to activate this release.", Plugin::SLUG ), $current ),
+				View::NOTICE_ERROR
+			);
+		}
 
 		$view->tabs( 'releases' );
 
@@ -292,20 +304,22 @@ class Single extends Controller {
 		wp_enqueue_style( 'itelic-admin-releases-edit' );
 		wp_enqueue_script( 'itelic-admin-releases-edit' );
 		wp_localize_script( 'itelic-admin-releases-edit', 'ITELIC', array(
-			'prevVersion'  => __( "Previous version: %s", Plugin::SLUG ),
-			'uploadTitle'  => __( "Choose Software File", Plugin::SLUG ),
-			'uploadButton' => __( "Replace File", Plugin::SLUG ),
-			'uploadLabel'  => __( "Upload File", Plugin::SLUG ),
-			'lessUpgrade'  => __( "Less", Plugin::SLUG ),
-			'moreUpgrade'  => __( "More", Plugin::SLUG ),
-			'saving'       => __( "Saving", Plugin::SLUG ),
-			'ibdLoadOn'    => 'loadCharts',
-			'statuses'     => Release::get_statuses(),
-			'types'        => Release::get_types( true ),
-			'release'      => $_GET['ID'],
-			'update_nonce' => wp_create_nonce( 'itelic-update-release-' . $_GET['ID'] ),
-			'ok'           => __( "Ok", Plugin::SLUG ),
-			'cancel'       => __( "Cancel", Plugin::SLUG )
+			'prevVersion'    => __( "Previous version: %s", Plugin::SLUG ),
+			'uploadTitle'    => __( "Choose Software File", Plugin::SLUG ),
+			'uploadButton'   => __( "Replace File", Plugin::SLUG ),
+			'uploadLabel'    => __( "Upload File", Plugin::SLUG ),
+			'lessUpgrade'    => __( "Less", Plugin::SLUG ),
+			'moreUpgrade'    => __( "More", Plugin::SLUG ),
+			'saving'         => __( "Saving", Plugin::SLUG ),
+			'ibdLoadOn'      => 'loadCharts',
+			'statuses'       => Release::get_statuses(),
+			'types'          => Release::get_types( true ),
+			'release'        => $_GET['ID'],
+			'update_nonce'   => wp_create_nonce( 'itelic-update-release-' . $_GET['ID'] ),
+			'ok'             => __( "Ok", Plugin::SLUG ),
+			'cancel'         => __( "Cancel", Plugin::SLUG ),
+			'currentVersion' => it_exchange_get_product_feature( Release::get( $_GET['ID'] )->get_product()->ID,
+				'licensing', array( 'field' => 'version' ) )
 		) );
 
 		wp_enqueue_media();
