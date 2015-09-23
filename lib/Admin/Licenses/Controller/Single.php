@@ -14,6 +14,8 @@ use ITELIC\Admin\Licenses\Dispatch;
 use ITELIC\Admin\Licenses\View\Single as Single_View;
 use ITELIC\Key;
 use ITELIC\Plugin;
+use ITELIC\Renewal;
+use ITELIC_API\Query\Renewals;
 
 /**
  * Class Single
@@ -289,7 +291,25 @@ class Single extends Controller {
 	 * @return Single_View
 	 */
 	protected function get_view() {
-		return new Single_View( $this->get_current_key() );
+		return new Single_View( $this->get_current_key(), $this->get_renewals() );
+	}
+
+	/**
+	 * Get all the renewals for this key.
+	 *
+	 * @since 1.0
+	 *
+	 * @return Renewal[]
+	 */
+	protected function get_renewals() {
+		$query = new Renewals( array(
+			'key'   => $this->get_current_key()->get_key(),
+			'order' => array(
+				'renewal_date' => 'ASC'
+			)
+		) );
+
+		return $query->get_results();
 	}
 
 	/**

@@ -328,6 +328,17 @@
 	background: #D8EAC2;
 }
 
+/** -----------------------------------------------------:[ renewals ]:---------- */
+
+#it-exchange-license-details .renewals h3 {
+	margin: .25em 0 .8em 0;
+}
+
+#it-exchange-license-details .renewals ul {
+	list-style-type: square;
+	margin-left: 20px;
+}
+
 /** -----------------------------------------------------:[ license click to edit ]:---------- */
 
 .editable-click, a.editable-click, a.editable-click:hover {

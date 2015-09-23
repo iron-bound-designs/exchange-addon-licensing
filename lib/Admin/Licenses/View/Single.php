@@ -12,6 +12,7 @@ use ITELIC\Activation;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Key;
 use ITELIC\Plugin;
+use ITELIC\Renewal;
 
 /**
  * Class Single
@@ -25,14 +26,21 @@ class Single extends View {
 	protected $key;
 
 	/**
+	 * @var Renewal[]
+	 */
+	protected $renewals = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0
 	 *
-	 * @param Key $key
+	 * @param Key       $key
+	 * @param Renewal[] $renewals
 	 */
-	public function __construct( Key $key ) {
-		$this->key = $key;
+	public function __construct( Key $key, array $renewals = array() ) {
+		$this->key      = $key;
+		$this->renewals = $renewals;
 	}
 
 	/**
@@ -103,7 +111,7 @@ class Single extends View {
 				</div>
 			</div>
 
-			<div class="spacing-wrapper activations">
+			<div class="spacing-wrapper activations<?php echo count( $this->renewals ) ? ' bottom-border' : ''; ?>">
 				<h3><?php _e( "Activations", Plugin::SLUG ); ?></h3>
 
 				<table id="activations-table" class="widefat">
@@ -114,7 +122,8 @@ class Single extends View {
 						<th class="activation-col"><?php _e( "Activation", Plugin::SLUG ); ?></th>
 						<th class="deactivation-col"><?php _e( "Deactivation", Plugin::SLUG ); ?></th>
 						<th class="version-col"><?php _e( "Version", Plugin::SLUG ); ?></th>
-						<th class="delete-col"><span class="screen-reader-text"><?php _e( "Delete", Plugin::SLUG ); ?></span></th>
+						<th class="delete-col">
+							<span class="screen-reader-text"><?php _e( "Delete", Plugin::SLUG ); ?></span></th>
 					</tr>
 					</thead>
 
@@ -135,6 +144,31 @@ class Single extends View {
 				<input type="hidden" id="remote-activate-key" value="<?php echo esc_attr( $this->key->get_key() ); ?>">
 				<?php wp_nonce_field( 'itelic-remote-activate-key-' . $this->key->get_key() ) ?>
 			</div>
+
+			<?php if ( count( $this->renewals ) ): ?>
+
+				<div class="spacing-wrapper renewals">
+
+					<h3><?php _e( "Renewal History", Plugin::SLUG ); ?></h3>
+
+					<ul>
+						<?php foreach ( $this->renewals as $renewal ): ?>
+
+							<li>
+								<?php echo $renewal->get_renewal_date()->format( get_option( 'date_format' ) ); ?>
+								&nbsp;&mdash;&nbsp;
+								<a href="<?php echo get_edit_post_link( $renewal->get_transaction()->ID ); ?>">
+									<?php echo it_exchange_get_transaction_order_number( $renewal->get_transaction() ); ?>
+								</a>
+							</li>
+
+						<?php endforeach; ?>
+					</ul>
+
+				</div>
+
+			<?php endif; ?>
+
 		</div>
 
 		<?php
