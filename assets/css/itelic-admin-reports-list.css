@@ -1,0 +1,27 @@
+.reports {
+	max-width: 1000px;
+}
+
+.report {
+	width: 300px;
+	background: white;
+	border: 1px solid #DFDFDF;
+	padding: 2em;
+	margin: 0 2em 2em 0;
+	display: inline-block;
+}
+
+.report h3 {
+	margin-top: 0;
+}
+
+.report p {
+	font-style: oblique;
+	color: #666;
+}
+
+.report a {
+	display: inline-block;
+	width: 100%;
+	text-align: right;
+}

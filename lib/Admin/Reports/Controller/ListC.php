@@ -9,6 +9,7 @@
 namespace ITELIC\Admin\Reports\Controller;
 
 use ITELIC\Admin\Reports\Controller;
+use ITELIC\Admin\Reports\Dispatch;
 use ITELIC\Admin\Reports\View\ListV;
 
 /**
@@ -24,13 +25,26 @@ class ListC extends Controller {
 	 */
 	public function render() {
 
-		$view = new ListV();
+		$this->enqueue();
+
+		$view = new ListV( Dispatch::get_reports() );
 
 		$view->begin();
 		$view->title();
 
 		$view->tabs( 'reports' );
 
+		$view->render();
+
 		$view->end();
+	}
+
+	/**
+	 * Enqueue the scripts.
+	 *
+	 * @since 1.0
+	 */
+	private function enqueue() {
+		wp_enqueue_style( 'itelic-admin-reports-list' );
 	}
 }

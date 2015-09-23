@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\Admin\Reports;
+
 use ITELIC\Admin\Tab\Dispatch as Tab_Dispatch;
 
 /**
@@ -24,6 +25,11 @@ class Dispatch {
 	 * @var Controller[]
 	 */
 	private static $views = array();
+
+	/**
+	 * @var Report[]
+	 */
+	private static $reports = array();
 
 	/**
 	 * Constructor.
@@ -63,6 +69,41 @@ class Dispatch {
 	 */
 	public static function register_view( $slug, Controller $controller ) {
 		self::$views[ $slug ] = $controller;
+	}
+
+	/**
+	 * Register a report type.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Report $report
+	 */
+	public static function register_report( Report $report ) {
+		self::$reports[ $report->get_slug() ] = $report;
+	}
+
+	/**
+	 * Get a report type.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $slug
+	 *
+	 * @return Report|null
+	 */
+	public static function get_report( $slug ) {
+		return isset( self::$reports[ $slug ] ) ? self::$reports[ $slug ] : null;
+	}
+
+	/**
+	 * Get all report types.
+	 *
+	 * @since 1.0
+	 *
+	 * @return Report[]
+	 */
+	public static function get_reports() {
+		return self::$reports;
 	}
 
 	/**

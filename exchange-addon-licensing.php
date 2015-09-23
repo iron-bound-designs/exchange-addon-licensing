@@ -143,6 +143,8 @@ class Plugin {
 			'jquery-blockUI'
 		), self::VERSION );
 
+		wp_register_style( 'itelic-admin-reports-list', self::$url . 'assets/css/itelic-admin-reports-list.css', array(), self::VERSION );
+
 		wp_register_style( 'itelic-admin-licenses-profile', self::$url . 'assets/css/admin-licenses-profile.css', array(), self::VERSION );
 	}
 

@@ -6,7 +6,7 @@
  * @since  1.0
  */
 
-namespace Admin\Reports;
+namespace ITELIC\Admin\Reports;
 
 use ITELIC\Admin\Chart\Base as Chart;
 use ITELIC\Plugin;
@@ -23,21 +23,9 @@ abstract class Report {
 	private $date_types = array();
 
 	/**
-	 * @var string
-	 */
-	protected $date_type;
-
-	/**
-	 * @var array
-	 */
-	private $data;
-
-	/**
 	 * Constructor.
-	 *
-	 * @param string $date_type
 	 */
-	public function __construct( $date_type ) {
+	public function __construct() {
 		$predefined = array(
 			'today'        => __( 'Today', Plugin::SLUG ),
 			'yesterday'    => __( 'Yesterday', Plugin::SLUG ),
@@ -72,33 +60,27 @@ abstract class Report {
 	/**
 	 * Retrieve the labels for the chart.
 	 *
+	 * @param array  $data
+	 * @param string $date_type
+	 *
 	 * @return array
 	 */
-	public function get_labels() {
-		$labels = array_keys( $this->data );
+	public static function get_labels( $data, $date_type ) {
+		$labels = array_keys( $data );
 
-		switch ( self::date_type_to_interval( $this->date_type ) ) {
+		switch ( self::date_type_to_interval( $date_type ) ) {
 			case 'hour':
-				$labels = array_map( array( $this, 'format_hour' ), $labels );
+				$labels = array_map( array( __CLASS__, 'format_hour' ), $labels );
 				break;
 			case 'weekday':
 				$labels = array_map( array( $GLOBALS['wp_locale'], 'get_weekday' ), $labels );
 				break;
 			case 'month':
-				$labels = array_map( array( $this, 'month_to_abbrev' ), $labels );
+				$labels = array_map( array( __CLASS__, 'month_to_abbrev' ), $labels );
 				break;
 		}
 
 		return $labels;
-	}
-
-	/**
-	 * Get the data for the chart.
-	 *
-	 * @return array
-	 */
-	public function get_data() {
-		return array_values( $this->data );
 	}
 
 	/**
@@ -108,7 +90,7 @@ abstract class Report {
 	 *
 	 * @return string
 	 */
-	private function format_hour( $hour ) {
+	private static function format_hour( $hour ) {
 		$format = get_option( 'time_format' );
 
 		$format = str_replace( array( 's', 'i', ':', '.' ), '', $format );
@@ -123,7 +105,7 @@ abstract class Report {
 	 *
 	 * @return string
 	 */
-	private function month_to_abbrev( $month ) {
+	private static function month_to_abbrev( $month ) {
 
 		/**
 		 * @var $wp_locale \WP_Locale
@@ -442,7 +424,7 @@ abstract class Report {
 	 *
 	 * @since 1.0
 	 *
-	 * @param array $data
+	 * @param array  $data
 	 * @param string $start
 	 * @param string $end
 	 * @param string $group
