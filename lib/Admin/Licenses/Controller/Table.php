@@ -34,16 +34,23 @@ class Table extends \WP_List_Table {
 	private $total;
 
 	/**
+	 * @var \IT_Exchange_Product[]
+	 */
+	private $products = array();
+
+	/**
 	 * Set up data.
 	 *
 	 * Use parent constructor and populate custom fields.
 	 *
 	 * @param array $keys
 	 * @param int   $total
+	 * @param array $products
 	 */
-	function __construct( $keys, $total ) {
-		$this->keys  = $keys;
-		$this->total = $total;
+	function __construct( $keys, $total, $products ) {
+		$this->keys     = $keys;
+		$this->total    = $total;
+		$this->products = $products;
 
 		//Set parent defaults
 		parent::__construct( array(
@@ -101,10 +108,10 @@ class Table extends \WP_List_Table {
 	public function column_key( $item ) {
 
 		$del_link = add_query_arg( array(
-				'itelic_action' => 'delete',
-				'key'           => $item['key'],
-				'nonce'         => wp_create_nonce( 'itelic-delete-license-' . $item['key'] )
-			), Dispatch::get_tab_link( 'licenses' )
+			'itelic_action' => 'delete',
+			'key'           => $item['key'],
+			'nonce'         => wp_create_nonce( 'itelic-delete-license-' . $item['key'] )
+		), Dispatch::get_tab_link( 'licenses' )
 		);
 
 		//Build row actions
@@ -231,6 +238,40 @@ class Table extends \WP_List_Table {
 		);
 
 		return $actions;
+	}
+
+	/**
+	 * Extra controls to be displayed between bulk actions and pagination
+	 *
+	 * @since  3.1.0
+	 * @access protected
+	 *
+	 * @param string $which
+	 */
+	protected function extra_tablenav( $which ) {
+
+		$selected_product = isset( $_GET['prod'] ) ? absint( $_GET['prod'] ) : 0;
+		?>
+
+		<label for="filter-by-product" class="screen-reader-text">
+			<?php _e( "Filter by product", Plugin::SLUG ); ?>
+		</label>
+
+		<select name="prod" id="filter-by-product" style="width: 150px;">
+
+			<option value=""><?php _e( "All products", Plugin::SLUG ); ?></option>
+
+			<?php foreach ( $this->products as $product ): ?>
+
+				<option value="<?php echo esc_attr( $product->ID ); ?>" <?php selected( $selected_product, $product->ID ); ?>>
+					<?php echo $product->post_title; ?>
+				</option>
+
+			<?php endforeach; ?>
+
+		</select>
+
+		<?php submit_button( __( 'Filter' ), 'button', 'filter_action', false );
 	}
 
 	/**

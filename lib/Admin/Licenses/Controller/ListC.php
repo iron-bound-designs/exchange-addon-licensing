@@ -29,6 +29,11 @@ class ListC extends Controller {
 	protected $table;
 
 	/**
+	 * @var array
+	 */
+	private $message = array();
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -66,11 +71,8 @@ class ListC extends Controller {
 		$view->begin();
 		$view->title();
 
-		try {
-			$view->notice( $this->process_bulk_actions(), View::NOTICE_SUCCESS );
-		}
-		catch ( \Exception $e ) {
-			$view->notice( $e->getMessage(), View::NOTICE_ERROR );
+		if ( ! empty( $this->message ) ) {
+			$view->notice( reset( $this->message ), key( $this->message ) );
 		}
 
 		$view->tabs( 'licenses' );
@@ -88,7 +90,7 @@ class ListC extends Controller {
 	 * @throws \Exception
 	 */
 	public function process_bulk_actions() {
-		$action = $this->get_table()->current_action();
+		$action = $this->current_action();
 
 		if ( empty( $action ) ) {
 			return '';
@@ -110,8 +112,6 @@ class ListC extends Controller {
 					$key->extend();
 				}
 
-				$this->setup_table();
-
 				return sprintf( __( "Extended %d keys", Plugin::SLUG ), count( $keys ) );
 
 			case 'delete':
@@ -119,12 +119,34 @@ class ListC extends Controller {
 					$key->delete();
 				}
 
-				$this->setup_table();
-
 				return sprintf( __( "Deleted %d keys", Plugin::SLUG ), count( $keys ) );
 		}
 
 		return '';
+	}
+
+	/**
+	 * Get the current action.
+	 *
+	 * @since 1.0
+	 *
+	 * @return bool|string
+	 */
+	protected function current_action() {
+
+		if ( isset( $_REQUEST['filter_action'] ) && ! empty( $_REQUEST['filter_action'] ) ) {
+			return false;
+		}
+
+		if ( isset( $_REQUEST['action'] ) && - 1 != $_REQUEST['action'] ) {
+			return $_REQUEST['action'];
+		}
+
+		if ( isset( $_REQUEST['action2'] ) && - 1 != $_REQUEST['action2'] ) {
+			return $_REQUEST['action2'];
+		}
+
+		return false;
 	}
 
 	/**
@@ -287,9 +309,19 @@ class ListC extends Controller {
 			$_GET['orderby'] = 'transaction';
 		}
 
-		$query = new Keys( $this->generate_get_key_args() );
+		try {
+			$this->message[ View::NOTICE_SUCCESS ] = $this->process_bulk_actions();
+		}
+		catch ( \Exception $e ) {
+			$this->message[ View::NOTICE_ERROR ] = $e->getMessage();
+		}
 
-		$this->table = new Table( $this->prepare_data( $query->get_results() ), $query->get_total_items() );
+		$query    = new Keys( $this->generate_get_key_args() );
+		$keys     = $query->get_results();
+		$total    = $query->get_total_items();
+		$products = itelic_get_products_with_licensing_enabled();
+
+		$this->table = new Table( $this->prepare_data( $keys ), $total, $products );
 	}
 
 	/**

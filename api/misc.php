@@ -21,6 +21,7 @@ function itelic_get_products_with_licensing_enabled() {
 	);
 
 	$args['show_hidden'] = true;
+	$args['posts_per_page'] = -1;
 
 	return it_exchange_get_products( $args );
 }
