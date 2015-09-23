@@ -107,7 +107,10 @@ class Updates implements Table {
 		release_id BIGINT(20) UNSIGNED NOT NULL,
 		previous_version VARCHAR(20) NOT NULL,
 		update_date DATETIME DEFAULT NULL,
-		PRIMARY KEY  (ID)
+		PRIMARY KEY  (ID),
+		KEY release_id (release_id),
+		KEY previous_version (previous_version),
+		KEY update_date (update_date)
 		) {$wpdb->get_charset_collate()};";
 	}
 
