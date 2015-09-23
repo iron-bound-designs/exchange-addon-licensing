@@ -78,12 +78,26 @@ class Single extends Controller {
 		$current = it_exchange_get_product_feature( $release->get_product()->ID, 'licensing', array( 'field' => 'version' ) );
 		$new     = $release->get_version();
 
-		if ( $release->get_status() == Release::STATUS_DRAFT && version_compare( $new, $current, '<=' ) ) {
-			$view->notice(
-				__( "The version number of this release is less than the current version.", Plugin::SLUG ) . '&nbsp;' .
-				sprintf( __( "This release's version must be greater than %s in order to activate this release.", Plugin::SLUG ), $current ),
-				View::NOTICE_ERROR
-			);
+		$version_statuses = array( Release::STATUS_DRAFT, Release::STATUS_PAUSED );
+
+		if ( in_array( $release->get_status(), $version_statuses ) && version_compare( $new, $current, '<=' ) ) {
+
+			$msg = __( "The version number of this release is less than the current version.", Plugin::SLUG ) . '&nbsp;';
+
+			if ( $release->get_status() == Release::STATUS_DRAFT ) {
+				$msg .= sprintf( __( "This release's version must be greater than %s in order to activate this release.",
+					Plugin::SLUG ), $current );
+			}
+
+			if ( $release->get_status() == Release::STATUS_PAUSED ) {
+
+				$new_url = add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'releases' ) );
+
+				$msg .= sprintf( __( 'You should %1$screate a new release%2$s instead.', Plugin::SLUG ),
+					"<a href=\"$new_url\">", '</a>' );
+			}
+
+			$view->notice( $msg, View::NOTICE_ERROR );
 		}
 
 		$view->tabs( 'releases' );

@@ -326,7 +326,11 @@
 
 			case 'paused':
 				selected['paused'] = all.paused;
-				selected['active'] = all.active;
+
+				if ($.versioncompare($(".version h3").data('value'), ITELIC.currentVersion) == 1) {
+					selected['active'] = all.active;
+				}
+
 				break;
 
 			case 'archived':

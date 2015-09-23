@@ -56,7 +56,7 @@ class Single extends View {
 	 */
 	public function render() {
 
-		$df  = get_option( 'date_format' );
+		$df  = str_replace( 'F', 'M', get_option( 'date_format' ) );
 		$tf  = get_option( 'time_format' );
 		$dtf = "$df $tf";
 
@@ -95,7 +95,11 @@ class Single extends View {
 					<h4><?php _e( "Released", Plugin::SLUG ); ?></h4>
 
 					<h3>
-						<?php if ( null === $this->release->get_start_date() ): ?>                            –                        <?php else: ?><?php echo $this->release->get_start_date()->format( $df ); ?><?php endif; ?>
+						<?php if ( null === $this->release->get_start_date() ): ?>
+							<?php echo '&mdash;' ?>
+						<?php else: ?>
+							<?php echo $this->release->get_start_date()->format( $df ); ?>
+						<?php endif; ?>
 					</h3>
 				</div>
 				<div class="third version">
@@ -199,7 +203,7 @@ class Single extends View {
 
 		$hidden = $this->release->get_type() != Release::TYPE_SECURITY ? ' hidden' : '';
 
-		$m = $this->release->get_meta( 'security-message', true) ;
+		$m = $this->release->get_meta( 'security-message', true );
 		?>
 
 		<div class="spacing-wrapper bottom-border security-message-block<?php echo $hidden; ?>">

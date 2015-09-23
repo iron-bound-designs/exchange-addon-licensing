@@ -310,6 +310,12 @@ class Release extends Model {
 	 */
 	public function pause() {
 
+		$current_version = it_exchange_get_product_feature( $this->get_product()->ID, 'licensing', array( 'field' => 'version' ) );
+
+		if ( version_compare( $this->get_version(), $current_version, '<=' ) ) {
+			throw new \InvalidArgumentException( "New release version must be greater than the current product's version." );
+		}
+
 		if ( $this->status != self::STATUS_PAUSED ) {
 			$this->status = self::STATUS_PAUSED;
 			$this->update( 'status', self::STATUS_PAUSED );
