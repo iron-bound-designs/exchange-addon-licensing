@@ -9,6 +9,7 @@
 namespace ITELIC\Admin\Licenses\Controller;
 
 use ITELIC\Admin\Tab\Dispatch;
+use ITELIC\Key;
 use ITELIC\Plugin;
 
 if ( ! class_exists( '\WP_List_Table' ) ) {
@@ -241,9 +242,67 @@ class Table extends \WP_List_Table {
 	}
 
 	/**
+	 * Get an associative array ( id => link ) with the list
+	 * of views available on this table.
+	 *
+	 * @since  1.0
+	 * @access protected
+	 *
+	 * @return array
+	 */
+	protected function get_views() {
+
+		$statuses = Key::get_statuses();
+
+		$statuses['any'] = __( "All", Plugin::SLUG );
+
+		$links = array(
+			'any'         =>
+				sprintf( '<a href="%1$s">%2$s</a>', $this->get_view_link( 'any' ), $statuses['any'] ),
+			Key::ACTIVE   =>
+				sprintf( '<a href="%1$s">%2$s</a>', $this->get_view_link( Key::ACTIVE ), $statuses[ Key::ACTIVE ] ),
+			Key::DISABLED =>
+				sprintf( '<a href="%1$s">%2$s</a>', $this->get_view_link( Key::DISABLED ), $statuses[ Key::DISABLED ] ),
+			Key::EXPIRED  =>
+				sprintf( '<a href="%1$s">%2$s</a>', $this->get_view_link( Key::EXPIRED ), $statuses[ Key::EXPIRED ] )
+		);
+
+		$selected = isset( $_GET['status'] ) ? $_GET['status'] : 'any';
+
+		$links[ $selected ] = "<strong>{$statuses[$selected]}</strong>";
+
+		return $links;
+	}
+
+	/**
+	 * Get the view link.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $status
+	 *
+	 * @return string
+	 */
+	protected function get_view_link( $status ) {
+
+		$link = Dispatch::get_tab_link( 'licenses' );
+
+		$white_list = array( 'prod', 's' );
+
+		foreach ( $white_list as $var ) {
+
+			if ( isset( $_GET[ $var ] ) ) {
+				$link = add_query_arg( $var, $_GET[ $var ], $link );
+			}
+		}
+
+		return add_query_arg( 'status', $status, $link );
+	}
+
+	/**
 	 * Extra controls to be displayed between bulk actions and pagination
 	 *
-	 * @since  3.1.0
+	 * @since  1.0
 	 * @access protected
 	 *
 	 * @param string $which

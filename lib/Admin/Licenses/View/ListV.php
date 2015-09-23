@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\Admin\Licenses\View;
+
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 
@@ -53,10 +54,16 @@ class ListV extends View {
 
 		<form method="GET">
 			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>">
+
+			<?php if ( isset( $_GET['status'] ) ): ?>
+				<input type="hidden" name="status" value="<?php echo esc_attr( $_GET['status'] ); ?>">
+			<?php endif; ?>
+
+			<?php $this->table->views(); ?>
 			<?php $this->table->search_box( __( "Search", Plugin::SLUG ), 'itelic-search' ); ?>
 			<?php $this->table->display(); ?>
 		</form>
 
-	<?php
+		<?php
 	}
 }
