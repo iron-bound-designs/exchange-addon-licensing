@@ -70,6 +70,11 @@ require_once( Plugin::$dir . 'lib/Admin/Licenses/load.php' );
 require_once( Plugin::$dir . 'lib/Admin/Releases/load.php' );
 
 /**
+ * Load the reports.
+ */
+require_once( Plugin::$dir . 'lib/Admin/Reports/load.php' );
+
+/**
  * Load the licenses profile page.
  */
 new Licenses();
