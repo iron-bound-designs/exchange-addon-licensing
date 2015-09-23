@@ -717,7 +717,7 @@ class Release extends Model {
 				self::TYPE_MINOR      => __( "Minor", Plugin::SLUG ),
 				self::TYPE_SECURITY   => __( "Security", Plugin::SLUG ),
 				self::TYPE_PRERELEASE => __( "Pre-release", Plugin::SLUG ),
-				self::TYPE_RESTRICTED => __( "Restricted", Plugin::SLUG )
+				//self::TYPE_RESTRICTED => __( "Restricted", Plugin::SLUG )
 			);
 		}
 
@@ -726,7 +726,7 @@ class Release extends Model {
 			self::TYPE_MINOR      => __( "Minor Release", Plugin::SLUG ),
 			self::TYPE_SECURITY   => __( "Security Release", Plugin::SLUG ),
 			self::TYPE_PRERELEASE => __( "Pre-release", Plugin::SLUG ),
-			self::TYPE_RESTRICTED => __( "Restricted Release", Plugin::SLUG )
+			//self::TYPE_RESTRICTED => __( "Restricted Release", Plugin::SLUG )
 		);
 	}
 
