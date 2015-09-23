@@ -288,16 +288,20 @@
 	margin: 1.8em 0 .5em 0;
 }
 
+#it-exchange-license-details .location-col {
+	width: 320px;
+}
+
 #it-exchange-license-details .status-col {
 	width: 85px;
 }
 
 #it-exchange-license-details .activation-col {
-	width: 95px;
+	width: 105px;
 }
 
 #it-exchange-license-details .deactivation-col {
-	width: 95px;
+	width: 105px;
 }
 
 #it-exchange-license-details .version-col {
