@@ -57,6 +57,11 @@ class ListV extends View {
 				<input type="hidden" name="view" value="<?php echo esc_attr( $_GET['view'] ); ?>">
 			<?php endif; ?>
 
+			<?php if ( isset( $_GET['status'] ) ): ?>
+				<input type="hidden" name="status" value="<?php echo esc_attr( $_GET['status'] ); ?>">
+			<?php endif; ?>
+
+			<?php $this->table->views(); ?>
 			<?php $this->table->search_box( __( "Search", Plugin::SLUG ), 'itelic-search' ); ?>
 			<?php $this->table->display(); ?>
 		</form>

@@ -10,6 +10,7 @@ namespace ITELIC\Admin\Releases\Controller;
 
 use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Plugin;
+use ITELIC\Release;
 
 if ( ! class_exists( '\WP_List_Table' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
@@ -176,6 +177,63 @@ class Table extends \WP_List_Table {
 	}
 
 	/**
+	 * Get an associative array ( id => link ) with the list
+	 * of views available on this table.
+	 *
+	 * @since  1.0
+	 * @access protected
+	 *
+	 * @return array
+	 */
+	protected function get_views() {
+
+		$statuses = Release::get_statuses();
+
+		$any = array(
+			'any' => __( "All", Plugin::SLUG )
+		);
+
+		$statuses = $any + $statuses;
+
+		$links = array();
+
+		foreach ( $statuses as $status => $label ) {
+			$links[ $status ] = sprintf( '<a href="%1$s">%2$s</a>', $this->get_view_link( $status ), $label );
+		}
+
+		$selected = isset( $_GET['status'] ) ? $_GET['status'] : 'any';
+
+		$links[ $selected ] = "<strong>{$statuses[$selected]}</strong>";
+
+		return $links;
+	}
+
+	/**
+	 * Get the view link.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $status
+	 *
+	 * @return string
+	 */
+	protected function get_view_link( $status ) {
+
+		$link = Dispatch::get_tab_link( 'releases' );
+
+		$white_list = array( 'prod', 's' );
+
+		foreach ( $white_list as $var ) {
+
+			if ( isset( $_GET[ $var ] ) ) {
+				$link = add_query_arg( $var, $_GET[ $var ], $link );
+			}
+		}
+
+		return add_query_arg( 'status', $status, $link );
+	}
+
+	/**
 	 * Extra controls to be displayed between bulk actions and pagination
 	 *
 	 * @since  1.0
@@ -190,20 +248,39 @@ class Table extends \WP_List_Table {
 		}
 
 		$selected_product = isset( $_GET['prod'] ) ? absint( $_GET['prod'] ) : 0;
+		$selected_type    = isset( $_GET['type'] ) ? absint( $_GET['type'] ) : '';
 		?>
 
 		<label for="filter-by-product" class="screen-reader-text">
 			<?php _e( "Filter by product", Plugin::SLUG ); ?>
 		</label>
 
-		<select name="prod" id="filter-by-product" style="width: 150px;">
+		<select name="prod" id="filter-by-product" style="width:150px;margin-left:-8px;">
 
-			<option value="-1"><?php _e( "All products", Plugin::SLUG ); ?></option>
+			<option value=""><?php _e( "All products", Plugin::SLUG ); ?></option>
 
 			<?php foreach ( $this->products as $product ): ?>
 
 				<option value="<?php echo esc_attr( $product->ID ); ?>" <?php selected( $selected_product, $product->ID ); ?>>
 					<?php echo $product->post_title; ?>
+				</option>
+
+			<?php endforeach; ?>
+
+		</select>
+
+		<label for="filter-by-type" class="screen-reader-text">
+			<?php _e( "Filter by type", Plugin::SLUG ); ?>
+		</label>
+
+		<select name="type" id="filter-by-type">
+
+			<option value=""><?php _e( "All types", Plugin::SLUG ); ?></option>
+
+			<?php foreach ( Release::get_types( true ) as $type => $label ): ?>
+
+				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $selected_type, $type ); ?>>
+					<?php echo $label; ?>
 				</option>
 
 			<?php endforeach; ?>

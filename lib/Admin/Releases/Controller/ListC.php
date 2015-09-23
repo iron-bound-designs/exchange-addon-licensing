@@ -171,6 +171,14 @@ class ListC extends Controller {
 			$args['product'] = absint( $_GET['prod'] );
 		}
 
+		if ( isset( $_GET['status'] ) ) {
+			$args['status'] = $_GET['status'];
+		}
+
+		if ( isset( $_GET['type'] ) ) {
+			$args['type'] = $_GET['type'];
+		}
+
 		if ( isset( $_GET['s'] ) ) {
 
 			$s = $_GET['s'];
