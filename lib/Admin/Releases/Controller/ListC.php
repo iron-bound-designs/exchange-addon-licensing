@@ -165,7 +165,16 @@ class ListC extends Controller {
 		}
 
 		if ( isset( $_GET['s'] ) ) {
-			$args['version_search'] = "%{$_GET['s']}%";
+
+			$s = $_GET['s'];
+
+			if ( strpos( $s, 'v' ) === 0 ) {
+				$s = substr( $s, 1 );
+
+				$args['version_search'] = "%{$s}%";
+			} else {
+				$args['changelog_search'] = "%{$s}%";
+			}
 		}
 
 		return $args;
