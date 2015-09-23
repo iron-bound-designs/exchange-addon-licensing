@@ -140,7 +140,7 @@ class Releases extends Complex_Query {
 	protected function parse_product() {
 
 		if ( ! empty( $this->args['product'] ) ) {
-			$this->args['product__in'] = array( $this->args['key'] );
+			$this->args['product__in'] = array( $this->args['product'] );
 		}
 
 		return $this->parse_in_or_not_in_query( 'product', $this->args['product__in'], $this->args['product__not_in'] );

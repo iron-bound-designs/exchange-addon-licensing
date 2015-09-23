@@ -77,9 +77,12 @@ class ListC extends Controller {
 			return;
 		}
 
-		$query = new Releases( $this->generate_query_args() );
+		$query    = new Releases( $this->generate_query_args() );
+		$releases = $query->get_results();
+		$total    = $query->get_total_items();
+		$products = itelic_get_products_with_licensing_enabled();
 
-		$this->table = new Table( $this->prepare_data( $query->get_results() ), $query->get_total_items() );
+		$this->table = new Table( $this->prepare_data( $releases ), $total, $products );
 	}
 
 	/**
@@ -162,6 +165,10 @@ class ListC extends Controller {
 
 		if ( isset( $_GET['paged'] ) && $_GET['paged'] > 1 ) {
 			$args['offset'] = $args['count'] * ( absint( $_GET['paged'] ) - 1 );
+		}
+
+		if ( isset( $_GET['prod'] ) ) {
+			$args['product'] = absint( $_GET['prod'] );
 		}
 
 		if ( isset( $_GET['s'] ) ) {
