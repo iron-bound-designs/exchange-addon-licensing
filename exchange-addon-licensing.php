@@ -142,6 +142,8 @@ class Plugin {
 			'jqueryui-editable',
 			'jquery-blockUI'
 		), self::VERSION );
+
+		wp_register_style( 'itelic-admin-licenses-profile', self::$url . 'assets/css/admin-licenses-profile.css', array(), self::VERSION );
 	}
 
 	/**

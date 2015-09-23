@@ -1,0 +1,64 @@
+.user-edit-block .inner-wrap {
+	margin: 15px;
+}
+
+.user-edit-block .inner-wrap hr {
+	width: 100%;
+}
+
+.user-edit-block .field {
+	padding-bottom: 10px;
+}
+
+.user-edit-block input[type="text"] {
+	background: #fff;
+	border: 1px solid #d6d6d6;
+	border-radius: 3px;
+	font-size: 18px;
+	padding: 10px;
+	color: #3d4142;
+	width: 260px;
+	-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	outline: 0;
+	-webkit-transition: .05s border-color ease-in-out;
+	transition: .05s border-color ease-in-out;
+}
+
+.user-edit-block input[disabled] {
+	cursor: not-allowed;
+	background-color: #eee;
+	opacity: 1;
+}
+
+.user-edit-block label {
+	display: block;
+	font-size: 13px;
+	font-weight: bold;
+	color: #3d4142;
+	margin-bottom: 5px;
+	margin-left: 2px;
+}
+
+.user-edit-block table {
+	width: 100%;
+	max-width: 750px;
+}
+
+.user-edit-block table td,
+.user-edit-block table th {
+	text-align: left;
+	padding-bottom: 10px;
+}
+
+.user-edit-block table .key {
+	width: 50%;
+}
+
+.user-edit-block table .status {
+	width: 15%;
+}
+
+.user-edit-block table .product {
+	width: 35%;
+}

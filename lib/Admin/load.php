@@ -8,6 +8,7 @@
 
 namespace ITELIC\Admin;
 
+use ITELIC\Admin\Profile\Licenses;
 use ITELIC\Plugin;
 use ITELIC\Admin\Tab\Dispatch;
 
@@ -67,3 +68,8 @@ require_once( Plugin::$dir . 'lib/Admin/Licenses/load.php' );
  * Load the releases.
  */
 require_once( Plugin::$dir . 'lib/Admin/Releases/load.php' );
+
+/**
+ * Load the licenses profile page.
+ */
+new Licenses();
