@@ -147,7 +147,7 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 				<input type="number" name="itelic[limit]" id="itelic-limit" min="0" value="<?php echo esc_attr( $data['limit'] ); ?>">
 			</div>
 
-			<?php if ( $controller ): ?>
+			<?php if ( $controller && $controller->post_meta ): ?>
 				<?php $hashes = $data['activation_variant']; ?>
 
 				<div class="itelic-variants-activation-limit-table<?php echo esc_attr( $hidden_variants ); ?>">
