@@ -288,6 +288,26 @@
 	margin: 1.8em 0 .5em 0;
 }
 
+#it-exchange-license-details .status-col {
+	width: 85px;
+}
+
+#it-exchange-license-details .activation-col {
+	width: 95px;
+}
+
+#it-exchange-license-details .deactivation-col {
+	width: 95px;
+}
+
+#it-exchange-license-details .version-col {
+	width: 70px;
+}
+
+#it-exchange-license-details .delete-col {
+	width: 10px;
+}
+
 #it-exchange-license-details #remote-activate-location {
 	width: 75%;
 }

@@ -109,11 +109,12 @@ class Single extends View {
 				<table id="activations-table" class="widefat">
 					<thead>
 					<tr>
-						<th><?php _e( "Location", Plugin::SLUG ); ?></th>
-						<th><?php _e( "Status", Plugin::SLUG ); ?></th>
-						<th><?php _e( "Activation", Plugin::SLUG ); ?></th>
-						<th><?php _e( "Deactivation", Plugin::SLUG ); ?></th>
-						<th><span class="screen-reader-text"><?php _e( "Delete", Plugin::SLUG ); ?></span></th>
+						<th class="location-col"><?php _e( "Location", Plugin::SLUG ); ?></th>
+						<th class="status-col"><?php _e( "Status", Plugin::SLUG ); ?></th>
+						<th class="activation-col"><?php _e( "Activation", Plugin::SLUG ); ?></th>
+						<th class="deactivation-col"><?php _e( "Deactivation", Plugin::SLUG ); ?></th>
+						<th class="version-col"><?php _e( "Version", Plugin::SLUG ); ?></th>
+						<th class="delete-col"><span class="screen-reader-text"><?php _e( "Delete", Plugin::SLUG ); ?></span></th>
 					</tr>
 					</thead>
 
@@ -165,6 +166,13 @@ class Single extends View {
 					</a>
 				<?php else: ?>
 					<?php echo $d->format( $this->get_short_df() ); ?>
+				<?php endif; ?>
+			</td>
+			<td>
+				<?php if ( '' === ( $v = $activation->get_version() ) ): ?>
+					<?php _e( "Unknown", Plugin::SLUG ); ?>
+				<?php else: ?>
+					<?php printf( 'v%s', $v ); ?>
 				<?php endif; ?>
 			</td>
 			<td>

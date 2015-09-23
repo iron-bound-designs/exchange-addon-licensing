@@ -100,7 +100,7 @@ class Activation extends Model implements API\Serializable {
 			$this->deactivation = new \DateTime( $data->deactivation );
 		}
 
-		$this->version = $data->version;
+		$this->version = trim( $data->version );
 	}
 
 	/**
