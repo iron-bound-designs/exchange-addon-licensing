@@ -231,8 +231,10 @@ function display_keys_on_transaction_detail( $post, $transaction_product ) {
 		return;
 	}
 
+	$link = '<a href="' . itelic_get_admin_edit_key_link( $key->get_key() ) .'">' . $key->get_key() . '</a>';
+
 	echo "<h4 class='product-license-key'>";
-	printf( __( "License Key: %s", Plugin::SLUG ), $key->get_key() );
+	printf( __( "License Key: %s", Plugin::SLUG ), $link );
 	echo "</h4>";
 }
 
