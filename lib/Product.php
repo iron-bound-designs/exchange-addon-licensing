@@ -87,7 +87,7 @@ class Product {
 
 			$query = new Releases( array(
 				'product'             => $this->get_product()->ID,
-				'status'              => array( Release::STATUS_ACTIVE, Release::STATUS_ARCHIVED ),
+				'status'              => array( Release::STATUS_ACTIVE, Release::STATUS_ARCHIVED, Release::STATUS_PAUSED ),
 				'order'               => array( 'start_date' => 'DESC' ),
 				'items_per_page'      => $num_releases,
 				'sql_calc_found_rows' => false
@@ -101,7 +101,7 @@ class Product {
 			$log = '';
 
 			foreach ( $releases as $release ) {
-				$log .= "<h3>{$release->get_version()} – {$release->get_start_date()}</h3>";
+				$log .= "<h3>{$release->get_version()} – {$release->get_start_date()->format( get_option( 'date_format' ) )}</h3>";
 				$log .= $release->get_changelog();
 				$log .= '<br>';
 			}

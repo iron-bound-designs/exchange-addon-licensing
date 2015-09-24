@@ -9,6 +9,7 @@
 namespace ITELIC\Product\Feature;
 
 use ITELIC\Plugin;
+use ITELIC\Product;
 
 /**
  * Class Base
