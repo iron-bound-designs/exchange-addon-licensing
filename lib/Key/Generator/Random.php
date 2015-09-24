@@ -21,17 +21,20 @@ class Random extends Generator {
 	 *
 	 * @since 1.0
 	 *
-	 * @param array $options
+	 * @param array                    $options Key options
+	 * @param \IT_Exchange_Product     $product
+	 * @param \IT_Exchange_Customer    $customer
+	 * @param \IT_Exchange_Transaction $transaction
 	 */
-	public function __construct( $options = array() ) {
+	public function __construct( $options = array(), $product, $customer, $transaction ) {
 
 		if ( empty( $options['length'] ) ) {
 			throw new \InvalidArgumentException( "Length is required to generate a key based on the random strategy." );
 		}
 
-		$length = $options['length'];
+		$options['length'];
 
-		parent::__construct( $length );
+		parent::__construct( $options, $product, $customer, $transaction );
 	}
 
 	/**
@@ -42,7 +45,7 @@ class Random extends Generator {
 	 * @return string
 	 */
 	public function generate() {
-		return $this->rand_sha1( $this->length );
+		return $this->rand_sha1( $this->options['length'] );
 	}
 
 	/**

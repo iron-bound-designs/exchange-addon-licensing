@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\Key;
+
 use ITELIC\Plugin;
 
 /**
@@ -30,6 +31,17 @@ function register_key_random_type() {
 }
 
 add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_random_type' );
+
+/**
+ * Register the 'list' key type.
+ *
+ * @since 1.0
+ */
+function register_key_list_type() {
+	itelic_register_key_type( 'list', __( "From List", Plugin::SLUG ), 'ITELIC\\Key\\Generator\\From_List' );
+}
+
+add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_list_type' );
 
 /**
  * Fires when key types should be registered.
@@ -94,7 +106,7 @@ add_action( 'it_exchange_itelic_render_key_type_pattern_settings', __NAMESPACE__
 function render_key_type_random_settings( $product, $prefix, $values = array() ) {
 
 	$defaults = array(
-		'length' => ''
+		'length' => '32'
 	);
 	$values   = \ITUtility::merge_defaults( $values, $defaults );
 	?>
@@ -111,3 +123,26 @@ function render_key_type_random_settings( $product, $prefix, $values = array() )
 }
 
 add_action( 'it_exchange_itelic_render_key_type_random_settings', __NAMESPACE__ . '\\render_key_type_random_settings', 10, 3 );
+
+/**
+ * Output the settings form for the 'list' key type.
+ *
+ * @since 1.0
+ *
+ * @param int    $product
+ * @param string $prefix
+ * @param array  $values
+ */
+function render_key_type_list_settings( $product, $prefix, $values = array() ) {
+
+	?>
+	<label for="itelic-key-type-list"><?php _e( "License Keys", Plugin::SLUG ); ?></label>
+	<textarea id="itelic-key-type-list" name="<?php echo $prefix; ?>[keys]"><?php echo $values['keys']; ?></textarea>
+	<p class="description">
+		<?php _e( "Enter in license keys, one per line. If empty, a key will be randomly generated.", Plugin::SLUG ); ?>
+	</p>
+
+	<?php
+}
+
+add_action( 'it_exchange_itelic_render_key_type_list_settings', __NAMESPACE__ . '\\render_key_type_list_settings', 10, 3 );

@@ -368,7 +368,14 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 	public function save_feature( $product_id, $new_value, $options = array() ) {
 
 		$prev_values = it_exchange_get_product_feature( $product_id, $this->slug );
-		$values      = \ITUtility::merge_defaults( $new_value, $prev_values );
+
+		if ( isset( $options['key-type'] ) ) {
+			$prev_values['type'][ $options['key-type'] ] = $new_value;
+
+			$values = $prev_values;
+		} else {
+			$values = \ITUtility::merge_defaults( $new_value, $prev_values );
+		}
 
 		update_post_meta( $product_id, '_it_exchange_itelic_enabled', $values['enabled'] );
 

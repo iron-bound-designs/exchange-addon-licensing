@@ -31,9 +31,12 @@ class Pattern extends Generator {
 	 *
 	 * @since 1.0
 	 *
-	 * @param array $options
+	 * @param array                    $options Key options
+	 * @param \IT_Exchange_Product     $product
+	 * @param \IT_Exchange_Customer    $customer
+	 * @param \IT_Exchange_Transaction $transaction
 	 */
-	public function __construct( $options = array() ) {
+	public function __construct( $options = array(), $product, $customer, $transaction ) {
 
 		if ( empty( $options['pattern'] ) ) {
 			throw new \InvalidArgumentException( "Pattern is required to generate a key based on the pattern strategy." );
@@ -47,7 +50,7 @@ class Pattern extends Generator {
 		$this->char_map['#'] = '!@#$%^&*()+=[]/';
 		$this->char_map['?'] = $this->char_map['X'] . $this->char_map['x'] . $this->char_map['9'] . $this->char_map['#'];
 
-		parent::__construct();
+		parent::__construct( $options, $product, $customer, $transaction );
 	}
 
 	/**

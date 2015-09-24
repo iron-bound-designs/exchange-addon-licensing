@@ -14,25 +14,46 @@ namespace ITELIC\Key;
  * This class should be overridden for each license generation type.
  * It should be instantiated for each license generation.
  *
- * @since 1.0
+ * @since   1.0
  * @package ITELIC\Key\Generator
  */
 abstract class Generator {
 
 	/**
-	 * @var int Length of the key to generate.
+	 * @var array
 	 */
-	protected $length = 64;
+	protected $options = array();
+
+	/**
+	 * @var \IT_Exchange_Product
+	 */
+	protected $product;
+
+	/**
+	 * @var \IT_Exchange_Customer
+	 */
+	protected $customer;
+
+	/**
+	 * @var \IT_Exchange_Transaction
+	 */
+	protected $transaction;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.0
 	 *
-	 * @param int $length Length of the key to generate.
+	 * @param array                    $options Key options
+	 * @param \IT_Exchange_Product     $product
+	 * @param \IT_Exchange_Customer    $customer
+	 * @param \IT_Exchange_Transaction $transaction
 	 */
-	public function __construct( $length = 64 ) {
-		$this->length = absint( $length );
+	public function __construct( $options = array(), $product, $customer, $transaction ) {
+		$this->options     = $options;
+		$this->product     = $product;
+		$this->customer    = $customer;
+		$this->transaction = $transaction;
 	}
 
 	/**

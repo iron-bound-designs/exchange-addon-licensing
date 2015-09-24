@@ -66,14 +66,12 @@ class Factory {
 			/**
 			 * @var Generator $generator
 			 */
-			$generator = new $class( $options );
+			$generator = new $class( $options, $this->product, $this->customer, $this->transaction );
 		} else {
 			throw new \UnexpectedValueException( "Invalid key type $type" );
 		}
 
-		$return = $generator->generate();
-
-		return $return;
+		return $generator->generate();
 	}
 
 	/**
