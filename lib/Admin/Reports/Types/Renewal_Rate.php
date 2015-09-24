@@ -14,10 +14,12 @@ use ITELIC\Admin\Chart\Pie;
 use ITELIC\Admin\Reports\Date_Filterable;
 use ITELIC\Admin\Reports\Product_Filterable;
 use ITELIC\Admin\Reports\Report;
+use ITELIC\Key;
 use ITELIC\Plugin;
 
 /**
  * Class Renewal_Rate
+ *
  * @package ITELIC\Admin\Reports\Types
  */
 class Renewal_Rate extends Report implements Date_Filterable, Product_Filterable {
@@ -119,31 +121,33 @@ class Renewal_Rate extends Report implements Date_Filterable, Product_Filterable
 			$product = '';
 		}
 
+		$expired_status = Key::EXPIRED;
+		$all_where      = " WHERE k.status = '{$expired_status}'";
+
 		if ( $date_type != 'all_time' ) {
 			$renew_where = " WHERE r.renewal_date BETWEEN '$start' AND '$end'";
-			$all_where   = " WHERE k.expires BETWEEN '$start' AND '$end'";
+			$all_where .= " AND k.expires BETWEEN '$start' AND '$end'";
 		} else {
 			$renew_where = '';
-			$all_where   = '';
 		}
 
 		if ( $product ) {
-			$all_where .= "{$all_where}{$product}";
+			$all_where .= $product;
 		}
 
 		$raw_renewed     = "SELECT COUNT(1) as c FROM $rtn r JOIN $ktn k ON (k.lkey = r.lkey$product)$renew_where";
 		$renewed_results = $wpdb->get_results( $raw_renewed );
 		$renewed         = (int) $renewed_results[0]->c;
 
-		$raw_all     = "SELECT COUNT(1) as c FROM $ktn k$all_where";
-		$all_results = $wpdb->get_results( $raw_all );
-		$all         = (int) $all_results[0]->c;
+		$raw_expired     = "SELECT COUNT(1) as c FROM $ktn k$all_where";
+		$expired_results = $wpdb->get_results( $raw_expired );
+		$expired         = (int) $expired_results[0]->c;
 
-		if ( $renewed > $all ) {
+		if ( $expired == 0 ) {
 			$renewed = 100;
 			$expired = 0;
 		} else {
-			$renewed = number_format( $renewed / $all * 100, 0 );
+			$renewed = number_format( $renewed / ( $expired + $renewed ) * 100, 0 );
 			$expired = 100 - $renewed;;
 		}
 
