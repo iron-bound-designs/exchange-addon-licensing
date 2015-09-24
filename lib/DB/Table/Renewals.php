@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\DB\Table;
+
 use IronBound\DB\Table\Table;
 
 /**
@@ -30,7 +31,8 @@ class Renewals implements Table {
 			'lkey'             => '%s',
 			'renewal_date'     => '%s',
 			'key_expired_date' => '%s',
-			'transaction_id'   => '%d'
+			'transaction_id'   => '%d',
+			'revenue'          => '%f'
 		);
 	}
 
@@ -47,7 +49,8 @@ class Renewals implements Table {
 			'lkey'             => '',
 			'renewal_date'     => '',
 			'key_expired_date' => '',
-			'transaction_id'   => 0
+			'transaction_id'   => 0,
+			'revenue'          => '0.00'
 		);
 	}
 
@@ -104,6 +107,7 @@ class Renewals implements Table {
 		renewal_date DATETIME NOT NULL,
 		key_expired_date DATETIME,
 		transaction_id BIGINT(20) NOT NULL,
+		revenue DECIMAL(10,2) NOT NULL,
 		PRIMARY KEY  (id),
 		KEY key_to_dates (lkey,renewal_date,key_expired_date)
 		) {$wpdb->get_charset_collate()};";

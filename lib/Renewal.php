@@ -44,6 +44,11 @@ class Renewal extends Model {
 	private $transaction;
 
 	/**
+	 * @var float
+	 */
+	private $revenue;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param object $data Data from the DB
@@ -65,6 +70,7 @@ class Renewal extends Model {
 		$this->renewal_date     = new \DateTime( $data->renewal_date );
 		$this->key_expired_date = new \DateTime( $data->key_expired_date );
 		$this->transaction      = it_exchange_get_transaction( $data->transaction_id );
+		$this->revenue          = (float) $data->revenue;
 
 		if ( ! $this->transaction instanceof \IT_Exchange_Transaction ) {
 			throw new \InvalidArgumentException( __( "Invalid transaction.", Plugin::SLUG ) );
@@ -102,11 +108,22 @@ class Renewal extends Model {
 			$renewal = new \DateTime();
 		}
 
+		$revenue = '0.00';
+
+		foreach ( it_exchange_get_transaction_products( $transaction ) as $product ) {
+			if ( $product['product_id'] == $key->get_product()->ID ) {
+				$revenue = $product['product_subtotal'];
+
+				break;
+			}
+		}
+
 		$data = array(
 			'lkey'             => $key->get_key(),
 			'renewal_date'     => $renewal->format( "Y-m-d H:i:s" ),
 			'key_expired_date' => $expired->format( "Y-m-d H:i:s" ),
-			'transaction_id'   => $transaction->ID
+			'transaction_id'   => $transaction->ID,
+			'revenue'          => $revenue
 		);
 
 		$db = Manager::make_simple_query_object( 'itelic-renewals' );
@@ -185,6 +202,24 @@ class Renewal extends Model {
 	 */
 	public function get_transaction() {
 		return $this->transaction;
+	}
+
+	/**
+	 * Get the revenue from this renewal.
+	 *
+	 * @since 1.0
+	 *
+	 * @param bool $format
+	 *
+	 * @return float|string
+	 */
+	public function get_revenue( $format = false ) {
+
+		if ( $format ) {
+			return it_exchange_format_price( $this->revenue );
+		}
+
+		return $this->revenue;
 	}
 
 	/**
