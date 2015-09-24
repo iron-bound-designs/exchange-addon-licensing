@@ -517,7 +517,7 @@ abstract class Report {
 		$translated = array();
 
 		foreach ( $results as $result ) {
-			$translated[ $result->p ] = $result->c;
+			$translated[ $result->d ] = $result->c;
 		}
 
 		return $translated;

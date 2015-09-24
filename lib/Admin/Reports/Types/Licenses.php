@@ -79,7 +79,7 @@ class Licenses extends Report {
 		$per   = $sql['per'];
 
 		if ( $per ) {
-			$per .= ' AS p, ';
+			$per .= ' AS d, ';
 		}
 
 		if ( $group ) {

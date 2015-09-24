@@ -27,6 +27,7 @@
 .chart-js-legend ul {
 	float: right;
 	margin-right: 1em;
+	margin-bottom: 0;
 }
 
 .chart-js-legend li {
