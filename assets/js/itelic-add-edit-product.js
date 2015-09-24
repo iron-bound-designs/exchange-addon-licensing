@@ -20,15 +20,6 @@ jQuery(document).ready(function ($) {
 	});
 
 	/**
-	 * When the cancel button is clicked, ignore latest changes.
-	 */
-	$(".cancel-update-changelog").click(function (e) {
-		e.preventDefault();
-
-		tb_remove()
-	});
-
-	/**
 	 * When the enable checkbox is checked, show the configuration.
 	 */
 	$("#itelic-enable").click(function () {

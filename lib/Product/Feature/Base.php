@@ -8,6 +8,7 @@
 
 namespace ITELIC\Product\Feature;
 
+use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Plugin;
 use ITELIC\Product;
 
@@ -74,6 +75,8 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 		$hidden          = $data['enabled'] ? '' : ' hide-if-js';
 		$hidden_variants = $data['enabled_variant_activations'] ? '' : ' hide-if-js';
 		$hidden_simple   = $hidden_variants ? '' : ' hide-if-js';
+
+		$version_read = empty( $data['version'] ) ? '' : 'readonly';
 		?>
 
 		<p><?php echo $this->description; ?></p>
@@ -103,10 +106,24 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 
 			<p class="description"><?php _e( "Select a file to be used for automatic updates.", Plugin::SLUG ); ?></p>
 
-			<label for="itelic-version"><?php _e( "Current Version", Plugin::SLUG ); ?></label>
-			<input type="text" id="itelic-version" name="itelic[version]" value="<?php echo esc_attr( $data['version'] ); ?>">
+			<label for="itelic-version">
 
-			<p class="description"><?php _e( "Update this whenever you want to push out an update.", Plugin::SLUG ); ?></p>
+				<?php if ( $version_read ): ?>
+					<?php _e( "Current Version", Plugin::SLUG ); ?>
+				<?php else: ?>
+					<?php _e( "Initial Version", Plugin::SLUG ); ?>
+				<?php endif; ?>
+			</label>
+			<input type="text" id="itelic-version" name="itelic[version]" <?php echo $version_read; ?> value="<?php echo esc_attr( $data['version'] ); ?>">
+
+			<p class="description">
+				<?php if ( ! $version_read ): ?>
+					<?php _e( "Set the initial version of this product.", Plugin::SLUG ); ?>&nbsp;
+				<?php else:; ?>
+					<?php printf( __( 'Create a new release from the <a href="%s">releases</a> tab.', Plugin::SLUG ),
+						add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'releases' ) ) ); ?>
+				<?php endif; ?>
+			</p>
 
 			<label for="itelic-changelog"><?php _e( "Changelog", Plugin::SLUG ); ?></label>
 			<button id="view-changelog" class="button"><?php _e( "View Changelog", Plugin::SLUG ); ?></button>
@@ -319,11 +336,17 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 			return;
 		}
 
+		$prev = it_exchange_get_product_feature( $product_id, $this->slug );
+
 		$data = $_POST['itelic'];
 
 		$data['enabled']                     = isset( $data['enabled'] ) ? it_exchange_str_true( $data['enabled'] ) : false;
 		$data['enabled_variant_activations'] = isset( $data['enabled_variant_activations'] ) ? it_exchange_str_true( $data['enabled_variant_activations'] ) : false;
 		$data['online-software']             = isset( $data['online-software'] ) ? it_exchange_str_true( $data['online-software'] ) : false;
+
+		if ( ! empty( $prev['version'] ) ) {
+			unset( $data['version'] );
+		}
 
 		it_exchange_update_product_feature( $product_id, $this->slug, $data );
 	}
