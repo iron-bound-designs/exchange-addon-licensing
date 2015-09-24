@@ -8,12 +8,15 @@
 
 namespace ITELIC\Admin\Reports\View;
 
+use ITELIC\Admin\Reports\Date_Filterable;
+use ITELIC\Admin\Reports\Product_Filterable;
 use ITELIC\Admin\Reports\Report;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 
 /**
  * Class SingleV
+ *
  * @package ITELIC\Admin\Reports\View
  */
 class SingleV extends View {
@@ -46,6 +49,8 @@ class SingleV extends View {
 		$selected_type    = isset( $_GET['date_type'] ) ? $_GET['date_type'] : 'this_year';
 		$selected_product = isset( $_GET['product'] ) ? absint( $_GET['product'] ) : 0;
 		$chart            = $this->report->get_chart( $selected_type, $selected_product );
+
+		$show_button = false;
 		?>
 
 		<form method="GET" class="filter-form">
@@ -55,39 +60,69 @@ class SingleV extends View {
 			<input type="hidden" name="view" value="<?php echo $_GET['view']; ?>">
 			<input type="hidden" name="report" value="<?php echo $_GET['report']; ?>">
 
-			<label for="date-type" class="screen-reader-text"><?php _e( "Select a date range.", Plugin::SLUG ); ?></label>
-			<select name="date_type" id="date-type">
+			<?php if ( $this->report instanceof Date_Filterable ): ?>
 
-				<?php foreach ( $this->report->get_date_types() as $type => $label ): ?>
+				<label for="date-type" class="screen-reader-text">
+					<?php _e( "Select a date range.", Plugin::SLUG ); ?>
+				</label>
 
-					<option value="<?php echo $type; ?>" <?php selected( $type, $selected_type ) ?>>
-						<?php echo $label; ?>
+				<select name="date_type" id="date-type">
+
+					<?php foreach ( $this->report->get_date_types() as $type => $label ): ?>
+
+						<option value="<?php echo $type; ?>" <?php selected( $type, $selected_type ) ?>>
+							<?php echo $label; ?>
+						</option>
+
+					<?php endforeach; ?>
+				</select>
+
+				<?php $show_button = true; ?>
+			<?php endif; ?>
+
+			<?php if ( $this->report instanceof Product_Filterable ): ?>
+
+				<label for="product" class="screen-reader-text">
+					<?php _e( "Select a product.", Plugin::SLUG ); ?>
+				</label>
+				<select name="product" id="product" style="width: 150px">
+
+					<option value="">
+						<?php if ( $this->report->is_product_required() ): ?>
+							<?php _e( "Select a Product", Plugin::SLUG ); ?>
+						<?php else: ?>
+							<?php _e( "All Products", Plugin::SLUG ); ?>
+						<?php endif; ?>
 					</option>
 
-				<?php endforeach; ?>
-			</select>
+					<?php foreach ( itelic_get_products_with_licensing_enabled() as $product ): ?>
 
-			<label for="product" class="screen-reader-text"><?php _e( "Select a product.", Plugin::SLUG ); ?></label>
-			<select name="product" id="product" style="width: 150px">
+						<option value="<?php echo $product->ID; ?>" <?php selected( $product->ID, $selected_product ) ?>>
+							<?php echo $product->post_title; ?>
+						</option>
 
-				<option value=""><?php _e( "All Products", Plugin::SLUG ); ?></option>
+					<?php endforeach; ?>
+				</select>
 
-				<?php foreach ( itelic_get_products_with_licensing_enabled() as $product ): ?>
+				<?php $show_button = true; ?>
 
-					<option value="<?php echo $product->ID; ?>" <?php selected( $product->ID, $selected_product ) ?>>
-						<?php echo $product->post_title; ?>
-					</option>
+			<?php endif; ?>
 
-				<?php endforeach; ?>
-			</select>
-
-			<?php submit_button( __( "Filter", Plugin::SLUG ), 'button', 'submit', false ); ?>
+			<?php if ( $show_button ): ?>
+				<?php submit_button( __( "Filter", Plugin::SLUG ), 'button', 'submit', false ); ?>
+			<?php endif; ?>
 
 		</form>
 
-		<?php if ( ! $chart ) {
-			return;
-		} ?>
+		<?php if ( ! $chart && $this->report instanceof Product_Filterable && $this->report->is_product_required() && ! $selected_product ): ?>
+			<?php $this->notice( __( "You must select a product to view this report.", Plugin::SLUG ), View::NOTICE_INFO ); ?>
+			<?php return; ?>
+		<?php endif; ?>
+
+		<?php if ( ! $chart || ! $chart->get_total_items() ): ?>
+			<?php $this->notice( __( "No data exists for this combination.", Plugin::SLUG ), View::NOTICE_WARNING ); ?>
+			<?php return; ?>
+		<?php endif; ?>
 
 		<div class="report report-<?php echo $this->report->get_slug(); ?>">
 

@@ -12,6 +12,8 @@ use IronBound\DB\Manager;
 use ITELIC\Activation;
 use ITELIC\Admin\Chart\Base as Chart;
 use ITELIC\Admin\Chart\Pie;
+use ITELIC\Admin\Reports\Date_Filterable;
+use ITELIC\Admin\Reports\Product_Filterable;
 use ITELIC\Admin\Reports\Report;
 use ITELIC\Plugin;
 
@@ -19,7 +21,7 @@ use ITELIC\Plugin;
  * Class Installed_Versions
  * @package ITELIC\Admin\Reports\Types
  */
-class Installed_Versions extends Report {
+class Installed_Versions extends Report implements Date_Filterable, Product_Filterable {
 
 	/**
 	 * Get the title of this report type.
@@ -55,6 +57,17 @@ class Installed_Versions extends Report {
 			"View the five most popular versions of an installed product.",
 			Plugin::SLUG
 		);
+	}
+
+	/**
+	 * Return boolean true if a product is required to view this report.
+	 *
+	 * @since 1.0
+	 *
+	 * @return bool
+	 */
+	public function is_product_required() {
+		return true;
 	}
 
 	/**

@@ -11,6 +11,8 @@ namespace ITELIC\Admin\Reports\Types;
 use IronBound\DB\Manager;
 use ITELIC\Admin\Chart\Base;
 use ITELIC\Admin\Chart\Line;
+use ITELIC\Admin\Reports\Date_Filterable;
+use ITELIC\Admin\Reports\Product_Filterable;
 use ITELIC\Admin\Reports\Report;
 use ITELIC\Plugin;
 
@@ -18,7 +20,7 @@ use ITELIC\Plugin;
  * Class Renewals_Over_Time
  * @package ITELIC\Admin\Reports\Types
  */
-class Renewals_Over_Time extends Report {
+class Renewals_Over_Time extends Report implements Date_Filterable, Product_Filterable {
 
 	/**
 	 * Get the title of this report type.
@@ -54,6 +56,17 @@ class Renewals_Over_Time extends Report {
 			"Chart renewals for all products, or a specific product, over time.",
 			Plugin::SLUG
 		);
+	}
+
+	/**
+	 * Return boolean true if a product is required to view this report.
+	 *
+	 * @since 1.0
+	 *
+	 * @return bool
+	 */
+	public function is_product_required() {
+		return false;
 	}
 
 	/**

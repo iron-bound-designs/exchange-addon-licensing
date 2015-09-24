@@ -11,6 +11,8 @@ namespace ITELIC\Admin\Reports\Types;
 use IronBound\DB\Manager;
 use ITELIC\Admin\Chart\Base;
 use ITELIC\Admin\Chart\Pie;
+use ITELIC\Admin\Reports\Date_Filterable;
+use ITELIC\Admin\Reports\Product_Filterable;
 use ITELIC\Admin\Reports\Report;
 use ITELIC\Plugin;
 
@@ -18,7 +20,7 @@ use ITELIC\Plugin;
  * Class Renewal_Rate
  * @package ITELIC\Admin\Reports\Types
  */
-class Renewal_Rate extends Report {
+class Renewal_Rate extends Report implements Date_Filterable, Product_Filterable {
 
 	/**
 	 * Get the title of this report type.
@@ -71,6 +73,17 @@ class Renewal_Rate extends Report {
 		$types['all_time'] = __( "All Time", Plugin::SLUG );
 
 		return $types;
+	}
+
+	/**
+	 * Return boolean true if a product is required to view this report.
+	 *
+	 * @since 1.0
+	 *
+	 * @return bool
+	 */
+	public function is_product_required() {
+		return false;
 	}
 
 	/**

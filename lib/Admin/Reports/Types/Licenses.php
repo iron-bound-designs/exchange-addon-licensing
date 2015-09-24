@@ -11,6 +11,8 @@ namespace ITELIC\Admin\Reports\Types;
 use IronBound\DB\Manager;
 use ITELIC\Admin\Chart\Base as Chart;
 use ITELIC\Admin\Chart\Line;
+use ITELIC\Admin\Reports\Date_Filterable;
+use ITELIC\Admin\Reports\Product_Filterable;
 use ITELIC\Admin\Reports\Report;
 use ITELIC\Key;
 use ITELIC\Plugin;
@@ -19,7 +21,7 @@ use ITELIC\Plugin;
  * Class Licenses
  * @package ITELIC\Admin\Reports\Types
  */
-class Licenses extends Report {
+class Licenses extends Report implements Date_Filterable, Product_Filterable {
 
 	/**
 	 * Get the title of this report type.
@@ -55,6 +57,17 @@ class Licenses extends Report {
 			"View the number of licenses created over time, segmented by their status.",
 			Plugin::SLUG
 		);
+	}
+
+	/**
+	 * Return boolean true if a product is required to view this report.
+	 *
+	 * @since 1.0
+	 *
+	 * @return bool
+	 */
+	public function is_product_required() {
+		return false;
 	}
 
 	/**
