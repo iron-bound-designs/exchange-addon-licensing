@@ -261,6 +261,8 @@ class Key extends Model implements API\Serializable {
 
 		$this->extend();
 
+		$this->set_status( self::ACTIVE );
+
 		return $record;
 	}
 
