@@ -63,10 +63,11 @@ class Licenses extends Report {
 	 * @since 1.0
 	 *
 	 * @param string $date_type
+	 * @param int    $product
 	 *
 	 * @return Chart
 	 */
-	public function get_chart( $date_type = 'this_year' ) {
+	public function get_chart( $date_type = 'this_year', $product = 0 ) {
 
 		$start = date( 'Y-m-d H:i:s', $this->convert_date( $date_type ) );
 		$end   = date( 'Y-m-d H:i:s', $this->convert_date( $date_type, true ) );
@@ -93,7 +94,16 @@ class Licenses extends Report {
 		$ktn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
 		$ptn = $wpdb->posts;
 
-		$raw = "SELECT {$per}COUNT(1) as c FROM $ktn k JOIN $ptn p ON (k.transaction_id = p.ID and p.post_date BETWEEN %s and %s) WHERE k.status = %s $group";
+		$raw = "SELECT {$per}COUNT(1) as c FROM $ktn k JOIN $ptn p ON (k.transaction_id = p.ID and p.post_date BETWEEN %s and %s) WHERE k.status = %s ";
+
+		if ( $product ) {
+
+			$product = absint( $product );
+
+			$raw .= "AND product = '$product' ";
+		}
+
+		$raw .= $group;
 
 		$active   = $wpdb->get_results( $wpdb->prepare( $raw, $start, $end, Key::ACTIVE ) );
 		$expired  = $wpdb->get_results( $wpdb->prepare( $raw, $start, $end, Key::EXPIRED ) );

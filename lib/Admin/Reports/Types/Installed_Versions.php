@@ -60,10 +60,11 @@ class Installed_Versions extends Report {
 	 * @since 1.0
 	 *
 	 * @param string $date_type
+	 * @param int    $product
 	 *
 	 * @return Chart
 	 */
-	public function get_chart( $date_type = 'this_year' ) {
+	public function get_chart( $date_type = 'this_year', $product = 0 ) {
 		// TODO: Implement get_chart() method.
 	}
 }

@@ -11,6 +11,7 @@ namespace ITELIC\Admin\Reports\Controller;
 use ITELIC\Admin\Reports\Controller;
 use ITELIC\Admin\Reports\Dispatch;
 use ITELIC\Admin\Reports\View\SingleV;
+use ITELIC\Admin\Tab\Dispatch as Tab_Dispatch;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 
@@ -28,6 +29,11 @@ class SingleC extends Controller {
 	public function render() {
 
 		$report = Dispatch::get_report( $_GET['report'] );
+
+		if ( is_null( $report ) ) {
+			wp_redirect( Tab_Dispatch::get_tab_link( 'reports' ) );
+			exit;
+		}
 
 		$this->enqueue();
 

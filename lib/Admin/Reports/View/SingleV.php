@@ -43,7 +43,9 @@ class SingleV extends View {
 			return;
 		}
 
-		$selected_type = isset( $_GET['date_type'] ) ? $_GET['date_type'] : 'this_year';
+		$selected_type    = isset( $_GET['date_type'] ) ? $_GET['date_type'] : 'this_year';
+		$selected_product = isset( $_GET['product'] ) ? absint( $_GET['product'] ) : 0;
+		$chart            = $this->report->get_chart( $selected_type, $selected_product );
 		?>
 
 		<form method="GET" class="filter-form">
@@ -65,9 +67,27 @@ class SingleV extends View {
 				<?php endforeach; ?>
 			</select>
 
+			<label for="product" class="screen-reader-text"><?php _e( "Select a product.", Plugin::SLUG ); ?></label>
+			<select name="product" id="product" style="width: 150px">
+
+				<option value=""><?php _e( "All Products", Plugin::SLUG ); ?></option>
+
+				<?php foreach ( itelic_get_products_with_licensing_enabled() as $product ): ?>
+
+					<option value="<?php echo $product->ID; ?>" <?php selected( $product->ID, $selected_product ) ?>>
+						<?php echo $product->post_title; ?>
+					</option>
+
+				<?php endforeach; ?>
+			</select>
+
 			<?php submit_button( __( "Filter", Plugin::SLUG ), 'button', 'submit', false ); ?>
 
 		</form>
+
+		<?php if ( ! $chart ) {
+			return;
+		} ?>
 
 		<div class="report report-<?php echo $this->report->get_slug(); ?>">
 
@@ -78,7 +98,7 @@ class SingleV extends View {
 			</p>
 
 			<div class="chart">
-				<?php $this->report->get_chart( $selected_type )->graph(); ?>
+				<?php $chart->graph(); ?>
 			</div>
 
 			<div id="legend-<?php echo $this->report->get_slug(); ?>" class="chart-js-legend"></div>

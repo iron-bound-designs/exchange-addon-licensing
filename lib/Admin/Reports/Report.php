@@ -624,8 +624,9 @@ abstract class Report {
 	 * @since 1.0
 	 *
 	 * @param string $date_type
+	 * @param int    $product
 	 *
 	 * @return Chart
 	 */
-	abstract public function get_chart( $date_type = 'this_year' );
+	abstract public function get_chart( $date_type = 'this_year', $product = 0 );
 }
