@@ -232,7 +232,13 @@ class Release extends Model {
 
 		if ( $release ) {
 
-			self::do_activation( $product, $file, $version );
+			if ( $status == self::STATUS_ACTIVE ) {
+				self::do_activation( $product, $file, $version );
+			}
+
+			if ( in_array( $status, array( self::STATUS_ACTIVE, self::STATUS_ARCHIVED ) ) ) {
+				wp_cache_delete( $product->ID, 'itelic-changelog' );
+			}
 
 			Cache::add( $release );
 		}
@@ -293,6 +299,8 @@ class Release extends Model {
 
 		self::do_activation( $this->get_product(), $this->get_download(), $this->get_version() );
 
+		wp_cache_delete( $this->get_product()->ID, 'itelic-changelog' );
+
 		/**
 		 * Fires when a release is activated.
 		 *
@@ -332,6 +340,8 @@ class Release extends Model {
 		it_exchange_update_product_feature( $this->get_product()->ID, 'licensing', array(
 			'version' => $prev_version
 		) );
+
+		wp_cache_delete( $this->get_product()->ID, 'itelic-changelog' );
 
 		/**
 		 * Fires when a release is paused.
@@ -545,6 +555,8 @@ class Release extends Model {
 		} else {
 			$this->changelog = $changelog;
 		}
+
+		wp_cache_delete( $this->get_product()->ID, 'itelic-changelog' );
 
 		$this->update( 'changelog', $this->changelog );
 	}
