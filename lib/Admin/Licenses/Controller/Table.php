@@ -322,7 +322,7 @@ class Table extends \WP_List_Table {
 
 		<select name="prod" id="filter-by-product" style="width: 150px;">
 
-			<option value="-1"><?php _e( "All products", Plugin::SLUG ); ?></option>
+			<option value=""><?php _e( "All products", Plugin::SLUG ); ?></option>
 
 			<?php foreach ( $this->products as $product ): ?>
 
