@@ -91,7 +91,7 @@ class Renew_Key extends Base {
 
 		<form method="POST" class="it-exchange-sw-purchase-options it-exchange-sw-itelic-renew">
 			<input type="hidden" name="it-exchange-renew-product" value="<?php echo esc_attr( $product_id ); ?>">
-			<?php wp_nonce_field( 'itelic-renew-' . $product_id ); ?>
+			<?php wp_nonce_field( 'itelic-renew-' . $product_id, 'nonce' ); ?>
 			<input type="submit" value="<?php esc_attr_e( "Renew", Plugin::SLUG ); ?>" class="itelic-renew-button" style="width:100%;">
 		</form>
 
@@ -105,13 +105,13 @@ class Renew_Key extends Base {
 	 */
 	public function enter_renewal_process_sw() {
 
-		if ( ! isset( $_GET['sw-product'] ) || ! isset( $_GET['_wpnonce'] ) ) {
+		if ( ! isset( $_GET['sw-product'] ) || ! isset( $_GET['nonce'] ) ) {
 			return;
 		}
 
 		$product = $_GET['sw-product'];
 
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], "itelic-renew-$product" ) ) {
+		if ( ! wp_verify_nonce( $_GET['nonce'], "itelic-renew-$product" ) ) {
 			it_exchange_add_message( 'error', __( "Something went wrong. Please refresh and try again.", Plugin::SLUG ) );
 
 			return;

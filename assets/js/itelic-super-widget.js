@@ -12,18 +12,18 @@ jQuery(document).ready(function ($) {
 
 		var quantity = 1;
 		var product = $('input[name="it-exchange-renew-product"]').val();
-		var additionalFields = $(':input', this).serializeArray();
-
+		var additionalFields = $('input', this).serializeArray();
 		var additionalFieldsString = '';
 
 		/**
 		 * Grab any additional fields from the form.
 		 */
 		$.each(additionalFields, function (index, field) {
+
 			if (typeof field.name != 'undefined' && typeof field.value != 'undefined' &&
 				field.name != 'it-exchange-action' && field.name != 'it-exchange-buy-now' &&
 				field.name != 'it-exchange-renew-product' && field.name != '_wp_http_referer') {
-				additionalFieldsString = '&' + field.name + '=' + field.value;
+				additionalFieldsString += '&' + field.name + '=' + field.value;
 			}
 		});
 
