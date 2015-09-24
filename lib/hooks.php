@@ -13,6 +13,7 @@ use IronBound\WP_Notifications\Queue\Storage\Options;
 use IronBound\WP_Notifications\Queue\WP_Cron;
 use ITELIC\Purchase_Requirement\Base as Purchase_Requirement;
 use ITELIC\Purchase_Requirement\Renew_Key;
+use ITELIC_API\Query\Keys;
 
 /**
  * When a new transaction is created, generate necessary license keys if applicable.
@@ -93,6 +94,31 @@ add_action( 'init', 'ITELIC\setup_notifications' );
 /* --------------------------------------------
 ================== Renewals ===================
 ----------------------------------------------- */
+
+/**
+ * Automatically set the licenses expiry status when their expiry date has passed.
+ *
+ * @since 1.0
+ */
+function auto_expire_licenses() {
+
+	$query = new Keys( array(
+		'expires' => array(
+			'before' => current_time( 'mysql' )
+		)
+	) );
+
+	/**
+	 * @var Key[] $keys
+	 */
+	$keys = $query->get_results();
+
+	foreach ( $keys as $key ) {
+		$key->expire();
+	}
+}
+
+add_action( 'it_exchange_itelic_daily_schedule', 'ITELIC\auto_expire_licenses' );
 
 $purchase_req = new Renew_Key( 'itelic-renew-product', array(
 	'priority'               => 2,
@@ -231,7 +257,7 @@ function display_keys_on_transaction_detail( $post, $transaction_product ) {
 		return;
 	}
 
-	$link = '<a href="' . itelic_get_admin_edit_key_link( $key->get_key() ) .'">' . $key->get_key() . '</a>';
+	$link = '<a href="' . itelic_get_admin_edit_key_link( $key->get_key() ) . '">' . $key->get_key() . '</a>';
 
 	echo "<h4 class='product-license-key'>";
 	printf( __( "License Key: %s", Plugin::SLUG ), $link );

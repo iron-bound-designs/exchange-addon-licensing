@@ -267,6 +267,39 @@ class Key extends Model implements API\Serializable {
 	}
 
 	/**
+	 * Expire this license and all active activation records.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \DateTime $date
+	 */
+	public function expire( \DateTime $date = null ) {
+
+		if ( $date === null ) {
+			$date = new \DateTime();
+		}
+
+		if ( $this->get_status() !== self::EXPIRED ) {
+			$this->set_status( self::EXPIRED );
+		}
+
+		$this->set_expires( $date );
+
+		foreach ( $this->get_activations( Activation::ACTIVE ) as $activation ) {
+			$activation->expire();
+		}
+
+		/**
+		 * Fires when a license key is expired.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Key $this
+		 */
+		do_action( 'itelic_expire_license', $this );
+	}
+
+	/**
 	 * Get all activations of this license key.
 	 *
 	 * @since 1.0

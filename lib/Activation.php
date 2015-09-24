@@ -234,6 +234,24 @@ class Activation extends Model implements API\Serializable {
 	}
 
 	/**
+	 * Expire an activation record.
+	 *
+	 * @since 1.0
+	 */
+	public function expire() {
+		$this->set_status( self::EXPIRED );
+
+		/**
+		 * Fires when an activation is expired.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation $this
+		 */
+		do_action( 'itelic_expire_activation', $this );
+	}
+
+	/**
 	 * Get the unique pk for this record.
 	 *
 	 * @since 1.0
