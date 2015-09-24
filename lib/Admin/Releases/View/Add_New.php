@@ -185,9 +185,12 @@ class Add_New extends View {
 	 */
 	protected function render_whats_changed() {
 
-		?><label for="whats-changed"><?php _e( "What's Changed", Plugin::SLUG ); ?></label> <?php
+		?><label for="whats-changed">
+		<?php _e( "What's Changed", Plugin::SLUG ); ?>
+		<span class="tip" title="<?php _e( "Don't include the version number or date, they'll be added automatically.", Plugin::SLUG ) ?>">i</span>
+		</label>
 
-		wp_editor( '', 'whats-changed', array(
+		<?php wp_editor( '', 'whats-changed', array(
 			'media_buttons' => false,
 			'teeny'         => true,
 			'textarea_rows' => 5,

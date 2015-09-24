@@ -203,3 +203,8 @@
 .buttons input:first-of-type {
 	margin-left: 0;
 }
+
+.tip {
+	margin-top: 0;
+	font-weight: 600;
+}

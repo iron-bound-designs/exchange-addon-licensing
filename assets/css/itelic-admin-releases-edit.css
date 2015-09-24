@@ -104,6 +104,11 @@
 	margin-right: 5px;
 }
 
+.tip {
+	font-weight: 600;
+	margin-top: 0;
+}
+
 /** -----------------------------------------------------:[ release status ]:---------- */
 
 #release-details .header-block {

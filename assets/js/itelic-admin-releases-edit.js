@@ -27,6 +27,8 @@
 
 	var type_span = $(".type h3");
 
+	$('.tip').tooltip();
+
 	/**
 	 * When the notify button next to the upgrade progress bar is clicked
 	 * launch the notifications editor, and hide the main views. This leaves

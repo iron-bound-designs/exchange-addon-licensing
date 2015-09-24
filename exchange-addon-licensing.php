@@ -131,7 +131,8 @@ class Plugin {
 
 		wp_register_style( 'itelic-admin-releases-new', self::$url . 'assets/css/itelic-admin-releases-new.css', array(), self::VERSION );
 		wp_register_script( 'itelic-admin-releases-new', self::$url . 'assets/js/itelic-admin-releases-new.js', array(
-			'jquery-effects-slide'
+			'jquery-effects-slide',
+			'jquery-ui-tooltip'
 		), self::VERSION );
 
 		wp_register_style( 'itelic-admin-releases-edit', self::$url . 'assets/css/itelic-admin-releases-edit.css', array(
@@ -140,7 +141,8 @@ class Plugin {
 		wp_register_script( 'itelic-admin-releases-edit', self::$url . 'assets/js/itelic-admin-releases-edit.js', array(
 			'jquery-effects-slide',
 			'jqueryui-editable',
-			'jquery-blockUI'
+			'jquery-blockUI',
+			'jquery-ui-tooltip'
 		), self::VERSION );
 
 		wp_register_style( 'itelic-admin-reports-list', self::$url . 'assets/css/itelic-admin-reports-list.css', array(), self::VERSION );

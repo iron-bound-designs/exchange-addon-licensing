@@ -82,6 +82,8 @@
 		}
 	});
 
+	$('.tip').tooltip();
+
 	/**
 	 * Disable the save buttons.
 	 *

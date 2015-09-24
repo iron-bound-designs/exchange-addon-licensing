@@ -163,7 +163,9 @@ class Single extends View {
 
 		<div class="spacing-wrapper bottom-border changelog-block">
 
-			<h4><?php _e( "What's Changed", Plugin::SLUG ); ?></h4>
+			<h4><?php _e( "What's Changed", Plugin::SLUG ); ?>
+				<span class="tip" title="<?php _e( "Don't include the version number or date, they'll be added automatically.", Plugin::SLUG ) ?>">i</span>
+			</h4>
 
 			<div class="whats-changed" title="<?php _e( "Click to Edit", Plugin::SLUG ); ?>">
 				<?php echo $this->release->get_changelog(); ?>
