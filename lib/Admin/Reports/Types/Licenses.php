@@ -52,7 +52,7 @@ class Licenses extends Report {
 	 */
 	public function get_description() {
 		return __(
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod pharetra felis sit amet faucibus. ",
+			"View the number of licenses created over time, segmented by their status.",
 			Plugin::SLUG
 		);
 	}
