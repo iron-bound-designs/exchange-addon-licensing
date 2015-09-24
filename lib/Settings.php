@@ -160,7 +160,10 @@ class Settings {
 				<?php $form->add_check_box( 'sell-online-software' ); ?>
 				<label for="sell-online-software"><?php _e( "Enable Online Software Tools?", Plugin::SLUG ); ?></label>
 
-				<p class="description"><?php _e( "Check this if you sell at least one software product that is tied to URLs.", Plugin::SLUG ); ?></p>
+				<p class="description">
+					<?php _e( "Check this if you sell at least one software product that is tied to URLs, such as WordPress plugins or themes.",
+						Plugin::SLUG ); ?>
+				</p>
 			</div>
 
 			<div class="enable-remote-activation-container">
