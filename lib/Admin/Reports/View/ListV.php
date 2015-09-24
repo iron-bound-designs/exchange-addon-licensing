@@ -61,7 +61,7 @@ class ListV extends View {
 	protected function render_report( Report $report ) {
 
 		$link = add_query_arg( array(
-			'view'   => 'report',
+			'view'   => 'single',
 			'report' => $report->get_slug()
 		), Dispatch::get_tab_link( 'reports' ) );
 

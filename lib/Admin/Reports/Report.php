@@ -420,6 +420,110 @@ abstract class Report {
 	}
 
 	/**
+	 * Get the SQL group by clause.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $group_by
+	 * @param string $column
+	 *
+	 * @return array
+	 */
+	protected static function get_group_by( $group_by, $column ) {
+
+		// the appended YEAR prevents conflicts from overlapping
+		switch ( $group_by ) {
+			case 'hour':
+				$per   = "HOUR($column)";
+				$group = "HOUR($column), DAY($column), MONTH($column), YEAR($column)";
+				break;
+			case 'weekday':
+				$per   = "DAYOFWEEK($column)";
+				$group = "DAYOFWEEK($column), MONTH($column), YEAR($column)";
+				break;
+			case 'day':
+				$per   = "DAY($column)";
+				$group = "DAY($column), MONTH($column), YEAR($column)";
+				break;
+			case 'week':
+				$per   = "WEEK($column)";
+				$group = "WEEK($column), YEAR($column)";
+				break;
+			case 'month':
+				$per   = "MONTH($column)";
+				$group = "MONTH($column), YEAR($column)";
+				break;
+			case 'quarter':
+				$per   = "QUARTER($column)";
+				$group = "QUARTER($column), YEAR($column)";
+				break;
+			default:
+				$per   = '';
+				$group = '';
+		}
+
+		return array(
+			'per'   => $per,
+			'group' => $group
+		);
+	}
+
+	/**
+	 * Get the grouping for a certain date type.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $date_type
+	 *
+	 * @return string
+	 */
+	protected static function get_grouping_for_date_type( $date_type ) {
+
+		switch ( $date_type ) {
+
+			case 'today':
+			case 'yesterday':
+				return 'hour';
+			case 'this_week':
+			case 'last_week':
+				return 'weekday';
+			case 'this_month':
+			case 'last_month':
+				return 'day';
+			case 'this_quarter':
+			case 'last_quarter':
+				return 'month';
+			case 'this_year':
+			case 'last_year':
+				return 'month';
+			case 'fiscal_year':
+				return 'quarter';
+		}
+
+		throw new \InvalidArgumentException( "Invalid date type." );
+	}
+
+	/**
+	 * Translate results into period based array.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $results
+	 *
+	 * @return array
+	 */
+	protected static function translate_results( $results ) {
+
+		$translated = array();
+
+		foreach ( $results as $result ) {
+			$translated[ $result->p ] = $result->c;
+		}
+
+		return $translated;
+	}
+
+	/**
 	 * Fill the gaps in a data set with zeroes.
 	 *
 	 * @since 1.0

@@ -199,7 +199,7 @@ abstract class Base {
 						var chart = new Chart(ctx).<?php echo $this->type; ?>(data, options);
 
 						<?php if ( $this->show_legend ): ?>
-						$("<?php echo $this->show_legend; ?>").innerHTML = chart.generateLegend();
+						$("<?php echo $this->show_legend; ?>").html( chart.generateLegend() );
 						<?php endif; ?>
 					});
 				<?php endif; ?>
