@@ -20,6 +20,11 @@ label[for="itelic-edit-changelog"] {
 	min-height: 100px;
 }
 
+.changelog-wrap ul {
+	list-style: square;
+	margin-left: 30px;
+}
+
 #TB_ajaxContent {
 	height: 100% !important;
 }

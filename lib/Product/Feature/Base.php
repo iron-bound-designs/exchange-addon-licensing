@@ -109,9 +109,8 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 			<p class="description"><?php _e( "Update this whenever you want to push out an update.", Plugin::SLUG ); ?></p>
 
 			<label for="itelic-changelog"><?php _e( "Changelog", Plugin::SLUG ); ?></label>
-			<textarea id="itelic-changelog" class="thickbox" name="itelic[changelog]" readonly><?php echo $data['changelog']; ?></textarea>
-
-			<p class="description"><?php _e( "You should update this whenever you update your software.", Plugin::SLUG ); ?></p>
+			<button id="view-changelog" class="button"><?php _e( "View Changelog", Plugin::SLUG ); ?></button>
+			<p class="description"><?php _e( "View the compiled changelog from the last 10 releases.", Plugin::SLUG ); ?></p>
 
 			<label for="itelic-key-type"><?php _e( "Key Type", Plugin::SLUG ); ?></label>
 			<select id="itelic-key-type" name="itelic[key-type]">
@@ -288,22 +287,18 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 	 * @since 1.0
 	 */
 	public function changelog_popup() {
+
+		if ( isset( $_GET['post'] ) ) {
+			$ID = $_GET['post'];
+		} else {
+			$ID = false;
+		}
+
 		?>
 
 		<div id="itelic-edit-changelog-popup" style="display: none">
-			<div class="wrap">
-				<p><?php _e( "Select a piece of data to insert" ); ?></p>
-
-				<label for="itelic-edit-changelog"><?php _e( "Changelog", Plugin::SLUG ); ?></label>
-				<textarea id="itelic-edit-changelog"></textarea>
-			</div>
-
-			<div style="padding: 15px 15px 15px 0">
-				<input type="button" class="button-primary update-changelog" value="<?php _e( 'Update Changelog' ); ?>" />
-				&nbsp;&nbsp;&nbsp;
-				<a class="button cancel-update-changelog" style="color:#bbb;" href="javascript:">
-					<?php _e( 'Cancel' ); ?>
-				</a>
+			<div class="wrap changelog-wrap">
+				<?php echo $ID ? Product::get( $ID )->get_changelog() : ''; ?>
 			</div>
 		</div>
 

@@ -101,9 +101,8 @@ class Product {
 			$log = '';
 
 			foreach ( $releases as $release ) {
-				$log .= "<h3>{$release->get_version()} – {$release->get_start_date()->format( get_option( 'date_format' ) )}</h3>";
+				$log .= "<h3>v{$release->get_version()} – {$release->get_start_date()->format( get_option( 'date_format' ) )}</h3>";
 				$log .= $release->get_changelog();
-				$log .= '<br>';
 			}
 
 			wp_cache_set( $this->get_product()->ID, $log, 'itelic-changelog' );

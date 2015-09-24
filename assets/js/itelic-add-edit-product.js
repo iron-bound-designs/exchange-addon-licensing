@@ -10,23 +10,13 @@ jQuery(document).ready(function ($) {
 	/**
 	 * When the changelog textarea is clicked, popup the changelog editor.
 	 */
-	$("#itelic-changelog").click(function (e) {
-		$("#itelic-edit-changelog").val($("#itelic-changelog").val());
+	$("#view-changelog").click(function (e) {
 
 		tb_show('Changelog', '#TB_inline?inlineId=itelic-edit-changelog-popup', false);
 
 		this.blur();
 
 		e.preventDefault();
-	});
-
-	/**
-	 * When the update button is clicked, update the textarea.
-	 */
-	$(".update-changelog").click(function (e) {
-		$("#itelic-changelog").val($("#itelic-edit-changelog").val());
-
-		tb_remove();
 	});
 
 	/**
