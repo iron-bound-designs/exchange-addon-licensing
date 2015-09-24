@@ -104,7 +104,10 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 				<?php endforeach; ?>
 			</select>
 
-			<p class="description"><?php _e( "Select a file to be used for automatic updates.", Plugin::SLUG ); ?></p>
+			<p class="description">
+				<?php _e( "Select a file to be used for automatic updates.", Plugin::SLUG ); ?>
+				<?php _e( "You shouldn't need to update this after the initial release.", Plugin::SLUG ); ?>
+			</p>
 
 			<label for="itelic-version">
 
