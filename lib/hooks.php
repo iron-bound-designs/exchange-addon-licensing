@@ -535,7 +535,7 @@ function account_licenses_deactivate_location() {
 	}
 
 	try {
-		$record = Activation::with_id( $id );
+		$record = itelic_get_activation( $id );
 	}
 	catch ( \Exception $e ) {
 		wp_send_json_error( array(

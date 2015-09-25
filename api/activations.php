@@ -16,7 +16,7 @@
  * @return \ITELIC\Activation
  */
 function itelic_get_activation( $id ) {
-	return \ITELIC\Activation::with_id( $id );
+	return \ITELIC\Activation::get( $id );
 }
 
 /**

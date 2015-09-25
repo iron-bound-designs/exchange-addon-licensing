@@ -184,7 +184,7 @@ class Activation extends Model implements API\Serializable {
 			return null;
 		}
 
-		$activation = self::with_id( $id );
+		$activation = self::get( $id );
 		$activation->get_key()->log_activation( $activation );
 
 		Cache::add( $activation );

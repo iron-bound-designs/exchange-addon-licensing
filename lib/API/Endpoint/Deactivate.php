@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\API\Endpoint;
+
 use ITELIC\Activation;
 use ITELIC\API\Endpoint;
 use ITELIC\API\Contracts\Authenticatable;
@@ -17,6 +18,7 @@ use ITELIC\Key;
 
 /**
  * Class Deactivate
+ *
  * @package ITELIC\API\Endpoint
  */
 class Deactivate extends Endpoint implements Authenticatable {
@@ -45,7 +47,7 @@ class Deactivate extends Endpoint implements Authenticatable {
 		$location_id = absint( $post['id'] );
 
 		try {
-			$activation = Activation::with_id( $location_id );
+			$activation = itelic_get_activation( $location_id );
 
 			if ( $activation ) {
 				if ( $activation->get_key()->get_key() !== $this->key->get_key() ) {
