@@ -64,7 +64,7 @@ class Update extends Model {
 	protected function init( \stdClass $data ) {
 		$this->ID               = $data->ID;
 		$this->activation       = itelic_get_activation( $data->activation );
-		$this->release          = new Release( $data->release_id );
+		$this->release          = Release::get( $data->release_id );
 		$this->update_date      = new \DateTime( $data->update_date );
 		$this->previous_version = $data->previous_version;
 	}
