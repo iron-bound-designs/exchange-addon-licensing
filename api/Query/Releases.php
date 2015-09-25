@@ -229,7 +229,7 @@ class Releases extends Complex_Query {
 			return null;
 		}
 
-		return new Where( 'q.version', true, esc_sql( $this->args['version}'] ) );
+		return new Where( 'q.version', true, esc_sql( $this->args['version'] ) );
 	}
 
 	/**

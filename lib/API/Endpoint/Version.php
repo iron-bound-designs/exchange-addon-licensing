@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\API\Endpoint;
+
 use ITELIC\API\Endpoint;
 use ITELIC\API\Contracts\Authenticatable;
 use ITELIC\Key;
@@ -46,14 +47,22 @@ class Version extends Endpoint implements Authenticatable {
 		$now     = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
 		$expires = $now->add( new \DateInterval( "P1D" ) );
 
-		$product = $this->activation->get_key()->get_product();
+		$release = $this->activation->get_key()->get_product()->get_latest_release_for_activation( $this->activation );
+
+		if ( ! $release ) {
+			wp_send_json_error( array(
+				'message' => __( 'Invalid version number', Plugin::SLUG )
+			) );
+
+			die();
+		}
 
 		return new Response( array(
 			'success' => true,
 			'body'    => array(
 				'list' => array(
 					$this->key->get_product()->ID => array(
-						'version' => $product->get_latest_release_for_activation($this->activation)->get_version(),
+						'version' => $release->get_version(),
 						'package' => \ITELIC\generate_download_link( $this->activation ),
 						'expires' => $expires->format( \DateTime::ISO8601 )
 					)
