@@ -14,8 +14,7 @@ use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
 use IronBound\DB\Exception as DB_Exception;
 use ITELIC_API\Query\Activations;
-use ITELIC_API\Query\Releases;
-use ITELIC_API\Updates;
+use ITELIC_API\Query\Updates;
 
 /**
  * Class Release

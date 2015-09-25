@@ -7,7 +7,7 @@
  */
 
 
-namespace ITELIC_API;
+namespace ITELIC_API\Query;
 
 use IronBound\DB\Manager;
 use IronBound\DB\Model;
