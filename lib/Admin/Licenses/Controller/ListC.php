@@ -19,6 +19,7 @@ use ITELIC_API\Query\Keys;
 
 /**
  * Class ListC
+ *
  * @package ITELIC\Admin\Licenses\Controller
  */
 class ListC extends Controller {
@@ -46,7 +47,7 @@ class ListC extends Controller {
 		add_action( 'wp_ajax_itelic_admin_licenses_list_max', array( $this, 'handle_ajax_max' ) );
 
 		if ( ! empty( $_GET['msg'] ) && $_GET['msg'] == 'deleted' ) {
-			$this->message[View::NOTICE_SUCCESS] = __( "Key successfully deleted.", Plugin::SLUG );
+			$this->message[ View::NOTICE_SUCCESS ] = __( "Key successfully deleted.", Plugin::SLUG );
 		}
 	}
 
@@ -312,7 +313,12 @@ class ListC extends Controller {
 		}
 
 		try {
-			$this->message[ View::NOTICE_SUCCESS ] = $this->process_bulk_actions();
+
+			$msg = $this->process_bulk_actions();
+
+			if ( $msg ) {
+				$this->message[ View::NOTICE_SUCCESS ] = $msg;
+			}
 		}
 		catch ( \Exception $e ) {
 			$this->message[ View::NOTICE_ERROR ] = $e->getMessage();
