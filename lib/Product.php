@@ -89,7 +89,7 @@ class Product extends \IT_Exchange_Product {
 			$log = '';
 
 			foreach ( $releases as $release ) {
-				$log .= "<h3>v{$release->get_version()} – {$release->get_start_date()->format( get_option( 'date_format' ) )}</h3>";
+				$log .= "<strong>v{$release->get_version()} – {$release->get_start_date()->format( get_option( 'date_format' ) )}</strong>";
 				$log .= $release->get_changelog();
 			}
 
