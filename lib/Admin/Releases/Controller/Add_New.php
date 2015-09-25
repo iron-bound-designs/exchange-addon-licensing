@@ -67,7 +67,7 @@ class Add_New extends Controller {
 			return;
 		}
 
-		$product = it_exchange_get_product( $_POST['product'] );
+		$product = itelic_get_product( $_POST['product'] );
 
 		if ( empty( $_POST['version'] ) ) {
 			$this->errors[] = __( "Invalid version number entered.", Plugin::SLUG );

@@ -74,7 +74,7 @@ class Release extends Model {
 	private $ID;
 
 	/**
-	 * @var \IT_Exchange_Product
+	 * @var Product
 	 */
 	private $product;
 
@@ -126,7 +126,7 @@ class Release extends Model {
 	 */
 	protected function init( \stdClass $data ) {
 		$this->ID      = $data->ID;
-		$this->product = it_exchange_get_product( $data->product );
+		$this->product = itelic_get_product( $data->product );
 
 		if ( ! $this->product ) {
 			throw new \InvalidArgumentException( "Invalid product." );
@@ -429,7 +429,7 @@ class Release extends Model {
 	 *
 	 * @since 1.0
 	 *
-	 * @return \IT_Exchange_Product
+	 * @return Product
 	 */
 	public function get_product() {
 		return $this->product;

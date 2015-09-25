@@ -34,7 +34,7 @@ function generate_keys_for_transaction( \IT_Exchange_Transaction $transaction, $
 
 		if ( it_exchange_product_has_feature( $product['product_id'], 'licensing' ) ) {
 
-			$product = it_exchange_get_product( $product['product_id'] );
+			$product = itelic_get_product( $product['product_id'] );
 
 			if ( generate_key_for_transaction_product( $transaction, $product, $status ) ) {
 				$result = true;

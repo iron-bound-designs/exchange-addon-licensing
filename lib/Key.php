@@ -50,7 +50,7 @@ class Key extends Model implements API\Serializable {
 	private $transaction;
 
 	/**
-	 * @var \IT_Exchange_Product
+	 * @var Product
 	 */
 	private $product;
 
@@ -94,7 +94,7 @@ class Key extends Model implements API\Serializable {
 	protected function init( \stdClass $data ) {
 		$this->key         = $data->lkey;
 		$this->transaction = it_exchange_get_transaction( $data->transaction_id );
-		$this->product     = it_exchange_get_product( $data->product );
+		$this->product     = itelic_get_product( $data->product );
 		$this->customer    = it_exchange_get_customer( $data->customer );
 		$this->status      = $data->status;
 		$this->max         = $data->max;
@@ -361,7 +361,7 @@ class Key extends Model implements API\Serializable {
 	}
 
 	/**
-	 * @return \IT_Exchange_Product
+	 * @return Product
 	 */
 	public function get_product() {
 		return $this->product;

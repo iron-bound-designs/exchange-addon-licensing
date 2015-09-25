@@ -57,7 +57,7 @@ class Version extends Endpoint implements Authenticatable {
 				'list' => array(
 					$this->key->get_product()->ID => array(
 						'version' => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'version' ) ),
-						'package' => itelic_generate_download_link( $this->key, $this->key->get_product() ),
+						'package' => \ITELIC\generate_download_link( $this->key, $this->key->get_product() ),
 						'expires' => $expires->format( \DateTime::ISO8601 )
 					)
 				)

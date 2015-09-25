@@ -152,7 +152,7 @@ class Renew_Key extends Base {
 
 		$nonce   = $_POST['nonce'];
 		$key     = itelic_get_key( $_POST['key'] );
-		$product = it_exchange_get_product( $_POST['product'] );
+		$product = itelic_get_product( $_POST['product'] );
 		$renew   = (bool) $_POST['renew'];
 
 		if ( ! wp_verify_nonce( $nonce, 'itelic_renew_product_sw' ) ) {
@@ -333,7 +333,7 @@ class Renew_Key extends Base {
 			return $db_base_price;
 		}
 
-		$discount = new Discount( it_exchange_get_product( $product['product_id'] ) );
+		$discount = new Discount( itelic_get_product( $product['product_id'] ) );
 
 		return $discount->get_discount_price( $format );
 	}

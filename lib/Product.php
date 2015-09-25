@@ -14,12 +14,7 @@ use ITELIC_API\Query\Releases;
  * Class Product
  * @package ITELIC
  */
-class Product {
-
-	/**
-	 * @var \IT_Exchange_Product
-	 */
-	private $product;
+class Product extends \IT_Exchange_Product {
 
 	/**
 	 * Constructor.
@@ -32,7 +27,7 @@ class Product {
 			throw new \InvalidArgumentException( "Product must have the digital downloads product type." );
 		}
 
-		$this->product = $product;
+		parent::IT_Exchange_Product( $product->ID );
 	}
 
 	/**
@@ -60,17 +55,6 @@ class Product {
 	}
 
 	/**
-	 * Get the product.
-	 *
-	 * @since 1.0
-	 *
-	 * @return \IT_Exchange_Product
-	 */
-	public function get_product() {
-		return $this->product;
-	}
-
-	/**
 	 * Get the changelog for this product.
 	 *
 	 * @since 1.0
@@ -81,13 +65,17 @@ class Product {
 	 */
 	public function get_changelog( $num_releases = 10 ) {
 
-		$log = wp_cache_get( $this->get_product()->ID, 'itelic-changelog' );
+		$log = wp_cache_get( $this->ID, 'itelic-changelog' );
 
 		if ( ! $log ) {
 
 			$query = new Releases( array(
-				'product'             => $this->get_product()->ID,
-				'status'              => array( Release::STATUS_ACTIVE, Release::STATUS_ARCHIVED, Release::STATUS_PAUSED ),
+				'product'             => $this->ID,
+				'status'              => array(
+					Release::STATUS_ACTIVE,
+					Release::STATUS_ARCHIVED,
+					Release::STATUS_PAUSED
+				),
 				'order'               => array( 'start_date' => 'DESC' ),
 				'items_per_page'      => $num_releases,
 				'sql_calc_found_rows' => false
@@ -105,7 +93,7 @@ class Product {
 				$log .= $release->get_changelog();
 			}
 
-			wp_cache_set( $this->get_product()->ID, $log, 'itelic-changelog' );
+			wp_cache_set( $this->ID, $log, 'itelic-changelog' );
 		}
 
 		return $log;

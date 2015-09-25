@@ -18,7 +18,7 @@ $session = it_exchange_get_session_data( 'purchase_req_itelic-renew-product' );
 			<?php else: ?>
 				<li>
 					<label for="itelic-renew-product-<?php echo esc_attr( $product ); ?>">
-						<?php echo it_exchange_get_product( $product )->post_title; ?>
+						<?php echo itelic_get_product( $product )->post_title; ?>
 					</label>
 					<select id="itelic-renew-product-<?php echo esc_attr( $product ); ?>" name="itelic_key[<?php echo esc_attr( $product ); ?>]">
 						<?php $keys = itelic_get_keys( array(

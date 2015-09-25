@@ -44,7 +44,7 @@ class Upgrades extends \IT_Exchange_Product_Feature_Abstract {
 	 */
 	function print_metabox( $post ) {
 
-		$product = it_exchange_get_product( $post );
+		$product = itelic_get_product( $post );
 
 		$data   = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, $this->slug );
 		$hidden = $data['enable'] ? '' : ' hide-if-js';

@@ -81,7 +81,7 @@ class Upgrade_Path {
 	 * @return \IT_Exchange_Product
 	 */
 	public function get_product() {
-		return it_exchange_get_product( $this->post->menu_order );
+		return itelic_get_product( $this->post->menu_order );
 	}
 
 	/**
@@ -108,7 +108,7 @@ class Upgrade_Path {
 	 * @return \IT_Exchange_Product
 	 */
 	public function get_upgrade_product() {
-		return it_exchange_get_product( get_post_meta( $this->get_ID(), '_itelic_upgrade_product', true ) );
+		return itelic_get_product( get_post_meta( $this->get_ID(), '_itelic_upgrade_product', true ) );
 	}
 
 	/**

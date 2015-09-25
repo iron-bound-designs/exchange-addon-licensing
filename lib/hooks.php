@@ -421,7 +421,7 @@ function add_renewal_info_to_product_title_transaction_feature( $value, $product
 	}
 
 	if ( isset( $product['renewed_key'] ) && $product['renewed_key'] ) {
-		$product = it_exchange_get_product( $product['product_id'] );
+		$product = itelic_get_product( $product['product_id'] );
 
 		if ( $product ) {
 			$value .= __( " – Renewal", Plugin::SLUG );
@@ -472,7 +472,7 @@ function render_license_keys_email_notification_shortcode( \IT_Exchange_Email_No
 	$out = '';
 
 	foreach ( $transaction->get_products() as $product ) {
-		$product = it_exchange_get_product( $product['product_id'] );
+		$product = itelic_get_product( $product['product_id'] );
 		$key     = get_key_for_transaction_product( $transaction->ID, $product->ID );
 
 		if ( $key ) {

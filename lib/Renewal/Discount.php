@@ -9,6 +9,7 @@
 namespace ITELIC\Renewal;
 
 use ITELIC\Key;
+use ITELIC\Product;
 
 /**
  * Class Discount
@@ -27,7 +28,7 @@ class Discount implements \Serializable {
 	const TYPE_PERCENT = 'percent';
 
 	/**
-	 * @var \IT_Exchange_Product
+	 * @var Product
 	 */
 	private $product;
 
@@ -41,9 +42,9 @@ class Discount implements \Serializable {
 	 *
 	 * @since 1.0
 	 *
-	 * @param \IT_Exchange_Product $product
+	 * @param Product $product
 	 */
-	public function __construct( \IT_Exchange_Product $product ) {
+	public function __construct( Product $product ) {
 		$this->product      = $product;
 		$this->feature_data = it_exchange_get_product_feature( $product->ID, 'licensing-discount' );
 	}
@@ -177,7 +178,7 @@ class Discount implements \Serializable {
 	 */
 	public function unserialize( $serialized ) {
 
-		$product = it_exchange_get_product( $serialized['product'] );
+		$product = itelic_get_product( $serialized['product'] );
 
 		$this->product      = $product;
 		$this->feature_data = it_exchange_get_product_feature( $product->ID, 'licensing-discount' );

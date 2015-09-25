@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\API\Endpoint;
+
 use ITELIC\API\Endpoint;
 use ITELIC\API\Contracts\Authenticatable;
 use ITELIC\Key;
@@ -57,9 +58,9 @@ class Product extends Endpoint implements Authenticatable {
 			'last_updated'    => empty( $readme['last_updated'] ) ? '' : $readme['last_updated']->format( \DateTime::ISO8601 ),
 			'banner_low'      => $readme['banner_low'],
 			'banner_high'     => $readme['banner_high'],
-			'package_url'     => itelic_generate_download_link( $this->key, $this->key->get_product() ),
+			'package_url'     => \ITELIC\generate_download_link( $this->key, $this->key->get_product() ),
 			'description_url' => get_permalink( $this->key->get_product()->ID ),
-			'changelog'       => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'changelog' ) ),
+			'changelog'       =>$this->key->get_product()->get_changelog(),
 			'sections'        => array()
 		);
 
