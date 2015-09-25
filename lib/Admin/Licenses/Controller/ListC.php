@@ -46,7 +46,7 @@ class ListC extends Controller {
 		add_action( 'wp_ajax_itelic_admin_licenses_list_max', array( $this, 'handle_ajax_max' ) );
 
 		if ( ! empty( $_GET['msg'] ) && $_GET['msg'] == 'deleted' ) {
-			$this->message[View::NOTICE_ERROR] = __( "Key successfully deleted.", Plugin::SLUG );
+			$this->message[View::NOTICE_SUCCESS] = __( "Key successfully deleted.", Plugin::SLUG );
 		}
 	}
 
