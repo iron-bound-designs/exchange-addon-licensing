@@ -53,11 +53,13 @@ class Product extends Endpoint implements Authenticatable {
 			}
 		}
 
+		$release = $this->key->get_product()->get_latest_release_for_activation( $this->activation );
+
 		$product = array(
 			'id'              => $this->key->get_product()->ID,
 			'name'            => $this->key->get_product()->post_title,
 			'description'     => it_exchange_get_product_feature( $this->key->get_product()->ID, 'description' ),
-			'version'         => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'version' ) ),
+			'version'         => $release->get_version(),
 			'tested'          => $readme['tested'],
 			'requires'        => $readme['requires'],
 			'contributors'    => $contributors,
@@ -66,7 +68,7 @@ class Product extends Endpoint implements Authenticatable {
 			'banner_high'     => $readme['banner_high'],
 			'package_url'     => \ITELIC\generate_download_link( $this->key, $this->key->get_product() ),
 			'description_url' => get_permalink( $this->key->get_product()->ID ),
-			'changelog'       =>$this->key->get_product()->get_changelog(),
+			'changelog'       => $this->key->get_product()->get_changelog(),
 			'sections'        => array()
 		);
 

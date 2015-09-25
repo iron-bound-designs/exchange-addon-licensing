@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\API\Endpoint;
+
 use ITELIC\API\Endpoint;
 use ITELIC\Key;
 use ITELIC\API\Response;
@@ -40,17 +41,17 @@ class Download extends Endpoint {
 			die();
 		}
 
-		$key = itelic_get_key( $get['key'] );
+		$activation = itelic_get_activation( $get['activation'] );
 
-		$download_id = it_exchange_get_product_feature( $key->get_product()->ID, 'licensing', array( 'field' => 'update-file' ) );
+		if ( ! $activation ) {
+			status_header( 403 );
 
-		foreach ( $key->get_transaction()->get_products() as $product_hash => $product ) {
-
-			if ( $product['product_id'] == $key->get_product()->ID ) {
-				$hashes = it_exchange_get_download_hashes_for_transaction_product( $key->get_transaction(), $product, $download_id );
-
-				it_exchange_serve_product_download( it_exchange_get_download_data_from_hash( $hashes[0] ) );
-			}
+			_e( "This download link is invalid or has expired.", Plugin::SLUG );
+			die();
 		}
+
+		$file = $activation->get_key()->get_product()->get_latest_release_for_activation( $activation )->get_download();
+
+		\ITELIC\serve_download( wp_get_attachment_url( $file->ID ) );
 	}
 }

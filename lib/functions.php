@@ -253,17 +253,16 @@ function get_current_product_id() {
  *
  * @since 1.0
  *
- * @param Key                  $key
- * @param \IT_Exchange_Product $product
+ * @param Activation $activation
  *
  * @return string
  */
-function generate_download_link( Key $key, \IT_Exchange_Product $product ) {
+function generate_download_link( Activation $activation ) {
 
 	$now     = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
 	$expires = $now->add( new \DateInterval( "P1D" ) );
 
-	$args            = generate_download_query_args( $key, $expires );
+	$args            = generate_download_query_args( $activation, $expires );
 	$args['product'] = $product->ID;
 
 	$download_ep = Dispatch::get_url( 'download' );
@@ -276,21 +275,20 @@ function generate_download_link( Key $key, \IT_Exchange_Product $product ) {
  *
  * @since 1.0
  *
- * @param Key       $key
- * @param \DateTime $expires
+ * @param Activation $activation
+ * @param \DateTime  $expires
  *
  * @return array
  */
-function generate_download_query_args( Key $key, \DateTime $expires ) {
+function generate_download_query_args( Activation $activation, \DateTime $expires ) {
 
 	$args = array(
-		'key'     => $key->get_key(),
-		'expires' => (int) $expires->getTimestamp()
+		'activation' => $activation->get_pk(),
+		'key'        => $activation->get_key()->get_key(),
+		'expires'    => (int) $expires->getTimestamp()
 	);
 
-	$salt = wp_salt();
-
-	$token = md5( serialize( $args ) . $salt );
+	$token = hash_hmac( 'md5', serialize( $args ), wp_salt() );
 
 	$args['token'] = $token;
 
@@ -313,14 +311,12 @@ function validate_query_args( $query_args ) {
 	}
 
 	$args = array(
-		'key'     => $query_args['key'],
-		'expires' => (int) $query_args['expires']
+		'key'        => $query_args['key'],
+		'activation' => $query_args['activation'],
+		'expires'    => (int) $query_args['expires']
 	);
 
-	$salt = wp_salt();
-
-	$token = md5( serialize( $args ) . $salt );
-
+	$token = hash_hmac( 'md5', serialize( $args ), wp_salt() );
 
 	if ( ! hash_equals( $token, $query_args['token'] ) ) {
 		return false;
@@ -330,6 +326,89 @@ function validate_query_args( $query_args ) {
 	$expires = new \DateTime( "@{$args['expires']}", new \DateTimeZone( get_option( 'timezone_string' ) ) );
 
 	return $now < $expires;
+}
+
+/**
+ * Serve a download.
+ *
+ * Essentially a clone of it_exchange_serve_product_download(), but works for arbitrary URLs.
+ *
+ * @since 1.0
+ *
+ * @param string $url
+ */
+function serve_download( $url ) {
+
+	/**
+	 * Fires prior to a download before being served.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $url
+	 */
+	do_action( 'itelic_serve_download', $url );
+
+	// Attempt to grab file
+	if ( $response = wp_remote_head( str_replace( ' ', '%20', $url ) ) ) {
+		if ( ! is_wp_error( $response ) ) {
+			$valid_response_codes = array(
+				200,
+				301,
+				302,
+			);
+
+			if ( in_array( wp_remote_retrieve_response_code( $response ), (array) $valid_response_codes ) ) {
+
+				// Get Resource Headers
+				$headers = wp_remote_retrieve_headers( $response );
+
+				// White list of headers to pass from original resource
+				$passthru_headers = array(
+					'accept-ranges',
+					'content-length',
+					'content-type',
+				);
+
+				// Set Headers for download from original resource
+				foreach ( (array) $passthru_headers as $header ) {
+					if ( isset( $headers[ $header ] ) ) {
+						header( esc_attr( $header ) . ': ' . esc_attr( $headers[ $header ] ) );
+					}
+				}
+
+				// Set headers to force download
+				header( 'Content-Description: File Transfer' );
+				header( 'Content-Disposition: attachment; filename=' . basename( parse_url( $url, PHP_URL_PATH ) ) );
+				header( 'Content-Transfer-Encoding: binary' );
+				header( 'Expires: 0' );
+				header( 'Cache-Control: must-revalidate' );
+				header( 'Pragma: public' );
+
+				// Clear buffer
+				flush();
+				ob_end_clean();
+
+				// Deliver the file: readfile, curl, redirect
+				if ( ini_get( 'allow_url_fopen' ) ) {
+					// Use readfile if allow_url_fopen is on
+					readfile( str_replace( ' ', '%20', $url ) );
+				} else if ( is_callable( 'curl_init' ) ) {
+					// Use cURL if allow_url_fopen is off and curl is available
+					$ch = curl_init( str_replace( ' ', '%20', $url ) );
+					curl_exec( $ch );
+					curl_close( $ch );
+				} else {
+					// Just redirect to the file becuase their host <strike>sucks</strike> doesn't support allow_url_fopen or curl.
+					wp_redirect( str_replace( ' ', '%20', $url ) );
+				}
+				die();
+
+			}
+			die( __( 'Download Error: Invalid response: ', 'it-l10n-ithemes-exchange' ) . wp_remote_retrieve_response_code( $response ) );
+		} else {
+			die( __( 'Download Error:', 'it-l10n-ithemes-exchange' ) . ' ' . $response->get_error_message() );
+		}
+	}
 }
 
 /**
