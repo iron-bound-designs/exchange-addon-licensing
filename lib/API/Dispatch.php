@@ -8,6 +8,8 @@
  */
 
 namespace ITELIC\API;
+
+use ITELIC\Activation;
 use ITELIC\Plugin;
 use ITELIC\Key;
 use API\Exception;
@@ -159,12 +161,37 @@ class Dispatch {
 			return false;
 		}
 
-		$endpoint->set_auth_license_key( $key );
-
-		if ( $endpoint->get_auth_mode() == Authenticatable::MODE_ACTIVE ) {
-			return $key->get_status() == Key::ACTIVE;
+		if ( ! empty( $_SERVER['PHP_AUTH_PW'] ) ) {
+			$activation = itelic_get_activation( $_SERVER['PHP_AUTH_PW'] );
 		} else {
-			return true;
+			$activation = null;
+		}
+
+		$endpoint->set_auth_license_key( $key );
+		$endpoint->set_auth_activation( $activation );
+
+		switch ( $endpoint->get_auth_mode() ) {
+			case Authenticatable::MODE_ACTIVE:
+				return $key->get_status() == Key::ACTIVE;
+			case Authenticatable::MODE_EXISTS;
+				return true;
+			case Authenticatable::MODE_VALID_ACTIVATION:
+
+				if ( ! $activation ) {
+					return false;
+				}
+
+				if ( $activation->get_status() != Activation::ACTIVE ) {
+					return false;
+				}
+
+				if ( $activation->get_key()->get_key() != $key->get_key() ) {
+					return false;
+				}
+
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -344,7 +371,7 @@ class Dispatch {
 	 * @since 1.0
 	 *
 	 * @param Endpoint $endpoint
-	 * @param string              $action Action this endpoint responds to.
+	 * @param string   $action Action this endpoint responds to.
 	 */
 	public static function register_endpoint( Endpoint $endpoint, $action ) {
 		self::$endpoints[ (string) $action ] = $endpoint;

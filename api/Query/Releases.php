@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC_API\Query;
+
 use IronBound\DB\Model;
 use IronBound\DB\Query\Complex_Query;
 use ITELIC\Release;
@@ -50,6 +51,7 @@ class Releases extends Complex_Query {
 			'download__not_in' => array(),
 			'status'           => 'any',
 			'type'             => 'any',
+			'version'          => '',
 			'version_search'   => '',
 			'changelog_search' => '',
 			'start_date'       => '',
@@ -101,6 +103,10 @@ class Releases extends Complex_Query {
 
 		if ( ( $type = $this->parse_type() ) !== null ) {
 			$where->qAnd( $type );
+		}
+
+		if ( ( $version = $this->parse_version() ) !== null ) {
+			$where->qAnd( $version );
 		}
 
 		if ( ( $version_search = $this->parse_version_search() ) !== null ) {
@@ -198,7 +204,7 @@ class Releases extends Complex_Query {
 			return null;
 		} else {
 			$white_list = Release::get_types();
-			$types   = (array) $this->args['type'];
+			$types      = (array) $this->args['type'];
 
 			foreach ( $types as $type ) {
 				if ( ! isset( $white_list[ $type ] ) ) {
@@ -208,6 +214,22 @@ class Releases extends Complex_Query {
 
 			return new Where( 'type', true, (array) $this->args['type'] );
 		}
+	}
+
+	/**
+	 * Parse the version search.
+	 *
+	 * @since 1.0
+	 *
+	 * @return Where|null
+	 */
+	protected function parse_version() {
+
+		if ( empty( $this->args['version'] ) ) {
+			return null;
+		}
+
+		return new Where( 'q.version', true, esc_sql( $this->args['version'] ) );
 	}
 
 	/**

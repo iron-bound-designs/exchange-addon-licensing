@@ -8,6 +8,7 @@
 
 namespace ITELIC\API\Endpoint;
 
+use ITELIC\Activation;
 use ITELIC\API\Endpoint;
 use ITELIC\API\Contracts\Authenticatable;
 use ITELIC\Key;
@@ -24,6 +25,11 @@ class Product extends Endpoint implements Authenticatable {
 	 * @var Key
 	 */
 	protected $key;
+
+	/**
+	 * @var Activation|null
+	 */
+	protected $activation;
 
 	/**
 	 * Serve the request to this endpoint.
@@ -82,7 +88,7 @@ class Product extends Endpoint implements Authenticatable {
 	 * @return string One of MODE_VALID, MODE_ACTIVE
 	 */
 	public function get_auth_mode() {
-		return Authenticatable::MODE_EXISTS;
+		return Authenticatable::MODE_VALID_ACTIVATION;
 	}
 
 	/**
@@ -116,5 +122,16 @@ class Product extends Endpoint implements Authenticatable {
 	 */
 	public function set_auth_license_key( Key $key ) {
 		$this->key = $key;
+	}
+
+	/**
+	 * Give a reference of the activation record to this object.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Activation $activation
+	 */
+	public function set_auth_activation( Activation $activation = null ) {
+		$this->activation = $activation;
 	}
 }

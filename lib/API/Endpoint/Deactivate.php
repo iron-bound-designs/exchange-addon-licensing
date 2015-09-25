@@ -29,6 +29,11 @@ class Deactivate extends Endpoint implements Authenticatable {
 	protected $key;
 
 	/**
+	 * @var Activation|null
+	 */
+	protected $activation;
+
+	/**
 	 * Serve the request to this endpoint.
 	 *
 	 * @param \ArrayAccess $get
@@ -128,5 +133,16 @@ class Deactivate extends Endpoint implements Authenticatable {
 	 */
 	public function set_auth_license_key( Key $key ) {
 		$this->key = $key;
+	}
+
+	/**
+	 * Give a reference of the activation record to this object.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Activation $activation
+	 */
+	public function set_auth_activation( Activation $activation = null ) {
+		$this->activation = $activation;
 	}
 }

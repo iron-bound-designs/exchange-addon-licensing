@@ -7,6 +7,8 @@
  */
 
 namespace ITELIC\API\Contracts;
+
+use ITELIC\Activation;
 use ITELIC\Key;
 
 /**
@@ -24,6 +26,11 @@ interface Authenticatable {
 	 * @var string. Used when the license key only has to exist.
 	 */
 	const MODE_EXISTS = 'exists';
+
+	/**
+	 * @var string. Used when the activation record has to be active.
+	 */
+	const MODE_VALID_ACTIVATION = 'valid-activation';
 
 	/**
 	 * Retrieve the mode of authentication.
@@ -61,4 +68,12 @@ interface Authenticatable {
 	 */
 	public function set_auth_license_key( Key $key );
 
+	/**
+	 * Give a reference of the activation record to this object.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Activation $activation
+	 */
+	public function set_auth_activation( Activation $activation = null );
 }

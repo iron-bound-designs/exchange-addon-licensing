@@ -30,6 +30,30 @@ function itelic_get_release( $id ) {
 }
 
 /**
+ * Get a release by its version number.
+ *
+ * @since 1.0
+ *
+ * @param int    $product_id
+ * @param string $version
+ *
+ * @return \ITELIC\Release
+ */
+function itelic_get_release_by_version( $product_id, $version ) {
+
+	$query = new \ITELIC_API\Query\Releases( array(
+		'product' => absint( $product_id ),
+		'version' => $version
+	) );
+
+	foreach ( $query->get_results() as $release ) {
+		return $release;
+	}
+
+	return null;
+}
+
+/**
  * How many releases should be kept with full data until they are archived.
  *
  * @since 1.0

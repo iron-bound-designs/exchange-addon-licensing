@@ -98,4 +98,32 @@ class Product extends \IT_Exchange_Product {
 
 		return $log;
 	}
+
+	/**
+	 * Get the latest release available for an activation record.
+	 *
+	 * By default, returns the latest version saved. But is used for getting pre-release or restricted versions.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Activation $activation
+	 *
+	 * @return Release
+	 */
+	public function get_latest_release_for_activation( Activation $activation ) {
+		$version = it_exchange_get_product_feature( $this->ID, 'licensing', array( 'field' => 'version' ) );
+
+		$release = itelic_get_release_by_version( $this->ID, $version );
+
+		/**
+		 * Filter the latest release for an activation record.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Release    $release
+		 * @param Activation $activation
+		 */
+
+		return apply_filters( 'itelic_get_latest_release_for_activation', $release, $activation );
+	}
 }

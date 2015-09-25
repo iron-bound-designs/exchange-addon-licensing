@@ -27,6 +27,11 @@ class Version extends Endpoint implements Authenticatable {
 	protected $key;
 
 	/**
+	 * @var Activation|null
+	 */
+	protected $activation;
+
+	/**
 	 * Serve the request to this endpoint.
 	 *
 	 * @param \ArrayAccess $get
@@ -73,7 +78,7 @@ class Version extends Endpoint implements Authenticatable {
 	 * @return string One of MODE_VALID, MODE_ACTIVE
 	 */
 	public function get_auth_mode() {
-		return Authenticatable::MODE_ACTIVE;
+		return Authenticatable::MODE_VALID_ACTIVATION;
 	}
 
 	/**
@@ -107,5 +112,16 @@ class Version extends Endpoint implements Authenticatable {
 	 */
 	public function set_auth_license_key( Key $key ) {
 		$this->key = $key;
+	}
+
+	/**
+	 * Give a reference of the activation record to this object.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Activation $activation
+	 */
+	public function set_auth_activation( Activation $activation = null ) {
+		$this->activation = $activation;
 	}
 }
