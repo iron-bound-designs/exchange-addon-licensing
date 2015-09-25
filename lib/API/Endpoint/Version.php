@@ -43,26 +43,18 @@ class Version extends Endpoint implements Authenticatable {
 	 */
 	public function serve( \ArrayAccess $get, \ArrayAccess $post ) {
 
-		if ( ! isset( $get['activation_id'] ) ) {
-			throw new Exception( __( "'activation_id' is a required parameter.", Plugin::SLUG ), self::CODE_ACTIVATION_ID_REQUIRED );
-		}
-
-		$activation = itelic_get_activation( $get['activation_id'] );
-
-		if ( ! $activation || $activation->get_status() != Activation::ACTIVE ) {
-			throw new Exception( __( "Invalid activation passed.", Plugin::SLUG ), self::CODE_INVALID_ACTIVATION );
-		}
-
 		$now     = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
 		$expires = $now->add( new \DateInterval( "P1D" ) );
+
+		$product = $this->activation->get_key()->get_product();
 
 		return new Response( array(
 			'success' => true,
 			'body'    => array(
 				'list' => array(
 					$this->key->get_product()->ID => array(
-						'version' => it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing', array( 'field' => 'version' ) ),
-						'package' => \ITELIC\generate_download_link( $this->key, $this->key->get_product() ),
+						'version' => $product->get_latest_release_for_activation($this->activation)->get_version(),
+						'package' => \ITELIC\generate_download_link( $this->activation ),
 						'expires' => $expires->format( \DateTime::ISO8601 )
 					)
 				)
