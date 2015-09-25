@@ -28,3 +28,25 @@ function itelic_get_release( $id ) {
 	 */
 	return apply_filters( 'itelic_get_release', \ITELIC\Release::get( $id ) );
 }
+
+/**
+ * How many releases should be kept with full data until they are archived.
+ *
+ * @since 1.0
+ *
+ * @param IT_Exchange_Product $product
+ *
+ * @return int
+ */
+function itelic_keep_last_n_releases( IT_Exchange_Product $product ) {
+
+	/**
+	 * Filter how many past releases should be kept before archiving.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int                 $number
+	 * @param IT_Exchange_Product $product
+	 */
+	return apply_filters( 'itelic_keep_last_n_releases', 10, $product );
+}
