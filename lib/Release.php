@@ -14,6 +14,7 @@ use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
 use IronBound\DB\Exception as DB_Exception;
 use ITELIC_API\Query\Activations;
+use ITELIC_API\Query\Releases;
 use ITELIC_API\Query\Updates;
 
 /**
@@ -272,18 +273,11 @@ class Release extends Model {
 		$download_id   = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'update-file' ) );
 		$download_data = get_post_meta( $download_id, '_it-exchange-download-info', true );
 
-		// save the previous download URL in case we pause
-		update_post_meta( $product->ID, '_itelic_prev_download', $download_data['source'] );
-
 		// update the download url
 		$download_data['source'] = wp_get_attachment_url( $file->ID );
 
 		// save the new download
 		update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
-
-		// save the previous version of the software
-		update_post_meta( $product->ID, '_itelic_prev_version',
-			it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'version' ) ) );
 
 		it_exchange_update_product_feature( $product->ID, 'licensing', array(
 			'version' => $version
@@ -331,7 +325,7 @@ class Release extends Model {
 
 		$current_version = it_exchange_get_product_feature( $this->get_product()->ID, 'licensing', array( 'field' => 'version' ) );
 
-		if ( version_compare( $this->get_version(), $current_version, '<=' ) ) {
+		if ( version_compare( $this->get_version(), $current_version, '<=' ) && $this->get_type() != self::TYPE_PRERELEASE ) {
 			throw new \InvalidArgumentException( "New release version must be greater than the current product's version." );
 		}
 
@@ -340,17 +334,38 @@ class Release extends Model {
 			$this->update( 'status', self::STATUS_PAUSED );
 		}
 
-		$prev_download = get_post_meta( $this->product->ID, '_itelic_prev_download', true );
-		$prev_version  = get_post_meta( $this->product->ID, '_itelic_prev_version', true );
+		if ( $this->get_type() != self::TYPE_PRERELEASE ) {
 
-		$download_id             = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => 'update-file' ) );
-		$download_data           = get_post_meta( $download_id, '_it-exchange-download-info', true );
-		$download_data['source'] = $prev_download;
-		update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
+			$query = new Releases( array(
+				'items_per_page'      => 1,
+				'page'                => 1,
+				'sql_calc_found_rows' => false,
+				'product'             => $this->get_product()->ID,
+				'type'                => array( self::TYPE_MAJOR, self::TYPE_MINOR, self::TYPE_SECURITY ),
+				'status'              => array( self::STATUS_ACTIVE, self::STATUS_ARCHIVED ),
+				'order'               => array(
+					'start_date' => 'DESC'
+				)
+			) );
 
-		it_exchange_update_product_feature( $this->get_product()->ID, 'licensing', array(
-			'version' => $prev_version
-		) );
+			$releases = $query->get_results();
+
+			/**
+			 * @var Release $prev_release
+			 */
+			$prev_release = reset( $releases );
+
+			$download_id = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => 'update-file' ) );
+
+			$download_data           = get_post_meta( $download_id, '_it-exchange-download-info', true );
+			$download_data['source'] = wp_get_attachment_url( $prev_release->get_download()->ID );
+
+			update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
+
+			it_exchange_update_product_feature( $this->get_product()->ID, 'licensing', array(
+				'version' => $prev_release->get_version()
+			) );
+		}
 
 		wp_cache_delete( $this->get_product()->ID, 'itelic-changelog' );
 
