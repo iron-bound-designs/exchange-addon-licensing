@@ -44,6 +44,10 @@ class ListC extends Controller {
 
 		add_action( 'wp_ajax_itelic_admin_licenses_list_extend', array( $this, 'handle_ajax_extend' ) );
 		add_action( 'wp_ajax_itelic_admin_licenses_list_max', array( $this, 'handle_ajax_max' ) );
+
+		if ( ! empty( $_GET['msg'] ) && $_GET['msg'] == 'deleted' ) {
+			$this->message[View::NOTICE_ERROR] = __( "Key successfully deleted.", Plugin::SLUG );
+		}
 	}
 
 	/**
@@ -168,7 +172,6 @@ class ListC extends Controller {
 			return;
 		}
 
-
 		$key = $_GET['key'];
 
 		if ( ! wp_verify_nonce( $_GET['nonce'], 'itelic-delete-license-' . $key ) ) {
@@ -176,10 +179,9 @@ class ListC extends Controller {
 		}
 
 		try {
-			$key = itelic_get_key( $key );
-			$key->delete();
+			itelic_get_key( $key )->delete();
 
-			wp_redirect( Tab_Dispatch::get_tab_link( 'licenses' ) );
+			wp_redirect( add_query_arg( 'msg', 'deleted', Tab_Dispatch::get_tab_link( 'licenses' ) ) );
 			exit;
 		}
 		catch ( \Exception $e ) {
