@@ -34,6 +34,16 @@ require_once( Plugin::$dir . 'api/activations.php' );
 require_once( Plugin::$dir . 'api/renewals.php' );
 
 /**
+ * Load releases API methods.
+ */
+require_once( Plugin::$dir . 'api/releases.php' );
+
+/**
+ * Load updates API methods.
+ */
+require_once( Plugin::$dir . 'api/updates.php' );
+
+/**
  * Load misc API methods.
  */
 require_once( Plugin::$dir . 'api/misc.php' );
