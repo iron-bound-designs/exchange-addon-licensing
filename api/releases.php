@@ -19,5 +19,12 @@
  */
 function itelic_get_release( $id ) {
 
-	return \ITELIC\Release::get( $id );
+	/**
+	 * Filter the release object as retrieved from the database.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \ITELIC\Release $release
+	 */
+	return apply_filters( 'itelic_get_release', \ITELIC\Release::get( $id ) );
 }

@@ -18,5 +18,13 @@
  * @return \ITELIC\Update
  */
 function itelic_get_update( $id ) {
-	return \ITELIC\Update::get( $id );
+
+	/**
+	 * Filter the update object as retrieved from the database.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \ITELIC\Update $update
+	 */
+	return apply_filters( 'itelic_get_update', \ITELIC\Update::get( $id ) );
 }

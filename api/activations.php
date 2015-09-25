@@ -16,20 +16,15 @@
  * @return \ITELIC\Activation
  */
 function itelic_get_activation( $id ) {
-	return \ITELIC\Activation::get( $id );
-}
 
-/**
- * Get an activation from data from the DB.
- *
- * @since 1.0
- *
- * @param stdClass $data
- *
- * @return \ITELIC\Activation
- */
-function itelic_get_activation_from_data( stdClass $data ) {
-	return new \ITELIC\Activation( $data );
+	/**
+	 * Filters the activation as it is retrieved from the database.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \ITELIC\Activation $activation
+	 */
+	return apply_filters( 'itelic_get_activation', \ITELIC\Activation::get( $id ) );
 }
 
 /**
@@ -49,13 +44,13 @@ function itelic_get_activation_by_location( $location, \ITELIC\Key $key ) {
 		'key'      => $key->get_key()
 	) );
 
-	$keys = $query->get_results();
+	$activations = $query->get_results();
 
-	if ( empty( $keys ) ) {
+	if ( empty( $activations ) ) {
 		return null;
 	}
 
-	return itelic_get_activation_from_data( reset( $keys ) );
+	return ( reset( $activations ) );
 }
 
 /**

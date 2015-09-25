@@ -32,7 +32,15 @@ function itelic_get_keys( $args = array() ) {
  * @return \ITELIC\Key
  */
 function itelic_get_key( $key ) {
-	return \ITELIC\Key::with_key( $key );
+
+	/**
+	 * Filters the key as it is retrieved from the database.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \ITELIC\Key $key
+	 */
+	return apply_filters( 'itelic_get_key', \ITELIC\Key::with_key( $key ) );
 }
 
 /**

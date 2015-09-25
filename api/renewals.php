@@ -16,7 +16,15 @@
  * @return \ITELIC\Renewal
  */
 function itelic_get_renewal_record( $id ) {
-	return \ITELIC\Renewal::get( $id );
+
+	/**
+	 * Filters the renewal as it is retrieved from the database.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \ITELIC\Renewal $renewal
+	 */
+	return apply_filters( 'itelic_get_renewal', \ITELIC\Renewal::get( $id ) );
 }
 
 /**
