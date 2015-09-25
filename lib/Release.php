@@ -241,6 +241,15 @@ class Release extends Model {
 				wp_cache_delete( $product->ID, 'itelic-changelog' );
 			}
 
+			/**
+			 * Fires when a release is created.
+			 *
+			 * @since 1.0
+			 *
+			 * @param Release $release
+			 */
+			do_action( 'itelic_create_release', $release );
+
 			Cache::add( $release );
 		}
 

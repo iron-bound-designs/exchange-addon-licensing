@@ -189,6 +189,15 @@ class Activation extends Model implements API\Serializable {
 
 		Cache::add( $activation );
 
+		/**
+		 * Fires when an activation record is created.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation $activation
+		 */
+		do_action( 'itelic_create_activation', $activation );
+
 		return $activation;
 	}
 
@@ -465,6 +474,5 @@ class Activation extends Model implements API\Serializable {
 	protected static function get_table() {
 		return Manager::get( 'itelic-activations' );
 	}
-
 
 }

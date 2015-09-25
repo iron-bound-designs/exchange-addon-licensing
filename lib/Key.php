@@ -167,6 +167,16 @@ class Key extends Model implements API\Serializable {
 		$key = self::with_key( $key );
 
 		if ( $key ) {
+
+			/**
+			 * Fires when a license key is created.
+			 *
+			 * @since 1.0
+			 *
+			 * @param Key $key
+			 */
+			do_action( 'itelic_create_key', $key );
+
 			Cache::add( $key );
 		}
 

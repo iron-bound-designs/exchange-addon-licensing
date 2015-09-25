@@ -16,6 +16,7 @@ use IronBound\DB\Exception as DB_Exception;
 
 /**
  * Class Upgrade
+ *
  * @package ITELIC
  */
 class Update extends Model {
@@ -102,13 +103,23 @@ class Update extends Model {
 		$db = Manager::make_simple_query_object( 'itelic-updates' );
 		$ID = $db->insert( $data );
 
-		$upgrade = self::get( $ID );
+		$update = self::get( $ID );
 
-		if ( $upgrade ) {
-			Cache::add( $upgrade );
+		if ( $update ) {
+
+			/**
+			 * Fires when an update record is created.
+			 *
+			 * @since 1.0
+			 *
+			 * @param Update $update
+			 */
+			do_action( 'itelic_create_update', $update );
+
+			Cache::add( $update );
 		}
 
-		return $upgrade;
+		return $update;
 	}
 
 	/**

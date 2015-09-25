@@ -132,6 +132,16 @@ class Renewal extends Model {
 		$renewal = self::from_id( $id );
 
 		if ( $renewal ) {
+
+			/**
+			 * Fires when a renewal record is created.
+			 *
+			 * @since 1.0
+			 *
+			 * @param Renewal $renewal
+			 */
+			do_action( 'itelic_create_renewal', $renewal );
+
 			Cache::add( $renewal );
 		}
 
