@@ -155,19 +155,6 @@ class Release extends Model {
 	}
 
 	/**
-	 * Retrieve a release by its ID.
-	 *
-	 * @since 1.0
-	 *
-	 * @param int $id
-	 *
-	 * @return Release|null
-	 */
-	public static function with_id( $id ) {
-		return self::get( $id );
-	}
-
-	/**
 	 * Create a new release record.
 	 *
 	 * If status is set to active, the start date will automatically be set to

@@ -60,7 +60,7 @@ class Single extends Controller {
 	 * @return void
 	 */
 	public function render() {
-		$release = Release::with_id( $_GET['ID'] );
+		$release = itelic_get_release( $_GET['ID'] );
 
 		if ( ! $release ) {
 			wp_redirect( Dispatch::get_tab_link( 'releases' ) );
@@ -135,8 +135,7 @@ class Single extends Controller {
 			) );
 		}
 
-		/** @var Release $release */
-		$release = Release::get( $release );
+		$release = itelic_get_release( $release );
 
 		try {
 			switch ( $prop ) {
@@ -261,8 +260,7 @@ class Single extends Controller {
 			) );
 		}
 
-		/** @var Release $release */
-		$release = Release::get( $release );
+		$release = itelic_get_release( $release );
 
 		/** @var $wpdb \wpdb */
 		global $wpdb;
@@ -332,7 +330,7 @@ class Single extends Controller {
 			'update_nonce'   => wp_create_nonce( 'itelic-update-release-' . $_GET['ID'] ),
 			'ok'             => __( "Ok", Plugin::SLUG ),
 			'cancel'         => __( "Cancel", Plugin::SLUG ),
-			'currentVersion' => it_exchange_get_product_feature( Release::get( $_GET['ID'] )->get_product()->ID,
+			'currentVersion' => it_exchange_get_product_feature( itelic_get_release( $_GET['ID'] )->get_product()->ID,
 				'licensing', array( 'field' => 'version' ) )
 		) );
 
