@@ -14,6 +14,7 @@ use IronBound\WP_Notifications\Queue\WP_Cron;
 use ITELIC\Purchase_Requirement\Base as Purchase_Requirement;
 use ITELIC\Purchase_Requirement\Renew_Key;
 use ITELIC_API\Query\Keys;
+use ITELIC_API\Query\Releases;
 
 /**
  * When a new transaction is created, generate necessary license keys if applicable.
@@ -237,6 +238,41 @@ function renew_key_on_update_expirations( $mid, $object_id, $meta_key, $_meta_va
 }
 
 add_action( 'updated_post_meta', 'ITELIC\renew_key_on_update_expirations', 10, 4 );
+
+/* --------------------------------------------
+================== Releases ===================
+----------------------------------------------- */
+
+/**
+ * When a new release is activated, automatically archive the old releases.
+ *
+ * @since 1.0
+ *
+ * @param Release $release
+ */
+function archive_old_releases_on_new_activation( Release $release ) {
+
+	// we are paginating the number of releases we want to keep, and start on page 2 to get all that don't match
+	// we don't need to calculate the number of total rows because we don't need the pagination, just the limit
+	$query = new Releases( array(
+		'items_per_page'      => itelic_keep_last_n_releases( $release->get_product() ),
+		'page'                => 2,
+		'status'              => Release::STATUS_ACTIVE,
+		'sql_calc_found_rows' => false,
+		'order' => array(
+			'start_date' => 'DESC'
+		)
+	) );
+
+	/**
+	 * @var Release $release
+	 */
+	foreach ( $query->get_results() as $release ) {
+		$release->archive();
+	}
+}
+
+add_action( 'itelic_activate_release', 'ITELIC\archive_old_releases_on_new_activation' );
 
 /* --------------------------------------------
 ============= Display License Key =============

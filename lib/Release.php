@@ -194,7 +194,7 @@ class Release extends Model {
 			throw new \InvalidArgumentException( "Product given does not have the licensing feature enabled." );
 		}
 
-		$current_version = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field', 'version' ) );
+		$current_version = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'version' ) );
 
 		if ( version_compare( $version, $current_version, '<=' ) ) {
 			throw new \InvalidArgumentException( "New release version must be greater than the current product's version." );
@@ -220,14 +220,6 @@ class Release extends Model {
 
 		if ( $release ) {
 
-			if ( $status == self::STATUS_ACTIVE ) {
-				self::do_activation( $product, $file, $version );
-			}
-
-			if ( in_array( $status, array( self::STATUS_ACTIVE, self::STATUS_ARCHIVED ) ) ) {
-				wp_cache_delete( $product->ID, 'itelic-changelog' );
-			}
-
 			/**
 			 * Fires when a release is created.
 			 *
@@ -236,6 +228,24 @@ class Release extends Model {
 			 * @param Release $release
 			 */
 			do_action( 'itelic_create_release', $release );
+
+			if ( $status == self::STATUS_ACTIVE ) {
+
+				/**
+				 * Fires when a release is activated.
+				 *
+				 * @since 1.0
+				 *
+				 * @param Release $release
+				 */
+				do_action( 'itelic_activate_release', $release );
+
+				self::do_activation( $product, $file, $version );
+			}
+
+			if ( in_array( $status, array( self::STATUS_ACTIVE, self::STATUS_ARCHIVED ) ) ) {
+				wp_cache_delete( $product->ID, 'itelic-changelog' );
+			}
 
 			Cache::add( $release );
 		}
