@@ -354,24 +354,7 @@ class Single extends Controller {
 			return null;
 		}
 
-		/** @var $wpdb \wpdb */
-		global $wpdb;
-
-		$tn = Manager::get( 'itelic-updates' )->get_table_name( $wpdb );
-
-		$id       = $release->get_ID();
-		$end_date = $release->get_start_date()->add( new \DateInterval( 'P14D' ) );
-
-		$results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT Date(update_date) AS d, COUNT(ID) AS c FROM $tn WHERE release_id = %d AND update_date < %s
-			GROUP BY Day(d) ORDER BY update_date ASC",
-			$id, $end_date->format( 'Y-m-d H:i:s' ) ) );
-
-		$raw = array();
-
-		foreach ( $results as $result ) {
-			$raw[ $result->d ] = (int) $result->c;
-		}
+		$raw = $release->get_first_14_days_of_upgrades();
 
 		$now = new \DateTime();
 
@@ -439,17 +422,7 @@ class Single extends Controller {
 			return null;
 		}
 
-		/** @var $wpdb \wpdb */
-		global $wpdb;
-
-		$tn = Manager::get( 'itelic-updates' )->get_table_name( $wpdb );
-
-		$id = $release->get_ID();
-
-		$results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT previous_version AS v, COUNT(ID) AS c FROM $tn WHERE release_id = %d
-			GROUP BY previous_version ORDER BY c DESC LIMIT 5",
-			$id ) );
+		$results = $release->get_top_5_previous_versions();
 
 		$chart = new Chart\Pie( 698, 200, array(
 			'ibdLoadOn'       => 'loadVersionsChart',

@@ -190,6 +190,14 @@
 	color: #E7E7E7;
 }
 
+#release-details .header-block .status-archived {
+	background: #3F88C5;
+}
+
+#release-details .header-block .status-archived span {
+	color: #fff;
+}
+
 /** -----------------------------------------------------:[ release header-details ]:---------- */
 
 #release-details .header-block h2 {

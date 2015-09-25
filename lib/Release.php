@@ -354,6 +354,31 @@ class Release extends Model {
 	}
 
 	/**
+	 * Archive this release.
+	 *
+	 * @since 1.0
+	 */
+	public function archive() {
+
+		$updated     = $this->get_total_updated();
+		$activations = $this->get_total_active_activations();
+
+		$this->update_meta( 'updated', $updated );
+		$this->update_meta( 'activations', $activations );
+
+		$top5 = $this->get_top_5_previous_versions();
+		$this->update_meta( 'top5_prev_version', $top5 );
+
+		$first_14_days = $this->get_first_14_days_of_upgrades();
+		$this->update_meta( 'first_14_days', $first_14_days );
+
+		if ( $this->status != self::STATUS_ARCHIVED ) {
+			$this->status = self::STATUS_ARCHIVED;
+			$this->update( 'status', self::STATUS_ARCHIVED );
+		}
+	}
+
+	/**
 	 * Get the unique pk for this record.
 	 *
 	 * @since 1.0
@@ -487,6 +512,10 @@ class Release extends Model {
 			$this->pause();
 		}
 
+		if ( $this->status == self::STATUS_ACTIVE && $status == self::STATUS_ARCHIVED ) {
+			$this->archive();
+		}
+
 		$this->status = $status;
 		$this->update( 'status', $status );
 	}
@@ -570,7 +599,7 @@ class Release extends Model {
 	 */
 	public function get_start_date() {
 		if ( $this->start_date ) {
-			return new \DateTimeImmutable( $this->start_date->format( \DateTime::ISO8601 ) );
+			return clone $this->start_date;
 		}
 
 		return $this->start_date;
@@ -667,6 +696,10 @@ class Release extends Model {
 	 */
 	public function get_total_updated() {
 
+		if ( $this->get_status() == self::STATUS_ARCHIVED ) {
+			return $this->get_meta( 'updated', true );
+		}
+
 		$found = null;
 
 		$count = wp_cache_get( $this->get_ID(), 'itelic-release-upgrade-count', false, $found );
@@ -687,13 +720,15 @@ class Release extends Model {
 	/**
 	 * Get the total activations for this product.
 	 *
-	 * todo determine correct location for this method
-	 *
 	 * @since 1.0
 	 *
 	 * @return int
 	 */
 	public function get_total_active_activations() {
+
+		if ( $this->get_status() == self::STATUS_ARCHIVED ) {
+			return $this->get_meta( 'activations', true );
+		}
 
 		$query = new Activations( array(
 			'status'       => Activation::ACTIVE,
@@ -702,6 +737,67 @@ class Release extends Model {
 		) );
 
 		return $query->get_total_items();
+	}
+
+	/**
+	 * Get the first 14 days of upgrades.
+	 *
+	 * @since 1.0
+	 *
+	 * @return array
+	 */
+	public function get_first_14_days_of_upgrades() {
+
+		if ( $this->get_status() == self::STATUS_ARCHIVED ) {
+			return $this->get_meta( 'first_14_days', true );
+		}
+
+		/** @var $wpdb \wpdb */
+		global $wpdb;
+
+		$tn = Manager::get( 'itelic-updates' )->get_table_name( $wpdb );
+
+		$id       = $this->get_ID();
+		$end_date = $this->get_start_date()->add( new \DateInterval( 'P14D' ) );
+
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"SELECT Date(update_date) AS d, COUNT(ID) AS c FROM $tn WHERE release_id = %d AND update_date < %s
+			GROUP BY Day(d) ORDER BY update_date ASC",
+			$id, $end_date->format( 'Y-m-d H:i:s' ) ) );
+
+		$raw = array();
+
+		foreach ( $results as $result ) {
+			$raw[ $result->d ] = (int) $result->c;
+		}
+
+		return $raw;
+	}
+
+	/**
+	 * Get the top five previous versions being upgraded from.
+	 *
+	 * @since 1.0
+	 *
+	 * @return array
+	 */
+	public function get_top_5_previous_versions() {
+
+		if ( $this->get_status() == self::STATUS_ARCHIVED ) {
+			return $this->get_meta( 'top5_prev_version', true );
+		}
+
+		/** @var $wpdb \wpdb */
+		global $wpdb;
+
+		$tn = Manager::get( 'itelic-updates' )->get_table_name( $wpdb );
+
+		$id = $this->get_ID();
+
+		return $wpdb->get_results( $wpdb->prepare(
+			"SELECT previous_version AS v, COUNT(ID) AS c FROM $tn WHERE release_id = %d
+			GROUP BY previous_version ORDER BY c DESC LIMIT 5",
+			$id ) );
 	}
 
 	/**
