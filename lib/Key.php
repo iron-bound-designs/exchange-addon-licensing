@@ -13,6 +13,7 @@ use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
 use ITELIC_API\Query\Activations;
+use ITELIC_API\Query\Renewals;
 
 /**
  * Class ITELIC\Key
@@ -542,13 +543,23 @@ class Key extends Model implements API\Serializable {
 		 */
 		do_action( 'itelic_delete_key', $this );
 
+		$activations = new Activations( array(
+			'key' => $this->get_key()
+		) );
+
+		foreach ( $activations->get_results() as $activation ) {
+			$activation->delete();
+		}
+
+		$renewals = new Renewals( array(
+			'key' => $this->get_key()
+		) );
+
+		foreach ( $renewals->get_results() as $renewal ) {
+			$renewal->delete();
+		}
+
 		parent::delete();
-
-		$activations = Manager::make_simple_query_object( 'itelic-activations' );
-		$activations->delete_many( array( 'lkey' => $this->get_key() ) );
-
-		$renewals = Manager::make_simple_query_object( 'itelic-renewals' );
-		$renewals->delete_many( array( 'lkey' => $this->get_key() ) );
 
 		/**
 		 * Fires after a key is deleted.

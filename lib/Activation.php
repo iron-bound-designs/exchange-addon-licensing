@@ -13,6 +13,7 @@ use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
 use IronBound\DB\Exception as DB_Exception;
+use ITELIC_API\Query\Updates;
 
 /**
  * Class ITELIC_Activation
@@ -460,6 +461,14 @@ class Activation extends Model implements API\Serializable {
 		do_action( 'itelic_delete_activation', $this );
 
 		parent::delete();
+
+		$updates = new Updates( array(
+			'activation' => $this->get_pk()
+		) );
+
+		foreach ( $updates->get_results() as $update ) {
+			$update->delete();
+		}
 
 		/**
 		 * Fires after an activation record is deleted.
