@@ -262,8 +262,7 @@ function generate_download_link( Activation $activation ) {
 	$now     = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
 	$expires = $now->add( new \DateInterval( "P1D" ) );
 
-	$args            = generate_download_query_args( $activation, $expires );
-	$args['product'] = $product->ID;
+	$args = generate_download_query_args( $activation, $expires );
 
 	$download_ep = Dispatch::get_url( 'download' );
 

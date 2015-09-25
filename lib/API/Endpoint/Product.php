@@ -66,7 +66,7 @@ class Product extends Endpoint implements Authenticatable {
 			'last_updated'    => empty( $readme['last_updated'] ) ? '' : $readme['last_updated']->format( \DateTime::ISO8601 ),
 			'banner_low'      => $readme['banner_low'],
 			'banner_high'     => $readme['banner_high'],
-			'package_url'     => \ITELIC\generate_download_link( $this->key, $this->key->get_product() ),
+			'package_url'     => \ITELIC\generate_download_link( $this->activation ),
 			'description_url' => get_permalink( $this->key->get_product()->ID ),
 			'changelog'       => $this->key->get_product()->get_changelog(),
 			'sections'        => array()

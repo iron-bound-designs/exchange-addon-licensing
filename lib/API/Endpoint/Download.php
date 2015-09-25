@@ -42,8 +42,9 @@ class Download extends Endpoint {
 		}
 
 		$activation = itelic_get_activation( $get['activation'] );
+		$key        = $get['key'];
 
-		if ( ! $activation ) {
+		if ( ! $activation || $activation->get_key()->get_key() != $key ) {
 			status_header( 403 );
 
 			_e( "This download link is invalid or has expired.", Plugin::SLUG );
