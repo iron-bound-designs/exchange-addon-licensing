@@ -40,7 +40,7 @@ function itelic_get_key( $key ) {
 	 *
 	 * @param \ITELIC\Key $key
 	 */
-	return apply_filters( 'itelic_get_key', \ITELIC\Key::with_key( $key ) );
+	return apply_filters( 'itelic_get_key', \ITELIC\Key::get( $key ) );
 }
 
 /**

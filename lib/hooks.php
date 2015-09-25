@@ -169,7 +169,7 @@ function renew_key_on_renewal_purchase( $transaction_id ) {
 	foreach ( $transaction->get_products() as $product ) {
 
 		if ( isset( $product['renewed_key'] ) && $product['renewed_key'] ) {
-			$key = Key::with_key( $product['renewed_key'] );
+			$key = itelic_get_key( $product['renewed_key'] );
 
 			if ( $key ) {
 				$key->renew( $transaction );
@@ -582,7 +582,7 @@ function account_licenses_activate() {
 	}
 
 	try {
-		$key = Key::with_key( $key );
+		$key = itelic_get_key( $key );
 	}
 	catch ( \Exception $e ) {
 		wp_send_json_error( array(

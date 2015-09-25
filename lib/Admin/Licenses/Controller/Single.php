@@ -329,6 +329,6 @@ class Single extends Controller {
 			return null;
 		}
 
-		return Key::with_key( $key );
+		return itelic_get_key( $key );
 	}
 }

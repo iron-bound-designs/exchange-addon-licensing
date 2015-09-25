@@ -116,17 +116,6 @@ class Key extends Model implements API\Serializable {
 	}
 
 	/**
-	 * Retrieve a license key object by using the license key.
-	 *
-	 * @param string $key
-	 *
-	 * @return Key
-	 */
-	public static function with_key( $key ) {
-		return self::get( $key );
-	}
-
-	/**
 	 * Create a license key record.
 	 *
 	 * @since 1.0
@@ -164,7 +153,7 @@ class Key extends Model implements API\Serializable {
 		$db = Manager::make_simple_query_object( 'itelic-keys' );
 		$db->insert( $data );
 
-		$key = self::with_key( $key );
+		$key = self::get( $key );
 
 		if ( $key ) {
 

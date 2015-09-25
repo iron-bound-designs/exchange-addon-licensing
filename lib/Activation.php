@@ -91,7 +91,7 @@ class Activation extends Model implements API\Serializable {
 	 */
 	protected function init( \stdClass $data ) {
 		$this->id         = $data->id;
-		$this->key        = Key::with_key( $data->lkey );
+		$this->key        = itelic_get_key( $data->lkey );
 		$this->location   = $data->location;
 		$this->status     = $data->status;
 		$this->activation = new \DateTime( $data->activation );
