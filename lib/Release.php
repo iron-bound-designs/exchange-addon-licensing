@@ -394,6 +394,15 @@ class Release extends Model {
 		foreach ( $update_query->get_results() as $update ) {
 			$update->delete();
 		}
+
+		/**
+		 * Fires when a release is archived.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Release $this
+		 */
+		do_action( 'itelic_archive_release', $this );
 	}
 
 	/**

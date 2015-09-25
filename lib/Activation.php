@@ -214,6 +214,15 @@ class Activation extends Model implements API\Serializable {
 
 		$this->set_deactivation( $date );
 		$this->set_status( self::DEACTIVATED );
+
+		/**
+		 * Fires when an activation record is deactivated.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation $this
+		 */
+		do_action( 'itelic_deactivate_activation', $this );
 	}
 
 	/**
@@ -240,6 +249,15 @@ class Activation extends Model implements API\Serializable {
 		$this->set_deactivation( null );
 		$this->set_activation( $date );
 		$this->set_status( self::ACTIVE );
+
+		/**
+		 * Fires when an activation record is reactivated.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation $this
+		 */
+		do_action( 'itelic_reactivate_activation', $this );
 	}
 
 	/**

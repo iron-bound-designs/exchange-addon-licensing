@@ -15,7 +15,7 @@ use IronBound\DB\Manager;
 use ITELIC_API\Query\Activations;
 
 /**
- * Class ITELIC_Key
+ * Class ITELIC\Key
  *
  * Class used to represent a license key.
  *
@@ -102,13 +102,7 @@ class Key extends Model implements API\Serializable {
 			$this->expires = new \DateTime( $data->expires );
 		}
 
-		foreach (
-			array(
-				'transaction',
-				'product',
-				'customer'
-			) as $maybe_error
-		) {
+		foreach ( array( 'transaction',	'product','customer' ) as $maybe_error ) {
 			if ( ! $this->$maybe_error || is_wp_error( $this->$maybe_error ) ) {
 				throw new \InvalidArgumentException( "Invalid $maybe_error" );
 			}
@@ -232,6 +226,15 @@ class Key extends Model implements API\Serializable {
 		$expires->add( $interval );
 		$this->set_expires( $expires );
 
+		/**
+		 * Fires when a license key's expiration date is extended.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Key $this
+		 */
+		do_action( 'itelic_extend_key', $this );
+
 		return $this->get_expires();
 	}
 
@@ -261,6 +264,15 @@ class Key extends Model implements API\Serializable {
 		$this->extend();
 
 		$this->set_status( self::ACTIVE );
+
+		/**
+		 * Fires when a license key is renewed.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Key $this
+		 */
+		do_action( 'itelic_renew_key', $this );
 
 		return $record;
 	}
