@@ -532,6 +532,16 @@ class Key extends Model implements API\Serializable {
 	 * Delete the license key.
 	 */
 	public function delete() {
+
+		/**
+		 * Fires before a key is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation $this
+		 */
+		do_action( 'itelic_delete_key', $this );
+
 		parent::delete();
 
 		$activations = Manager::make_simple_query_object( 'itelic-activations' );
@@ -539,6 +549,15 @@ class Key extends Model implements API\Serializable {
 
 		$renewals = Manager::make_simple_query_object( 'itelic-renewals' );
 		$renewals->delete_many( array( 'lkey' => $this->get_key() ) );
+
+		/**
+		 * Fires after a key is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation $this
+		 */
+		do_action( 'itelic_deleted_key', $this );
 	}
 
 	/**

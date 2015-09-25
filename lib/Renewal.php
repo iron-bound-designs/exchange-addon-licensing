@@ -227,6 +227,36 @@ class Renewal extends Model {
 	}
 
 	/**
+	 * Delete this object.
+	 *
+	 * @since 1.0
+	 *
+	 * @throws DB\Exception
+	 */
+	public function delete() {
+
+		/**
+		 * Fires before a renewal record is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Renewal $this
+		 */
+		do_action( 'itelic_delete_renewal', $this );
+
+		parent::delete();
+
+		/**
+		 * Fires after a renewal record is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Renewal $this
+		 */
+		do_action( 'itelic_deleted_renewal', $this );
+	}
+
+	/**
 	 * Get the data we'd like to cache.
 	 *
 	 * This is a bit magical. It iterates through all of the table columns,

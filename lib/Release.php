@@ -839,6 +839,36 @@ class Release extends Model {
 	}
 
 	/**
+	 * Delete this object.
+	 *
+	 * @since 1.0
+	 *
+	 * @throws DB\Exception
+	 */
+	public function delete() {
+
+		/**
+		 * Fires before a release record is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Release $this
+		 */
+		do_action( 'itelic_delete_release', $this );
+
+		parent::delete();
+
+		/**
+		 * Fires after a release record is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Release $this
+		 */
+		do_action( 'itelic_deleted_release', $this );
+	}
+
+	/**
 	 * Get a list of the various statuses.
 	 *
 	 * @since 1.0

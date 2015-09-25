@@ -211,6 +211,36 @@ class Update extends Model {
 	}
 
 	/**
+	 * Delete this object.
+	 *
+	 * @since 1.0
+	 *
+	 * @throws DB\Exception
+	 */
+	public function delete() {
+
+		/**
+		 * Fires before an update record is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Update $this
+		 */
+		do_action( 'itelic_delete_update', $this );
+
+		parent::delete();
+
+		/**
+		 * Fires after an update record is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Update $this
+		 */
+		do_action( 'itelic_deleted_update', $this );
+	}
+
+	/**
 	 * Get the table object for this model.
 	 *
 	 * @since 1.0

@@ -442,6 +442,36 @@ class Activation extends Model implements API\Serializable {
 	}
 
 	/**
+	 * Delete this object.
+	 *
+	 * @since 1.0
+	 *
+	 * @throws DB\Exception
+	 */
+	public function delete() {
+
+		/**
+		 * Fires before an activation record is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation $this
+		 */
+		do_action( 'itelic_delete_activation', $this );
+
+		parent::delete();
+
+		/**
+		 * Fires after an activation record is deleted.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation $this
+		 */
+		do_action( 'itelic_deleted_activation', $this );
+	}
+
+	/**
 	 * Get data suitable for the API.
 	 *
 	 * @since 1.0
