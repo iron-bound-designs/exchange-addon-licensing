@@ -15,6 +15,7 @@ use IronBound\DB\Manager;
 use IronBound\DB\Exception as DB_Exception;
 use ITELIC_API\Query\Activations;
 use ITELIC_API\Query\Releases;
+use ITELIC_API\Updates;
 
 /**
  * Class Release
@@ -376,6 +377,14 @@ class Release extends Model {
 		if ( $this->status != self::STATUS_ARCHIVED ) {
 			$this->status = self::STATUS_ARCHIVED;
 			$this->update( 'status', self::STATUS_ARCHIVED );
+		}
+
+		$update_query = new Updates(array(
+			'release' => $this->get_ID()
+		));
+
+		foreach ( $update_query->get_results() as $update ) {
+			$update->delete();
 		}
 	}
 
