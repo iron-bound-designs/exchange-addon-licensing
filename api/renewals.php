@@ -16,7 +16,7 @@
  * @return \ITELIC\Renewal
  */
 function itelic_get_renewal_record( $id ) {
-	return \ITELIC\Renewal::from_id( $id );
+	return \ITELIC\Renewal::get( $id );
 }
 
 /**

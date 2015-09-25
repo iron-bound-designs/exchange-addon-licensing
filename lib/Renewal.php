@@ -78,19 +78,6 @@ class Renewal extends Model {
 	}
 
 	/**
-	 * Get a renewal record from it's ID.
-	 *
-	 * @since 1.0
-	 *
-	 * @param int $id
-	 *
-	 * @return Renewal
-	 */
-	public static function from_id( $id ) {
-		return self::get( $id );
-	}
-
-	/**
 	 * Create a renewal record.
 	 *
 	 * @since 1.0
@@ -129,7 +116,7 @@ class Renewal extends Model {
 		$db = Manager::make_simple_query_object( 'itelic-renewals' );
 		$id = $db->insert( $data );
 
-		$renewal = self::from_id( $id );
+		$renewal = self::get( $id );
 
 		if ( $renewal ) {
 
