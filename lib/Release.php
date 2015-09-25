@@ -240,7 +240,9 @@ class Release extends Model {
 				 */
 				do_action( 'itelic_activate_release', $release );
 
-				self::do_activation( $product, $file, $version );
+				if ( $type != self::TYPE_PRERELEASE ) {
+					self::do_activation( $product, $file, $version );
+				}
 			}
 
 			if ( in_array( $status, array( self::STATUS_ACTIVE, self::STATUS_ARCHIVED ) ) ) {
@@ -304,7 +306,9 @@ class Release extends Model {
 			$this->set_start_date( new \DateTime() );
 		}
 
-		self::do_activation( $this->get_product(), $this->get_download(), $this->get_version() );
+		if ( $this->get_type() != self::TYPE_PRERELEASE ) {
+			self::do_activation( $this->get_product(), $this->get_download(), $this->get_version() );
+		}
 
 		wp_cache_delete( $this->get_product()->ID, 'itelic-changelog' );
 
@@ -384,9 +388,9 @@ class Release extends Model {
 			$this->update( 'status', self::STATUS_ARCHIVED );
 		}
 
-		$update_query = new Updates(array(
+		$update_query = new Updates( array(
 			'release' => $this->get_ID()
-		));
+		) );
 
 		foreach ( $update_query->get_results() as $update ) {
 			$update->delete();
