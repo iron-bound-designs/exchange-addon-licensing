@@ -12,9 +12,11 @@ use ITELIC\API\Endpoint;
 use ITELIC\Key;
 use ITELIC\API\Response;
 use ITELIC\Plugin;
+use ITELIC\Update;
 
 /**
  * Class Download
+ *
  * @package ITELIC\API\Endpoint
  */
 class Download extends Endpoint {
@@ -51,7 +53,11 @@ class Download extends Endpoint {
 			die();
 		}
 
-		$file = $activation->get_key()->get_product()->get_latest_release_for_activation( $activation )->get_download();
+		$release = $activation->get_key()->get_product()->get_latest_release_for_activation( $activation );
+
+		$file = $release->get_download();
+
+		Update::create( $activation, $release );
 
 		\ITELIC\serve_download( wp_get_attachment_url( $file->ID ) );
 	}
