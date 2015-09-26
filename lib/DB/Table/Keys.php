@@ -103,11 +103,11 @@ class Keys implements Table {
 		$tn = $this->get_table_name( $wpdb );
 
 		return "CREATE TABLE {$tn} (
-		lkey VARCHAR(255) NOT NULL,
+		lkey VARCHAR(128) NOT NULL,
 		transaction_id BIGINT(20) UNSIGNED NOT NULL,
 		product BIGINT(20) UNSIGNED NOT NULL,
 		customer BIGINT(20) UNSIGNED NOT NULL,
-		status VARCHAR(255) NOT NULL,
+		status VARCHAR(20) NOT NULL,
 		max INTEGER UNSIGNED NOT NULL,
 		expires DATETIME,
 		PRIMARY KEY  (lkey),

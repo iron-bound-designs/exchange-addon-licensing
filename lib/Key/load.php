@@ -112,7 +112,7 @@ function render_key_type_random_settings( $product, $prefix, $values = array() )
 	?>
 
 	<label for="itelic-key-type-random"><?php _e( "Key Length", Plugin::SLUG ); ?></label>
-	<input type="number" min="1" id="itelic-key-type-random" name="<?php echo $prefix; ?>[length]" value="<?php echo esc_attr( $values['length'] ); ?>">
+	<input type="number" min="1" max="128" id="itelic-key-type-random" name="<?php echo $prefix; ?>[length]" value="<?php echo esc_attr( $values['length'] ); ?>">
 
 	<p class="description">
 		<?php _e( "Choose a key length.", Plugin::SLUG ); ?>

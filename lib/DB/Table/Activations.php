@@ -108,11 +108,11 @@ class Activations implements Table {
 
 		return "CREATE TABLE {$tn} (
 		id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT,
-		lkey VARCHAR(255) NOT NULL,
-		location VARCHAR(255) NOT NULL,
+		lkey VARCHAR(128) NOT NULL,
+		location VARCHAR(191) NOT NULL,
 		activation DATETIME NOT NULL,
 		deactivation DATETIME,
-		status VARCHAR(255) NOT NULL,
+		status VARCHAR(20) NOT NULL,
 		version VARCHAR(20) NOT NULL,
 		PRIMARY KEY  (id),
 		KEY lkey (lkey),

@@ -134,6 +134,10 @@ class Activation extends Model implements API\Serializable {
 			throw new \InvalidArgumentException( __( "The license key and install location are required.", Plugin::SLUG ) );
 		}
 
+		if ( strlen($location) > 191) {
+			throw new \InvalidArgumentException( "The location field has a max length of 191 characters." );
+		}
+
 		if ( $key->get_active_count() >= $key->get_max() ) {
 			throw new \LogicException( __( "This license key has reached it's maximum number of activations.", Plugin::SLUG ) );
 		}

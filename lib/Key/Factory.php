@@ -13,6 +13,7 @@ use ITELIC\Key\Generator\Random;
 
 /**
  * Class Factory
+ *
  * @package ITELIC\Key
  */
 class Factory {
@@ -71,7 +72,7 @@ class Factory {
 			throw new \UnexpectedValueException( "Invalid key type $type" );
 		}
 
-		return trim( $generator->generate() );
+		return substr( trim( $generator->generate() ), 0, 128 );
 	}
 
 	/**

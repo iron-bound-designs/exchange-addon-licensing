@@ -131,6 +131,10 @@ class Key extends Model implements API\Serializable {
 			throw new \InvalidArgumentException( "\$key must not be empty." );
 		}
 
+		if ( strlen($key) > 128) {
+			throw new \InvalidArgumentException( "The maximum key length is 128 characters." );
+		}
+
 		if ( empty( $status ) ) {
 			$status = self::ACTIVE;
 		}
