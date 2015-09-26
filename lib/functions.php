@@ -305,13 +305,15 @@ function generate_download_query_args( Activation $activation, \DateTime $expire
  */
 function validate_query_args( $query_args ) {
 
-	if ( ! isset( $query_args['key'] ) || ! isset( $query_args['expires'] ) || ! isset( $query_args['token'] ) ) {
+	if ( ! isset( $query_args['key'] ) || ! isset( $query_args['expires'] ) ||
+	     ! isset( $query_args['token'] ) || ! isset( $query_args['activation'] )
+	) {
 		return false;
 	}
 
 	$args = array(
-		'key'        => $query_args['key'],
 		'activation' => $query_args['activation'],
+		'key'        => $query_args['key'],
 		'expires'    => (int) $query_args['expires']
 	);
 
