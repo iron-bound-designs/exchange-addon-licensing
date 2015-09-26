@@ -121,7 +121,7 @@ class Single extends View {
 			$this->render_whats_changed();
 			$this->render_security_message();
 			$this->render_upgrades_bar();
-			
+
 			if ( $this->release->get_status() != Release::STATUS_ARCHIVED ):
 				$this->render_notification_editor();
 			endif;
@@ -244,7 +244,7 @@ class Single extends View {
 		}
 
 		if ( $this->release->get_status() == Release::STATUS_ARCHIVED ) {
-			$disabled = ' disabled="disabled"';
+			$disabled = ' button-disabled';
 			$title = __( "Update notifications can't be sent for archived releases.", Plugin::SLUG );
 			$title = " title=\"$title\"";
 		} else {
@@ -268,7 +268,7 @@ class Single extends View {
 					</div>
 				</progress>
 
-				<button class="button" id="notify-button"<?php echo $disabled . $title; ?>>
+				<button class="button <?php echo $disabled; ?>" id="notify-button"<?php echo $title; ?>>
 					<?php _e( "Notify", Plugin::SLUG ); ?>
 				</button>
 			</div>
@@ -285,7 +285,7 @@ class Single extends View {
 	protected function render_notify_button_section() {
 
 		if ( $this->release->get_status() == Release::STATUS_ARCHIVED ) {
-			$disabled = ' disabled="disabled"';
+			$disabled = ' button-disabled';
 			$title = __( "Update notifications can't be sent for archived releases.", Plugin::SLUG );
 			$title = " title=\"$title\"";
 		} else {
@@ -296,7 +296,7 @@ class Single extends View {
 		?>
 
 		<div class="spacing-wrapper bottom-border full-notify-button hidden">
-			<button class="button" id="notify-button-full"<?php echo $disabled . $title; ?>>
+			<button class="button <?php echo $disabled; ?>" id="notify-button-full"<?php echo $title; ?>>
 				<?php _e( "Notify Outdated Customers", Plugin::SLUG ); ?>
 			</button>
 		</div>
