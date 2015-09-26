@@ -203,10 +203,10 @@ class Single extends View {
 				<?php endif; ?>
 			</td>
 			<td>
-				<?php if ( '' === ( $v = $activation->get_version() ) ): ?>
+				<?php if ( null === ( $r = $activation->get_release() ) ): ?>
 					<?php _e( "Unknown", Plugin::SLUG ); ?>
 				<?php else: ?>
-					<?php printf( 'v%s', $v ); ?>
+					<?php printf( 'v%s', $r->get_version() ); ?>
 				<?php endif; ?>
 			</td>
 			<td>

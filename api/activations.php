@@ -141,19 +141,18 @@ function itelic_normalize_url( $url ) {
  *
  * @since 1.0
  *
- * @param \ITELIC\Key $key
- * @param string      $location
- * @param DateTime    $date
- * @param string      $status
- * @param string      $version
+ * @param \ITELIC\Key     $key
+ * @param string          $location
+ * @param DateTime        $date
+ * @param \ITELIC\Release $release
  *
  * @return \ITELIC\Activation
  *
  * @throws LogicException|\IronBound\DB\Exception
  */
-function itelic_activate_license_key( \ITELIC\Key $key, $location, DateTime $date = null, $status = '', $version = '' ) {
+function itelic_activate_license_key( \ITELIC\Key $key, $location, DateTime $date = null, \ITELIC\Release $release = null ) {
 
-	$record = \ITELIC\Activation::create( $key, $location, $date, $status, $version );
+	$record = \ITELIC\Activation::create( $key, $location, $date, $release );
 	$key->log_activation( $record );
 
 	return $record;

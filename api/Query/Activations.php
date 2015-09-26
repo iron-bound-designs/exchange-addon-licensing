@@ -55,9 +55,9 @@ class Activations extends Complex_Query {
 			'status'           => 'any',
 			'activation'       => '',
 			'deactivation'     => '',
-			'version'          => '',
-			'version__in'      => array(),
-			'version__not_in'  => array(),
+			'release'          => '',
+			'release__in'      => array(),
+			'release__not_in'  => array(),
 			'product'          => '',
 			'customer'         => ''
 		);
@@ -114,8 +114,8 @@ class Activations extends Complex_Query {
 			$where->qAnd( $deactivation );
 		}
 
-		if ( ( $version = $this->parse_version() ) !== null ) {
-			$where->qAnd( $version );
+		if ( ( $release = $this->parse_release() ) !== null ) {
+			$where->qAnd( $release );
 		}
 
 		$order = $this->parse_order();
@@ -244,19 +244,19 @@ class Activations extends Complex_Query {
 	}
 
 	/**
-	 * Parse the version query.
+	 * Parse the release query.
 	 *
 	 * @since 1.0
 	 *
 	 * @return Where|null
 	 */
-	protected function parse_version() {
+	protected function parse_release() {
 
-		if ( ! empty( $this->args['version'] ) ) {
-			$this->args['version__in'] = array( $this->args['version'] );
+		if ( ! empty( $this->args['release'] ) ) {
+			$this->args['release__in'] = array( $this->args['release'] );
 		}
 
-		return $this->parse_in_or_not_in_query( 'version', $this->args['version__in'], $this->args['version__not_in'] );
+		return $this->parse_in_or_not_in_query( 'release', $this->args['release__in'], $this->args['release__not_in'] );
 	}
 
 	/**

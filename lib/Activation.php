@@ -72,9 +72,9 @@ class Activation extends Model implements API\Serializable {
 	private $deactivation = null;
 
 	/**
-	 * @var string
+	 * @var Release
 	 */
-	private $version;
+	private $release;
 
 	/**
 	 * Constructor.
@@ -101,7 +101,7 @@ class Activation extends Model implements API\Serializable {
 			$this->deactivation = new \DateTime( $data->deactivation );
 		}
 
-		$this->version = trim( $data->version );
+		$this->release = itelic_get_release( $data->release );
 	}
 
 	/**
@@ -121,20 +121,20 @@ class Activation extends Model implements API\Serializable {
 	 * @param Key       $key
 	 * @param string    $location
 	 * @param \DateTime $activation
+	 * @param Release   $release
 	 * @param string    $status
-	 * @param string    $version
 	 *
 	 * @return Activation
 	 *
 	 * @throws \LogicException|DB_Exception
 	 */
-	public static function create( Key $key, $location, \DateTime $activation = null, $status = '', $version = '' ) {
+	public static function create( Key $key, $location, \DateTime $activation = null, Release $release = null, $status = '' ) {
 
 		if ( empty( $key ) || empty( $location ) ) {
 			throw new \InvalidArgumentException( __( "The license key and install location are required.", Plugin::SLUG ) );
 		}
 
-		if ( strlen($location) > 191) {
+		if ( strlen( $location ) > 191 ) {
 			throw new \InvalidArgumentException( "The location field has a max length of 191 characters." );
 		}
 
@@ -156,20 +156,17 @@ class Activation extends Model implements API\Serializable {
 			$location = itelic_normalize_url( $location );
 		}
 
-		if ( ! $version ) {
-			$version = it_exchange_get_product_feature( $key->get_product()->ID, 'licensing', array( 'field' => 'version' ) );
-		} else {
-			$version = sanitize_text_field( $version );
-		}
-
 		$data = array(
 			'lkey'         => $key->get_key(),
 			'location'     => $location,
 			'activation'   => $activation,
 			'deactivation' => null,
-			'status'       => $status,
-			'version'      => $version
+			'status'       => $status
 		);
+
+		if ( $release ) {
+			$data['release'] = $release->get_pk();
+		}
 
 		$db = Manager::make_simple_query_object( 'itelic-activations' );
 
@@ -193,6 +190,12 @@ class Activation extends Model implements API\Serializable {
 		$activation->get_key()->log_activation( $activation );
 
 		Cache::add( $activation );
+
+		if ( ! $release ) {
+
+			$latest = $key->get_product()->get_latest_release_for_activation( $activation );
+			$latest->set_release( $latest );
+		}
 
 		/**
 		 * Fires when an activation record is created.
@@ -419,10 +422,10 @@ class Activation extends Model implements API\Serializable {
 	 *
 	 * @since 1.0
 	 *
-	 * @return string
+	 * @return Release
 	 */
-	public function get_version() {
-		return $this->version;
+	public function get_release() {
+		return $this->release;
 	}
 
 	/**
@@ -430,13 +433,13 @@ class Activation extends Model implements API\Serializable {
 	 *
 	 * @since 1.0
 	 *
-	 * @param string $version
+	 * @param Release $release
 	 */
-	public function set_version( $version ) {
+	public function set_release( Release $release ) {
 
-		$this->version = sanitize_text_field( $version );
+		$this->release = $release;
 
-		$this->update( 'version', $this->version );
+		$this->update( 'release', $this->release->get_pk() );
 	}
 
 	/**

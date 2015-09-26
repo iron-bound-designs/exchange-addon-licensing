@@ -97,8 +97,8 @@ class Installed_Versions extends Report implements Date_Filterable, Product_Filt
 		$atn = Manager::get( 'itelic-activations' )->get_table_name( $wpdb );
 		$ktn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
 
-		$raw = "SELECT COUNT(1) as c, version as d FROM $atn a JOIN $ktn k ON (k.lkey = a.lkey AND k.product = %d)
-				WHERE a.activation BETWEEN %s AND %s AND a.status = %s GROUP BY version LIMIT 5";
+		$raw = "SELECT COUNT(1) as c, `release` as d FROM $atn a JOIN $ktn k ON (k.lkey = a.lkey AND k.product = %d)
+				WHERE a.activation BETWEEN %s AND %s AND a.status = %s GROUP BY `release` LIMIT 5";
 
 		$results = $wpdb->get_results( $wpdb->prepare( $raw, $product, $start, $end, Activation::ACTIVE ) );
 
@@ -146,6 +146,10 @@ class Installed_Versions extends Report implements Date_Filterable, Product_Filt
 		foreach ( $translated as $label => $value ) {
 
 			if ( $label != __( 'Unknown', Plugin::SLUG ) ) {
+
+				$release = itelic_get_release( $label );
+				$label = $release->get_version();
+
 				$label = "v$label";
 			}
 

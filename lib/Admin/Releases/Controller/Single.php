@@ -212,23 +212,23 @@ class Single extends Controller {
 				'status'          => Activation::ACTIVE,
 				'product'         => $release->get_product()->ID,
 				'customer'        => $to->ID,
-				'version__not_in' => array( $release->get_version() )
+				'release__not_in' => array( $release->get_pk() )
 			) );
 
 			$activations = array_filter( $query->get_results(), function ( Activation $activation ) use ( $release ) {
 
-				if ( ! $activation->get_version() ) {
+				if ( ! $activation->get_release() ) {
 					return true;
 				}
 
-				return version_compare( $activation->get_version(), $release->get_version(), '<' );
+				return version_compare( $activation->get_release(), $release->get_version(), '<' );
 			} );
 
 			$html = '<ul>';
 
 			/** @var Activation $activation */
 			foreach ( $activations as $activation ) {
-				$html .= '<li>' . "{$activation->get_location()} – v{$activation->get_version()}" . '</li>';
+				$html .= '<li>' . "{$activation->get_location()} – v{$activation->get_release()}" . '</li>';
 			}
 
 			$html .= '</ul>';

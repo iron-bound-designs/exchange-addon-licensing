@@ -90,7 +90,7 @@ class Update extends Model {
 		}
 
 		if ( empty( $previous_version ) ) {
-			$previous_version = $activation->get_version();
+			$previous_version = $activation->get_release();
 		}
 
 		$data = array(
@@ -107,7 +107,7 @@ class Update extends Model {
 
 		if ( $update ) {
 
-			$activation->set_version( $release->get_version() );
+			$activation->set_release( $release );
 
 			/**
 			 * Fires when an update record is created.

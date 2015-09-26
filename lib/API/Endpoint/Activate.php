@@ -50,8 +50,16 @@ class Activate extends Endpoint implements Authenticatable {
 
 		$location = sanitize_text_field( $post['location'] );
 
+		$version = isset( $post['version'] ) ? $post['version'] : '';
+
+		if ( $version ) {
+			$release = itelic_get_release_by_version( $this->key->get_product()->ID, $version );
+		} else {
+			$release = null;
+		}
+
 		try {
-			$activation = itelic_activate_license_key( $this->key, $location, null, '', isset( $post['version'] ) ? $post['version'] : '' );
+			$activation = itelic_activate_license_key( $this->key, $location, null, $release );
 		}
 		catch ( \IronBound\DB\Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
