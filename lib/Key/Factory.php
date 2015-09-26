@@ -71,7 +71,7 @@ class Factory {
 			throw new \UnexpectedValueException( "Invalid key type $type" );
 		}
 
-		return $generator->generate();
+		return trim( $generator->generate() );
 	}
 
 	/**
