@@ -28,6 +28,8 @@
 	var type_span = $(".type h3");
 
 	$('.tip').tooltip();
+	notify_button.tooltip();
+	full_notify_button.tooltip();
 
 	/**
 	 * When the notify button next to the upgrade progress bar is clicked
@@ -35,6 +37,10 @@
 	 * only the header block visible.
 	 */
 	notify_button.click(function () {
+
+		if ( $(this).hasClass('button-disabled') ) {
+			return;
+		}
 
 		misc.slideUp();
 		changelog.slideUp();
@@ -80,6 +86,10 @@
 	 */
 	full_notify_button.click(function () {
 
+		if ( $(this).hasClass('button-disabled') ) {
+			return;
+		}
+		
 		upgrades.slideUp();
 		line_graph.slideUp();
 		pie_chart.slideUp();
