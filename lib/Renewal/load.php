@@ -13,4 +13,4 @@ use ITELIC\Plugin;
 /**
  * Load the renewal reminders.
  */
-require_once( Plugin::$dir . 'lib/renewal/reminder/load.php');
+require_once( Plugin::$dir . 'lib/Renewal/Reminder/load.php');
