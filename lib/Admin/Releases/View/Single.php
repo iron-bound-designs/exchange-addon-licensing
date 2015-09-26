@@ -117,13 +117,18 @@ class Single extends View {
 
 			<?php endif; ?>
 
-			<?php $this->render_whats_changed(); ?>
-			<?php $this->render_security_message(); ?>
-			<?php $this->render_upgrades_bar(); ?>
-			<?php $this->render_notification_editor(); ?>
-			<?php $this->render_progress_line_chart(); ?>
-			<?php $this->render_versions_pie_chart(); ?>
-			<?php $this->render_notify_button_section(); ?>
+			<?php
+			$this->render_whats_changed();
+			$this->render_security_message();
+			$this->render_upgrades_bar();
+			
+			if ( $this->release->get_status() != Release::STATUS_ARCHIVED ):
+				$this->render_notification_editor();
+			endif;
+
+			$this->render_progress_line_chart();
+			$this->render_versions_pie_chart();
+			$this->render_notify_button_section(); ?>
 		</div>
 
 		<?php
@@ -238,6 +243,14 @@ class Single extends View {
 			$hidden = '';
 		}
 
+		if ( $this->release->get_status() == Release::STATUS_ARCHIVED ) {
+			$disabled = ' disabled="disabled"';
+			$title = __( "Update notifications can't be sent for archived releases.", Plugin::SLUG );
+			$title = " title=\"$title\"";
+		} else {
+			$disabled = '';
+			$title = '';
+		}
 		?>
 
 		<div class="spacing-wrapper bottom-border upgrade-progress-block<?php echo $hidden; ?>">
@@ -255,7 +268,9 @@ class Single extends View {
 					</div>
 				</progress>
 
-				<a href="javascript:" class="button" id="notify-button"><?php _e( "Notify", Plugin::SLUG ); ?></a>
+				<button class="button" id="notify-button"<?php echo $disabled . $title; ?>>
+					<?php _e( "Notify", Plugin::SLUG ); ?>
+				</button>
 			</div>
 		</div>
 
@@ -269,12 +284,21 @@ class Single extends View {
 	 */
 	protected function render_notify_button_section() {
 
+		if ( $this->release->get_status() == Release::STATUS_ARCHIVED ) {
+			$disabled = ' disabled="disabled"';
+			$title = __( "Update notifications can't be sent for archived releases.", Plugin::SLUG );
+			$title = " title=\"$title\"";
+		} else {
+			$disabled = '';
+			$title = '';
+		}
+
 		?>
 
 		<div class="spacing-wrapper bottom-border full-notify-button hidden">
-			<a href="javascript:" class="button" id="notify-button-full">
+			<button class="button" id="notify-button-full"<?php echo $disabled . $title; ?>>
 				<?php _e( "Notify Outdated Customers", Plugin::SLUG ); ?>
-			</a>
+			</button>
 		</div>
 
 		<?php
