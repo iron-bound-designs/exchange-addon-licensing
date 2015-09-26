@@ -770,6 +770,9 @@ class Release extends Model {
 		$query = new Activations( array(
 			'status'       => Activation::ACTIVE,
 			'product'      => $this->get_product()->ID,
+			'activation'   => array(
+				'before' => $this->get_start_date()->format( 'Y-m-d H:i:s' )
+			),
 			'return_value' => 'count'
 		) );
 
