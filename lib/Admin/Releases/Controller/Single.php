@@ -267,12 +267,13 @@ class Single extends Controller {
 
 		$atn = Manager::get( 'itelic-activations' )->get_table_name( $wpdb );
 		$ktn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
+		$rtn = Manager::get( 'itelic-releases' )->get_table_name( $wpdb );
 
 		$results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT DISTINCT k.customer FROM $atn a
-			JOIN $ktn k ON (a.lkey = k.lkey AND k.product = %d)
-			WHERE a.status = %s AND a.version != %d",
-			$release->get_product()->ID, Activation::ACTIVE, $release->get_version() ) );
+			"SELECT DISTINCT k.customer FROM $atn a JOIN $ktn k ON ( a.lkey = k.lkey AND k.`product` = %d )
+			 WHERE a.status = %s AND a.`release` IN (
+			 SELECT r.ID FROM $rtn r WHERE r.product = %d AND r.`start_date` < %s )"
+		), $release->get_product()->ID, Activation::ACTIVE, $release->get_product()->ID, $release->get_start_date()->format( 'Y-m-d H:i:s' ) );
 
 		if ( empty( $results ) ) {
 			wp_send_json_error( array(
