@@ -15,6 +15,7 @@ use ITELIC\API\Response;
 use API\Exception;
 use ITELIC\Plugin;
 use ITELIC\Activation;
+use ITELIC\Release;
 
 /**
  * Class Version
@@ -57,14 +58,34 @@ class Version extends Endpoint implements Authenticatable {
 			die();
 		}
 
+		if ( $release->get_type() == Release::TYPE_SECURITY ) {
+			$notice = $release->get_meta( 'security-message', true );
+		} else if ( $release->get_type() == Release::TYPE_MAJOR ) {
+			$notice = __( "Warning! This is a major upgrade. Make sure you backup your website before updating.", Plugin::SLUG );
+		} else {
+			$notice = '';
+		}
+
+		/**
+		 * Filters the upgrade notice sent back from the API.
+		 *
+		 * @since 1.0
+		 *
+		 * @param string  $notice
+		 * @param Release $release
+		 */
+		$notice = apply_filters( 'itelic_get_release_upgrade_notice', $notice, $release );
+
 		return new Response( array(
 			'success' => true,
 			'body'    => array(
 				'list' => array(
 					$this->key->get_product()->ID => array(
-						'version' => $release->get_version(),
-						'package' => \ITELIC\generate_download_link( $this->activation ),
-						'expires' => $expires->format( \DateTime::ISO8601 )
+						'version'        => $release->get_version(),
+						'package'        => \ITELIC\generate_download_link( $this->activation ),
+						'expires'        => $expires->format( \DateTime::ISO8601 ),
+						'upgrade_notice' => $notice,
+						'type'           => $release->get_type()
 					)
 				)
 			)
