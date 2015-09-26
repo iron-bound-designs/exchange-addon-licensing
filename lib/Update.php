@@ -107,6 +107,8 @@ class Update extends Model {
 
 		if ( $update ) {
 
+			$activation->set_version( $release->get_version() );
+
 			/**
 			 * Fires when an update record is created.
 			 *
