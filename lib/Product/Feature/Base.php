@@ -11,6 +11,7 @@ namespace ITELIC\Product\Feature;
 use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Plugin;
 use ITELIC\Product;
+use ITELIC\Release;
 
 /**
  * Class Base
@@ -42,6 +43,7 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 			$this,
 			'ajax_get_key_type_settings'
 		) );
+		add_action( 'transition_post_status', array( $this, 'activate_initial_release' ), 10, 3 );
 	}
 
 	/**
@@ -351,7 +353,81 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 			unset( $data['version'] );
 		}
 
+		$first_release = get_post_meta( $product_id, '_itelic_first_release', true );
+
+		if ( ! $first_release && $data['update-file'] ) {
+
+			$download      = $data['update-file'];
+			$download_meta = get_post_meta( $download, '_it-exchange-download-info', true );
+			$url           = $download_meta['source'];
+
+			/**
+			 * @var \wpdb $wpdb
+			 */
+			global $wpdb;
+
+			$ID   = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE guid = %s", $url ) );
+			$file = get_post( $ID );
+
+			if ( $file->post_type == 'attachment' ) {
+
+				$product = it_exchange_get_product( $product_id );
+
+				if ( isset( $data['version'] ) ) {
+					$version = $data['version'];
+				} elseif ( isset( $prev['version'] ) ) {
+					$version = $prev['version'];
+				} else {
+					$version = '';
+				}
+
+				$type      = Release::TYPE_MAJOR;
+				$status    = get_post_status( $product_id ) == 'publish' ? Release::STATUS_ACTIVE : Release::STATUS_DRAFT;
+				$changelog = '<ul><li>' . __( "Initial release.", Plugin::SLUG ) . '</li></ul>';
+
+				if ( $version ) {
+
+					try {
+						$release = Release::create( $product, $file, $version, $type, $status, $changelog );
+
+						if ( $release ) {
+							update_post_meta( $product_id, '_itelic_first_release', $release->get_pk() );
+						}
+					}
+					catch ( \Exception $e ) {
+
+					}
+				}
+			}
+		}
+
 		it_exchange_update_product_feature( $product_id, $this->slug, $data );
+	}
+
+	/**
+	 * Activate the initial release when the product is published.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string   $new_status
+	 * @param string   $old_status
+	 * @param \WP_Post $post
+	 */
+	public function activate_initial_release( $new_status, $old_status, $post ) {
+
+		$first_release = get_post_meta( $post->ID, '_itelic_first_release', true );
+
+		if ( ! $first_release ) {
+			return;
+		}
+
+		if ( $new_status == 'publish' && $old_status != 'publish' ) {
+			$release = itelic_get_release( $post->ID );
+
+			if ( $release->get_status() !== Release::STATUS_ACTIVE ) {
+				$release->activate();
+			}
+		}
 	}
 
 	/**
