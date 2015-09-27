@@ -103,7 +103,7 @@ class Key extends Model implements API\Serializable {
 			$this->expires = new \DateTime( $data->expires );
 		}
 
-		foreach ( array( 'transaction',	'product','customer' ) as $maybe_error ) {
+		foreach ( array( 'transaction', 'product', 'customer' ) as $maybe_error ) {
 			if ( ! $this->$maybe_error || is_wp_error( $this->$maybe_error ) ) {
 				throw new \InvalidArgumentException( "Invalid $maybe_error" );
 			}
@@ -131,7 +131,7 @@ class Key extends Model implements API\Serializable {
 			throw new \InvalidArgumentException( "\$key must not be empty." );
 		}
 
-		if ( strlen($key) > 128) {
+		if ( strlen( $key ) > 128 ) {
 			throw new \InvalidArgumentException( "The maximum key length is 128 characters." );
 		}
 
@@ -230,6 +230,12 @@ class Key extends Model implements API\Serializable {
 
 		$expires->add( $interval );
 		$this->set_expires( $expires );
+
+		$now = new \DateTime();
+
+		if ( $this->get_expires() > $now && $this->get_status() != self::ACTIVE ) {
+			$this->set_status( self::ACTIVE );
+		}
 
 		/**
 		 * Fires when a license key's expiration date is extended.
