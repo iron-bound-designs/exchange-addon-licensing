@@ -58,23 +58,21 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 * @param $args
 	 * @param $assoc_args
 	 *
-	 * @synopsis   [--per-page=<per-page>] [--page=<page>] [--fields=<fields>]
+	 * @synopsis   [--per-page=<per-page>] [--page=<page>] [--<field>=<value>] [--fields=<fields>]
 	 * @subcommand list
 	 */
 	public function list_( $args, $assoc_args ) {
 
-		$assoc_args = wp_parse_args( $assoc_args, array(
-			'per_page' => 20,
-			'page'     => 1
+		$query_args = wp_parse_args( $assoc_args, array(
+			'items_per_page' => 20,
+			'page'           => 1
 		) );
 
-		$query = new \ITELIC_API\Query\Keys( array(
-			'items_per_page' => $assoc_args['per_page'],
-			'page'           => $assoc_args['page'],
-			'order'          => array(
-				'transaction' => 'DESC'
-			)
-		) );
+		$query_args['order'] = array(
+			'transaction' => 'DESC'
+		);
+
+		$query = new \ITELIC_API\Query\Keys( $query_args );
 
 		$results = $query->get_results();
 
