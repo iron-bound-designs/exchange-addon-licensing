@@ -16,6 +16,7 @@ use API\Exception;
 use ITELIC\Plugin;
 use ITELIC\Activation;
 use ITELIC\Release;
+use ITELIC\Update;
 
 /**
  * Class Version
@@ -75,6 +76,17 @@ class Version extends Endpoint implements Authenticatable {
 		 * @param Release $release
 		 */
 		$notice = apply_filters( 'itelic_get_release_upgrade_notice', $notice, $release );
+
+		// if the installed version of the software is passed to the API,
+		// and the installed version is greater than the version on record, create an update record
+		// this accounts for manually updating the theme or plugin
+		if ( isset( $get['installed_version'] ) ) {
+			$installed = itelic_get_release_by_version( $this->key->get_product()->ID, $get['installed_version'] );
+
+			if ( $installed && version_compare( $installed->get_version(), $this->activation->get_release()->get_version(), '>' ) ) {
+				Update::create( $this->activation, $installed );
+			}
+		}
 
 		return new Response( array(
 			'success' => true,
