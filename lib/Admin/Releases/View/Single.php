@@ -111,6 +111,21 @@ class Single extends View {
 				</div>
 			</div>
 
+			<?php if ( get_post_meta( $this->release->get_product()->ID, '_itelic_first_release', true ) == $this->release->get_pk() ): ?>
+
+				<div class="spacing-wrapper">
+					<p>
+						<?php printf(
+							__( "Congratulations on releasing %s; there isn't any data to display for your first release, though.", Plugin::SLUG ),
+							$this->release->get_product()->post_title );?>
+					</p>
+				</div>
+
+				</div>
+
+				<?php return; ?>
+			<?php endif; ?>
+
 			<?php if ( $this->release->get_status() == Release::STATUS_DRAFT ): ?>
 
 				<?php $this->render_replace_file_section(); ?>
