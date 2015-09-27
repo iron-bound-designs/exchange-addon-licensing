@@ -331,6 +331,15 @@ class ListC extends Controller {
 		$products = itelic_get_products_with_licensing_enabled();
 
 		$this->table = new Table( $this->prepare_data( $keys ), $total, $products );
+
+		if ( isset( $_GET['s'] ) ) {
+			$key = itelic_get_key( $_GET['s'] );
+
+			if ( $key ) {
+				wp_redirect( itelic_get_admin_edit_key_link( $key->get_key() ) );
+				die();
+			}
+		}
 	}
 
 	/**
