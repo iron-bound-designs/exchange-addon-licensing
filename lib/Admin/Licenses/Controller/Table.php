@@ -140,6 +140,11 @@ class Table extends \WP_List_Table {
 	 * @return string
 	 */
 	public function column_expires( $item ) {
+
+		if ( ! strtotime( $item['expires'] ) ) {
+			return $item['expires'];
+		}
+
 		//Build row actions
 		$actions = array(
 			'extend' => sprintf( '<a href="javascript:" data-key="%1$s" data-nonce="%2$s">%3$s</a>', $item['key'],
