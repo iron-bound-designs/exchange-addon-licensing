@@ -272,8 +272,8 @@ class Single extends Controller {
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT DISTINCT k.customer FROM $atn a JOIN $ktn k ON ( a.lkey = k.lkey AND k.`product` = %d )
 			 WHERE a.status = %s AND a.`release` IN (
-			 SELECT r.ID FROM $rtn r WHERE r.product = %d AND r.`start_date` < %s )"
-		), $release->get_product()->ID, Activation::ACTIVE, $release->get_product()->ID, $release->get_start_date()->format( 'Y-m-d H:i:s' ) );
+			 SELECT r.ID FROM $rtn r WHERE r.product = %d AND r.`start_date` < %s )",
+			$release->get_product()->ID, Activation::ACTIVE, $release->get_product()->ID, $release->get_start_date()->format( 'Y-m-d H:i:s' ) ) );
 
 		if ( empty( $results ) ) {
 			wp_send_json_error( array(
