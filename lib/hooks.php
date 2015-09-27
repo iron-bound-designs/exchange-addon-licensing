@@ -114,8 +114,13 @@ function auto_expire_licenses() {
 	 */
 	$keys = $query->get_results();
 
+	$now = new \DateTime();
+
 	foreach ( $keys as $key ) {
-		$key->expire();
+
+		if ( $key->get_expires() && $key->get_expires() < $now ) {
+			$key->expire();
+		}
 	}
 }
 
@@ -259,7 +264,7 @@ function archive_old_releases_on_new_activation( Release $release ) {
 		'page'                => 2,
 		'status'              => Release::STATUS_ACTIVE,
 		'sql_calc_found_rows' => false,
-		'order' => array(
+		'order'               => array(
 			'start_date' => 'DESC'
 		)
 	) );
