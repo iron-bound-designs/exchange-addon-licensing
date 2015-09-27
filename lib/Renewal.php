@@ -89,7 +89,7 @@ class Renewal extends Model {
 	 *
 	 * @return Renewal
 	 */
-	public static function create( Key $key, \IT_Exchange_Transaction $transaction, \DateTime $expired, \DateTime $renewal = null ) {
+	public static function create( Key $key, \IT_Exchange_Transaction $transaction = null, \DateTime $expired, \DateTime $renewal = null ) {
 
 		if ( empty( $renewal ) ) {
 			$renewal = new \DateTime();
@@ -97,19 +97,26 @@ class Renewal extends Model {
 
 		$revenue = '0.00';
 
-		foreach ( it_exchange_get_transaction_products( $transaction ) as $product ) {
-			if ( $product['product_id'] == $key->get_product()->ID ) {
-				$revenue = $product['product_subtotal'];
+		if ( $transaction ) {
 
-				break;
+			$tid = $transaction->ID;
+
+			foreach ( it_exchange_get_transaction_products( $transaction ) as $product ) {
+				if ( $product['product_id'] == $key->get_product()->ID ) {
+					$revenue = $product['product_subtotal'];
+
+					break;
+				}
 			}
+		} else {
+			$tid = 0;
 		}
 
 		$data = array(
 			'lkey'             => $key->get_key(),
 			'renewal_date'     => $renewal->format( "Y-m-d H:i:s" ),
 			'key_expired_date' => $expired->format( "Y-m-d H:i:s" ),
-			'transaction_id'   => $transaction->ID,
+			'transaction_id'   => $tid,
 			'revenue'          => $revenue
 		);
 

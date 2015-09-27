@@ -157,9 +157,14 @@ class Single extends View {
 							<li>
 								<?php echo $renewal->get_renewal_date()->format( get_option( 'date_format' ) ); ?>
 								&nbsp;&mdash;&nbsp;
+
+								<?php if ( $renewal->get_transaction() ): ?>
 								<a href="<?php echo get_edit_post_link( $renewal->get_transaction()->ID ); ?>">
 									<?php echo it_exchange_get_transaction_order_number( $renewal->get_transaction() ); ?>
 								</a>
+								<?php else: ?>
+									<?php _e( "Manual Renewal", Plugin::SLUG ); ?>
+								<?php endif; ?>
 							</li>
 
 						<?php endforeach; ?>

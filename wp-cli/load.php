@@ -10,4 +10,8 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	return;
 }
 
+include_once __DIR__ . '/Fetcher.php';
+
+// commands
 include_once __DIR__ . '/commands/ITELIC.php';
+include_once __DIR__ . '/commands/Key.php';
