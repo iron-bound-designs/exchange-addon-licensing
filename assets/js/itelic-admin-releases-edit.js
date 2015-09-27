@@ -299,11 +299,24 @@
 
 			$.unblockUI();
 
-			if (!response.success) {
-				alert(response.data.message);
-			} else {
-				//alert(response.data.message);
-			}
+			var message = response.data.message;
+			var msgClass = response.success ? 'notice-success' : 'notice-warning';
+            msgClass += ' is-dismissible';
+
+            var $notice = $('<div class="notice ' +  msgClass+ '"><p>' + message + '</p></div>');
+            $notice.css({
+                display: 'none'
+            });
+
+            $notice.insertBefore( ".notifications-editor h4" );
+
+            $notice.slideDown();
+
+            setTimeout(function() {
+                $notice.slideUp(400, function() {
+                    $(this ).remove();
+                })
+            }, 5000);
 		});
 	});
 

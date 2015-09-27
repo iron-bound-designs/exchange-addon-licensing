@@ -271,7 +271,7 @@ class Single extends View {
 		<div class="spacing-wrapper bottom-border upgrade-progress-block<?php echo $hidden; ?>">
 
 			<h4>
-				<?php _e( "Upgrades", Plugin::SLUG ); ?>
+				<?php _e( "Updates", Plugin::SLUG ); ?>
 				<a href="javascript:" id="more-upgrades-link"><?php _e( "More", Plugin::SLUG ); ?></a>
 			</h4>
 
@@ -338,7 +338,7 @@ class Single extends View {
 
 			<?php else: ?>
 
-				<h4><?php printf( __( "Upgrades over the first %d days", Plugin::SLUG ), $this->progress->get_total_items() ); ?></h4>
+				<h4><?php printf( __( "Updates over the first %d days", Plugin::SLUG ), $this->progress->get_total_items() ); ?></h4>
 
 				<?php $this->progress->graph(); ?>
 
@@ -365,7 +365,7 @@ class Single extends View {
 
 		<div class="spacing-wrapper bottom-border versions-pie-chart hidden">
 
-			<h4><?php printf( __( "Top %d versions upgraded from", Plugin::SLUG ), $total ); ?></h4>
+			<h4><?php printf( __( "Top %d versions updated from", Plugin::SLUG ), $total ); ?></h4>
 
 			<?php $this->version->graph(); ?>
 
@@ -397,12 +397,12 @@ class Single extends View {
 
 		<div class="spacing-wrapper hidden notifications-editor">
 
-			<h4><?php _e( "Send Upgrade Reminders", Plugin::SLUG ); ?></h4>
+			<h4><?php _e( "Send Update Reminders", Plugin::SLUG ); ?></h4>
 
 			<p class="description">
 				<?php printf(
-					__( "Email your customers who have not yet upgrade to version %s of your software.", Plugin::SLUG ),
-					$this->release->get_version()
+					__( 'Email your customers who have not yet updated to version %1$s of %2$s.', Plugin::SLUG ),
+					$this->release->get_version(), $this->release->get_product()->post_title
 				); ?>
 			</p>
 

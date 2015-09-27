@@ -277,7 +277,7 @@ class Single extends Controller {
 
 		if ( empty( $results ) ) {
 			wp_send_json_error( array(
-				'message' => __( "All customers have upgraded.", Plugin::SLUG )
+				'message' => __( "All customers have already updated to the latest version.", Plugin::SLUG )
 			) );
 		}
 
