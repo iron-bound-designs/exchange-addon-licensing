@@ -51,7 +51,7 @@ class Keys implements Table {
 			'customer'       => 0,
 			'status'         => 'active',
 			'max'            => 0,
-			'expires'        => ''
+			'expires'        => null
 		);
 	}
 
@@ -109,7 +109,7 @@ class Keys implements Table {
 		customer BIGINT(20) UNSIGNED NOT NULL,
 		status VARCHAR(20) NOT NULL,
 		max INTEGER UNSIGNED NOT NULL,
-		expires DATETIME,
+		expires DATETIME DEFAULT NULL,
 		PRIMARY KEY  (lkey),
 		KEY customer (customer),
 		KEY transaction_id (transaction_id),
