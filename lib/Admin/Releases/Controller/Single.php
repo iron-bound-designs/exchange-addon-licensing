@@ -254,6 +254,24 @@ class Single extends Controller {
 		$message = wp_unslash( $_POST['message'] );
 		$nonce   = wp_unslash( $_POST['nonce'] );
 
+		if ( empty( $subject ) ) {
+			wp_send_json_error( array(
+				'message' => __(
+					"A subject is required. You want people to open this email, right?",
+					Plugin::SLUG
+				)
+			) );
+		}
+
+		if ( empty( $message ) ) {
+			wp_send_json_error( array(
+				'message' => __(
+					"A message is required. What's an email without a body?",
+					Plugin::SLUG
+				)
+			) );
+		}
+
 		if ( ! wp_verify_nonce( $nonce, "itelic-update-release-$release" ) ) {
 			wp_send_json_error( array(
 				'message' => __( "Request expired. Please refresh and try again.", Plugin::SLUG )
