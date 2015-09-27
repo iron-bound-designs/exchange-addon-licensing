@@ -212,20 +212,17 @@ class Simple_Query {
 		$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
 
 		$null_columns = array();
-		$null_formats = array();
-		$i            = 0;
 
 		foreach ( $data as $col => $val ) {
+
 			if ( $val == null ) {
 				$null_columns[] = $col;
-				$null_formats[] = $i;
 			}
-
-			$i ++;
 		}
 
 		foreach ( $null_columns as $null_column ) {
 			unset( $data[ $null_column ] );
+			unset( $column_formats[ $null_column ] );
 		}
 
 		foreach ( $null_formats as $format_index ) {

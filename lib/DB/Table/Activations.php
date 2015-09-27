@@ -111,9 +111,9 @@ class Activations implements Table {
 		lkey VARCHAR(128) NOT NULL,
 		location VARCHAR(191) NOT NULL,
 		activation DATETIME NOT NULL,
-		deactivation DATETIME,
+		deactivation DATETIME DEFAULT NULL,
 		status VARCHAR(20) NOT NULL,
-		`release` BIGINT(20),
+		`release` BIGINT(20) DEFAULT 0,
 		PRIMARY KEY  (id),
 		KEY lkey (lkey),
 		UNIQUE KEY key__location (lkey,location)

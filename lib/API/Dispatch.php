@@ -152,12 +152,16 @@ class Dispatch {
 			return false;
 		}
 
-		$license_key = sanitize_text_field( $_SERVER['PHP_AUTH_USER'] );
+		$license_key = $_SERVER['PHP_AUTH_USER'];
 
 		try {
 			$key = itelic_get_key( $license_key );
 		}
 		catch ( \Exception $e ) {
+			return false;
+		}
+
+		if ( ! $key ) {
 			return false;
 		}
 

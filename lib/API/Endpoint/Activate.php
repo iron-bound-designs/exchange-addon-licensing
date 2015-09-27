@@ -64,19 +64,17 @@ class Activate extends Endpoint implements Authenticatable {
 			$release = null;
 		}
 
-		try {
-			$activation = itelic_activate_license_key( $this->key, $location, null, $release, $track );
-		}
-		catch ( \IronBound\DB\Exception $e ) {
-			if ( $e->getCode() == 1062 ) {
-				$activation = itelic_get_activation_by_location( $location, $this->key );
-				$activation->reactivate();
-			} else {
-				throw $e;
+		$activation = itelic_get_activation_by_location( $location, $this->key );
+
+		if ( $activation ) {
+			$activation->reactivate();
+			$activation->update_meta( 'track', $track );
+
+			if ( $release ) {
+				$activation->set_release( $release );
 			}
-		}
-		catch ( \LogicException $e ) {
-			throw new Exception( $e->getMessage(), self::CODE_MAX_ACTIVATIONS, $e );
+		} else {
+			$activation = itelic_activate_license_key( $this->key, $location, null, $release, $track );
 		}
 
 		return new Response( array(

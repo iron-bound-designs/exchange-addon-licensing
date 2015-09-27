@@ -249,9 +249,7 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		if ( $date === null ) {
-			$date = current_time( 'mysql' );
-		} else {
-			$date = $date->format( 'Y-m-d H:i:s' );
+			$date = new \DateTime();
 		}
 
 		$this->set_deactivation( null );
