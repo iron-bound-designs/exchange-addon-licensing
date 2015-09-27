@@ -22,8 +22,9 @@ jQuery(document).ready(function ($) {
 			if (!response.success) {
 				alert(response.data.message);
 			} else {
-				var td = link.closest('td');
-				$(".expires-date", td).text(response.data.expires);
+				var tr = link.closest('tr');
+				$(".expires-date", tr).text(response.data.expires);
+				$(".status", tr).text(response.data.status);
 			}
 		});
 	});
