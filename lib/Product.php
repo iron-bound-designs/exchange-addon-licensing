@@ -111,9 +111,25 @@ class Product extends \IT_Exchange_Product {
 	 * @return Release
 	 */
 	public function get_latest_release_for_activation( Activation $activation ) {
-		$version = it_exchange_get_product_feature( $this->ID, 'licensing', array( 'field' => 'version' ) );
 
-		$release = itelic_get_release_by_version( $this->ID, $version );
+		$track = $activation->get_meta( 'track', true );
+
+		if ( ! $track || $track != 'pre-release' ) {
+			$version = it_exchange_get_product_feature( $this->ID, 'licensing', array( 'field' => 'version' ) );
+			$release = itelic_get_release_by_version( $this->ID, $version );
+		} else {
+			$query = new Releases( array(
+				'product'             => $activation->get_key()->get_product()->ID,
+				'order'               => array(
+					'start_date' => 'DESC'
+				),
+				'items_per_page'      => 1,
+				'sql_calc_found_rows' => false
+			) );
+
+			$releases = $query->get_results();
+			$release = reset( $releases );
+		}
 
 		/**
 		 * Filter the latest release for an activation record.

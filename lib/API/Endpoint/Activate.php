@@ -52,6 +52,12 @@ class Activate extends Endpoint implements Authenticatable {
 
 		$version = isset( $post['version'] ) ? $post['version'] : '';
 
+		if ( isset( $post['track'] ) && in_array( $post['track'], array( 'stable', 'pre-release' ) ) ) {
+			$track = $post['track'];
+		} else {
+			$track = 'stable';
+		}
+
 		if ( $version ) {
 			$release = itelic_get_release_by_version( $this->key->get_product()->ID, $version );
 		} else {
@@ -59,7 +65,7 @@ class Activate extends Endpoint implements Authenticatable {
 		}
 
 		try {
-			$activation = itelic_activate_license_key( $this->key, $location, null, $release );
+			$activation = itelic_activate_license_key( $this->key, $location, null, $release, $track );
 		}
 		catch ( \IronBound\DB\Exception $e ) {
 			if ( $e->getCode() == 1062 ) {
