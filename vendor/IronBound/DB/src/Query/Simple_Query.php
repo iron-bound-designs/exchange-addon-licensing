@@ -225,10 +225,6 @@ class Simple_Query {
 			unset( $column_formats[ $null_column ] );
 		}
 
-		foreach ( $null_formats as $format_index ) {
-			unset( $column_formats[ $format_index ] );
-		}
-
 		$prev = $this->wpdb->show_errors( false );
 		$this->wpdb->insert( $this->table->get_table_name( $this->wpdb ), $data, $column_formats );
 		$this->wpdb->show_errors( $prev );
