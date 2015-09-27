@@ -586,7 +586,7 @@ class Activation extends Model implements API\Serializable {
 		$data = parent::get_data_to_cache();
 
 		unset( $data['key'] );
-		$data['lkey'] = $this->get_key();
+		$data['lkey'] = $this->get_key()->get_key();
 
 		return $data;
 	}
