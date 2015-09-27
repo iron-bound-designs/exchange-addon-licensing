@@ -89,7 +89,7 @@
 		if ( $(this).hasClass('button-disabled') ) {
 			return;
 		}
-		
+
 		upgrades.slideUp();
 		line_graph.slideUp();
 		pie_chart.slideUp();

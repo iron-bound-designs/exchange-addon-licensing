@@ -221,14 +221,14 @@ class Single extends Controller {
 					return true;
 				}
 
-				return version_compare( $activation->get_release(), $release->get_version(), '<' );
+				return version_compare( $activation->get_release()->get_version(), $release->get_version(), '<' );
 			} );
 
 			$html = '<ul>';
 
 			/** @var Activation $activation */
 			foreach ( $activations as $activation ) {
-				$html .= '<li>' . "{$activation->get_location()} – v{$activation->get_release()}" . '</li>';
+				$html .= '<li>' . "{$activation->get_location()} – v{$activation->get_release()->get_version()}" . '</li>';
 			}
 
 			$html .= '</ul>';
