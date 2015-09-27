@@ -90,7 +90,7 @@ class Update extends Model {
 		}
 
 		if ( empty( $previous_version ) ) {
-			$previous_version = $activation->get_release();
+			$previous_version = $activation->get_release()->get_version();
 		}
 
 		$data = array(
