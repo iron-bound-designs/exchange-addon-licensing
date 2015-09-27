@@ -99,6 +99,11 @@ require_once( Plugin::$dir . 'lib/Upgrades/load.php' );
 require_once( Plugin::$dir . 'lib/API/load.php' );
 
 /**
+ * Load the WP CLI commands.
+ */
+require_once( Plugin::$dir . 'wp-cli/load.php' );
+
+/**
  * Run the upgrade routine if necessary.
  */
 Plugin::upgrade();
