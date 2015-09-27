@@ -21,7 +21,7 @@ use ITELIC\Plugin;
  * Class Installed_Versions
  * @package ITELIC\Admin\Reports\Types
  */
-class Installed_Versions extends Report implements Date_Filterable, Product_Filterable {
+class Installed_Versions extends Report implements Product_Filterable {
 
 	/**
 	 * Get the title of this report type.
@@ -86,9 +86,6 @@ class Installed_Versions extends Report implements Date_Filterable, Product_Filt
 			return null;
 		}
 
-		$start = date( 'Y-m-d H:i:s', $this->convert_date( $date_type ) );
-		$end   = date( 'Y-m-d H:i:s', $this->convert_date( $date_type, true ) );
-
 		/**
 		 * @var \wpdb $wpdb
 		 */
@@ -98,9 +95,9 @@ class Installed_Versions extends Report implements Date_Filterable, Product_Filt
 		$ktn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
 
 		$raw = "SELECT COUNT(1) as c, `release` as d FROM $atn a JOIN $ktn k ON (k.lkey = a.lkey AND k.product = %d)
-				WHERE a.activation BETWEEN %s AND %s AND a.status = %s GROUP BY `release` LIMIT 5";
+				WHERE a.status = %s GROUP BY `release` LIMIT 5";
 
-		$results = $wpdb->get_results( $wpdb->prepare( $raw, $product, $start, $end, Activation::ACTIVE ) );
+		$results = $wpdb->get_results( $wpdb->prepare( $raw, $product, Activation::ACTIVE ) );
 
 		$translated = self::translate_results( $results );
 
