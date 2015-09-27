@@ -9,3 +9,5 @@
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	return;
 }
+
+include_once __DIR__ . '/commands/ITELIC.php';
