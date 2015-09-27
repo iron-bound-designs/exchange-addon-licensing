@@ -243,6 +243,13 @@
 	color: #6d6d6d;
 }
 
+#release-details .initial-release-notice {
+	width: 100%;
+	color: #666;
+	font-style: oblique;
+	text-align: center;
+}
+
 /** -----------------------------------------------------:[ release click to edit ]:---------- */
 
 .editable-click, a.editable-click, a.editable-click:hover {
@@ -304,14 +311,14 @@
 }
 
 #release-details .security-message-block .editable-buttons {
-    display: block !important;
-    margin-left: 0 !important;
+	display: block !important;
+	margin-left: 0 !important;
 	text-align: right;
 }
 
 #release-details .security-message-block .editable-buttons button.ui-button-icon-only {
-    height: 28px;
-    width: auto !important;
+	height: 28px;
+	width: auto !important;
 }
 
 #release-details .security-message-block .editable-buttons button.button-primary {

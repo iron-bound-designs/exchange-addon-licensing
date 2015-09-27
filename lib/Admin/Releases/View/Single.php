@@ -114,7 +114,7 @@ class Single extends View {
 			<?php if ( get_post_meta( $this->release->get_product()->ID, '_itelic_first_release', true ) == $this->release->get_pk() ): ?>
 
 				<div class="spacing-wrapper">
-					<p>
+					<p class="initial-release-notice">
 						<?php printf(
 							__( "Congratulations on releasing %s; there isn't any data to display for your first release, though.", Plugin::SLUG ),
 							$this->release->get_product()->post_title );?>
