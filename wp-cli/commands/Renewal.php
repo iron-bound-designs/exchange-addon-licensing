@@ -111,6 +111,69 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 	}
 
 	/**
+	 * Generate renewal records.
+	 *
+	 * ## Options
+	 *
+	 * <rate>
+	 * : Renewal rate as a percentage. Ex: 50 or 35
+	 *
+	 * [--product=<product>]
+	 * : Only generate renewals for a certain product.
+	 *
+	 * @param $args
+	 * @param $assoc_args
+	 */
+	public function generate( $args, $assoc_args ) {
+
+		list( $rate ) = $args;
+
+		if ( $rate < 1 || $rate > 100 ) {
+			WP_CLI::error( "Usage: 1 < <rate> <= 100" );
+		}
+
+		$query_args = array(
+			'status' => \ITELIC\Key::EXPIRED
+		);
+
+		if ( ( $p = \WP_CLI\Utils\get_flag_value( $assoc_args, 'product' ) ) ) {
+			$query_args['product'] = $p;
+		}
+
+		$keys = itelic_get_keys( $query_args );
+
+		$faker = \Faker\Factory::create();
+
+		$notify = \WP_CLI\Utils\make_progress_bar( 'Generating renewals.', count( $keys ) );
+
+		foreach ( $keys as $key ) {
+			if ( rand( 0, 100 ) <= $rate ) {
+
+				$min = clone $key->get_expires();
+				$min->sub( new DateInterval( 'P15D' ) );
+
+				$max = clone $key->get_expires();
+				$max->add( new DateInterval( 'P30D' ) );
+
+				$txn = itelic_create_renewal_transaction( array(
+					'key'  => $key->get_key(),
+					'date' => $faker->dateTimeBetween( $min, $max )->format( 'Y-m-d H:i:s' )
+				) );
+
+				if ( is_wp_error( $txn ) ) {
+					WP_CLI::error( $txn );
+				}
+
+				$key->renew( $txn );
+			}
+
+			$notify->tick();
+		}
+
+		$notify->finish();
+	}
+
+	/**
 	 * Delete a renewal object.
 	 *
 	 * ## Options
