@@ -11,9 +11,11 @@
  *
  * @since 1.0
  *
- * @return \IT_Exchange_Product[]
+ * @param array $args
+ *
+ * @return \ITELIC\Product[]
  */
-function itelic_get_products_with_licensing_enabled() {
+function itelic_get_products_with_licensing_enabled( $args = array() ) {
 
 	$args['meta_query'][] = array(
 		'key'   => '_it_exchange_itelic_enabled',
@@ -23,7 +25,9 @@ function itelic_get_products_with_licensing_enabled() {
 	$args['show_hidden']    = true;
 	$args['posts_per_page'] = - 1;
 
-	return it_exchange_get_products( $args );
+	return array_map( function ( IT_Exchange_Product $product ) {
+		return itelic_get_product( $product->ID );
+	}, it_exchange_Get_products( $args ) );
 }
 
 /**

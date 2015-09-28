@@ -39,6 +39,9 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--fields=<fields>]
 	 * : Return designated object fields.
 	 *
+	 * [--format=<format>]
+	 * : Accepted values: table, json, csv. Default: table
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -68,6 +71,9 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * [--fields=<fields>]
 	 * : Return designated object fields.
+	 *
+	 * [--format=<format>]
+	 * : Accepted values: table, json, csv. Default: table
 	 *
 	 * @param $args
 	 * @param $assoc_args

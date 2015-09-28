@@ -481,7 +481,6 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 			'key-type'                    => '',
 			'update-file'                 => '',
 			'version'                     => '',
-			'changelog'                   => '',
 			'enabled_variant_activations' => false,
 			'activation_variant'          => array()
 		);
