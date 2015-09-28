@@ -496,6 +496,15 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			return new WP_Error( 'product_error', 'Product not created.' );
 		}
 
+		$faker    = \Faker\Factory::create();
+		$new_date = $faker->dateTimeBetween( '-2 years', '-1 months' )->format( 'Y-m-d H:i:s' );
+
+		wp_update_post( array(
+			'ID'            => $product,
+			'post_date'     => $new_date,
+			'post_date_gmt' => get_gmt_from_date( $new_date )
+		) );
+
 		$download_data = array(
 			'product_id' => $product,
 			'source'     => wp_get_attachment_url( $file->ID ),
@@ -521,11 +530,14 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 		$product = it_exchange_get_product( $product );
 
 		$type      = \ITELIC\Release::TYPE_MAJOR;
-		$status    = \ITELIC\Release::STATUS_ACTIVE;
+		$status    = \ITELIC\Release::STATUS_PAUSED;
 		$changelog = '<ul><li>' . __( "Initial release.", \ITELIC\Plugin::SLUG ) . '</li></ul>';
 
 		try {
 			$release = \ITELIC\Release::create( $product, $file, $version, $type, $status, $changelog );
+
+			$when = new DateTime( $product->post_date );
+			$release->activate( $when );
 		}
 		catch ( Exception $e ) {
 			return new WP_Error( 'release_exception', $e->getMessage() );

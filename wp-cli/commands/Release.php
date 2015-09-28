@@ -559,7 +559,7 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 			'version'   => $release->get_version(),
 			'type'      => $release->get_type( true ),
 			'status'    => $release->get_status( true ),
-			'download'  => $release->get_download()->post_title,
+			'download'  => $release->get_download()->ID,
 			'started'   => $started,
 			'changelog' => $release->get_changelog()
 		);

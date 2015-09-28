@@ -315,6 +315,95 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	}
 
 	/**
+	 * Generate license keys.
+	 *
+	 * ## Options
+	 *
+	 * [--count=<count>]
+	 * : Number of keys to generate. Default 1000.
+	 *
+	 * [--product=<product>]
+	 * : Only generate keys for a certain product.
+	 *
+	 * @param $args
+	 * @param $assoc_args
+	 */
+	public function generate( $args, $assoc_args ) {
+
+		if ( ( $product = \WP_CLI\Utils\get_flag_value( $assoc_args, 'product' ) ) ) {
+			$product = itelic_get_product( $product );
+
+			if ( ! $product ) {
+				WP_CLI::error( "Invalid product." );
+			}
+
+			$products = array( $product->ID );
+		} else {
+			$products = wp_list_pluck( itelic_get_products_with_licensing_enabled(), 'ID' );
+		}
+
+		$count = \WP_CLI\Utils\get_flag_value( $assoc_args, 'count', 1000 );
+
+		$notify = \WP_CLI\Utils\make_progress_bar( "Generating keys", $count );
+
+		$faker = \Faker\Factory::create();
+
+		for ( $i = 0; $i < $count; $i ++ ) {
+
+			$product  = $this->get_product( $products );
+			$customer = $this->get_random_customer();
+
+			$min_date = max( strtotime( $product->post_date ), strtotime( $customer->wp_user->user_registered ) );
+
+			$date = $faker->dateTimeBetween( "@$min_date" );
+
+			$key_args = array(
+				'product'  => $product->ID,
+				'customer' => $customer->id,
+				'date'     => $date->format( 'Y-m-d H:i:s' )
+			);
+
+			$key = itelic_create_key( $key_args );
+
+			if ( is_wp_error( $key ) ) {
+				WP_CLI::error( $key );
+			}
+
+			$notify->tick();
+		}
+
+		$notify->finish();
+	}
+
+	/**
+	 * Get a product.
+	 *
+	 * @param $products
+	 *
+	 * @return \ITELIC\Product
+	 */
+	protected function get_product( $products ) {
+		return itelic_get_product( $products[ array_rand( $products ) ] );
+	}
+
+	/**
+	 * Get a random customer.
+	 *
+	 * @return IT_Exchange_Customer
+	 */
+	protected function get_random_customer() {
+
+		/**
+		 * @var \wpdb $wpdb
+		 */
+		global $wpdb;
+
+		$ID = (int) $wpdb->get_var( "SELECT ID FROM $wpdb->users ORDER BY RAND() LIMIT 1" );
+
+		return it_exchange_get_customer( $ID );
+	}
+
+	/**
 	 * Delete a license key.
 	 *
 	 * ## Options

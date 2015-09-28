@@ -17,7 +17,8 @@ use ITELIC_API\Query\Keys;
 use ITELIC_API\Query\Releases;
 
 /**
- * When a new transaction is created, generate necessary license keys if applicable.
+ * When a new transaction is created, generate necessary license keys if
+ * applicable.
  *
  * @since 1.0
  *
@@ -97,7 +98,8 @@ add_action( 'init', 'ITELIC\setup_notifications' );
 ----------------------------------------------- */
 
 /**
- * Automatically set the licenses expiry status when their expiry date has passed.
+ * Automatically set the licenses expiry status when their expiry date has
+ * passed.
  *
  * @since 1.0
  */
@@ -263,10 +265,11 @@ function archive_old_releases_on_new_activation( Release $release ) {
 		'items_per_page'      => itelic_keep_last_n_releases( $release->get_product() ),
 		'page'                => 2,
 		'status'              => Release::STATUS_ACTIVE,
+		'product'             => $release->get_product()->ID,
 		'sql_calc_found_rows' => false,
 		'order'               => array(
 			'start_date' => 'DESC'
-		)
+		),
 	) );
 
 	/**
@@ -284,7 +287,8 @@ add_action( 'itelic_activate_release', 'ITELIC\archive_old_releases_on_new_activ
 ----------------------------------------------- */
 
 /**
- * Display the license key for a transaction product on the payments detail page.
+ * Display the license key for a transaction product on the payments detail
+ * page.
  *
  * @since 1.0
  *
@@ -437,7 +441,6 @@ function add_renewal_info_to_product_title_transaction_feature( $value, $product
 }
 
 add_filter( 'it_exchange_get_transaction_product_feature', 'ITELIC\add_renewal_info_to_product_title_transaction_feature', 10, 3 );
-
 
 /* --------------------------------------------
 ============== Confirmation Email =============

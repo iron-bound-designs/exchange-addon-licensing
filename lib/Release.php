@@ -8,6 +8,7 @@
 
 namespace ITELIC;
 
+use Faker\Provider\tr_TR\DateTime;
 use IronBound\Cache\Cache;
 use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
@@ -291,8 +292,10 @@ class Release extends Model {
 	 * Activate this release.
 	 *
 	 * @since 1.0
+	 *
+	 * @param \DateTime $when
 	 */
-	public function activate() {
+	public function activate( \DateTime $when = null ) {
 
 		if ( $this->status != self::STATUS_ACTIVE ) {
 			$this->status = self::STATUS_ACTIVE;
@@ -300,7 +303,12 @@ class Release extends Model {
 		}
 
 		if ( ! $this->get_start_date() ) {
-			$this->set_start_date( new \DateTime() );
+
+			if ( $when === null ) {
+				$when = new \DateTime();
+			}
+
+			$this->set_start_date( $when );
 		}
 
 		if ( $this->get_type() != self::TYPE_PRERELEASE ) {
@@ -804,6 +812,10 @@ class Release extends Model {
 
 		if ( $this->get_status() == self::STATUS_ARCHIVED ) {
 			return $this->get_meta( 'first_14_days', true );
+		}
+
+		if ( ! $this->get_start_date() ) {
+			return array();
 		}
 
 		/** @var $wpdb \wpdb */

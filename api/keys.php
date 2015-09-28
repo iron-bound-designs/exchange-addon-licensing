@@ -90,6 +90,7 @@ function itelic_get_admin_edit_key_link( $key ) {
  * @type int    $limit       Activation limit.
  * @type string $expires     Expiration date. Pass null or empty string for
  *       forever.
+ * @type string $date        When the transaction occurred.
  * }
  *
  * @return \ITELIC\Key|null
@@ -107,20 +108,17 @@ function itelic_create_key( $args ) {
 
 	$args = ITUtility::merge_defaults( $args, $defaults );
 
-	if ( ! $args['customer'] ) {
-		return null;
-	}
-
 	$product = itelic_get_product( $args['product'] );
 
 	if ( ! it_exchange_product_has_feature( $product->ID, 'licensing' ) ) {
-		return null;
+		return new WP_Error( 'invalid_product',
+			__( "Product does not have licensing enabled.", \ITELIC\Plugin::SLUG ) );
 	}
 
 	$customer = it_exchange_get_customer( $args['customer'] );
 
 	if ( ! $customer ) {
-		return null;
+		return new WP_Error( 'invalid_customer', __( "Invalid customer", \ITELIC\Plugin::SLUG ) );
 	}
 
 	$transaction = it_exchange_get_transaction( $args['transaction'] );
@@ -128,7 +126,8 @@ function itelic_create_key( $args ) {
 	if ( ! $args['transaction'] ) {
 
 		if ( ! function_exists( 'it_exchange_register_manual_purchases_addon' ) ) {
-			return null;
+			return new WP_Error( 'no_manual_purchases',
+				__( "Manual purchases add-on is not installed.", \ITELIC\Plugin::SLUG ) );
 		}
 
 		// Grab default currency
@@ -163,10 +162,19 @@ function itelic_create_key( $args ) {
 		$object->products    = $products;
 
 		remove_action( 'it_exchange_add_transaction_success', 'ITELIC\on_add_transaction_generate_license_keys' );
-		$transaction_id = it_exchange_manual_purchases_addon_process_transaction( $customer->id, $object );
+
+		$uniquid  = it_exchange_manual_purchases_addon_transaction_uniqid();
+		$txn_args = array();
+
+		if ( isset( $args['date'] ) ) {
+			$txn_args['post_date'] = $args['date'];
+		}
+
+		$tid = it_exchange_add_transaction( 'manual-purchases', $uniquid, 'Completed', $customer->id, $object, $txn_args );
+
 		add_action( 'it_exchange_add_transaction_success', 'ITELIC\on_add_transaction_generate_license_keys' );
 
-		$transaction = it_exchange_get_transaction( $transaction_id );
+		$transaction = it_exchange_get_transaction( $tid );
 	}
 
 	$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $args['status'], $args['key'] );
