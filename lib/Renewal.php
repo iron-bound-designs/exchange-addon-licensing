@@ -69,12 +69,14 @@ class Renewal extends Model {
 		$this->key              = itelic_get_key( $data->lkey );
 		$this->renewal_date     = new \DateTime( $data->renewal_date );
 		$this->key_expired_date = new \DateTime( $data->key_expired_date );
-		$this->transaction      = it_exchange_get_transaction( $data->transaction_id );
-		$this->revenue          = (float) $data->revenue;
 
-		if ( ! $this->transaction instanceof \IT_Exchange_Transaction ) {
-			throw new \InvalidArgumentException( __( "Invalid transaction.", Plugin::SLUG ) );
+		if ( $data->transaction_id ) {
+			$this->transaction = it_exchange_get_transaction( $data->transaction_id );
+		} else {
+			$this->transaction = null;
 		}
+
+		$this->revenue = (float) $data->revenue;
 	}
 
 	/**
@@ -202,7 +204,7 @@ class Renewal extends Model {
 	 *
 	 * @since 1.0
 	 *
-	 * @return \IT_Exchange_Transaction
+	 * @return \IT_Exchange_Transaction|null
 	 */
 	public function get_transaction() {
 		return $this->transaction;
@@ -280,7 +282,8 @@ class Renewal extends Model {
 		$data = parent::get_data_to_cache();
 
 		unset( $data['key'] );
-		$data['lkey'] = $this->get_key();
+		$data['lkey']           = $this->get_key();
+		$data['transaction_id'] = $this->get_transaction() ? $this->get_transaction()->ID : null;
 
 		return $data;
 	}

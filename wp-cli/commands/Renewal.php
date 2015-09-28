@@ -134,7 +134,7 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 			WP_CLI::error( $e->getMessage() );
 		}
 
-		WP_CLI::success( "Key deleted." );
+		WP_CLI::success( "Renewal deleted." );
 	}
 
 	/**
@@ -149,7 +149,7 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 		if ( $object->get_transaction() ) {
 			$transaction = it_exchange_get_transaction_order_number( $object->get_transaction() );
 		} else {
-			$transaction = 'Manual Renewal';
+			$transaction = 'Manual';
 		}
 
 		return array(
