@@ -107,7 +107,7 @@ function generate_key_for_transaction_product( \IT_Exchange_Transaction $transac
 
 		$interval = convert_rp_to_date_interval( $type, $count );
 
-		$expires = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
+		$expires = new \DateTime( $transaction->post_date );
 		$expires->add( $interval );
 	}
 
