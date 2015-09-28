@@ -15,3 +15,4 @@ include_once __DIR__ . '/Fetcher.php';
 // commands
 include_once __DIR__ . '/commands/ITELIC.php';
 include_once __DIR__ . '/commands/Key.php';
+include_once __DIR__ . '/commands/Activation.php';

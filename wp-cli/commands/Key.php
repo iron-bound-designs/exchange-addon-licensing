@@ -58,7 +58,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 * @param $args
 	 * @param $assoc_args
 	 *
-	 * @synopsis   [--per-page=<per-page>] [--page=<page>] [--<field>=<value>] [--fields=<fields>]
+	 * @synopsis   [--<field>=<value>] [--fields=<fields>]
 	 * @subcommand list
 	 */
 	public function list_( $args, $assoc_args ) {

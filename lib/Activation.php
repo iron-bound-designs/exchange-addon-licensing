@@ -194,7 +194,10 @@ class Activation extends Model implements API\Serializable {
 		if ( ! $release ) {
 
 			$latest = $key->get_product()->get_latest_release_for_activation( $activation );
-			$activation->set_release( $latest );
+
+			if ( $latest ) {
+				$activation->set_release( $latest );
+			}
 		}
 
 		/**
