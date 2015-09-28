@@ -361,7 +361,8 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 				'product'  => $product->ID,
 				'customer' => $customer->id,
 				'date'     => $date->format( 'Y-m-d H:i:s' ),
-				'status'   => $this->get_status()
+				'status'   => $this->get_status(),
+				'paid'     => it_exchange_get_product_feature( $product->ID, 'base-price' )
 			);
 
 			$key = itelic_create_key( $key_args );
