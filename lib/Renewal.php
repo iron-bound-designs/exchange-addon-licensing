@@ -169,7 +169,7 @@ class Renewal extends Model {
 	 *
 	 * @since 1.0
 	 *
-	 * @return string
+	 * @return Key
 	 */
 	public function get_key() {
 		return $this->key;
