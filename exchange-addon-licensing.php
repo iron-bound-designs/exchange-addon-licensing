@@ -172,6 +172,8 @@ class Plugin {
 		$autoloader->addNamespace( 'URL', self::$dir . 'vendor/URL' );
 
 		$autoloader->register();
+
+		require_once( self::$dir . 'vendor/Faker/src/autoload.php' );
 	}
 }
 
