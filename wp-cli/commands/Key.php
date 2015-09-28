@@ -360,7 +360,8 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			$key_args = array(
 				'product'  => $product->ID,
 				'customer' => $customer->id,
-				'date'     => $date->format( 'Y-m-d H:i:s' )
+				'date'     => $date->format( 'Y-m-d H:i:s' ),
+				'status'   => $this->get_status()
 			);
 
 			$key = itelic_create_key( $key_args );
@@ -373,6 +374,22 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 		}
 
 		$notify->finish();
+	}
+
+	/**
+	 * Get the license key's status.
+	 *
+	 * @return string
+	 */
+	protected function get_status() {
+
+		$rand = rand( 0, 20 );
+
+		if ( $rand < 1 ) {
+			return \ITELIC\Key::DISABLED;
+		}
+
+		return \ITELIC\Key::ACTIVE;
 	}
 
 	/**
