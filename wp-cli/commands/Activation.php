@@ -189,6 +189,9 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--track=<track>]
 	 * : Accepted values: stable, pre-release. Default: stable
 	 *
+	 * [--porcelain]
+	 * : Output just the new activation ID.
+	 *
 	 * @param $args
 	 * @param $assoc_args
 	 */
