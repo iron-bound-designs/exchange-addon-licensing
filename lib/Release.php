@@ -246,7 +246,10 @@ class Release extends Model {
 				}
 			}
 
-			if ( in_array( $status, array( self::STATUS_ACTIVE, self::STATUS_ARCHIVED ) ) ) {
+			if ( in_array( $status, array(
+				self::STATUS_ACTIVE,
+				self::STATUS_ARCHIVED
+			) ) ) {
 				wp_cache_delete( $product->ID, 'itelic-changelog' );
 			}
 
@@ -335,8 +338,15 @@ class Release extends Model {
 				'page'                => 1,
 				'sql_calc_found_rows' => false,
 				'product'             => $this->get_product()->ID,
-				'type'                => array( self::TYPE_MAJOR, self::TYPE_MINOR, self::TYPE_SECURITY ),
-				'status'              => array( self::STATUS_ACTIVE, self::STATUS_ARCHIVED ),
+				'type'                => array(
+					self::TYPE_MAJOR,
+					self::TYPE_MINOR,
+					self::TYPE_SECURITY
+				),
+				'status'              => array(
+					self::STATUS_ACTIVE,
+					self::STATUS_ARCHIVED
+				),
 				'order'               => array(
 					'start_date' => 'DESC'
 				)
@@ -765,6 +775,10 @@ class Release extends Model {
 
 		if ( $this->get_status() == self::STATUS_ARCHIVED ) {
 			return $this->get_meta( 'activations', true );
+		}
+
+		if ( ! $this->get_start_date() ) {
+			return 0;
 		}
 
 		$query = new Activations( array(

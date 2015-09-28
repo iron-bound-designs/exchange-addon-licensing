@@ -338,7 +338,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	}
 
 	/**
-	 * Delete a license key.
+	 * Delete an activation key.
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -347,12 +347,12 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	 */
 	public function delete( $args, $assoc_args ) {
 
-		list( $key ) = $args;
+		list( $object ) = $args;
 
-		$key = $this->fetcher->get_check( $key );
+		$object = $this->fetcher->get_check( $object );
 
 		try {
-			$key->delete();
+			$object->delete();
 		}
 		catch ( Exception $e ) {
 			WP_CLI::error( $e->getMessage() );
