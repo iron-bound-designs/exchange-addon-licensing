@@ -17,3 +17,4 @@ include_once __DIR__ . '/commands/ITELIC.php';
 include_once __DIR__ . '/commands/Key.php';
 include_once __DIR__ . '/commands/Activation.php';
 include_once __DIR__ . '/commands/Release.php';
+include_once __DIR__ . '/commands/Update.php';
