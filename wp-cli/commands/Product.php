@@ -275,7 +275,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * ## Options
 	 *
-	 * [--<field>=<field>]
+	 * [--<field>=<value>]
 	 * : Pass additional parameters to products query.
 	 *
 	 * [--format=<format>]
@@ -315,8 +315,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	 * : Attachment ID used for download
 	 *
 	 * --limit=<limit>
-	 * : Activation limit. Variants are not supported. Pass empty string for
-	 * unlimited.
+	 * : Activation limit. Variants are not supported. Pass 0 for unlimited.
 	 *
 	 * [--key-type=<key-type>]
 	 * : Key type. Default: random.
@@ -337,76 +336,204 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $title, $price ) = $args;
 
-		parent::_create( $args, $assoc_args, function ( $params ) use ( $title, $price ) {
+		$fn = array( $this, 'create_product' );
 
-			$file = get_post( $params['file'] );
-
-			if ( get_post_type( $file ) != 'attachment' ) {
-				WP_CLI::error( "Invalid file. Post type is not attachment." );
-			}
-
-			$limit = (int) $params['limit'];
-
-			if ( empty( $limit ) ) {
-				$limit = '';
-			}
-
-			$key_type        = \WP_CLI\Utils\get_flag_value( $params, 'key-type', 'random' );
-			$online_software = \WP_CLI\Utils\get_flag_value( $params, 'online-software', 'true' );
-			$version         = \WP_CLI\Utils\get_flag_value( $params, 'version', '1.0' );
-			$description     = \WP_CLI\Utils\get_flag_value( $params, 'description', '' );
-
-			$product = it_exchange_add_product( array(
-				'type'          => 'digital-downloads-product-type',
-				'title'         => $title,
-				'base-price'    => $price,
-				'description'   => $description,
-				'show_in_store' => true
-			) );
-
-			if ( ! $product ) {
-				WP_CLI::error( 'Product not created.' );
-			}
-
-			$download_data = array(
-				'product_id' => $product,
-				'source'     => wp_get_attachment_url( $file->ID ),
-				'name'       => $file->post_title
-			);
-
-			it_exchange_update_product_feature( $product, 'downloads', $download_data );
-
-			$downloads   = it_exchange_get_product_feature( $product, 'downloads' );
-			$download_id = key( $downloads );
-
-			$feature_data = array(
-				'enabled'         => true,
-				'online-software' => $online_software == 'true' ? true : false,
-				'limit'           => $limit,
-				'key-type'        => $key_type,
-				'update-file'     => $download_id,
-				'version'         => $version
-			);
-
-			it_exchange_update_product_feature( $product, 'licensing', $feature_data );
-
-			$product = it_exchange_get_product( $product );
-
-			$type      = \ITELIC\Release::TYPE_MAJOR;
-			$status    = \ITELIC\Release::STATUS_ACTIVE;
-			$changelog = '<ul><li>' . __( "Inital release.", \ITELIC\Plugin::SLUG ) . '</li></ul>';
-
-			try {
-				$release = \ITELIC\Release::create( $product, $file, $version, $type, $status, $changelog );
-			}
-			catch ( Exception $e ) {
-				WP_CLI::error( $e->getMessage() );
-			}
-
-			update_post_meta( $product->ID, '_itelic_first_release', $release->get_pk() );
-
-			return $product->ID;
+		parent::_create( $args, $assoc_args, function ( $params ) use ( $title, $price, $fn ) {
+			return call_user_func( $fn, $title, $price, $params );
 		} );
+	}
+
+	/**
+	 * Generate proucts.
+	 *
+	 * ## Options
+	 *
+	 * [--file=<file>]
+	 * : Specify which files to used. By default pulls random zips from DB.
+	 *
+	 * [--count=<count>]
+	 * : How many products to generate. Default: 15
+	 *
+	 * @param $args
+	 * @param $assoc_args
+	 */
+	public function generate( $args, $assoc_args ) {
+
+		$count = \WP_CLI\Utils\get_flag_value( $assoc_args, 'count', 15 );
+
+		if ( ! \WP_CLI\Utils\get_flag_value( $assoc_args, 'file' ) ) {
+
+			/**
+			 * @var \wpdb $wpdb
+			 */
+			global $wpdb;
+
+			$results = $wpdb->get_results( $wpdb->prepare(
+				"SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment'
+				 AND post_mime_type = 'application/zip' LIMIT %d",
+				$count ) );
+
+			$files = array();
+
+			foreach ( $results as $result ) {
+				$files[] = $result->ID;
+			}
+		} else {
+
+			if ( get_post_type( $assoc_args['file'] ) != 'attachment' ) {
+				WP_CLI::error( "Invalid file post type." );
+			}
+
+			$files = array( $assoc_args['file'] );
+		}
+
+		if ( empty( $files ) ) {
+			WP_CLI::error( 'No files exist.' );
+		}
+
+		$notify = \WP_CLI\Utils\make_progress_bar( 'Generating products.', $count );
+
+		$faker = \Faker\Factory::create();
+
+		$results = array();
+
+		$limits = array( '-', '2', '2', '5', '5', '10' );
+
+		for ( $i = 0; $i < $count; $i ++ ) {
+
+			$title = $faker->catchPhrase . ' software';
+
+			$price = itelic_purebell( 44, 199, 45 );
+			$price = floatval( intval( $price ) );
+
+			$index = array_rand( $files );
+			$file  = get_post( $files[ $index ] );
+			$zip   = get_attached_file( $file->ID );
+
+			if ( ! file_exists( $zip ) ) {
+				unset( $files[ $index ] );
+
+				if ( empty( $files ) ) {
+					WP_CLI::error( 'No files exist.' );
+				}
+			}
+
+			$new_name = str_replace( ' ', '-', strtolower( $title ) );
+			$new_name .= '-1.0.zip';
+
+			$new_path = str_replace( basename( $zip ), $new_name, $zip );
+
+			copy( $zip, $new_path );
+
+			$file = wp_insert_attachment( array(
+				'guid'           => str_replace( $zip, $new_path, $file->guid ),
+				'post_mime_type' => $file->post_mime_type,
+				'post_title'     => preg_replace( '/\.[^.]+$/', '', $new_name )
+			), $new_path );
+
+			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+			$attach_data = wp_generate_attachment_metadata( $file, $new_path );
+			wp_update_attachment_metadata( $file, $attach_data );
+
+			$params = array(
+				'description' => $faker->realText(),
+				'limit'       => $limits[ array_rand( $limits ) ],
+				'file'        => $file
+			);
+
+			$results[] = $this->create_product( $title, $price, $params );
+
+			$notify->tick();
+		}
+
+		$notify->finish();
+
+		foreach ( $results as $result ) {
+			if ( is_wp_error( $result ) ) {
+				WP_CLI::error( $result, false );
+			}
+		}
+	}
+
+	/**
+	 * Create a product.
+	 *
+	 * @param string $title
+	 * @param float  $price
+	 * @param array  $params
+	 *
+	 * @return WP_Error|int
+	 */
+	protected function create_product( $title, $price, $params ) {
+
+		$file = get_post( $params['file'] );
+
+		if ( get_post_type( $file ) != 'attachment' ) {
+			return new WP_Error( 'invalid_file', "Invalid file. Post type is not attachment." );
+		}
+
+		$limit = (int) $params['limit'];
+
+		if ( empty( $limit ) ) {
+			$limit = '';
+		}
+
+		$key_type        = \WP_CLI\Utils\get_flag_value( $params, 'key-type', 'random' );
+		$online_software = \WP_CLI\Utils\get_flag_value( $params, 'online-software', 'true' );
+		$version         = \WP_CLI\Utils\get_flag_value( $params, 'version', '1.0' );
+		$description     = \WP_CLI\Utils\get_flag_value( $params, 'description', '' );
+
+		$product = it_exchange_add_product( array(
+			'type'          => 'digital-downloads-product-type',
+			'title'         => $title,
+			'base-price'    => $price,
+			'description'   => $description,
+			'show_in_store' => true
+		) );
+
+		if ( ! $product ) {
+			return new WP_Error( 'product_error', 'Product not created.' );
+		}
+
+		$download_data = array(
+			'product_id' => $product,
+			'source'     => wp_get_attachment_url( $file->ID ),
+			'name'       => $file->post_title
+		);
+
+		it_exchange_update_product_feature( $product, 'downloads', $download_data );
+
+		$downloads   = it_exchange_get_product_feature( $product, 'downloads' );
+		$download_id = key( $downloads );
+
+		$feature_data = array(
+			'enabled'         => true,
+			'online-software' => $online_software == 'true' ? true : false,
+			'limit'           => $limit,
+			'key-type'        => $key_type,
+			'update-file'     => $download_id,
+			'version'         => $version
+		);
+
+		it_exchange_update_product_feature( $product, 'licensing', $feature_data );
+
+		$product = it_exchange_get_product( $product );
+
+		$type      = \ITELIC\Release::TYPE_MAJOR;
+		$status    = \ITELIC\Release::STATUS_ACTIVE;
+		$changelog = '<ul><li>' . __( "Initial release.", \ITELIC\Plugin::SLUG ) . '</li></ul>';
+
+		try {
+			$release = \ITELIC\Release::create( $product, $file, $version, $type, $status, $changelog );
+		}
+		catch ( Exception $e ) {
+			return new WP_Error( 'release_exception', $e->getMessage() );
+		}
+
+		update_post_meta( $product->ID, '_itelic_first_release', $release->get_pk() );
+
+		return $product->ID;
 	}
 
 	/**
