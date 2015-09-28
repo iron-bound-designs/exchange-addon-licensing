@@ -145,6 +145,12 @@ class Key extends Model implements API\Serializable {
 			$status = self::ACTIVE;
 		}
 
+		$now = new \DateTime();
+
+		if ( $expires && $expires < $now ) {
+			$status = self::EXPIRED;
+		}
+
 		$data = array(
 			'lkey'           => $key,
 			'transaction_id' => $transaction->ID,
