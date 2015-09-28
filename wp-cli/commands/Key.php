@@ -31,10 +31,16 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	/**
 	 * Get a license key's content by key.
 	 *
+	 * ## Options
+	 *
+	 * <key>
+	 * : License key
+	 *
+	 * [--fields=<fields>]
+	 * : Return designated object fields.
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
-	 *
-	 * @synopsis <key> [--fields=<fields>]
 	 */
 	public function get( $args, $assoc_args ) {
 
@@ -42,7 +48,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 		$object = $this->fetcher->get_check( $key );
 
-		$fields = $this->get_fields_for_key( $object );
+		$fields = $this->get_fields_for_object( $object );
 
 		if ( empty( $assoc_args['fields'] ) ) {
 			$assoc_args['fields'] = array_keys( $fields );
@@ -55,10 +61,17 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	/**
 	 * Get a list of keys
 	 *
+	 * ## Options
+	 *
+	 * [--<field>=<value>]
+	 * : Include additional query args in keys query.
+	 *
+	 * [--fields=<fields>]
+	 * : Return designated object fields.
+	 *
 	 * @param $args
 	 * @param $assoc_args
 	 *
-	 * @synopsis   [--<field>=<value>] [--fields=<fields>]
 	 * @subcommand list
 	 */
 	public function list_( $args, $assoc_args ) {
@@ -79,7 +92,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 		$items = array();
 
 		foreach ( $results as $item ) {
-			$items[] = $this->get_fields_for_key( $item );
+			$items[] = $this->get_fields_for_object( $item );
 		}
 
 		if ( empty( $assoc_args['fields'] ) ) {
@@ -96,12 +109,15 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	}
 
 	/**
-	 * Extend a license key.
+	 * Extend a license key's expiration date.
+	 *
+	 * ## Options
+	 *
+	 * <key>
+	 * : License key
 	 *
 	 * @param $args
 	 * @param $assoc_args
-	 *
-	 * @synopsis <key>
 	 */
 	public function extend( $args, $assoc_args ) {
 
@@ -121,10 +137,16 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	/**
 	 * Renew a license key.
 	 *
+	 * ## Options
+	 *
+	 * <key>
+	 * : License key
+	 *
+	 * [<transaction>]
+	 * : Optionally tie this renewal to a transaction
+	 *
 	 * @param $args
 	 * @param $assoc_args
-	 *
-	 * @synopsis <key> [<transaction>]
 	 */
 	public function renew( $args, $assoc_args ) {
 
@@ -166,10 +188,16 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	/**
 	 * Expire a license key.
 	 *
+	 * ## Options
+	 *
+	 * <key>
+	 * : License key
+	 *
+	 * [<when>]
+	 * : Specify when the license key expired. Accepts strtotime compatible value
+	 *
 	 * @param $args
 	 * @param $assoc_args
-	 *
-	 * @synopsis <key> [<when>]
 	 */
 	public function expire( $args, $assoc_args ) {
 
@@ -192,19 +220,22 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	/**
 	 * Delete a license key.
 	 *
+	 * ## Options
+	 *
+	 * <key>
+	 * : Key
+	 *
 	 * @param $args
 	 * @param $assoc_args
-	 *
-	 * @synopsis <key>
 	 */
 	public function delete( $args, $assoc_args ) {
 
-		list( $key ) = $args;
+		list( $object ) = $args;
 
-		$key = $this->fetcher->get_check( $key );
+		$object = $this->fetcher->get_check( $object );
 
 		try {
-			$key->delete();
+			$object->delete();
 		}
 		catch ( Exception $e ) {
 			WP_CLI::error( $e->getMessage() );
@@ -214,22 +245,22 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	}
 
 	/**
-	 * Get data to display for a single key.
+	 * Get data to display for a single object.
 	 *
-	 * @param \ITELIC\Key $key
+	 * @param \ITELIC\Key $object
 	 *
 	 * @return array
 	 */
-	protected function get_fields_for_key( \ITELIC\Key $key ) {
+	protected function get_fields_for_object( \ITELIC\Key $object ) {
 		return array(
-			'key'         => $key->get_key(),
-			'status'      => $key->get_status( true ),
-			'product'     => $key->get_product()->post_title,
-			'transaction' => it_exchange_get_transaction_order_number( $key->get_transaction() ),
-			'customer'    => $key->get_customer()->wp_user->display_name,
-			'expires'     => $key->get_expires() ? $key->get_expires()->format( DateTime::ISO8601 ) : '-',
-			'max'         => $key->get_max(),
-			'activations' => $key->get_active_count()
+			'key'         => $object->get_key(),
+			'status'      => $object->get_status( true ),
+			'product'     => $object->get_product()->post_title,
+			'transaction' => it_exchange_get_transaction_order_number( $object->get_transaction() ),
+			'customer'    => $object->get_customer()->wp_user->display_name,
+			'expires'     => $object->get_expires() ? $object->get_expires()->format( DateTime::ISO8601 ) : '-',
+			'max'         => $object->get_max(),
+			'activations' => $object->get_active_count()
 		);
 	}
 }
