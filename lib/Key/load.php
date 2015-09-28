@@ -135,6 +135,11 @@ add_action( 'it_exchange_itelic_render_key_type_random_settings', __NAMESPACE__ 
  */
 function render_key_type_list_settings( $product, $prefix, $values = array() ) {
 
+	$defaults = array(
+		'keys' => ''
+	);
+	$values = \ITUtility::merge_defaults( $values, $defaults );
+
 	?>
 	<label for="itelic-key-type-list"><?php _e( "License Keys", Plugin::SLUG ); ?></label>
 	<textarea id="itelic-key-type-list" name="<?php echo $prefix; ?>[keys]"><?php echo $values['keys']; ?></textarea>

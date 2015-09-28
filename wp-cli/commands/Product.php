@@ -111,6 +111,11 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		$type = it_exchange_get_product_feature( $ID, 'licensing', array( 'field' => 'key-type' ) );
 		$item = it_exchange_get_product_feature( $ID, 'licensing', array( 'field' => "type.$type" ) );
+
+		if ( ! is_array( $item ) ) {
+			$item = array();
+		}
+
 		$item = array( 'type' => $type ) + $item;
 
 		$assoc_args['fields'] = array_keys( $item );
@@ -129,7 +134,8 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * --<field>=<value>
 	 * : One or more fields to update.
-	 * Accepted: online-software, update-file, variants-enabled, base-price
+	 * Accepted: online-software, update-file, variants-enabled, base-price,
+	 * limit, key-type
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -145,13 +151,20 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			'update-file',
 			'variants-enabled',
 			'base-price',
-			'limit'
+			'limit',
+			'key-type'
 		);
 
 		foreach ( $assoc_args as $arg => $val ) {
 			if ( ! in_array( $arg, $white_list ) ) {
 				WP_CLI::error( sprintf( "Invalid update param '%s'", $arg ) );
 			}
+		}
+
+		$key_types = itelic_get_key_types();
+
+		if ( isset( $assoc_args['key-type'] ) && ! isset( $key_types[ $assoc_args['key-type'] ] ) ) {
+			WP_CLI::error( sprintf( "Invalid key type '%s'", $assoc_args['key-type'] ) );
 		}
 
 		parent::_update( $args, $assoc_args, function ( $params ) use ( $ID ) {
@@ -221,6 +234,43 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	}
 
 	/**
+	 * Get a product's key type settings.
+	 *
+	 * ## Options
+	 *
+	 * <ID>
+	 * : Product ID
+	 *
+	 * --<field>=<value>
+	 * : One or more fields to update.
+	 *
+	 * @param $args
+	 * @param $assoc_args
+	 *
+	 * @subcommand update-key-type
+	 */
+	public function update_key_type( $args, $assoc_args ) {
+
+		list( $ID ) = $args;
+
+		$this->fetcher->get_check( $ID );
+
+		$type = it_exchange_get_product_feature( $ID, 'licensing', array( 'field' => 'key-type' ) );
+
+		$current = it_exchange_get_product_feature( $ID, 'licensing', array( 'field' => "type.$type" ) );
+
+		if ( ! is_array( $current ) ) {
+			$current = array();
+		}
+
+		$new = wp_parse_args( $assoc_args, $current );
+
+		it_exchange_update_product_feature( $ID, 'licensing', $new, array( 'key-type' => $type ) );
+
+		WP_CLI::success( 'Key type settings updated.' );
+	}
+
+	/**
 	 * Get all products with licensing enabled.
 	 *
 	 * ## Options
@@ -268,7 +318,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 		$data['online-software'] = $base['online-software'] ? 'yes' : 'no';
 
 		$data['version']     = $base['version'];
-		$data['key-type']    = $base['key-type'] ? itelic_get_key_type_name( $base['key-type'] ) : '';
+		$data['key-type']    = $base['key-type'];
 		$data['update-file'] = ( $p = get_post( $base['update-file'] ) ) ? $p->post_title : '-';
 
 		$data['variants-enabled'] = $base['enabled_variant_activations'] ? 'yes' : 'no';
