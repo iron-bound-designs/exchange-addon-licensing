@@ -68,6 +68,11 @@ jQuery(document).ready(function ($) {
 			return editable_ajax(params);
 		},
 		success    : function (response, newValue) {
+
+			if ( newValue == 0 || newValue == '' ) {
+				newValue = 'Unlimited';
+			}
+
 			return editable_success_callback(response, newValue);
 		}
 	});

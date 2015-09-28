@@ -103,7 +103,13 @@ class Key extends Model implements API\Serializable {
 			$this->expires = new \DateTime( $data->expires );
 		}
 
-		foreach ( array( 'transaction', 'product', 'customer' ) as $maybe_error ) {
+		foreach (
+			array(
+				'transaction',
+				'product',
+				'customer'
+			) as $maybe_error
+		) {
 			if ( ! $this->$maybe_error || is_wp_error( $this->$maybe_error ) ) {
 				throw new \InvalidArgumentException( "Invalid $maybe_error" );
 			}
@@ -145,7 +151,7 @@ class Key extends Model implements API\Serializable {
 			'product'        => $product->ID,
 			'customer'       => $customer->id,
 			'status'         => $status,
-			'max'            => $max,
+			'max'            => (int) $max,
 			'expires'        => isset( $expires ) ? $expires->format( "Y-m-d H:i:s" ) : null
 		);
 
@@ -477,7 +483,7 @@ class Key extends Model implements API\Serializable {
 	 * @return int
 	 */
 	public function get_max() {
-		return $this->max;
+		return $this->max ? $this->max : '';
 	}
 
 	/**
@@ -489,7 +495,7 @@ class Key extends Model implements API\Serializable {
 	 */
 	public function set_max( $max ) {
 
-		$this->max = absint( $max );
+		$this->max = (int) $max;
 		$this->update( 'max', $this->get_max() );
 	}
 

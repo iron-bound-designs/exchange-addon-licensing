@@ -200,7 +200,8 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 * : License key
 	 *
 	 * [<when>]
-	 * : Specify when the license key expired. Accepts strtotime compatible value
+	 * : Specify when the license key expired. Accepts strtotime compatible
+	 * value
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -221,6 +222,96 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 		$key->expire( $when );
 
 		WP_CLI::success( "Key expired." );
+	}
+
+	/**
+	 * Create a license key.
+	 *
+	 * Requires manual purchases add-on.
+	 *
+	 * ## Options
+	 *
+	 * <product>
+	 * : Product ID.
+	 *
+	 * <customer>
+	 * : Customer ID
+	 *
+	 * [<key>]
+	 * : Optionally, specify the license key to be used.
+	 *
+	 * [--limit=<limit>]
+	 * : Activation limit. Defaults to lowest value available.
+	 * Set to '-' for unlimited.
+	 *
+	 * [--amount-paid=<amount-paid>]
+	 * : The amount the customer paid for this key. Defaults to the product
+	 * base price.
+	 *
+	 * [--expires=<expires>]
+	 * : License key expiry date.
+	 * Default: forever. Accepts strtotime compatible value.
+	 *
+	 * [--status=<status>]
+	 * : Key status. Accepts: active, expired, disabled. Default: active
+	 *
+	 * @param $args
+	 * @param $assoc_args
+	 */
+	public function create( $args, $assoc_args ) {
+
+		list( $ID, $customer, $key ) = array_pad( $args, 3, '' );
+
+		$product = itelic_get_product( $ID );
+
+		if ( ! $product || ! it_exchange_product_has_feature( $product->ID, 'licensing' ) ) {
+			WP_CLI::error( "Invalid product." );
+		}
+
+		$customer = it_exchange_get_customer( $customer );
+
+		if ( ! $customer ) {
+			WP_CLI::error( "Invalid customer." );
+		}
+
+		$create_args = array(
+			'product'  => $product->ID,
+			'customer' => $customer->id,
+			'key'      => $key,
+			'status'   => \WP_CLI\Utils\get_flag_value( $assoc_args, 'status', \ITELIC\Key::ACTIVE )
+		);
+
+		if ( isset( $assoc_args['limit'] ) ) {
+			$create_args['limit'] = $assoc_args['limit'];
+		}
+
+		if ( isset( $assoc_args['expires'] ) ) {
+			$create_args['expires'] = $assoc_args['expires'];
+		}
+
+		if ( isset( $assoc_args['amount-paid'] ) ) {
+			$create_args['paid'] = $assoc_args['amount-paid'];
+		} else {
+			$create_args['paid'] = it_exchange_get_product_feature( $product->ID, 'base-price' );
+		}
+
+		parent::_create( $args, $assoc_args, function () use ( $create_args ) {
+
+			try {
+				$key = itelic_create_key( $create_args );
+
+				if ( ! $key ) {
+					WP_CLI::error( "Unknown error occurred." );
+				}
+
+				return $key->get_pk();
+			}
+			catch ( Exception $e ) {
+				WP_CLI::error( $e->getMessage() );
+			}
+
+			WP_CLI::error( "Unknown error occurred." );
+		} );
 	}
 
 	/**
@@ -265,7 +356,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			'transaction' => it_exchange_get_transaction_order_number( $object->get_transaction() ),
 			'customer'    => $object->get_customer()->wp_user->display_name,
 			'expires'     => $object->get_expires() ? $object->get_expires()->format( DateTime::ISO8601 ) : '-',
-			'max'         => $object->get_max(),
+			'max'         => $object->get_max() ? $object->get_max() : 'Unlimited',
 			'activations' => $object->get_active_count()
 		);
 	}

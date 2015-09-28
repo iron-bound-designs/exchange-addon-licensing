@@ -12,6 +12,7 @@ use ITELIC\Key\Generator;
 
 /**
  * Class Random
+ *
  * @package ITELIC\Key\Generator
  */
 class Random extends Generator {
@@ -28,8 +29,12 @@ class Random extends Generator {
 	 */
 	public function __construct( $options = array(), $product, $customer, $transaction ) {
 
-		if ( empty( $options['length'] ) ) {
-			throw new \InvalidArgumentException( "Length is required to generate a key based on the random strategy." );
+		if ( ! isset( $options['length'] ) ) {
+			$options['length'] = 32;
+		}
+
+		if ( $options['length'] < 4 ) {
+			throw new \InvalidArgumentException( "Key length must be greater than 3." );
 		}
 
 		$options['length'];

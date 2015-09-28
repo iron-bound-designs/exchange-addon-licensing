@@ -55,15 +55,18 @@ function generate_keys_for_transaction( \IT_Exchange_Transaction $transaction, $
  * @param \IT_Exchange_Transaction $transaction
  * @param \IT_Exchange_Product     $product
  * @param string                   $status
+ * @param string                   $key
  *
  * @return Key
  */
-function generate_key_for_transaction_product( \IT_Exchange_Transaction $transaction, \IT_Exchange_Product $product, $status = '' ) {
+function generate_key_for_transaction_product( \IT_Exchange_Transaction $transaction, \IT_Exchange_Product $product, $status = '', $key = '' ) {
 
 	$customer = it_exchange_get_transaction_customer( $transaction );
 
-	$factory = new Factory( $product, $customer, $transaction );
-	$key     = $factory->make();
+	if ( ! $key ) {
+		$factory = new Factory( $product, $customer, $transaction );
+		$key     = $factory->make();
+	}
 
 	foreach ( $transaction->get_products() as $tran_product ) {
 
@@ -227,7 +230,8 @@ function get_shared_tags() {
 /**
  * Exchange isn't very consistent in getting access to the current product.
  *
- * This function tries to abstract that away and provide all the possible means of getting the product.
+ * This function tries to abstract that away and provide all the possible means
+ * of getting the product.
  *
  * @return int
  */
@@ -246,7 +250,6 @@ function get_current_product_id() {
 
 	return $id;
 }
-
 
 /**
  * Generate a download link.
@@ -332,7 +335,8 @@ function validate_query_args( $query_args ) {
 /**
  * Serve a download.
  *
- * Essentially a clone of it_exchange_serve_product_download(), but works for arbitrary URLs.
+ * Essentially a clone of it_exchange_serve_product_download(), but works for
+ * arbitrary URLs.
  *
  * @since 1.0
  *

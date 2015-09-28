@@ -107,7 +107,9 @@ class Single extends View {
 				<div class="third max-activations">
 					<h4><?php _e( "Max Activations", Plugin::SLUG ); ?></h4>
 
-					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>"><?php echo $this->key->get_max(); ?></h3>
+					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>">
+						<?php echo $this->key->get_max() ? $this->key->get_max() : __( 'Unlimited', Plugin::SLUG ); ?>
+					</h3>
 				</div>
 			</div>
 
