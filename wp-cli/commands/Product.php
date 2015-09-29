@@ -418,7 +418,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 				}
 			}
 
-			$new_name = str_replace( ' ', '-', strtolower( $title ) );
+			$new_name = str_replace( array(' ', '/'), '-', strtolower( $title ) );
 			$new_name .= '-1.0.zip';
 
 			$new_path = str_replace( basename( $zip ), $new_name, $zip );
@@ -441,6 +441,42 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 				'limit'       => $limits[ array_rand( $limits ) ],
 				'file'        => $file
 			);
+
+			$recurring = array(
+				array(
+					'interval'  => 'month',
+					'count'     => 1,
+					'frequency' => 10
+				),
+				array(
+					'interval'  => 'month',
+					'count'     => 6,
+					'frequency' => 20
+				),
+				array(
+					'interval'  => 'none',
+					'frequency' => 30
+				),
+				array(
+					'interval'  => 'year',
+					'count'     => 1,
+					'frequency' => 100
+				),
+			);
+
+			$rand = rand( 0, 100 );
+
+			foreach ( $recurring as $option ) {
+				if ( $rand <= $option['frequency'] ) {
+
+					if ( $option['interval'] != 'none' ) {
+						$params['interval']       = $option['interval'];
+						$params['interval-count'] = $option['count'];
+					}
+
+					break;
+				}
+			}
 
 			$results[] = $this->create_product( $title, $price, $params );
 
@@ -526,6 +562,16 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 		);
 
 		it_exchange_update_product_feature( $product, 'licensing', $feature_data );
+
+		if ( isset( $params['interval'] ) ) {
+			it_exchange_update_product_feature( $product, 'recurring-payments', 'on' );
+			it_exchange_update_product_feature( $product, 'recurring-payments', $params['interval'], array(
+				'setting' => 'interval'
+			) );
+			it_exchange_update_product_feature( $product, 'recurring-payments', $params['interval-count'], array(
+				'setting' => 'interval-count'
+			) );
+		}
 
 		$product = it_exchange_get_product( $product );
 
