@@ -16,6 +16,7 @@ use IronBound\DB\Table\Table;
 
 /**
  * Class Query
+ *
  * @package IronBound\DB
  */
 class Simple_Query {
@@ -350,6 +351,10 @@ class Simple_Query {
 
 		if ( ! isset( $columns[ $column ] ) ) {
 			throw new Exception( "Invalid database column." );
+		}
+
+		if ( empty( $value ) ) {
+			return '';
 		}
 
 		$column_format = $columns[ $column ];
