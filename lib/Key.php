@@ -8,6 +8,7 @@
 
 namespace ITELIC;
 
+use Faker\Provider\tr_TR\DateTime;
 use IronBound\Cache\Cache;
 use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
@@ -286,7 +287,11 @@ class Key extends Model implements API\Serializable {
 
 		$this->extend();
 
-		$this->set_status( self::ACTIVE );
+		$now = new \DateTime();
+
+		if ( $this->get_expires() > $now ) {
+			$this->set_status( self::ACTIVE );
+		}
 
 		/**
 		 * Fires when a license key is renewed.
