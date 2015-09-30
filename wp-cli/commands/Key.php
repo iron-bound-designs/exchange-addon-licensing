@@ -408,7 +408,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			$limit = 20;
 		}
 
-		$limit = $limit / 2 + 2;
+		$limit = min( $limit, $limit / 2 + 2 );
 
 		$faker = \Faker\Factory::create();
 
@@ -416,31 +416,48 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 		$end     = new DateTime( $created );
 		$end->add( new DateInterval( 'P5D' ) );
 
-		$date    = $faker->dateTimeBetween( $created, $end );
-		$release = $this->get_release_for_date( $key, $date );
+		$creation_date = $faker->dateTimeBetween( $created, $end );
+		$release       = $this->get_release_for_date( $key, $creation_date );
 
-		\ITELIC\Activation::create( $key, $faker->domainName, $date, $release );
+		\ITELIC\Activation::create( $key, $faker->domainName, $creation_date, $release );
 
-		$count = rand( 0, $limit );
+		$count = rand( 0, $limit - 1 );
 
 		if ( ! $count ) {
 			return;
 		}
 
+		$now = new DateTime();
+
 		for ( $i = 0; $i < $count; $i ++ ) {
 
 			$expires = $key->get_expires();
-			$date    = $faker->dateTimeBetween( $created, $expires ? $expires : 'now' );
 
-			if ( rand( 0, 1 ) ) {
-				$status = \ITELIC\Activation::DEACTIVATED;
+			if ( $expires > $now ) {
+				$max = $now;
 			} else {
-				$status = '';
+				$max = $expires;
 			}
 
-			$release = $this->get_release_for_date( $key, $date );
+			$creation_date = $faker->dateTimeBetween( $created, $max );
 
-			\ITELIC\Activation::create( $key, $faker->domainName, $date, $release, $status );
+			$release = $this->get_release_for_date( $key, $creation_date );
+
+			try {
+				$a = \ITELIC\Activation::create( $key, $faker->domainName, $creation_date, $release );
+			}
+			catch ( LogicException $e ) {
+				continue;
+			}
+			catch ( IronBound\DB\Exception $e ) {
+				continue;
+			}
+
+			if ( ! rand( 0, 3 ) ) {
+
+				$deactivate_date = $faker->dateTimeBetween( $creation_date, $max );
+				$a->deactivate( $deactivate_date );
+			}
 		}
 	}
 
@@ -475,7 +492,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			),
 			'items_per_page'      => 1,
 			'sql_calc_found_rows' => false,
-			'type'                => array()
+			'type'                => $types
 		) );
 
 		$releases = $query->get_results();

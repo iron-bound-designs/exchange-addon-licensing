@@ -175,7 +175,7 @@ class Activation extends Model implements API\Serializable {
 		}
 		catch ( DB_Exception $e ) {
 
-			if ( $e->getCode() === 1062 ) {
+			if ( $e->getCode() == 1062 ) {
 				throw new DB_Exception( __( "An activation with this same location already exists.", Plugin::SLUG ), $e->getCode(), $e );
 			} else {
 				throw $e;

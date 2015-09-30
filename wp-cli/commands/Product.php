@@ -344,7 +344,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	}
 
 	/**
-	 * Generate proucts.
+	 * Generate products.
 	 *
 	 * ## Options
 	 *
