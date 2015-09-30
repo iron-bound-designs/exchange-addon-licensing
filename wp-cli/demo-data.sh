@@ -10,8 +10,11 @@ if [ "$SIZE" = "small" ] ; then
 	printf "\nGenerating Products...\n"
 	wp itelic product generate --count=10
 
+	printf "\nGenerating Releases...\n"
+	wp itelic release generate
+
 	printf "\nGenerating Keys...\n"
-	wp itelic key generate  --activations
+	wp itelic key generate --activations
 
 	printf "\nGenerating Renewals...\n"
 	wp itelic renewal generate 33
@@ -24,6 +27,9 @@ elif [ "$SIZE" = "medium" ] ; then
 
 	printf "\nGenerating products...\n"
 	wp itelic product generate --count=20
+
+	printf "\nGenerating Releases...\n"
+	wp itelic release generate
 
 	printf "\nGenearting Keys...\n"
 
@@ -42,6 +48,9 @@ elif [ "$SIZE" = "large" ] ; then
 
 	printf "\nGenerating products...\n"
 	wp itelic product generate --count=50
+
+	printf "\nGenerating Releases...\n"
+	wp itelic release generate
 
 	printf "\nGenearting Keys...\n"
 
@@ -63,11 +72,14 @@ elif [ "$SIZE" = "giant" ] ; then
 	printf "\nGenerating products...\n"
 	wp itelic product generate --count=150
 
-	 printf "\nGenearting Keys...\n"
+	printf "\nGenerating Releases...\n"
+	wp itelic release generate
 
-        for (( i = 1; i <= 100 ; i++ )) ; do
-                wp itelic key generate --activations
-        done
+	printf "\nGenearting Keys...\n"
+
+	for (( i = 1; i <= 100 ; i++ )) ; do
+ 		wp itelic key generate --activations
+	done
 
 	pritnf "\nGenerating Renewals...\n"
 	wp itelic renewal generate 33

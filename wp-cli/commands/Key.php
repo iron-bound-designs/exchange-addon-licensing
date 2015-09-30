@@ -419,6 +419,10 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 		$creation_date = $faker->dateTimeBetween( $created, $end );
 		$release       = $this->get_release_for_date( $key, $creation_date );
 
+		if ( ! $release ) {
+			WP_CLI::error( "Release not created." );
+		}
+
 		\ITELIC\Activation::create( $key, $faker->domainName, $creation_date, $release );
 
 		$count = rand( 0, $limit - 1 );

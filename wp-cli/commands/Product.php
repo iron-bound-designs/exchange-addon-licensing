@@ -395,8 +395,6 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		$faker = \Faker\Factory::create();
 
-		$results = array();
-
 		$limits = array( '-', '2', '2', '5', '5', '10' );
 
 		for ( $i = 0; $i < $count; $i ++ ) {
@@ -459,18 +457,16 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 				}
 			}
 
-			$results[] = $this->create_product( $title, $price, $params );
+			$result = $this->create_product( $title, $price, $params );
+
+			if ( is_wp_error( $result ) ) {
+				WP_CLI::error( $result );
+			}
 
 			$notify->tick();
 		}
 
 		$notify->finish();
-
-		foreach ( $results as $result ) {
-			if ( is_wp_error( $result ) ) {
-				WP_CLI::error( $result, false );
-			}
-		}
 	}
 
 	/**

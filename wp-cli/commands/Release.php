@@ -522,6 +522,8 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 
 		$notify = \WP_CLI\Utils\make_progress_bar( 'Generating Releases', count( $products ) );
 
+		$now = new DateTime();
+
 		foreach ( $products as $product ) {
 
 			$major = get_post_meta( $product->ID, '_itelic_first_release', true );
@@ -529,7 +531,38 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 
 			$minor_releases = rand( 3, 9 );
 
+			$last = $major;
 
+			while ( $last->get_start_date() < $now ) {
+
+				for ( $i = 0; $i < $minor_releases; $i ++ ) {
+
+					// this exponentially spaces out minor releases
+					$days = rand( $i ^ 2, ( $i + 1 ) ^ 2 );
+
+					$start = $last->get_start_date()->add( new DateInterval( "P{$days}D" ) );
+
+					// we don't want to create any releases in the future
+					if ( $start > $now ) {
+						break 2;
+					}
+
+					$last = $this->generate_minor_release( $last );
+					$last->activate( $start );
+				}
+
+				// between 3 and 7 weeks after a minor release to a major release
+				$days_before_major = rand( 3 * 7, 7 * 7 );
+
+				$start = $last->get_start_date()->add( new DateInterval( "P{$days_before_major}D" ) );
+
+				if ( $start > $now ) {
+					break;
+				}
+
+				$last = $this->generate_major_release( $last );
+				$last->activate( $start );
+			}
 
 			$notify->tick();
 		}
@@ -575,7 +608,7 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 	protected function generate_minor_release( \ITELIC\Release $latest ) {
 
 		$product = $latest->get_product();
-		$type    = \ITELIC\Release::TYPE_MAJOR;
+		$type    = \ITELIC\Release::TYPE_MINOR;
 
 		$version = \WP_CLI\Utils\increment_version( $latest->get_version(), 'minor' );
 
