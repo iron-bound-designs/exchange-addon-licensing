@@ -320,10 +320,13 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 * ## Options
 	 *
 	 * [--count=<count>]
-	 * : Number of keys to generate. Default 1000.
+	 * : Number of keys to generate. Default 500. Max 750.
 	 *
 	 * [--product=<product>]
 	 * : Only generate keys for a certain product.
+	 *
+	 * [--activations]
+	 * : Generate activations for license keys.
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -342,7 +345,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			$products = wp_list_pluck( itelic_get_products_with_licensing_enabled(), 'ID' );
 		}
 
-		$count = \WP_CLI\Utils\get_flag_value( $assoc_args, 'count', 1000 );
+		$count = \WP_CLI\Utils\get_flag_value( $assoc_args, 'count', 500 );
 
 		$notify = \WP_CLI\Utils\make_progress_bar( "Generating keys", $count );
 
@@ -371,10 +374,113 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 				WP_CLI::error( $key );
 			}
 
+			if ( \WP_CLI\Utils\get_flag_value( $assoc_args, 'activations' ) ) {
+				$this->create_activations_for_key( $key );
+			}
+
+			if ( $key->get_status() == \ITELIC\Key::EXPIRED ) {
+				$key->expire( $key->get_expires() );
+			}
+
 			$notify->tick();
 		}
 
 		$notify->finish();
+	}
+
+	/**
+	 * Create activation records for a license key.
+	 *
+	 * @param \ITELIC\Key $key
+	 */
+	protected function create_activations_for_key( ITELIC\Key $key ) {
+
+		if ( in_array( $key->get_status(), array(
+			\ITELIC\Key::EXPIRED,
+			\ITELIC\Key::DISABLED
+		) ) ) {
+			return;
+		}
+
+		$limit = $key->get_max();
+
+		if ( empty( $limit ) ) {
+			$limit = 20;
+		}
+
+		$limit = $limit / 2 + 2;
+
+		$faker = \Faker\Factory::create();
+
+		$created = $key->get_transaction()->post_date;
+		$end     = new DateTime( $created );
+		$end->add( new DateInterval( 'P5D' ) );
+
+		$date    = $faker->dateTimeBetween( $created, $end );
+		$release = $this->get_release_for_date( $key, $date );
+
+		\ITELIC\Activation::create( $key, $faker->domainName, $date, $release );
+
+		$count = rand( 0, $limit );
+
+		if ( ! $count ) {
+			return;
+		}
+
+		for ( $i = 0; $i < $count; $i ++ ) {
+
+			$expires = $key->get_expires();
+			$date    = $faker->dateTimeBetween( $created, $expires ? $expires : 'now' );
+
+			if ( rand( 0, 1 ) ) {
+				$status = \ITELIC\Activation::DEACTIVATED;
+			} else {
+				$status = '';
+			}
+
+			$release = $this->get_release_for_date( $key, $date );
+
+			\ITELIC\Activation::create( $key, $faker->domainName, $date, $release, $status );
+		}
+	}
+
+	/**
+	 * Get the latest release available at a certain date.
+	 *
+	 * @param \ITELIC\Key $key
+	 * @param DateTime    $date
+	 * @param string      $track
+	 *
+	 * @return \ITELIC\Release
+	 */
+	protected function get_release_for_date( ITELIC\Key $key, DateTime $date, $track = 'stable' ) {
+
+		$types = array(
+			\ITELIC\Release::TYPE_MAJOR,
+			\ITELIC\Release::TYPE_MINOR,
+			\ITELIC\Release::TYPE_SECURITY
+		);
+
+		if ( $track == 'pre-release' ) {
+			$types[] = \ITELIC\Release::TYPE_PRERELEASE;
+		}
+
+		$query = new \ITELIC_API\Query\Releases( array(
+			'product'             => $key->get_product()->ID,
+			'order'               => array(
+				'start_date' => 'DESC'
+			),
+			'start_date'          => array(
+				'before' => $date->format( 'Y-m-d H:i:s' )
+			),
+			'items_per_page'      => 1,
+			'sql_calc_found_rows' => false,
+			'type'                => array()
+		) );
+
+		$releases = $query->get_results();
+
+		return reset( $releases );
 	}
 
 	/**

@@ -138,7 +138,7 @@ class Activation extends Model implements API\Serializable {
 			throw new \InvalidArgumentException( "The location field has a max length of 191 characters." );
 		}
 
-		if ( $key->get_active_count() >= $key->get_max() ) {
+		if ( $key->get_max() && $key->get_active_count() >= $key->get_max() ) {
 			throw new \LogicException( __( "This license key has reached it's maximum number of activations.", Plugin::SLUG ) );
 		}
 
