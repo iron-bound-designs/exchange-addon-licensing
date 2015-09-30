@@ -76,6 +76,11 @@ class ITELIC_Command extends WP_CLI_Command {
 	/**
 	 * Generate a customer.
 	 *
+	 * ## Options
+	 *
+	 * [--billing]
+	 * : Generate billing addresses
+	 *
 	 * @param array $args
 	 */
 	protected function generate_customer( $args ) {

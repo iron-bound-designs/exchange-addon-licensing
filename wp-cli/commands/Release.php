@@ -511,6 +511,133 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 	}
 
 	/**
+	 * Generate releases.
+	 *
+	 * @param $args
+	 * @param $assoc_args
+	 */
+	public function generate( $args, $assoc_args ) {
+
+		$products = itelic_get_products_with_licensing_enabled();
+
+		$notify = \WP_CLI\Utils\make_progress_bar( 'Generating Releases', count( $products ) );
+
+		foreach ( $products as $product ) {
+
+			$major = get_post_meta( $product->ID, '_itelic_first_release', true );
+			$major = itelic_get_release( $major );
+
+			$minor_releases = rand( 3, 9 );
+
+
+
+			$notify->tick();
+		}
+
+		$notify->finish();
+	}
+
+	/**
+	 * Generate a major release.
+	 *
+	 * @param \ITELIC\Release $latest
+	 *
+	 * @return \ITELIC\Release|null
+	 */
+	protected function generate_major_release( \ITELIC\Release $latest ) {
+
+		$product = $latest->get_product();
+		$type    = \ITELIC\Release::TYPE_MAJOR;
+
+		$version = \WP_CLI\Utils\increment_version( $latest->get_version(), 'major' );
+
+		$download = $latest->get_download();
+		$name     = $download->post_name . "-$version.zip";
+
+		$file = itelic_rename_file( $download, $name );
+
+		$fixes  = rand( 7, 30 );
+		$tweaks = rand( 6, 14 );
+		$adds   = rand( 8, 20 );
+
+		$changelog = $this->generate_changelog( $adds, $tweaks, $fixes );
+
+		return \ITELIC\Release::create( $product, $file, $version, $type, '', $changelog );
+	}
+
+	/**
+	 * Generate a minor release.
+	 *
+	 * @param \ITELIC\Release $latest
+	 *
+	 * @return \ITELIC\Release|null
+	 */
+	protected function generate_minor_release( \ITELIC\Release $latest ) {
+
+		$product = $latest->get_product();
+		$type    = \ITELIC\Release::TYPE_MAJOR;
+
+		$version = \WP_CLI\Utils\increment_version( $latest->get_version(), 'minor' );
+
+		$download = $latest->get_download();
+		$name     = $download->post_name . "-$version.zip";
+
+		$file = itelic_rename_file( $download, $name );
+
+		$fixes  = rand( 3, 15 );
+		$tweaks = rand( 1, 10 );
+		$adds   = rand( 0, 2 );
+
+		$changelog = $this->generate_changelog( $adds, $tweaks, $fixes );
+
+		return \ITELIC\Release::create( $product, $file, $version, $type, '', $changelog );
+	}
+
+	/**
+	 * Generate a changelog.
+	 *
+	 * @param int $adds
+	 * @param int $tweaks
+	 * @param int $fixes
+	 *
+	 * @return string
+	 */
+	protected function generate_changelog( $adds, $tweaks, $fixes ) {
+
+		$html = '<ul>';
+
+		for ( $i = 0; $i < $adds; $i ++ ) {
+			$html .= "<li>{$this->generate_changelog_entry('add')}</li>";
+		}
+
+		for ( $i = 0; $i < $tweaks; $i ++ ) {
+			$html .= "<li>{$this->generate_changelog_entry('tweak')}</li>";
+		}
+
+		for ( $i = 0; $i < $fixes; $i ++ ) {
+			$html .= "<li>{$this->generate_changelog_entry('fix')}</li>";
+		}
+
+		return "$html</ul>";
+	}
+
+	/**
+	 * Generate a changelog entry.
+	 *
+	 * @param $type
+	 *
+	 * @return string
+	 */
+	protected function generate_changelog_entry( $type ) {
+
+		$faker = \Faker\Factory::create();
+
+		$type = ucfirst( $type );
+
+		return "$type: {$faker->sentence(rand(5,10))}";
+	}
+
+	/**
 	 * Delete a release key.
 	 *
 	 * @param $args

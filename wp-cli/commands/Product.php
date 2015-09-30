@@ -407,39 +407,20 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			$price = floatval( intval( $price ) );
 
 			$index = array_rand( $files );
-			$file  = get_post( $files[ $index ] );
-			$zip   = get_attached_file( $file->ID );
 
-			if ( ! file_exists( $zip ) ) {
-				unset( $files[ $index ] );
+			$file = get_post( $files[ $index ] );
 
-				if ( empty( $files ) ) {
-					WP_CLI::error( 'No files exist.' );
-				}
+			try {
+				$file = itelic_rename_file( $file, $title . '-1.0.zip' );
 			}
-
-			$new_name = str_replace( array(' ', '/'), '-', strtolower( $title ) );
-			$new_name .= '-1.0.zip';
-
-			$new_path = str_replace( basename( $zip ), $new_name, $zip );
-
-			copy( $zip, $new_path );
-
-			$file = wp_insert_attachment( array(
-				'guid'           => str_replace( $zip, $new_path, $file->guid ),
-				'post_mime_type' => $file->post_mime_type,
-				'post_title'     => preg_replace( '/\.[^.]+$/', '', $new_name )
-			), $new_path );
-
-			require_once( ABSPATH . 'wp-admin/includes/image.php' );
-
-			$attach_data = wp_generate_attachment_metadata( $file, $new_path );
-			wp_update_attachment_metadata( $file, $attach_data );
+			catch ( InvalidArgumentException $e ) {
+				WP_CLI::error( $e->getMessage() );
+			}
 
 			$params = array(
 				'description' => $faker->realText(),
 				'limit'       => $limits[ array_rand( $limits ) ],
-				'file'        => $file
+				'file'        => $file->ID
 			);
 
 			$recurring = array(
