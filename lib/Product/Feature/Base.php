@@ -422,9 +422,9 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 		}
 
 		if ( $new_status == 'publish' && $old_status != 'publish' ) {
-			$release = itelic_get_release( $post->ID );
+			$release = itelic_get_release( $first_release );
 
-			if ( $release->get_status() !== Release::STATUS_ACTIVE ) {
+			if ( $release && $release->get_status() !== Release::STATUS_ACTIVE ) {
 				$release->activate();
 			}
 		}

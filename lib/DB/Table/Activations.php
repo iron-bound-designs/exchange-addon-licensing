@@ -113,7 +113,7 @@ class Activations implements Table {
 		activation DATETIME NOT NULL,
 		deactivation DATETIME DEFAULT NULL,
 		status VARCHAR(20) NOT NULL,
-		`release` BIGINT(20) DEFAULT 0,
+		`release` BIGINT(20),
 		PRIMARY KEY  (id),
 		KEY lkey (lkey),
 		UNIQUE KEY key__location (lkey,location)

@@ -497,13 +497,19 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 		$version         = \WP_CLI\Utils\get_flag_value( $params, 'version', '1.0' );
 		$description     = \WP_CLI\Utils\get_flag_value( $params, 'description', '' );
 
-		$product = it_exchange_add_product( array(
-			'type'          => 'digital-downloads-product-type',
-			'title'         => $title,
-			'base-price'    => $price,
-			'description'   => $description,
-			'show_in_store' => true
-		) );
+		try {
+			$product = it_exchange_add_product( array(
+				'type'          => 'digital-downloads-product-type',
+				'title'         => $title,
+				'base-price'    => $price,
+				'description'   => $description,
+				'show_in_store' => true
+			) );
+
+		}
+		catch ( Exception $e ) {
+			WP_CLI::error( $e->getMessage() );
+		}
 
 		if ( ! $product ) {
 			return new WP_Error( 'product_error', 'Product not created.' );

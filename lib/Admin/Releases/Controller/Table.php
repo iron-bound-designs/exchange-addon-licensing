@@ -248,7 +248,7 @@ class Table extends \WP_List_Table {
 		}
 
 		$selected_product = isset( $_GET['prod'] ) ? absint( $_GET['prod'] ) : 0;
-		$selected_type    = isset( $_GET['type'] ) ? absint( $_GET['type'] ) : '';
+		$selected_type    = isset( $_GET['type'] ) ? $_GET['type'] : '';
 		?>
 
 		<label for="filter-by-product" class="screen-reader-text">

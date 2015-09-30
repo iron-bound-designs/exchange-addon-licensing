@@ -175,7 +175,7 @@ class ListC extends Controller {
 			$args['status'] = $_GET['status'];
 		}
 
-		if ( isset( $_GET['type'] ) ) {
+		if ( ! empty( $_GET['type'] ) ) {
 			$args['type'] = $_GET['type'];
 		}
 

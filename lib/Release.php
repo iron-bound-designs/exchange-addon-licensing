@@ -198,7 +198,9 @@ class Release extends Model {
 
 		$current_version = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'version' ) );
 
-		if ( get_post_meta( $product->ID, '_itelic_first_release', true ) && version_compare( $version, $current_version, '<=' ) ) {
+		$first_release = itelic_get_release( get_post_meta( $product->ID, '_itelic_first_release', true ) );
+
+		if ( $first_release && version_compare( $version, $current_version, '<=' ) ) {
 			throw new \InvalidArgumentException( "New release version must be greater than the current product's version." );
 		}
 
