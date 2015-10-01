@@ -314,12 +314,7 @@ class Single extends Controller {
 
 		try {
 			$queue = \ITELIC\get_queue_processor( 'itelic-outdated-customers' );
-
-			if ( $queue instanceof Mandrill ) {
-				$queue->process( $notifications, \ITELIC\get_notification_strategy() );
-			} else {
-				error_log( 'Invalid queue' );
-			}
+			$queue->process( $notifications, \ITELIC\get_notification_strategy() );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(
