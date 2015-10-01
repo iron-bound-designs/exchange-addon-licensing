@@ -8,7 +8,13 @@
 
 namespace ITELIC;
 
+use IronBound\WP_Notifications\Queue\Mandrill as Mandrill_Queue;
+use IronBound\WP_Notifications\Strategy\Mandrill as Mandrill_Strategy;
+use IronBound\WP_Notifications\Queue\Storage\Options;
+use IronBound\WP_Notifications\Queue\WP_Cron;
+use IronBound\WP_Notifications\Strategy\iThemes_Exchange;
 use IronBound\WP_Notifications\Template\Listener;
+use Mandrill as Mandrill_API;
 use ITELIC\Key\Factory;
 use ITELIC\API\Dispatch;
 
@@ -189,6 +195,76 @@ function get_key_for_transaction_product( $transaction_id, $product_id ) {
 	}
 
 	return reset( $data );
+}
+
+/**
+ * Get the notifications queue processor to use.
+ *
+ * @since 1.0
+ *
+ * @param string $batch_name
+ *
+ * @return \IronBound\WP_Notifications\Queue\Queue
+ */
+function get_queue_processor( $batch_name ) {
+
+	if ( class_exists( 'wpMandrill' ) ) {
+		$key = \wpMandrill::getAPIKey();
+
+		$queue = new Mandrill_Queue( new Mandrill_API( $key ) );
+
+	} elseif ( defined( 'ITELIC_Mandrill' ) && class_exists( 'Mandrill' ) ) {
+		$key = ITELIC_Mandrill;
+
+		$queue = new Mandrill_Queue( new Mandrill_API( $key ) );
+	} else {
+		$queue = new WP_Cron( new Options( $batch_name ) );
+	}
+
+	/**
+	 * Get a queue processor.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \IronBound\WP_Notifications\Queue\Queue $queue
+	 * @param string                                  $batch_name
+	 */
+
+	return apply_filters( 'itelic_get_queue_processor', $queue, $batch_name );
+}
+
+/**
+ * Get the notification strategy.
+ *
+ * @since 1.0
+ *
+ * @return \IronBound\WP_Notifications\Strategy\Strategy
+ */
+function get_notification_strategy() {
+
+	if ( class_exists( 'wpMandrill' ) ) {
+		$key = \wpMandrill::getAPIKey();
+
+		$strategy = new Mandrill_Strategy( new Mandrill_API( $key ) );
+
+	} elseif ( defined( 'ITELIC_Mandrill' ) && class_exists( 'Mandrill' ) ) {
+		$key = ITELIC_Mandrill;
+
+		$strategy = new Mandrill_Strategy( new Mandrill_API( $key ) );
+	} else {
+		$strategy = new iThemes_Exchange();
+	}
+
+	/**
+	 * Get a notifications strategy.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \IronBound\WP_Notifications\Strategy\Strategy $strategy
+	 * @param string                                        $batch_name
+	 */
+
+	return apply_filters( 'itelic_get_queue_processor', $strategy );
 }
 
 /* --------------------------------------------

@@ -312,8 +312,8 @@ class Single extends Controller {
 		}
 
 		try {
-			$cron = new WP_Cron( new Options( 'itelic-outdated-customers' ) );
-			$cron->process( $notifications, new iThemes_Exchange() );
+			$queue = \ITELIC\get_queue_processor( 'itelic-outdated-customers' );
+			$queue->process( $notifications, \ITELIC\get_notification_strategy() );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(

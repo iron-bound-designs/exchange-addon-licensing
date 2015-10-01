@@ -96,8 +96,8 @@ class Sender {
 			$notifications[] = $this->make_notification( $date_to_reminder[ $expire ], $key, $manager );
 		}
 
-		$queue = Queue_Manager::get( 'itelic-wp-cron' );
-		$queue->process( $notifications, new WP_Mail() );
+		$queue = \ITELIC\get_queue_processor( 'itelic-renewal-reminders' );
+		$queue->process( $notifications, \ITELIC\get_notification_strategy() );
 	}
 
 	/**
