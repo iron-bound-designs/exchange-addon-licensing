@@ -122,8 +122,14 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $product ) = $args;
 
+		$product = itelic_get_product( $product );
+
+		if ( ! $product ) {
+			WP_CLI::error( "Invalid product ID" );
+		}
+
 		$query = new \ITELIC_API\Query\Releases( array(
-			'product' => $product,
+			'product' => $product->ID,
 			'order'   => array(
 				'start_date' => 'ASC'
 			)
@@ -133,7 +139,7 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 		$releases = $query->get_results();
 		unset( $query );
 
-		$notify = \WP_CLI\Utils\make_progress_bar( "Generating Updates", count( $releases ) );
+		$notify = \WP_CLI\Utils\make_progress_bar( sprintf( "Generating Updates: %d", $product->ID ), count( $releases ) );
 
 		foreach ( $releases as $release ) {
 
@@ -158,7 +164,7 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 				'activation'   => array(
 					'before' => $release->get_start_date()->format( 'Y-m-d H:i:s' )
 				),
-				'product'      => $release->get_product()->ID,
+				'product'      => $product->ID,
 				'return_value' => 'count'
 			) );
 
@@ -168,7 +174,7 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 				'activation'          => array(
 					'before' => $release->get_start_date()->format( 'Y-m-d H:i:s' )
 				),
-				'product'             => $release->get_product()->ID,
+				'product'             => $product->ID,
 				'order'               => 'rand',
 				'items_per_page'      => $total_activations * ( $percent_updated / 100 ),
 				'sql_calc_found_rows' => false
@@ -181,6 +187,10 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 
 			foreach ( $activations as $activation ) {
 
+				if ( $activation->get_deactivation() && $activation->get_deactivation() > $release->get_start_date() ) {
+					continue;
+				}
+
 				if ( $release->get_type() == ITELIC\Release::TYPE_MAJOR ) {
 					$days = rand( 0, 10 );
 				} else {
@@ -192,10 +202,10 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 				\ITELIC\Update::create( $activation, $release, $upgade_date );
 			}
 
-			/*if ( $release->get_status() == \ITELIC\Release::STATUS_ARCHIVED ) {
+			if ( $release->get_status() == \ITELIC\Release::STATUS_ARCHIVED ) {
 				$release->set_status( \ITELIC\Release::STATUS_ACTIVE );
 				$release->archive();
-			}*/
+			}
 
 			$notify->tick();
 		}

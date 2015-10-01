@@ -26,7 +26,6 @@ if [ "$SIZE" = "small" ] ; then
 	for ID in $IDS ; do
 
 		if [ "$ID" != 'ID' ] ; then
-			printf "$ID"
 			wp itelic update generate "$ID"
 		fi
 	done
@@ -59,7 +58,6 @@ elif [ "$SIZE" = "medium" ] ; then
 	for ID in $IDS ; do
 
 		if [ "$ID" != 'ID' ] ; then
-			printf "$ID"
 			wp itelic update generate "$ID"
 		fi
 	done
@@ -92,7 +90,6 @@ elif [ "$SIZE" = "large" ] ; then
 	for ID in $IDS ; do
 
 		if [ "$ID" != 'ID' ] ; then
-			printf "$ID"
 			wp itelic update generate "$ID"
 		fi
 	done
@@ -127,7 +124,6 @@ elif [ "$SIZE" = "giant" ] ; then
 	for ID in $IDS ; do
 
 		if [ "$ID" != 'ID' ] ; then
-			printf "$ID"
 			wp itelic update generate "$ID"
 		fi
 	done

@@ -250,7 +250,7 @@ class Single extends View {
 		$total_activations = $this->release->get_total_active_activations();
 		$total_activations = max( 1, $total_activations );
 
-		$percent = number_format( $updated / $total_activations * 100, 0 );
+		$percent = min( number_format( $updated / $total_activations * 100, 0 ), 100 );
 
 		if ( $this->release->get_status() == Release::STATUS_DRAFT ) {
 			$hidden = ' hidden';
