@@ -795,6 +795,7 @@ class Release extends Model {
 			return 0;
 		}
 
+
 		$query = new Activations( array(
 			'status'       => Activation::ACTIVE,
 			'product'      => $this->get_product()->ID,
