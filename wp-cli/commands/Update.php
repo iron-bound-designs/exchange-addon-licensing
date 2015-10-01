@@ -108,6 +108,102 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 	}
 
 	/**
+	 * Generate update records.
+	 *
+	 * ## Options
+	 *
+	 * <product>
+	 * : Product ID to generate update records for.
+	 *
+	 * @param $args
+	 * @param $assoc_args
+	 */
+	public function generate( $args, $assoc_args ) {
+
+		list( $product ) = $args;
+
+		$query = new \ITELIC_API\Query\Releases( array(
+			'product' => $product,
+			'order'   => array(
+				'start_date' => 'ASC'
+			)
+		) );
+
+		/** @var \ITELIC\Release[] $releases */
+		$releases = $query->get_results();
+		unset( $query );
+
+		$notify = \WP_CLI\Utils\make_progress_bar( "Generating Updates", count( $releases ) );
+
+		foreach ( $releases as $release ) {
+
+			switch ( $release->get_type() ) {
+				case \ITELIC\Release::TYPE_MAJOR:
+					$percent_updated = 75;
+					break;
+				case \ITELIC\Release::TYPE_MINOR:
+					$percent_updated = 90;
+					break;
+				case \ITELIC\Release::TYPE_SECURITY:
+					$percent_updated = 95;
+					break;
+				case \ITELIC\Release::TYPE_PRERELEASE:
+					$percent_updated = 95;
+					break;
+				default:
+					throw new InvalidArgumentException( "Invalid release type." );
+			}
+
+			$total_activations = new \ITELIC_API\Query\Activations( array(
+				'activation'   => array(
+					'before' => $release->get_start_date()->format( 'Y-m-d H:i:s' )
+				),
+				'product'      => $release->get_product()->ID,
+				'return_value' => 'count'
+			) );
+
+			$total_activations = $total_activations->get_results();
+
+			$activation_query = new \ITELIC_API\Query\Activations( array(
+				'activation'          => array(
+					'before' => $release->get_start_date()->format( 'Y-m-d H:i:s' )
+				),
+				'product'             => $release->get_product()->ID,
+				'order'               => 'rand',
+				'items_per_page'      => $total_activations * ( $percent_updated / 100 ),
+				'sql_calc_found_rows' => false
+			) );
+
+			/** @var \ITELIC\Activation[] $activations */
+			$activations = $activation_query->get_results();
+
+			unset( $activation_query );
+
+			foreach ( $activations as $activation ) {
+
+				if ( $release->get_type() == ITELIC\Release::TYPE_MAJOR ) {
+					$days = rand( 0, 10 );
+				} else {
+					$days = rand( 0, 4 );
+				}
+
+				$upgade_date = $release->get_start_date()->add( new DateInterval( "P{$days}D" ) );
+
+				\ITELIC\Update::create( $activation, $release, $upgade_date );
+			}
+
+			/*if ( $release->get_status() == \ITELIC\Release::STATUS_ARCHIVED ) {
+				$release->set_status( \ITELIC\Release::STATUS_ACTIVE );
+				$release->archive();
+			}*/
+
+			$notify->tick();
+		}
+
+		$notify->finish();
+	}
+
+	/**
 	 * Delete an update record.
 	 *
 	 * ## Options

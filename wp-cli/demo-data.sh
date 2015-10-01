@@ -19,6 +19,18 @@ if [ "$SIZE" = "small" ] ; then
 	printf "\nGenerating Renewals...\n"
 	wp itelic renewal generate 33
 
+	printf "\nGenerating Updates...\n"
+
+	IDS=$(wp itelic product list --format=csv --fields=ID)
+
+	for ID in $IDS ; do
+
+		if [ "$ID" != 'ID' ] ; then
+			printf "$ID"
+			wp itelic update generate "$ID"
+		fi
+	done
+
 
 elif [ "$SIZE" = "medium" ] ; then
 
@@ -40,6 +52,18 @@ elif [ "$SIZE" = "medium" ] ; then
 	printf "\nGenerating Renewals...\n"
 	wp itelic renewal generate 33
 
+	printf "\nGenerating Updates...\n"
+
+	IDS=$(wp itelic product list --format=csv --fields=ID)
+
+	for ID in $IDS ; do
+
+		if [ "$ID" != 'ID' ] ; then
+			printf "$ID"
+			wp itelic update generate "$ID"
+		fi
+	done
+
 elif [ "$SIZE" = "large" ] ; then
 
 	printf "\nGenerating Customers...\n"
@@ -60,6 +84,18 @@ elif [ "$SIZE" = "large" ] ; then
 
 	pritnf "\nGenerating Renewals...\n"
 	wp itelic renewal generate 33
+
+	printf "\nGenerating Updates...\n"
+
+	IDS=$(wp itelic product list --format=csv --fields=ID)
+
+	for ID in $IDS ; do
+
+		if [ "$ID" != 'ID' ] ; then
+			printf "$ID"
+			wp itelic update generate "$ID"
+		fi
+	done
 
 elif [ "$SIZE" = "giant" ] ; then
 
@@ -83,6 +119,18 @@ elif [ "$SIZE" = "giant" ] ; then
 
 	pritnf "\nGenerating Renewals...\n"
 	wp itelic renewal generate 33
+
+	printf "\nGenerating Updates...\n"
+
+	IDS=$(wp itelic product list --format=csv --fields=ID)
+
+	for ID in $IDS ; do
+
+		if [ "$ID" != 'ID' ] ; then
+			printf "$ID"
+			wp itelic update generate "$ID"
+		fi
+	done
 
 else
 	echo "Usage setup.sh <size>"

@@ -284,6 +284,9 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--<field>=<value>]
 	 * : Pass additional parameters to products query.
 	 *
+	 * [--fields=<fields>]
+	 * : Only return certain fields.
+	 *
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
 	 *
