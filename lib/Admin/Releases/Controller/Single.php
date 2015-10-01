@@ -10,9 +10,7 @@ namespace ITELIC\Admin\Releases\Controller;
 
 use IronBound\DB\Manager;
 use IronBound\WP_Notifications\Notification;
-use IronBound\WP_Notifications\Queue\Storage\Options;
-use IronBound\WP_Notifications\Queue\WP_Cron;
-use IronBound\WP_Notifications\Strategy\iThemes_Exchange;
+use IronBound\WP_Notifications\Queue\Mandrill;
 use IronBound\WP_Notifications\Template\Factory;
 use IronBound\WP_Notifications\Template\Listener;
 use IronBound\WP_Notifications\Template\Manager as Template_Manager;
@@ -316,7 +314,12 @@ class Single extends Controller {
 
 		try {
 			$queue = \ITELIC\get_queue_processor( 'itelic-outdated-customers' );
-			$queue->process( $notifications, \ITELIC\get_notification_strategy() );
+
+			if ( $queue instanceof Mandrill ) {
+				$queue->process( $notifications, \ITELIC\get_notification_strategy() );
+			} else {
+				error_log( 'Invalid queue' );
+			}
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(

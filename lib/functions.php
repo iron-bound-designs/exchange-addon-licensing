@@ -209,15 +209,21 @@ function get_key_for_transaction_product( $transaction_id, $product_id ) {
 function get_queue_processor( $batch_name ) {
 
 	if ( class_exists( 'wpMandrill' ) ) {
-		$key = \wpMandrill::getAPIKey();
 
-		$queue = new Mandrill_Queue( new Mandrill_API( $key ) );
+		\wpMandrill::getConnected();
+
+		if ( \wpMandrill::isConnected() ) {
+			$key   = \wpMandrill::getAPIKey();
+			$queue = new Mandrill_Queue( new Mandrill_API( $key ) );
+		}
 
 	} elseif ( defined( 'ITELIC_Mandrill' ) && class_exists( 'Mandrill' ) ) {
 		$key = ITELIC_Mandrill;
 
 		$queue = new Mandrill_Queue( new Mandrill_API( $key ) );
-	} else {
+	}
+
+	if ( ! isset( $queue ) ) {
 		$queue = new WP_Cron( new Options( $batch_name ) );
 	}
 
@@ -242,7 +248,7 @@ function get_queue_processor( $batch_name ) {
  */
 function get_notification_strategy() {
 
-	if ( class_exists( 'wpMandrill' ) ) {
+	if ( class_exists( 'wpMandrill' ) && $c = \wpMandrill::getConnected() && \wpMandrill::isConnected() ) {
 		$key = \wpMandrill::getAPIKey();
 
 		$strategy = new Mandrill_Strategy( new Mandrill_API( $key ) );

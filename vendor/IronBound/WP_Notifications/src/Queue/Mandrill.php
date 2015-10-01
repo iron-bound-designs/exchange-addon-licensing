@@ -49,7 +49,7 @@ class Mandrill implements Queue {
 	 * @param Contract[] $notifications
 	 * @param Strategy   $strategy This will end up being unused.
 	 *
-	 * @throws \Exception|\Mandrill_Error
+	 * @throws \Exception|\Mandrill_Error|\Mandrill_Exception
 	 */
 	public function process( array $notifications, Strategy $strategy ) {
 
@@ -73,7 +73,11 @@ class Mandrill implements Queue {
 
 		$args = wp_parse_args( $args, $this->defaults );
 
-		$this->mandrill->messages->send( $args );
+		if ( method_exists( $this->mandrill, 'messages_send' ) ) {
+			$this->mandrill->messages_send( $args );
+		} else {
+			$this->mandrill->messages->send( $args );
+		}
 
 		foreach ( $notifications as $notification ) {
 			$notification->set_strategy( new Null() )->send();

@@ -172,6 +172,7 @@ class Table extends \WP_List_Table {
 
 		unset( $sortable_columns['cb'] );
 		unset( $sortable_columns['release'] );
+		unset( $sortable_columns['updated'] );
 
 		return $sortable_columns;
 	}

@@ -135,11 +135,18 @@ class ListC extends Controller {
 			$start_date = '-';
 		}
 
+		$updated           = $release->get_total_updated();
+		$total_activations = $release->get_total_active_activations();
+		$total_activations = max( 1, $total_activations );
+
+		$percent = min( number_format( $updated / $total_activations * 100, 0 ), 100 );
+
 		$data = array(
 			'ID'         => $release->get_ID(),
 			'release'    => (string) $release,
 			'status'     => $release->get_status( true ),
 			'type'       => $release->get_type( true ),
+			'updated'    => "$percent%",
 			'start_date' => $start_date
 		);
 
