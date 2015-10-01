@@ -24,10 +24,16 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	);
 
 	/**
+	 * @var \Faker\Generator
+	 */
+	protected $faker;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		$this->fetcher = new ITELIC_Product_Fetcher();
+		$this->faker   = \Faker\Factory::create();
 	}
 
 	/**
@@ -393,13 +399,11 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		$notify = \WP_CLI\Utils\make_progress_bar( 'Generating products.', $count );
 
-		$faker = \Faker\Factory::create();
-
 		$limits = array( '-', '2', '2', '5', '5', '10' );
 
 		for ( $i = 0; $i < $count; $i ++ ) {
 
-			$title = $faker->catchPhrase . ' software';
+			$title = $this->faker->catchPhrase . ' software';
 
 			$price = itelic_purebell( 44, 199, 45 );
 			$price = floatval( intval( $price ) );
@@ -416,7 +420,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			}
 
 			$params = array(
-				'description' => $faker->realText(),
+				'description' => $this->faker->realText(),
 				'limit'       => $limits[ array_rand( $limits ) ],
 				'file'        => $file->ID
 			);

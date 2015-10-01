@@ -22,10 +22,16 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	protected $fetcher;
 
 	/**
+	 * @var \Faker\Generator
+	 */
+	protected $faker;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		$this->fetcher = new ITELIC_Fetcher( '\ITELIC\Key' );
+		$this->faker = \Faker\Factory::create();
 	}
 
 	/**
@@ -349,8 +355,6 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 		$notify = \WP_CLI\Utils\make_progress_bar( "Generating keys", $count );
 
-		$faker = \Faker\Factory::create();
-
 		for ( $i = 0; $i < $count; $i ++ ) {
 
 			$product  = $this->get_product( $products );
@@ -358,7 +362,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 			$min_date = max( strtotime( $product->post_date ), strtotime( $customer->wp_user->user_registered ) );
 
-			$date = $faker->dateTimeBetween( "@$min_date" );
+			$date = $this->faker->dateTimeBetween( "@$min_date" );
 
 			$key_args = array(
 				'product'  => $product->ID,
@@ -410,20 +414,18 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 		$limit = min( $limit, $limit / 2 + 2 );
 
-		$faker = \Faker\Factory::create();
-
 		$created = $key->get_transaction()->post_date;
 		$end     = new DateTime( $created );
 		$end->add( new DateInterval( 'P5D' ) );
 
-		$creation_date = $faker->dateTimeBetween( $created, $end );
+		$creation_date = $this->faker->dateTimeBetween( $created, $end );
 		$release       = $this->get_release_for_date( $key, $creation_date );
 
 		if ( ! $release ) {
 			WP_CLI::error( "Release not created." );
 		}
 
-		\ITELIC\Activation::create( $key, $faker->domainName, $creation_date, $release );
+		\ITELIC\Activation::create( $key, $this->faker->domainName, $creation_date, $release );
 
 		$count = rand( 0, $limit - 1 );
 
@@ -443,12 +445,12 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 				$max = $expires;
 			}
 
-			$creation_date = $faker->dateTimeBetween( $created, $max );
+			$creation_date = $this->faker->dateTimeBetween( $created, $max );
 
 			$release = $this->get_release_for_date( $key, $creation_date );
 
 			try {
-				$a = \ITELIC\Activation::create( $key, $faker->domainName, $creation_date, $release );
+				$a = \ITELIC\Activation::create( $key, $this->faker->domainName, $creation_date, $release );
 			}
 			catch ( LogicException $e ) {
 				continue;
@@ -459,7 +461,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 			if ( ! rand( 0, 3 ) ) {
 
-				$deactivate_date = $faker->dateTimeBetween( $creation_date, $max );
+				$deactivate_date = $this->faker->dateTimeBetween( $creation_date, $max );
 				$a->deactivate( $deactivate_date );
 			}
 		}

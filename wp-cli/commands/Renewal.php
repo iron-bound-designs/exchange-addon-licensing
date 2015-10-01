@@ -22,10 +22,16 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 	protected $fetcher;
 
 	/**
+	 * @var \Faker\Generator
+	 */
+	protected $faker;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		$this->fetcher = new ITELIC_Fetcher( '\ITELIC\Renewal' );
+		$this->faker = \Faker\Factory::create();
 	}
 
 	/**
@@ -142,8 +148,6 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 
 		$keys = itelic_get_keys( $query_args );
 
-		$faker = \Faker\Factory::create();
-
 		$notify = \WP_CLI\Utils\make_progress_bar( 'Generating renewals.', count( $keys ) );
 
 		foreach ( $keys as $key ) {
@@ -157,7 +161,7 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 
 				$txn = itelic_create_renewal_transaction( array(
 					'key'  => $key->get_key(),
-					'date' => $faker->dateTimeBetween( $min, $max )->format( 'Y-m-d H:i:s' )
+					'date' => $this->faker->dateTimeBetween( $min, $max )->format( 'Y-m-d H:i:s' )
 				) );
 
 				if ( is_wp_error( $txn ) ) {

@@ -22,10 +22,16 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 	protected $fetcher;
 
 	/**
+	 * @var \Faker\Generator
+	 */
+	protected $faker;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		$this->fetcher = new ITELIC_Fetcher( '\ITELIC\Release' );
+		$this->faker = \Faker\Factory::create();
 	}
 
 	/**
@@ -663,11 +669,9 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 	 */
 	protected function generate_changelog_entry( $type ) {
 
-		$faker = \Faker\Factory::create();
-
 		$type = ucfirst( $type );
 
-		return "$type: {$faker->sentence(rand(5,10))}";
+		return "$type: {$this->faker->sentence(rand(5,10))}";
 	}
 
 	/**

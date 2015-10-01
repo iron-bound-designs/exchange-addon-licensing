@@ -12,6 +12,18 @@
 class ITELIC_Command extends WP_CLI_Command {
 
 	/**
+	 * @var \Faker\Generator
+	 */
+	protected $faker;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		$this->faker = \Faker\Factory::create();
+	}
+
+	/**
 	 * Get information about the licensing add-on.
 	 */
 	public function info() {
@@ -85,19 +97,17 @@ class ITELIC_Command extends WP_CLI_Command {
 	 */
 	protected function generate_customer( $args ) {
 
-		$faker = \Faker\Factory::create();
-
-		$first = $faker->firstName;
-		$last  = $faker->lastName;
+		$first = $this->faker->firstName;
+		$last  = $this->faker->lastName;
 
 		$ID = wp_insert_user( array(
 			'user_login'      => "$first $last",
 			'first_name'      => $first,
 			'last_name'       => $last,
-			'user_email'      => $faker->safeEmail,
-			'user_registered' => $faker->dateTimeBetween( '-2 years' )->format( 'Y-m-d H:i:s' ),
-			'user_url'        => $faker->domainName,
-			'user_pass'       => $faker->password
+			'user_email'      => $this->faker->safeEmail,
+			'user_registered' => $this->faker->dateTimeBetween( '-2 years' )->format( 'Y-m-d H:i:s' ),
+			'user_url'        => $this->faker->domainName,
+			'user_pass'       => $this->faker->password
 		) );
 
 		if ( is_wp_error( $ID ) ) {
@@ -108,15 +118,15 @@ class ITELIC_Command extends WP_CLI_Command {
 			$billing = array(
 				'first-name'   => $first,
 				'last-name'    => $last,
-				'company-name' => $faker->company,
-				'address1'     => $faker->streetAddress,
-				'address2'     => rand( 0, 1 ) ? $faker->secondaryAddress : '',
-				'city'         => $faker->city,
-				'state'        => $faker->stateAbbr,
-				'zip'          => $faker->postcode,
+				'company-name' => $this->faker->company,
+				'address1'     => $this->faker->streetAddress,
+				'address2'     => rand( 0, 1 ) ? $this->faker->secondaryAddress : '',
+				'city'         => $this->faker->city,
+				'state'        => $this->faker->stateAbbr,
+				'zip'          => $this->faker->postcode,
 				'country'      => 'US',
-				'email'        => $faker->companyEmail,
-				'phone'        => $faker->phoneNumber
+				'email'        => $this->faker->companyEmail,
+				'phone'        => $this->faker->phoneNumber
 			);
 
 			update_user_meta( $ID, 'it-exchange-billing-address', $billing );
