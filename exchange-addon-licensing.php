@@ -107,10 +107,14 @@ class Plugin {
 
 		wp_register_script( 'jquery-blockUI', self::$url . 'assets/vendor/blockUI/js/jquery.blockUI.js', array( 'jquery' ), '2.70.0' );
 
+		wp_register_script( 'select2', self::$url . 'assets/vendor/select2/select2.full.min.js', array( 'jquery' ), '4.0' );
+		wp_register_style( 'select2', self::$url . 'assets/vendor/select2/select2.min.css', array(), '4.0' );
+
 		wp_register_style( 'itelic-add-edit-product', self::$url . 'assets/css/itelic-add-edit-product.css', array(), self::VERSION );
 		wp_register_script( 'itelic-add-edit-product', self::$url . 'assets/js/itelic-add-edit-product.js', array( 'jquery' ), self::VERSION );
 
-		wp_register_script( 'itelic-admin-licenses-list', self::$url . 'assets/js/itelic-admin-licenses-list.js', array( 'jquery' ), self::VERSION );
+		wp_register_style( 'itelic-admin-licenses-list', self::$url . 'assets/css/itelic-admin-licenses-list.css', array( 'select2' ), self::VERSION );
+		wp_register_script( 'itelic-admin-licenses-list', self::$url . 'assets/js/itelic-admin-licenses-list.js', array( 'select2' ), self::VERSION );
 		wp_register_script( 'itelic-admin-license-detail', self::$url . 'assets/js/itelic-admin-license-detail.js', array(
 			'jquery',
 			'jqueryui-editable'
@@ -135,6 +139,14 @@ class Plugin {
 			'jquery-ui-tooltip'
 		), self::VERSION );
 
+		wp_register_script( 'itelic-admin-releases-list', self::$url . 'assets/js/itelic-admin-releases-list.js', array(
+			'select2',
+			'jquery'
+		), self::VERSION );
+		wp_register_style( 'itelic-admin-releases-list', self::$url . 'assets/css/itelic-admin-releases-list.css', array(
+			'select2'
+		), self::VERSION );
+
 		wp_register_style( 'itelic-admin-releases-edit', self::$url . 'assets/css/itelic-admin-releases-edit.css', array(
 			'jqueryui-editable'
 		), self::VERSION );
@@ -147,8 +159,8 @@ class Plugin {
 
 		wp_register_style( 'itelic-admin-reports-list', self::$url . 'assets/css/itelic-admin-reports-list.css', array(), self::VERSION );
 
-		wp_register_style( 'itelic-admin-report-view', self::$url . 'assets/css/itelic-admin-report-view.css', array(), self::VERSION );
-		wp_register_script( 'w', self::$url . 'assets/js/itelic-admin-report-view.js', array( 'jquery' ), self::VERSION );
+		wp_register_style( 'itelic-admin-report-view', self::$url . 'assets/css/itelic-admin-report-view.css', array( 'select2' ), self::VERSION );
+		wp_register_script( 'itelic-admin-report-view', self::$url . 'assets/js/itelic-admin-report-view.js', array( 'select2' ), self::VERSION );
 
 		wp_register_style( 'itelic-admin-licenses-profile', self::$url . 'assets/css/admin-licenses-profile.css', array(), self::VERSION );
 	}

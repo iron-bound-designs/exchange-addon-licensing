@@ -71,6 +71,12 @@ class ListC extends Controller {
 	 */
 	public function render() {
 
+		wp_enqueue_style( 'itelic-admin-licenses-list' );
+		wp_enqueue_script( 'itelic-admin-licenses-list' );
+		wp_localize_script( 'itelic-admin-licenses-list', 'ITELIC', array(
+			'ajax' => admin_url( 'admin-ajax.php' )
+		) );
+
 		$view = new ListV( $this->get_table() );
 
 		$view->begin();

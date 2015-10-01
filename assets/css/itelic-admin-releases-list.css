@@ -1,0 +1,13 @@
+.product-filter-container,
+.type-filter-container {
+	display: inline-block;
+}
+
+#filter-by-product {
+	width: 300px;
+	margin-left: -8px;
+}
+
+.product-filter-container .select2 {
+	margin-left: -8px;
+}

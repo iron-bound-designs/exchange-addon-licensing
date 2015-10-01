@@ -251,41 +251,47 @@ class Table extends \WP_List_Table {
 		$selected_type    = isset( $_GET['type'] ) ? $_GET['type'] : '';
 		?>
 
-		<label for="filter-by-product" class="screen-reader-text">
-			<?php _e( "Filter by product", Plugin::SLUG ); ?>
-		</label>
+		<div class="product-filter-container">
 
-		<select name="prod" id="filter-by-product" style="width:150px;margin-left:-8px;">
+			<label for="filter-by-product" class="screen-reader-text">
+				<?php _e( "Filter by product", Plugin::SLUG ); ?>
+			</label>
 
-			<option value=""><?php _e( "All products", Plugin::SLUG ); ?></option>
+			<select name="prod" id="filter-by-product" style="width:300px;margin-left:-8px;">
 
-			<?php foreach ( $this->products as $product ): ?>
+				<option value=""><?php _e( "All products", Plugin::SLUG ); ?></option>
 
-				<option value="<?php echo esc_attr( $product->ID ); ?>" <?php selected( $selected_product, $product->ID ); ?>>
-					<?php echo $product->post_title; ?>
-				</option>
+				<?php foreach ( $this->products as $product ): ?>
 
-			<?php endforeach; ?>
+					<option value="<?php echo esc_attr( $product->ID ); ?>" <?php selected( $selected_product, $product->ID ); ?>>
+						<?php echo $product->post_title; ?>
+					</option>
 
-		</select>
+				<?php endforeach; ?>
 
-		<label for="filter-by-type" class="screen-reader-text">
-			<?php _e( "Filter by type", Plugin::SLUG ); ?>
-		</label>
+			</select>
+		</div>
 
-		<select name="type" id="filter-by-type">
+		<div class="type-filter-container">
 
-			<option value=""><?php _e( "All types", Plugin::SLUG ); ?></option>
+			<label for="filter-by-type" class="screen-reader-text">
+				<?php _e( "Filter by type", Plugin::SLUG ); ?>
+			</label>
 
-			<?php foreach ( Release::get_types( true ) as $type => $label ): ?>
+			<select name="type" id="filter-by-type">
 
-				<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $selected_type, $type ); ?>>
-					<?php echo $label; ?>
-				</option>
+				<option value=""><?php _e( "All types", Plugin::SLUG ); ?></option>
 
-			<?php endforeach; ?>
+				<?php foreach ( Release::get_types( true ) as $type => $label ): ?>
 
-		</select>
+					<option value="<?php echo esc_attr( $type ); ?>" <?php selected( $selected_type, $type ); ?>>
+						<?php echo $label; ?>
+					</option>
+
+				<?php endforeach; ?>
+
+			</select>
+		</div>
 
 		<?php submit_button( __( 'Filter' ), 'button', 'filter_action', false );
 	}

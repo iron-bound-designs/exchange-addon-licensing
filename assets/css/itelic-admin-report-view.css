@@ -2,6 +2,10 @@
 	padding-bottom: 10px;
 }
 
+#product {
+	width: 300px;
+}
+
 .report {
 	background: white;
 	border: 1px solid #DFDFDF;

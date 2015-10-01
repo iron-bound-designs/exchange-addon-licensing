@@ -85,7 +85,7 @@ class SingleV extends View {
 				<label for="product" class="screen-reader-text">
 					<?php _e( "Select a product.", Plugin::SLUG ); ?>
 				</label>
-				<select name="product" id="product" style="width: 150px">
+				<select name="product" id="product">
 
 					<option value="">
 						<?php if ( $this->report->is_product_required() ): ?>

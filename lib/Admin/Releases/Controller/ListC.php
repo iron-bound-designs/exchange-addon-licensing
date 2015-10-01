@@ -56,6 +56,9 @@ class ListC extends Controller {
 	 */
 	public function render() {
 
+		wp_enqueue_script( 'itelic-admin-releases-list' );
+		wp_enqueue_style( 'itelic-admin-releases-list' );
+
 		$view = new ListV( $this->get_table() );
 
 		$view->begin();

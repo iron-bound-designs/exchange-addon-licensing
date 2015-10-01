@@ -321,23 +321,26 @@ class Table extends \WP_List_Table {
 		$selected_product = isset( $_GET['prod'] ) ? absint( $_GET['prod'] ) : 0;
 		?>
 
-		<label for="filter-by-product" class="screen-reader-text">
-			<?php _e( "Filter by product", Plugin::SLUG ); ?>
-		</label>
+		<div class="product-filter-container">
 
-		<select name="prod" id="filter-by-product" style="width: 150px;">
+			<label for="filter-by-product" class="screen-reader-text">
+				<?php _e( "Filter by product", Plugin::SLUG ); ?>
+			</label>
 
-			<option value=""><?php _e( "All products", Plugin::SLUG ); ?></option>
+			<select name="prod" id="filter-by-product">
 
-			<?php foreach ( $this->products as $product ): ?>
+				<option value=""><?php _e( "All products", Plugin::SLUG ); ?></option>
 
-				<option value="<?php echo esc_attr( $product->ID ); ?>" <?php selected( $selected_product, $product->ID ); ?>>
-					<?php echo $product->post_title; ?>
-				</option>
+				<?php foreach ( $this->products as $product ): ?>
 
-			<?php endforeach; ?>
+					<option value="<?php echo esc_attr( $product->ID ); ?>" <?php selected( $selected_product, $product->ID ); ?>>
+						<?php echo $product->post_title; ?>
+					</option>
 
-		</select>
+				<?php endforeach; ?>
+
+			</select>
+		</div>
 
 		<?php submit_button( __( 'Filter' ), 'button', 'filter_action', false );
 	}

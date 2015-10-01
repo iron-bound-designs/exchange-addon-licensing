@@ -7,6 +7,12 @@
 
 jQuery(document).ready(function ($) {
 
+	$("#filter-by-product").select2();
+
+	$("#bulk-action-selector-top,#bulk-action-selector-bottom").select2();
+
+	$('.bulkactions').hide().show(0);
+
 	$(".extend a").click(function (e) {
 		e.preventDefault();
 

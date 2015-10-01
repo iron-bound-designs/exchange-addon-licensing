@@ -46,10 +46,6 @@ class ListV extends View {
 	 */
 	public function render() {
 
-		wp_enqueue_script( 'itelic-admin-licenses-list' );
-		wp_localize_script( 'itelic-admin-licenses-list', 'ITELIC', array(
-			'ajax' => admin_url( 'admin-ajax.php' )
-		) );
 		?>
 
 		<form method="GET">
