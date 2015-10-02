@@ -207,7 +207,7 @@ class Base {
 	 */
 	public function persist() {
 		if ( $this->is_dirty() ) {
-			it_exchange_add_session_data( "purchase_req_{$this->slug}", $this->cache_data );
+			it_exchange_update_session_data( "purchase_req_{$this->slug}", $this->cache_data );
 
 			return true;
 		}

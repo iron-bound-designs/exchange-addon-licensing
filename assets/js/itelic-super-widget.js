@@ -34,12 +34,16 @@ jQuery(document).ready(function ($) {
 		 */
 		$.get(itExchangeSWAjaxURL + '&sw-action=renew_key&sw-product=' + product + '&sw-quantity=' + quantity + additionalFieldsString, function (data) {
 
-			$(".it-exchange-product-variants").remove();
+			$(".it-exchange-product-variants").hide();
 
 			itExchangeGetSuperWidgetState('checkout', product);
 
 			itExchange.hooks.doAction('itExchangeSW.RenewProduct');
 		});
+	});
+
+	$(document).on('click', '.it-exchange-empty-cart', function (e) {
+		$(".it-exchange-product-variants").show();
 	});
 
 	$(document).on('click', '.itelic-submit', function (e) {

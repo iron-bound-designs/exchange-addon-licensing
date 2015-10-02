@@ -60,7 +60,7 @@ class Renew_Key extends Base {
 			$this,
 			'remove_renewal_info_on_cart_product_removal'
 		), 10, 2 );
-		add_action( 'it_exchange_empty_shopping_cart', array( $this, 'clear_cache_data' ) );
+		add_action( 'it_exchange_empty_shopping_cart', array( $this, 'clear_cache_on_empty_cart' ) );
 	}
 
 	/**
@@ -457,6 +457,17 @@ class Renew_Key extends Base {
 	 */
 	public function remove_renewal_info_on_cart_product_removal( $cart_product_id, $products ) {
 		$this->remove_cache_data( "p$cart_product_id" );
+		$this->persist();
+	}
+
+	/**
+	 * When the cart is emptied, clear the session data.
+	 *
+	 * @since 1.0
+	 */
+	public function clear_cache_on_empty_cart() {
+
+		$this->clear_cache_data();
 		$this->persist();
 	}
 }
