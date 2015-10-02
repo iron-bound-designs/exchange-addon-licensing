@@ -60,7 +60,7 @@
 }
 
 .main-editor .product-container select {
-	width: 300px;
+	width: 260px;
 }
 
 .main-editor .new-customer-container label,
@@ -84,7 +84,7 @@
 }
 
 .main-editor .existing-customer-form select {
-	width: 300px;
+	width: 260px;
 }
 
 .main-editor .existing-customer-form .select2 {
@@ -107,6 +107,6 @@
 }
 
 .main-editor .buttons {
+	margin: 0;
 	float: right;
-	margin-bottom: 0;
 }
