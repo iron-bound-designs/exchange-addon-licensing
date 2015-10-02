@@ -15,6 +15,7 @@ use ITELIC\Product;
 
 /**
  * Class Add_New
+ *
  * @package ITELIC\Admin\Licenses\View
  */
 class Add_New extends View {
@@ -42,6 +43,12 @@ class Add_New extends View {
 
 		$df = it_exchange_php_date_format_to_jquery_datepicker_format( get_option( 'date_format' ) );
 
+		$options = it_exchange_get_option( 'settings_general' );
+
+		$position  = $options['currency-symbol-position'];
+		$decimals  = $options['currency-decimals-separator'];
+		$thousands = $options['currency-thousands-separator'];
+		$symbol    = it_exchange_get_currency_symbol( $options['default-currency'] );
 		?>
 
 		<form method="POST" action="<?php echo esc_attr( add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'licenses' ) ) ); ?>">
@@ -56,8 +63,7 @@ class Add_New extends View {
 						<div class="product-container">
 							<select id="product" name="product">
 								<?php foreach ( $this->products as $product ): ?>
-									<option value="<?php echo $product->ID; ?>"><?php echo $product->post_title; ?></option>
-								<?php endforeach; ?>
+									<option value="<?php echo $product->ID; ?>"><?php echo $product->post_title; ?></option>                                <?php endforeach; ?>
 							</select>
 						</div>
 					</li>
@@ -113,8 +119,7 @@ class Add_New extends View {
 								<label for="customer" class="screen-reader-text"><?php _e( 'Customer', Plugin::SLUG ); ?></label>
 								<select id="customer" name="customer">
 									<?php foreach ( get_users() as $user ): ?>
-										<option value="<?php echo $user->ID; ?>"><?php echo $user->user_login; ?></option>
-									<?php endforeach; ?>
+										<option value="<?php echo $user->ID; ?>"><?php echo $user->user_login; ?></option>                                    <?php endforeach; ?>
 								</select>
 							</p>
 
@@ -171,7 +176,10 @@ class Add_New extends View {
 						<div class="paid-container">
 
 							<label for="paid"><?php _e( "Amount Paid", Plugin::SLUG ); ?></label>
-							<input type="text" name="paid" id="paid">
+							<input type="text" name="paid" id="paid"
+							       data-symbol="<?php echo $symbol; ?>" data-symbol-position="<?php echo $position; ?>"
+							       data-thousands-separator="<?php echo $thousands; ?>"
+							       data-decimals-separator="<?php echo $decimals; ?>">
 
 						</div>
 
@@ -180,8 +188,7 @@ class Add_New extends View {
 				</ol>
 
 				<p class="buttons">
-					<input type="reset" class="button button-secondary" value="<?php _e( "Clear", Plugin::SLUG ); ?>">
-					<?php submit_button( __( "Create", Plugin::SLUG ), 'primary', 'submit', false ); ?>
+					<input type="reset" class="button button-secondary" value="<?php _e( "Clear", Plugin::SLUG ); ?>"> <?php submit_button( __( "Create", Plugin::SLUG ), 'primary', 'submit', false ); ?>
 				</p>
 
 			</div>

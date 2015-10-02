@@ -23,6 +23,7 @@
 .main-editor input[type="email"],
 .main-editor input[type="number"],
 .main-editor textarea {
+	font-weight: normal;
 	background: #fff;
 	border: 1px solid #d6d6d6;
 	border-radius: 3px;
