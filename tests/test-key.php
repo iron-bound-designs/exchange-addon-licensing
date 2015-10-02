@@ -9,7 +9,10 @@
 /**
  * Class ITELIC_Test_Key
  */
-class ITELIC_Test_Key extends WP_UnitTestCase {
+class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 
 
+	public function test_true() {
+		$this->assertTrue( true );
+	}
 }

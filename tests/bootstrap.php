@@ -29,5 +29,8 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 require $_tests_dir . '/includes/bootstrap.php';
 
+require dirname( __FILE__ ) . '/framework/product-factory.php';
+require dirname( __FILE__ ) . '/framework/test-case.php';
+
 //activate_plugin( 'ithemes-exchange/init.php' );
 activate_plugin( 'exchange-addon-licensing/exchange-addon-licensing.php' );
