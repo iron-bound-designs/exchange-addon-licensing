@@ -77,16 +77,16 @@ class Update extends Model {
 	 *
 	 * @param Activation $activation
 	 * @param Release    $release
-	 * @param \DateTime  $upgrade_date
+	 * @param \DateTime  $update_date
 	 * @param string     $previous_version
 	 *
 	 * @return Update|null
 	 * @throws DB_Exception
 	 */
-	public static function create( Activation $activation, Release $release, \DateTime $upgrade_date = null, $previous_version = '' ) {
+	public static function create( Activation $activation, Release $release, \DateTime $update_date = null, $previous_version = '' ) {
 
-		if ( $upgrade_date === null ) {
-			$upgrade_date = make_date_time();
+		if ( $update_date === null ) {
+			$update_date = make_date_time();
 		}
 
 		if ( empty( $previous_version ) ) {
@@ -96,7 +96,7 @@ class Update extends Model {
 		$data = array(
 			'activation'       => $activation->get_id(),
 			'release_id'       => $release->get_ID(),
-			'update_date'      => $upgrade_date->format( "Y-m-d H:i:s" ),
+			'update_date'      => $update_date->format( "Y-m-d H:i:s" ),
 			'previous_version' => $previous_version
 		);
 

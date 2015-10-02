@@ -48,6 +48,66 @@ function itelic_generate_auto_renewal_url( \ITELIC\Key $key ) {
 }
 
 /**
+ * Create a renewal record.
+ *
+ * @since 1.0
+ *
+ * @param array $args
+ *
+ * @return \ITELIC\Renewal|WP_Error
+ */
+function itelic_create_renewal( $args ) {
+
+	$defaults = array(
+		'key'         => '',
+		'transaction' => '',
+		'expired'     => '',
+		'renewal'     => ''
+	);
+
+	$args = ITUtility::merge_defaults( $args, $defaults );
+
+	if ( is_string( $args['key'] ) ) {
+		$key = itelic_get_key( $args['key'] );
+	} else {
+		$key = $args['key'];
+	}
+
+	if ( ! $key ) {
+		return new WP_Error( 'invalid_key', __( "Invalid Key", \ITELIC\Plugin::SLUG ) );
+	}
+
+	if ( ! empty( $args['transaction'] ) ) {
+		$transaction = it_exchange_get_transaction( $args['transaction'] );
+
+		if ( ! $transaction ) {
+			return new WP_Error( 'invalid_transaction', __( "Invalid transaction.", \ITELIC\Plugin::SLUG ) );
+		}
+	} else {
+		$transaction = null;
+	}
+
+	$expired = is_string( $args['expired'] ) ? \ITELIC\make_date_time( $args['expired'] ) : $args['expired'];
+
+	if ( ! $expired instanceof DateTime ) {
+		return new WP_Error( 'invalid_expiration', __( "Invalid expiration date.", \ITELIC\Plugin::SLUG ) );
+	}
+
+	if ( ! empty( $args['renewal'] ) ) {
+		$renewal = is_string( $args['renewal'] ) ? \ITELIC\make_date_time( $args['renewal'] ) : $args['renewal'];
+
+		if ( ! $renewal instanceof DateTime ) {
+			return new WP_Error( "invalid_renewal", __( "Invalid renewal date.", \ITELIC\Plugin::SLUG ) );
+		}
+
+	} else {
+		$renewal = null;
+	}
+
+	return \ITELIC\Renewal::create( $key, $transaction, $expired, $renewal );
+}
+
+/**
  * Create a renewal transaction key.
  *
  * @param array $args {

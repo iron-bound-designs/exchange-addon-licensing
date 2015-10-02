@@ -28,3 +28,49 @@ function itelic_get_update( $id ) {
 	 */
 	return apply_filters( 'itelic_get_update', \ITELIC\Update::get( $id ) );
 }
+
+/**
+ * Create an update record.
+ *
+ * @since 1.0
+ *
+ * @param array $args
+ *
+ * @return \ITELIC\Update|WP_Error
+ */
+function itelic_create_update( $args ) {
+
+	$defaults = array(
+		'activation'       => '',
+		'release'          => '',
+		'update_date'      => '',
+		'previous_version' => ''
+	);
+
+	$args = ITUtility::merge_defaults( $args, $defaults );
+
+	$activation = is_int( $args['activation'] ) ? itelic_get_activation( $args['activation'] ) : $args['activation'];
+
+	if ( ! $activation ) {
+		return new WP_Error( 'invalid_activation', __( "Invalid activation record.", \ITELIC\Plugin::SLUG ) );
+	}
+
+	$release = is_int( $args['release'] ) ? itelic_get_release( $args['release'] ) : $args['release'];
+
+	if ( ! $release ) {
+		return new WP_Error( 'invalid_release', __( "Invalid release object.", \ITELIC\Plugin::SLUG ) );
+	}
+
+	if ( ! empty( $args['update_date'] ) ) {
+		$update_date = is_string( $args['update_date'] ) ? \ITELIC\make_date_time( $args['update_date'] ) : $args['update_date'];
+
+		if ( ! $update_date instanceof DateTime ) {
+			return new WP_Error( "invalid_update_date", __( "Invalid update date.", \ITELIC\Plugin::SLUG ) );
+		}
+
+	} else {
+		$update_date = null;
+	}
+
+	return \ITELIC\Update::create( $activation, $release, $update_date, $args['previous_version'] );
+}

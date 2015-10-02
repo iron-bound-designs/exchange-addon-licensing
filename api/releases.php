@@ -74,3 +74,49 @@ function itelic_keep_last_n_releases( IT_Exchange_Product $product ) {
 	 */
 	return apply_filters( 'itelic_keep_last_n_releases', 10, $product );
 }
+
+/**
+ * Create a release.
+ *
+ * @since 1.0
+ *
+ * @param array $args
+ *
+ * @return \ITELIC\Release|WP_Error
+ */
+function itelic_create_release( $args ) {
+
+	$defaults = array(
+		'product'   => '',
+		'file'      => '',
+		'version'   => '',
+		'type'      => '',
+		'status'    => '',
+		'changelog' => ''
+	);
+	$args     = wp_parse_args( $args, $defaults );
+
+	$product = itelic_get_product( $args['product'] );
+
+	if ( ! $product ) {
+		return new WP_Error( 'invalid_product', __( 'Invalid Product', \ITELIC\Plugin::SLUG ) );
+	}
+
+	$file = get_post( $args['file'] );
+
+	if ( ! $file ) {
+		return new WP_Error( 'invalid_file', __( "Invalid File", \ITELIC\Plugin::SLUG ) );
+	}
+
+	$version   = $args['version'];
+	$type      = $args['type'];
+	$status    = $args['status'];
+	$changelog = $args['changelog'];
+
+	try {
+		return \ITELIC\Release::create( $product, $file, $version, $type, $status, $changelog );
+	}
+	catch ( InvalidArgumentException $e ) {
+		return new WP_Error( $e->getCode(), $e->getMessage() );
+	}
+}
