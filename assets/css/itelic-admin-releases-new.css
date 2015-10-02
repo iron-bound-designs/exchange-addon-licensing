@@ -135,6 +135,7 @@
 
 #product {
 	height: 46px;
+	max-width: 100%;
 }
 
 #prev-version {

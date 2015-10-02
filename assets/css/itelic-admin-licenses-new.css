@@ -1,0 +1,111 @@
+.main-editor {
+	width: 699px;
+	padding: 2em;
+	background: white;
+	border: #ccc solid 1px;
+	-webkit-transition-duration: 0.3s;
+	transition-duration: 0.3s;
+	-webkit-transition-property: color, background-color, opacity;
+	transition-property: color, background-color, opacity;
+}
+
+.main-editor:before,
+.main-editor:after {
+	content: " ";
+	display: table;
+}
+
+.main-editor:after {
+	clear: both;
+}
+
+.main-editor input[type="text"],
+.main-editor input[type="email"],
+.main-editor input[type="number"],
+.main-editor textarea {
+	background: #fff;
+	border: 1px solid #d6d6d6;
+	border-radius: 3px;
+	font-size: 18px;
+	padding: 10px;
+	color: #3d4142;
+	width: 260px;
+	-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	outline: 0;
+	-webkit-transition: .05s border-color ease-in-out;
+	transition: .05s border-color ease-in-out;
+}
+
+
+.main-editor ol li,
+.main-editor ol li label {
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.main-editor ol li {
+	margin-bottom: 20px;
+}
+
+.main-editor ol li label {
+	display: block;
+	padding-bottom: 10px;
+}
+
+.main-editor .product-container {
+	font-weight: normal;
+	font-size: 13px;
+}
+
+.main-editor .product-container select {
+	width: 300px;
+}
+
+.main-editor .new-customer-container label,
+.main-editor .existing-customer-container label {
+	font-weight: normal;
+	font-size: 14px;
+}
+
+.main-editor .new-customer-container p {
+	margin-top: 0;
+}
+
+.main-editor .existing-customer-container p {
+	margin-bottom: 0;
+}
+
+.main-editor .new-customer-form label {
+	font-size: 14px;
+	font-weight: normal;
+	font-style: oblique;
+}
+
+.main-editor .existing-customer-form select {
+	width: 300px;
+}
+
+.main-editor .existing-customer-form .select2 {
+	font-weight: normal;
+}
+
+.main-editor .activations-container p {
+	color: #666;
+	font-weight: normal;
+}
+
+.main-editor .expiration-container {
+	font-weight: normal;
+	font-size: 13px;
+}
+
+.main-editor .key-container a {
+	font-size: 13px;
+	font-weight: normal;
+}
+
+.main-editor .buttons {
+	float: right;
+	margin-bottom: 0;
+}

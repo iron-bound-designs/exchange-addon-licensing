@@ -113,6 +113,12 @@ class Plugin {
 		wp_register_style( 'itelic-add-edit-product', self::$url . 'assets/css/itelic-add-edit-product.css', array(), self::VERSION );
 		wp_register_script( 'itelic-add-edit-product', self::$url . 'assets/js/itelic-add-edit-product.js', array( 'jquery' ), self::VERSION );
 
+		wp_register_style( 'itelic-admin-licenses-new', self::$url . 'assets/css/itelic-admin-licenses-new.css', array( 'select2' ), self::VERSION );
+		wp_register_script( 'itelic-admin-licenses-new', self::$url . 'assets/js/itelic-admin-licenses-new.js', array(
+			'select2',
+			'jquery-ui-datepicker'
+		), self::VERSION );
+
 		wp_register_style( 'itelic-admin-licenses-list', self::$url . 'assets/css/itelic-admin-licenses-list.css', array( 'select2' ), self::VERSION );
 		wp_register_script( 'itelic-admin-licenses-list', self::$url . 'assets/js/itelic-admin-licenses-list.js', array( 'select2' ), self::VERSION );
 		wp_register_script( 'itelic-admin-license-detail', self::$url . 'assets/js/itelic-admin-license-detail.js', array(
@@ -133,10 +139,11 @@ class Plugin {
 		wp_register_style( 'itelic-account-licenses', self::$url . 'assets/css/itelic-account-licenses.css', array(), self::VERSION );
 		wp_register_script( 'itelic-account-licenses', self::$url . 'assets/js/itelic-account-licenses.js', array( 'jquery' ), self::VERSION );
 
-		wp_register_style( 'itelic-admin-releases-new', self::$url . 'assets/css/itelic-admin-releases-new.css', array(), self::VERSION );
+		wp_register_style( 'itelic-admin-releases-new', self::$url . 'assets/css/itelic-admin-releases-new.css', array( 'select2' ), self::VERSION );
 		wp_register_script( 'itelic-admin-releases-new', self::$url . 'assets/js/itelic-admin-releases-new.js', array(
 			'jquery-effects-slide',
-			'jquery-ui-tooltip'
+			'jquery-ui-tooltip',
+			'select2'
 		), self::VERSION );
 
 		wp_register_script( 'itelic-admin-releases-list', self::$url . 'assets/js/itelic-admin-releases-list.js', array(

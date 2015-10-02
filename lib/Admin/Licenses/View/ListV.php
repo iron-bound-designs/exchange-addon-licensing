@@ -8,6 +8,7 @@
 
 namespace ITELIC\Admin\Licenses\View;
 
+use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 
@@ -61,5 +62,22 @@ class ListV extends View {
 		</form>
 
 		<?php
+	}
+
+	/**
+	 * Override title display to show an add new button.
+	 *
+	 * @since 1.0
+	 */
+	public function title() {
+		echo '<h2>' . $this->get_title() . ' ';
+
+		if ( function_exists( 'it_exchange_register_manual_purchases_addon' ) ) {
+			echo '<a href="' . add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'licenses' ) ) . '" class="add-new-h2">';
+			echo __( "Add New", Plugin::SLUG );
+			echo '</a>';
+		}
+
+		echo '</h2>';
 	}
 }

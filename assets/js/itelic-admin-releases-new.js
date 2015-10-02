@@ -3,6 +3,8 @@
 
 	var file_frame, image_data;
 
+	var product = $("#product");
+
 	/**
 	 * When a release type is selected, display the main release editor.
 	 */
@@ -30,10 +32,12 @@
 		}
 	});
 
+	//product.select2();
+
 	/**
 	 * When a product is selected, display the previous version on the version input.
 	 */
-	$("#product").change(function () {
+	product.change(function () {
 
 		var $this = $(this);
 
