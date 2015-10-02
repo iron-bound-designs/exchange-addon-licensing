@@ -10,8 +10,8 @@ namespace ITELIC\Admin\Licenses\Controller;
 
 use ITELIC\Admin\Licenses\Controller;
 use ITELIC\Admin\Licenses\View\Add_New as Add_New_View;
-use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Admin\Tab\View;
+use ITELIC\Key;
 use ITELIC\Plugin;
 
 /**
@@ -57,8 +57,26 @@ class Add_New extends Controller {
 			return;
 		}
 
-		$product     = absint( $_POST['product'] );
-		$customer    = absint( $_POST['customer'] );
+		$product = absint( $_POST['product'] );
+
+		if ( empty( $_POST['username'] ) ) {
+			$customer = absint( $_POST['customer'] );
+		} else {
+			$customer = wp_insert_user( array(
+				'user_login' => $_POST['username'],
+				'user_email' => $_POST['email'],
+				'first_name' => $_POST['first'],
+				'last_name'  => $_POST['last'],
+				'user_pass'  => wp_generate_password( 24, true, true )
+			) );
+
+			if ( is_wp_error( $customer ) ) {
+				$this->message[ View::NOTICE_ERROR ] = $customer->get_error_message();
+
+				return;
+			}
+		}
+
 		$activations = intval( $_POST['activations'] );
 		$expiration  = $_POST['expiration'];
 		$key         = $_POST['license'];
@@ -76,6 +94,22 @@ class Add_New extends Controller {
 		if ( is_wp_error( $key ) ) {
 			$this->message[ View::NOTICE_ERROR ] = $key->get_error_message();
 		} else {
+
+			/**
+			 * Determine whether or not to send WP's new user notification
+			 * when a key is manually created from the add new license key page.
+			 *
+			 * @since 1.0
+			 *
+			 * @param bool $send
+			 * @param Key  $key
+			 */
+			$send_notification = apply_filters( 'itelic_send_new_user_notification_on_create_key', true, $key );
+
+			if ( $send_notification ) {
+				wp_new_user_notification( $customer, null, 'both' );
+			}
+
 			wp_redirect( itelic_get_admin_edit_key_link( $key->get_key() ) );
 			exit;
 		}
