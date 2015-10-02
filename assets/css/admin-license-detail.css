@@ -289,7 +289,7 @@
 }
 
 #it-exchange-license-details .location-col {
-	width: 320px;
+	width: 300px;
 }
 
 #it-exchange-license-details .status-col {
@@ -297,11 +297,11 @@
 }
 
 #it-exchange-license-details .activation-col {
-	width: 105px;
+	width: 115px;
 }
 
 #it-exchange-license-details .deactivation-col {
-	width: 105px;
+	width: 115px;
 }
 
 #it-exchange-license-details .version-col {
