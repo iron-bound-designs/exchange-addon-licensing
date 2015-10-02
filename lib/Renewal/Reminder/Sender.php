@@ -117,7 +117,7 @@ class Sender {
 		$notification = new Notification( $key->get_customer()->wp_user, $manager, $template->post_content, $template->post_title );
 
 		$notification->add_data_source( $key );
-		$notification->add_data_source( new Discount( $key->get_product() ) );
+		$notification->add_data_source( new Discount( $key ) );
 
 		return $notification;
 	}

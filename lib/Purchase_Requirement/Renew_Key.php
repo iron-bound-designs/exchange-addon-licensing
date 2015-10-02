@@ -46,7 +46,10 @@ class Renew_Key extends Base {
 
 		add_filter( 'it_exchange_theme_api_cart-item_title', array( $this, 'modify_cart_item_title' ) );
 
-		add_filter( 'it_exchange_get_cart_product_base_price', array( $this, 'apply_renewal_discount' ), 10, 3 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'remove_variant_options' ), 20 );
+		add_filter( 'it_exchange_multi_item_product_allowed', array( $this, 'disable_multi_item_product' ), 10, 2 );
+		add_filter( 'it_exchange_get_cart_product_base_price', array( $this, 'apply_renewal_discount' ), 20, 3 );
+
 		add_filter( 'it_exchange_generate_transaction_object_products', array(
 			$this,
 			'save_renewal_info_to_transaction_object'
@@ -311,6 +314,65 @@ class Renew_Key extends Base {
 	}
 
 	/**
+	 * Remove the variant options from the page.
+	 *
+	 * @since 1.0
+	 */
+	public function remove_variant_options() {
+
+		$product = \ITELIC\get_current_product_id();
+
+		$session = $this->get_cache_data();
+
+		if ( ! isset( $session[ "p" . $product ] ) || $session[ "p" . $product ] === null ) {
+			return;
+		}
+
+		add_filter( 'it_exchange_multi_item_product_allowed', function ( $allowed, $product_id ) use ( $product ) {
+
+			if ( $product_id == $product ) {
+				$allowed = false;
+			}
+
+			return $allowed;
+
+		}, 10, 2 );
+
+		wp_dequeue_script( 'it-exchange-variants-addon-frontend-product' );
+		wp_dequeue_style( 'it-exchange-variants-addon-frontend-product' );
+
+		remove_filter( 'wp_footer', 'it_exchange_variants_addon_print_product_variant_js' );
+		remove_filter( 'it_exchange_get_content_product_product_info_loop_elements', 'it_exchange_variants_addon_register_template_loop' );
+	}
+
+	/**
+	 * Disable the multi-item product if a key is being renewed.
+	 *
+	 * @param bool $allowed
+	 * @param int  $product_id
+	 *
+	 * @return bool
+	 */
+	function disable_multi_item_product( $allowed, $product_id ) {
+
+		$products = it_exchange_get_cart_products();
+
+		foreach ( $products as $product ) {
+
+			if ( $product['product_id'] == $product_id ) {
+
+				$session = $this->get_cache_data();
+
+				if ( isset( $session[ "p" . $product_id ] ) && $session[ "p" . $product_id ] !== null ) {
+					$allowed = false;
+				}
+			}
+		}
+
+		return $allowed;
+	}
+
+	/**
 	 * Apply the renewal discount.
 	 *
 	 * @since 1.0
@@ -333,7 +395,10 @@ class Renew_Key extends Base {
 			return $db_base_price;
 		}
 
-		$discount = new Discount( itelic_get_product( $product['product_id'] ) );
+		$key = $session[ "p" . $product['product_id'] ];
+		$key = itelic_get_key( $key );
+
+		$discount = new Discount( $key );
 
 		return $discount->get_discount_price( $format );
 	}

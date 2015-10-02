@@ -38,15 +38,21 @@ class Discount implements \Serializable {
 	private $feature_data;
 
 	/**
+	 * @var Key
+	 */
+	private $key;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0
 	 *
-	 * @param Product $product
+	 * @param Key $key
 	 */
-	public function __construct( Product $product ) {
-		$this->product      = $product;
-		$this->feature_data = it_exchange_get_product_feature( $product->ID, 'licensing-discount' );
+	public function __construct( Key $key ) {
+		$this->product      = $key->get_product();
+		$this->feature_data = it_exchange_get_product_feature( $key->get_product()->ID, 'licensing-discount' );
+		$this->key          = $key;
 	}
 
 	/**
@@ -126,7 +132,7 @@ class Discount implements \Serializable {
 	 */
 	public function get_discount_price( $format = false ) {
 
-		$price = it_exchange_get_product_feature( $this->product->ID, 'base-price' );
+		$price = $this->get_amount_paid();
 
 		switch ( $this->get_type() ) {
 			case self::TYPE_FLAT:
@@ -142,6 +148,32 @@ class Discount implements \Serializable {
 		} else {
 			return $price;
 		}
+	}
+
+	/**
+	 * Get the total amount paid.
+	 *
+	 * @since 1.0
+	 *
+	 * @return float
+	 */
+	protected function get_amount_paid() {
+
+		$txn      = $this->key->get_transaction();
+		$products = $txn->get_products();
+
+		$amount = it_exchange_get_product_feature( $this->product->ID, 'base-price' );
+
+		foreach ( $products as $product ) {
+
+			if ( $product['product_id'] == $this->product->ID ) {
+				$amount = $product['product_subtotal'];
+
+				break;
+			}
+		}
+
+		return $amount;
 	}
 
 	/**

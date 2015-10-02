@@ -95,7 +95,7 @@ function itelic_create_renewal_transaction( $args ) {
 	}
 	$i = $product_id . '-' . md5( $itemized_data );
 
-	$discounted = new \ITELIC\Renewal\Discount( $key->get_product() );
+	$discounted = new \ITELIC\Renewal\Discount( $key );
 	$discounted = $discounted->get_discount_price();
 
 	$products[ $i ]['product_base_price'] = $discounted;
