@@ -355,11 +355,16 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 
 		$first_release = get_post_meta( $product_id, '_itelic_first_release', true );
 
-		if ( ! $first_release && $data['update-file'] ) {
+		if ( ! $first_release && isset( $data['update-file'] ) && $data['update-file'] ) {
 
 			$download      = $data['update-file'];
 			$download_meta = get_post_meta( $download, '_it-exchange-download-info', true );
-			$url           = $download_meta['source'];
+
+			if ( empty( $download_meta ) ) {
+				return;
+			}
+
+			$url = $download_meta['source'];
 
 			/**
 			 * @var \wpdb $wpdb
