@@ -89,7 +89,7 @@ class Single extends View {
 
 					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>">
 						<?php if ( null === ( $d = $this->key->get_expires() ) ) : ?>
-							<?php _e( "Forever", Plugin::SLUG ); ?>
+							<?php _e( "Never", Plugin::SLUG ); ?>
 						<?php else: ?>
 							<?php echo $d->format( $this->get_short_df() ); ?>
 						<?php endif; ?>

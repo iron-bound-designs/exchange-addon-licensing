@@ -104,13 +104,7 @@ class Key extends Model implements API\Serializable {
 			$this->expires = new \DateTime( $data->expires );
 		}
 
-		foreach (
-			array(
-				'transaction',
-				'product',
-				'customer'
-			) as $maybe_error
-		) {
+		foreach ( array( 'transaction', 'product', 'customer' ) as $maybe_error ) {
 			if ( ! $this->$maybe_error || is_wp_error( $this->$maybe_error ) ) {
 				throw new \InvalidArgumentException( "Invalid $maybe_error" );
 			}
