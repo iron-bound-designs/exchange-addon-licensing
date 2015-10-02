@@ -442,6 +442,7 @@ class Renew_Key extends Base {
 	 */
 	public function clear_renewal_session_on_purchase( $transaction_object ) {
 		$this->clear_cache_data();
+		$this->persist();
 
 		return $transaction_object;
 	}
@@ -456,5 +457,6 @@ class Renew_Key extends Base {
 	 */
 	public function remove_renewal_info_on_cart_product_removal( $cart_product_id, $products ) {
 		$this->remove_cache_data( "p$cart_product_id" );
+		$this->persist();
 	}
 }

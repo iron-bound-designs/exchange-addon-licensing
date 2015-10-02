@@ -34,6 +34,8 @@ jQuery(document).ready(function ($) {
 		 */
 		$.get(itExchangeSWAjaxURL + '&sw-action=renew_key&sw-product=' + product + '&sw-quantity=' + quantity + additionalFieldsString, function (data) {
 
+			$(".it-exchange-product-variants").remove();
+
 			itExchangeGetSuperWidgetState('checkout', product);
 
 			itExchange.hooks.doAction('itExchangeSW.RenewProduct');
