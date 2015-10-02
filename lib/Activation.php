@@ -369,10 +369,14 @@ class Activation extends Model implements API\Serializable {
 	}
 
 	/**
+	 * Get the activation date.
+	 *
+	 * @since 1.0
+	 *
 	 * @return \DateTime
 	 */
 	public function get_activation() {
-		return $this->activation;
+		return clone $this->activation;
 	}
 
 	/**
@@ -394,10 +398,19 @@ class Activation extends Model implements API\Serializable {
 	}
 
 	/**
+	 * Get the deactivation date.
+	 *
+	 * @since 1.0
+	 *
 	 * @return \DateTime
 	 */
 	public function get_deactivation() {
-		return $this->deactivation;
+
+		if ( $this->deactivation ) {
+			return clone $this->deactivation;
+		}
+
+		return null;
 	}
 
 	/**

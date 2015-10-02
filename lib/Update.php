@@ -176,7 +176,7 @@ class Update extends Model {
 	 * @return \DateTime
 	 */
 	public function get_update_date() {
-		return $this->update_date;
+		return clone $this->update_date;
 	}
 
 	/**

@@ -185,7 +185,7 @@ class Renewal extends Model {
 	 * @return \DateTime
 	 */
 	public function get_renewal_date() {
-		return $this->renewal_date;
+		return clone $this->renewal_date;
 	}
 
 	/**
@@ -196,7 +196,7 @@ class Renewal extends Model {
 	 * @return \DateTime
 	 */
 	public function get_key_expired_date() {
-		return $this->key_expired_date;
+		return clone $this->key_expired_date;
 	}
 
 	/**

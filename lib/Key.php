@@ -464,10 +464,19 @@ class Key extends Model implements API\Serializable {
 	}
 
 	/**
-	 * @return \DateTime|null
+	 * Get the expiration date.
+	 *
+	 * @since 1.0
+	 *
+	 * @return \DateTime|null Returns null if lifetime.
 	 */
 	public function get_expires() {
-		return $this->expires;
+
+		if ( $this->expires ) {
+			return clone $this->expires;
+		}
+
+		return null;
 	}
 
 	/**
