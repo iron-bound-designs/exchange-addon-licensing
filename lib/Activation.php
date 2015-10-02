@@ -101,7 +101,7 @@ class Activation extends Model implements API\Serializable {
 			$this->deactivation = make_date_time( $data->deactivation );
 		}
 
-		$this->release = itelic_get_release( $data->release );
+		$this->release = itelic_get_release( $data->release_id );
 	}
 
 	/**
@@ -165,7 +165,7 @@ class Activation extends Model implements API\Serializable {
 		);
 
 		if ( $release ) {
-			$data['release'] = $release->get_pk();
+			$data['release_id'] = $release->get_pk();
 		}
 
 		$db = Manager::make_simple_query_object( 'itelic-activations' );
@@ -602,7 +602,8 @@ class Activation extends Model implements API\Serializable {
 		$data = parent::get_data_to_cache();
 
 		unset( $data['key'] );
-		$data['lkey'] = $this->get_key()->get_key();
+		$data['lkey']    = $this->get_key()->get_key();
+		$data['release'] = $this->get_release()->get_pk();
 
 		return $data;
 	}

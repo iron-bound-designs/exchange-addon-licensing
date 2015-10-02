@@ -35,7 +35,7 @@ class Activations implements Table {
 			'status'       => '%s',
 			'activation'   => '%s',
 			'deactivation' => '%s',
-			'release'      => '%d',
+			'release_id'   => '%d',
 		);
 	}
 
@@ -54,7 +54,7 @@ class Activations implements Table {
 			'status'       => 'active',
 			'activation'   => '',
 			'deactivation' => '',
-			'release'      => '',
+			'release_id'   => '',
 		);
 	}
 
@@ -113,7 +113,7 @@ class Activations implements Table {
 		activation DATETIME NOT NULL,
 		deactivation DATETIME DEFAULT NULL,
 		status VARCHAR(20) NOT NULL,
-		`release` BIGINT(20),
+		release_id BIGINT(20),
 		PRIMARY KEY  (id),
 		KEY lkey (lkey),
 		UNIQUE KEY key__location (lkey,location)

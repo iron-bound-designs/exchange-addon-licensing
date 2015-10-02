@@ -256,7 +256,7 @@ class Activations extends Complex_Query {
 			$this->args['release__in'] = array( $this->args['release'] );
 		}
 
-		return $this->parse_in_or_not_in_query( 'release', $this->args['release__in'], $this->args['release__not_in'] );
+		return $this->parse_in_or_not_in_query( 'release_id', $this->args['release__in'], $this->args['release__not_in'] );
 	}
 
 	/**
