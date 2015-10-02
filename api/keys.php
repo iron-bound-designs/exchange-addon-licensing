@@ -93,7 +93,7 @@ function itelic_get_admin_edit_key_link( $key ) {
  * @type string $date        When the transaction occurred.
  * }
  *
- * @return \ITELIC\Key|null
+ * @return \ITELIC\Key|WP_Error
  */
 function itelic_create_key( $args ) {
 

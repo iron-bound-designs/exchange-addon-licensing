@@ -188,10 +188,13 @@ class Add_New extends View {
 				</ol>
 
 				<p class="buttons">
-					<input type="reset" class="button button-secondary" value="<?php _e( "Clear", Plugin::SLUG ); ?>"> <?php submit_button( __( "Create", Plugin::SLUG ), 'primary', 'submit', false ); ?>
+					<input type="reset" class="button button-secondary" value="<?php _e( "Clear", Plugin::SLUG ); ?>">
+					<?php submit_button( __( "Create", Plugin::SLUG ), 'primary', 'itelic-add-new-key', false ); ?>
 				</p>
 
 			</div>
+
+			<?php wp_nonce_field( 'itelic-add-new-key' ); ?>
 
 		</form>
 
