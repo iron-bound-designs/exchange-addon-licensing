@@ -119,7 +119,8 @@ class Single extends Controller {
 					$key->set_max( $val );
 					break;
 				case 'expires':
-					$date = new \DateTime( $val, new \DateTimeZone( get_option( 'timezone_string' ) ) );
+					$date = \ITELIC\make_date_time( $val, false );
+					$date = \ITELIC\convert_local_to_gmt( $date );
 					$key->set_expires( $date );
 					break;
 				default:

@@ -98,7 +98,7 @@ class Single extends View {
 						<?php if ( null === $this->release->get_start_date() ): ?>
 							<?php echo '&mdash;' ?>
 						<?php else: ?>
-							<?php echo $this->release->get_start_date()->format( $df ); ?>
+							<?php echo \ITELIC\convert_gmt_to_local( $this->release->get_start_date() )->format( $df ); ?>
 						<?php endif; ?>
 					</h3>
 				</div>

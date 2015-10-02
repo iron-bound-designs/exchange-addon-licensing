@@ -55,6 +55,7 @@ function itelic_generate_auto_renewal_url( \ITELIC\Key $key ) {
  * @type string $key  The license key to be used. If empty, one will be
  *       generated.
  * @type float  $paid If manually generating a transaction, the amount paid.
+ * @tpye string $date When the transaction occurred. GMT.
  * }
  *
  * @return IT_Exchange_Transaction
@@ -122,7 +123,11 @@ function itelic_create_renewal_transaction( $args ) {
 	$txn_args = array();
 
 	if ( isset( $args['date'] ) ) {
-		$txn_args['post_date'] = $args['date'];
+
+		$date = \ITELIC\make_date_time( $args['date'] );
+
+		$txn_args['post_date']     = \ITELIC\convert_gmt_to_local( $date )->format( 'Y-m-d H:i:s' );
+		$txn_args['post_date_gmt'] = $date->format( 'Y-m-d H:i:s' );
 	}
 
 	$customer = $key->get_customer()->id;

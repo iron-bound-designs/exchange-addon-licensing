@@ -66,7 +66,7 @@ class Update extends Model {
 		$this->ID               = $data->ID;
 		$this->activation       = itelic_get_activation( $data->activation );
 		$this->release          = itelic_get_release( $data->release_id );
-		$this->update_date      = new \DateTime( $data->update_date );
+		$this->update_date      = make_date_time( $data->update_date );
 		$this->previous_version = $data->previous_version;
 	}
 
@@ -86,7 +86,7 @@ class Update extends Model {
 	public static function create( Activation $activation, Release $release, \DateTime $upgrade_date = null, $previous_version = '' ) {
 
 		if ( $upgrade_date === null ) {
-			$upgrade_date = new \DateTime();
+			$upgrade_date = make_date_time();
 		}
 
 		if ( empty( $previous_version ) ) {

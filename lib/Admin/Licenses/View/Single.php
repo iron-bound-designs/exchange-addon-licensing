@@ -91,7 +91,7 @@ class Single extends View {
 						<?php if ( null === ( $d = $this->key->get_expires() ) ) : ?>
 							<?php _e( "Never", Plugin::SLUG ); ?>
 						<?php else: ?>
-							<?php echo $d->format( $this->get_short_df() ); ?>
+							<?php echo \ITELIC\convert_gmt_to_local( $d )->format( $this->get_short_df() ); ?>
 						<?php endif; ?>
 					</h3>
 				</div>
@@ -199,14 +199,14 @@ class Single extends View {
 		<tr>
 			<td><?php echo $activation->get_location(); ?></td>
 			<td><?php echo $activation->get_status( true ); ?></td>
-			<td><?php echo $activation->get_activation()->format( $this->get_short_df() ); ?></td>
+			<td><?php echo \ITELIC\convert_gmt_to_local( $activation->get_activation() )->format( $this->get_short_df() ); ?></td>
 			<td>
 				<?php if ( null === ( $d = $activation->get_deactivation() ) ): ?>
 					<a href="javascript:" data-id="<?php echo esc_attr( $activation->get_id() ); ?>" data-nonce="<?php echo $n_deactivate; ?>" class="deactivate">
 						<?php _e( "Deactivate", Plugin::SLUG ); ?>
 					</a>
 				<?php else: ?>
-					<?php echo $d->format( $this->get_short_df() ); ?>
+					<?php echo \ITELIC\convert_gmt_to_local( $d )->format( $this->get_short_df() ); ?>
 				<?php endif; ?>
 			</td>
 			<td>

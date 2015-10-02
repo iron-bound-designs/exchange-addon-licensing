@@ -90,7 +90,7 @@ function itelic_get_admin_edit_key_link( $key ) {
  * @type int    $limit       Activation limit.
  * @type string $expires     Expiration date. Pass null or empty string for
  *       forever.
- * @type string $date        When the transaction occurred.
+ * @type string $date        When the transaction occurred. GMT.
  * }
  *
  * @return \ITELIC\Key|WP_Error
@@ -167,7 +167,11 @@ function itelic_create_key( $args ) {
 		$txn_args = array();
 
 		if ( isset( $args['date'] ) ) {
-			$txn_args['post_date'] = $args['date'];
+
+			$date = \ITELIC\make_date_time( $args['date'] );
+
+			$txn_args['post_date']     = \ITELIC\convert_gmt_to_local( $date )->format( 'Y-m-d H:i:s' );
+			$txn_args['post_date_gmt'] = $date->format( 'Y-m-d H:i:s' );
 		}
 
 		$tid = it_exchange_add_transaction( 'manual-purchases', $uniquid, 'Completed', $customer->id, $object, $txn_args );
@@ -194,7 +198,7 @@ function itelic_create_key( $args ) {
 		if ( empty( $args['expires'] ) ) {
 			$expires = null;
 		} else {
-			$expires = new DateTime( $args['expires'] );
+			$expires = \ITELIC\make_date_time( $args['expires'] );
 		}
 
 		$key->set_expires( $expires );

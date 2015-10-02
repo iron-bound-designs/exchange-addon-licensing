@@ -101,7 +101,7 @@ class Key extends Model implements API\Serializable {
 		$this->max         = $data->max;
 
 		if ( ! empty( $data->expires ) && $data->expires != '0000-00-00 00:00:00' ) {
-			$this->expires = new \DateTime( $data->expires );
+			$this->expires = make_date_time( $data->expires );
 		}
 
 		foreach ( array( 'transaction', 'product', 'customer' ) as $maybe_error ) {
@@ -140,7 +140,7 @@ class Key extends Model implements API\Serializable {
 			$status = self::ACTIVE;
 		}
 
-		$now = new \DateTime();
+		$now = make_date_time();
 
 		if ( $expires && $expires < $now ) {
 			$status = self::EXPIRED;
@@ -238,7 +238,7 @@ class Key extends Model implements API\Serializable {
 		$expires->add( $interval );
 		$this->set_expires( $expires );
 
-		$now = new \DateTime();
+		$now = make_date_time();
 
 		if ( $this->get_expires() > $now && $this->get_status() != self::ACTIVE ) {
 			$this->set_status( self::ACTIVE );
@@ -274,14 +274,14 @@ class Key extends Model implements API\Serializable {
 		if ( $transaction === null ) {
 			$date = null;
 		} else {
-			$date = new \DateTime( $transaction->post_date );
+			$date = make_date_time( $transaction->post_date_gmt );
 		}
 
 		$record = Renewal::create( $this, $transaction, $this->get_expires(), $date );
 
 		$this->extend();
 
-		$now = new \DateTime();
+		$now = make_date_time();
 
 		if ( $this->get_expires() > $now ) {
 			$this->set_status( self::ACTIVE );
@@ -309,7 +309,7 @@ class Key extends Model implements API\Serializable {
 	public function expire( \DateTime $date = null ) {
 
 		if ( $date === null ) {
-			$date = new \DateTime();
+			$date = make_date_time();
 		}
 
 		if ( $this->get_status() !== self::EXPIRED ) {

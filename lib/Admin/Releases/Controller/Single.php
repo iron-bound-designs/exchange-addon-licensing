@@ -10,7 +10,6 @@ namespace ITELIC\Admin\Releases\Controller;
 
 use IronBound\DB\Manager;
 use IronBound\WP_Notifications\Notification;
-use IronBound\WP_Notifications\Queue\Mandrill;
 use IronBound\WP_Notifications\Template\Factory;
 use IronBound\WP_Notifications\Template\Listener;
 use IronBound\WP_Notifications\Template\Manager as Template_Manager;
@@ -382,7 +381,7 @@ class Single extends Controller {
 
 		$data = array();
 
-		$day = clone $release->get_start_date();
+		$day = \ITELIC\convert_gmt_to_local( clone $release->get_start_date() );
 
 		$sql_df = 'Y-m-d';
 

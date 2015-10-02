@@ -153,10 +153,10 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 		foreach ( $keys as $key ) {
 			if ( rand( 0, 100 ) <= $rate ) {
 
-				$min = clone $key->get_expires();
+				$min = $key->get_expires();
 				$min->sub( new DateInterval( 'P15D' ) );
 
-				$max = clone $key->get_expires();
+				$max = $key->get_expires();
 				$max->add( new DateInterval( 'P30D' ) );
 
 				$txn = itelic_create_renewal_transaction( array(

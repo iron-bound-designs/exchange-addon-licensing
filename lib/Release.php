@@ -152,7 +152,7 @@ class Release extends Model {
 		$this->changelog = $data->changelog;
 
 		if ( $data->start_date && $data->start_date != '0000-00-00 00:00:00' ) {
-			$this->start_date = new \DateTime( $data->start_date );
+			$this->start_date = make_date_time( $data->start_date );
 		}
 	}
 
@@ -214,7 +214,7 @@ class Release extends Model {
 		);
 
 		if ( $status == self::STATUS_ACTIVE ) {
-			$data['start_date'] = current_time( 'mysql' );
+			$data['start_date'] = make_date_time()->format( 'Y-m-d H:i:s' );
 		}
 
 		$db = Manager::make_simple_query_object( 'itelic-releases' );
@@ -307,7 +307,7 @@ class Release extends Model {
 		if ( ! $this->get_start_date() ) {
 
 			if ( $when === null ) {
-				$when = new \DateTime();
+				$when = make_date_time();
 			}
 
 			$this->set_start_date( $when );

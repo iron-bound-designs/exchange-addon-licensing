@@ -95,10 +95,10 @@ class Activation extends Model implements API\Serializable {
 		$this->key        = itelic_get_key( $data->lkey );
 		$this->location   = $data->location;
 		$this->status     = $data->status;
-		$this->activation = new \DateTime( $data->activation );
+		$this->activation = make_date_time( $data->activation );
 
 		if ( ! empty( $data->deactivation ) && $data->deactivation != '0000-00-00 00:00:00' ) {
-			$this->deactivation = new \DateTime( $data->deactivation );
+			$this->deactivation = make_date_time( $data->deactivation );
 		}
 
 		$this->release = itelic_get_release( $data->release );
@@ -143,7 +143,7 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		if ( $activation === null ) {
-			$activation = current_time( 'mysql' );
+			$activation = make_date_time();
 		} else {
 			$activation = $activation->format( 'Y-m-d H:i:s' );
 		}
@@ -220,7 +220,7 @@ class Activation extends Model implements API\Serializable {
 	public function deactivate( \DateTime $date = null ) {
 
 		if ( $date === null ) {
-			$date = new \DateTime();
+			$date = make_date_time();
 		}
 
 		$this->set_deactivation( $date );
@@ -252,7 +252,7 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		if ( $date === null ) {
-			$date = new \DateTime();
+			$date = make_date_time();
 		}
 
 		$this->set_deactivation( null );

@@ -67,8 +67,8 @@ class Renewal extends Model {
 	protected function init( \stdClass $data ) {
 		$this->id               = $data->id;
 		$this->key              = itelic_get_key( $data->lkey );
-		$this->renewal_date     = new \DateTime( $data->renewal_date );
-		$this->key_expired_date = new \DateTime( $data->key_expired_date );
+		$this->renewal_date     = make_date_time( $data->renewal_date );
+		$this->key_expired_date = make_date_time( $data->key_expired_date );
 
 		if ( $data->transaction_id ) {
 			$this->transaction = it_exchange_get_transaction( $data->transaction_id );
@@ -94,7 +94,7 @@ class Renewal extends Model {
 	public static function create( Key $key, \IT_Exchange_Transaction $transaction = null, \DateTime $expired, \DateTime $renewal = null ) {
 
 		if ( empty( $renewal ) ) {
-			$renewal = new \DateTime();
+			$renewal = make_date_time();
 		}
 
 		$revenue = '0.00';
@@ -232,7 +232,7 @@ class Renewal extends Model {
 	 * @return string
 	 */
 	public function __toString() {
-		return $this->get_key() . ' – ' . $this->get_renewal_date()->format( get_option( 'date_format' ) );
+		return $this->get_key() . ' – ' . convert_gmt_to_local( $this->get_renewal_date() )->format( get_option( 'date_format' ) );
 	}
 
 	/**

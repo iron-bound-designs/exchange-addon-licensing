@@ -180,7 +180,7 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
 		if ( $this->activation ) {
-			$value = $this->activation->get_activation()->format( $options['df'] );
+			$value = \ITELIC\convert_gmt_to_local( $this->activation->get_activation() )->format( $options['df'] );
 		} else {
 			$value = '';
 		}
@@ -222,7 +222,7 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 			if ( $this->activation->get_deactivation() === null ) {
 				$value = '';
 			} else {
-				$value = $this->activation->get_deactivation()->format( $options['df'] );
+				$value = \ITELIC\convert_gmt_to_local( $this->activation->get_deactivation() )->format( $options['df'] );
 			}
 		} else {
 			$value = '';

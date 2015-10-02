@@ -181,7 +181,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * [--when=<when>]
 	 * : Wen the activation occurred. Accepts strtotime compatible
-	 * value.
+	 * value. GMT.
 	 *
 	 * [--version=<version>]
 	 * : The version of the software installed. Default: latest.
@@ -210,7 +210,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 		}
 
 		if ( isset( $assoc_args['when'] ) ) {
-			$when = new DateTime( $assoc_args['when'] );
+			$when = \ITELIC\make_date_time( $assoc_args['when'] );
 		} else {
 			$when = null;
 		}
@@ -259,7 +259,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	 * : Activation ID.
 	 *
 	 * [--when=<when>]
-	 * : When the deactivation occurred. Accepts strtotime compatible value.
+	 * : When the deactivation occurred. Accepts strtotime compatible value. GMT.
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -271,7 +271,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 		$activation = $this->fetcher->get_check( $id );
 
 		if ( isset( $assoc_args['when'] ) ) {
-			$when = new DateTime( $assoc_args['when'] );
+			$when = \ITELIC\make_date_time( $assoc_args['when'] );
 		} else {
 			$when = null;
 		}
@@ -290,7 +290,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	 * : Activation ID.
 	 *
 	 * [--when=<when>]
-	 * : When the reactivation occurred. Accepts strtotime compatible value.
+	 * : When the reactivation occurred. Accepts strtotime compatible value. GMT.
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -302,7 +302,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 		$activation = $this->fetcher->get_check( $id );
 
 		if ( isset( $assoc_args['when'] ) ) {
-			$when = new DateTime( $assoc_args['when'] );
+			$when = \ITELIC\make_date_time( $assoc_args['when'] );
 		} else {
 			$when = null;
 		}

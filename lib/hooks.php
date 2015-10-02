@@ -107,7 +107,7 @@ function auto_expire_licenses() {
 
 	$query = new Keys( array(
 		'expires' => array(
-			'before' => current_time( 'mysql' )
+			'before' => make_date_time()->format( 'Y-m-d H:i:s' )
 		)
 	) );
 

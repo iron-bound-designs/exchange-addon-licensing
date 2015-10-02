@@ -113,7 +113,7 @@ function generate_key_for_transaction_product( \IT_Exchange_Transaction $transac
 
 		$interval = convert_rp_to_date_interval( $type, $count );
 
-		$expires = new \DateTime( $transaction->post_date );
+		$expires = make_date_time( $transaction->post_date_gmt );
 		$expires->add( $interval );
 	}
 
@@ -197,6 +197,139 @@ function get_key_for_transaction_product( $transaction_id, $product_id ) {
 	return reset( $data );
 }
 
+/* --------------------------------------------
+================== Date Utils =================
+----------------------------------------------- */
+
+/**
+ * Make a DateTime object.
+ *
+ * @since 1.0
+ *
+ * @param string $time
+ * @param bool   $gmt If false, returns object set to the timezone specified in general settings.
+ *
+ * @return \DateTime
+ */
+function make_date_time( $time = 'now', $gmt = true ) {
+
+	$tz   = new \DateTimeZone( 'UTC' );
+	$time = new \DateTime( $time, $tz );
+
+	if ( $gmt ) {
+		return $time;
+	} else {
+		return convert_gmt_to_local( $time );
+	}
+}
+
+/**
+ * Convert a GMT date to its localized equivalent.
+ *
+ * @since 1.0
+ *
+ * @param \DateTime $time
+ *
+ * @return \DateTime
+ */
+function convert_gmt_to_local( \DateTime $time ) {
+
+	if ( $time->getOffset() != 0 ) {
+		throw new \InvalidArgumentException( "Passed DateTime object is not in GMT time." );
+	}
+
+	$tz_string = get_option( 'timezone_string' );
+
+	if ( ! empty( $tz_string ) ) {
+		$tz = new \DateTimeZone( $tz_string );
+
+		$time->setTimezone( $tz );
+
+		return $time;
+	} else {
+		$tz = new \DateTimeZone( 'UTC' );
+		$time->setTimezone( $tz );
+
+		$offset = get_option( 'gmt_offset', 0 );
+
+		if ( $offset == 0 ) {
+			return $time;
+		}
+
+		$invert = $offset < 0;
+
+		$parts = explode( '.', $offset );
+		$hours = $parts[0];
+
+		$interval_spec = "PT{$hours}H";
+
+		if ( isset( $parts[1] ) ) {
+			$minutes_fraction = (float) "0.$parts[1]";
+			$minutes          = 60 * $minutes_fraction;
+
+			if ( $minutes ) {
+				$interval_spec .= "{$minutes}M";
+			}
+		}
+
+		$interval         = new \DateInterval( $interval_spec );
+		$interval->invert = $invert;
+
+		$time->add( $interval );
+
+		return $time;
+	}
+}
+
+/**
+ * Convert a localized date to its GMT equivalent.
+ *
+ * @since 1.0
+ *
+ * @param \DateTime $time
+ *
+ * @return \DateTime
+ */
+
+function convert_local_to_gmt( \DateTime $time ) {
+	$time->setTimezone( new \DateTimeZone( 'UTC' ) );
+
+	return $time;
+}
+
+/* --------------------------------------------
+================= Notifications ===============
+----------------------------------------------- */
+
+/**
+ * Get tags that are shared between managers.
+ *
+ * @since 1.0
+ *
+ * @return Listener[]
+ */
+function get_shared_tags() {
+	return array(
+		new Listener( 'full_customer_name', function ( \WP_User $to ) {
+			return $to->first_name . " " . $to->last_name;
+		} ),
+		new Listener( 'customer_first_name', function ( \WP_User $to ) {
+			return $to->first_name;
+		} ),
+		new Listener( 'customer_last_name', function ( \WP_User $to ) {
+			return $to->last_name;
+		} ),
+		new Listener( 'customer_email', function ( \WP_User $to ) {
+			return $to->user_email;
+		} ),
+		new Listener( 'store_name', function () {
+			$settings = it_exchange_get_option( 'settings_general' );
+
+			return $settings['company-name'];
+		} )
+	);
+}
+
 /**
  * Get the notifications queue processor to use.
  *
@@ -274,39 +407,6 @@ function get_notification_strategy() {
 }
 
 /* --------------------------------------------
-================= Notifications ===============
------------------------------------------------ */
-
-/**
- * Get tags that are shared between managers.
- *
- * @since 1.0
- *
- * @return Listener[]
- */
-function get_shared_tags() {
-	return array(
-		new Listener( 'full_customer_name', function ( \WP_User $to ) {
-			return $to->first_name . " " . $to->last_name;
-		} ),
-		new Listener( 'customer_first_name', function ( \WP_User $to ) {
-			return $to->first_name;
-		} ),
-		new Listener( 'customer_last_name', function ( \WP_User $to ) {
-			return $to->last_name;
-		} ),
-		new Listener( 'customer_email', function ( \WP_User $to ) {
-			return $to->user_email;
-		} ),
-		new Listener( 'store_name', function () {
-			$settings = it_exchange_get_option( 'settings_general' );
-
-			return $settings['company-name'];
-		} )
-	);
-}
-
-/* --------------------------------------------
 ============ Purchase Requirements ============
 ----------------------------------------------- */
 /**
@@ -344,7 +444,7 @@ function get_current_product_id() {
  */
 function generate_download_link( Activation $activation ) {
 
-	$now     = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
+	$now     = make_date_time();
 	$expires = $now->add( new \DateInterval( "P1D" ) );
 
 	$args = generate_download_query_args( $activation, $expires );
@@ -408,8 +508,8 @@ function validate_query_args( $query_args ) {
 		return false;
 	}
 
-	$now     = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
-	$expires = new \DateTime( "@{$args['expires']}", new \DateTimeZone( get_option( 'timezone_string' ) ) );
+	$now     = make_date_time();
+	$expires = make_date_time( "@{$args['expires']}" );
 
 	return $now < $expires;
 }

@@ -226,7 +226,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 			if ( $this->license->get_expires() === null ) {
 				$value = __( "Never", ITELIC\Plugin::SLUG );
 			} else {
-				$value = $this->license->get_expires()->format( $options['df'] );
+				$value = \ITELIC\convert_gmt_to_local( $this->license->get_expires() )->format( $options['df'] );
 			}
 		} else {
 			$value = '';

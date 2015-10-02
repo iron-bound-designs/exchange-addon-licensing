@@ -31,7 +31,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 */
 	public function __construct() {
 		$this->fetcher = new ITELIC_Fetcher( '\ITELIC\Key' );
-		$this->faker = \Faker\Factory::create();
+		$this->faker   = \Faker\Factory::create();
 	}
 
 	/**
@@ -207,7 +207,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * [<when>]
 	 * : Specify when the license key expired. Accepts strtotime compatible
-	 * value
+	 * value. GMT.
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -219,7 +219,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 		$key = $this->fetcher->get_check( $key );
 
 		try {
-			$when = new DateTime( $when );
+			$when = \ITELIC\make_date_time( $when );
 		}
 		catch ( Exception $e ) {
 			WP_CLI::error( $e->getMessage() );
@@ -256,7 +256,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * [--expires=<expires>]
 	 * : License key expiry date.
-	 * Default: forever. Accepts strtotime compatible value.
+	 * Default: forever. Accepts strtotime compatible value. GMT.
 	 *
 	 * [--status=<status>]
 	 * : Key status. Accepts: active, expired, disabled. Default: active
@@ -414,8 +414,8 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 		$limit = min( $limit, $limit / 2 + 2 );
 
-		$created = $key->get_transaction()->post_date;
-		$end     = new DateTime( $created );
+		$created = $key->get_transaction()->post_date_gmt;
+		$end     = \ITELIC\make_date_time( $created );
 		$end->add( new DateInterval( 'P5D' ) );
 
 		$creation_date = $this->faker->dateTimeBetween( $created, $end );
@@ -471,7 +471,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 * Get the latest release available at a certain date.
 	 *
 	 * @param \ITELIC\Key $key
-	 * @param DateTime    $date
+	 * @param DateTime    $date GMT.
 	 * @param string      $track
 	 *
 	 * @return \ITELIC\Release
