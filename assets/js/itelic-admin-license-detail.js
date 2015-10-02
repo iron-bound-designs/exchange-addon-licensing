@@ -69,7 +69,7 @@ jQuery(document).ready(function ($) {
 		},
 		success    : function (response, newValue) {
 
-			if ( newValue == 0 || newValue == '' ) {
+			if (newValue == 0 || newValue == '') {
 				newValue = 'Unlimited';
 			}
 
@@ -128,6 +128,16 @@ jQuery(document).ready(function ($) {
 		});
 
 		container.addClass('status-' + params.newValue);
+	});
+
+
+	$(document).on('keypress', '#remote-activate-location', function (e) {
+
+		var keycode = (e.keyCode ? e.keyCode : e.which);
+
+		if (keycode == '13') {
+			$("#remote-activate-submit").click();
+		}
 	});
 
 	$(document).on('click', '#remote-activate-submit', function (e) {
