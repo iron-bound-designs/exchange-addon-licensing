@@ -143,16 +143,89 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 		$this->assertEquals( Key::EXPIRED, $key->get_status(), "Key::renew updated status, despite date in the past." );
 	}
 
-	public function test_create_key_throws_exception_on_invalid_key_length() {
+	public function test_renew_key_creates_renewal_record() {
 
-		$stub_txn      = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
-		$stub_product  = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
-		$stub_customer = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create( array(
+				'interval'       => 'month',
+				'interval-count' => 1
+			) ),
+			'customer' => 1
+		) );
+
+		$renew = $key->renew();
+
+		$this->assertInstanceOf( '\ITELIC\Renewal', $renew );
+	}
+
+	public function test_renew_key_creates_renewal_record_with_correct_expiration_date() {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create( array(
+				'interval'       => 'month',
+				'interval-count' => 1
+			) ),
+			'customer' => 1
+		) );
+
+		$expired = $key->get_expires();
+
+		$renew = $key->renew();
+
+		$this->assertEquals( $expired, $renew->get_key_expired_date() );
+	}
+
+	public function test_renew_key_with_transaction_sets_revenue() {
+
+		$stub_txn = $this->getMockBuilder( '\IT_Exchange_Transaction' )->getMock();
+
+		$product = $this->product_factory->create_and_get( array(
+			'interval'       => 'month',
+			'interval-count' => 1
+		) );
+
+		$stub_customer     = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
+		$stub_customer->id = 1;
+
+		$key = Key::create( 'key', $stub_txn, $product, $stub_customer, 5, \ITELIC\make_date_time( '+1 year' ) );
+
+		$renewal_txn = $this->getMockBuilder( '\IT_Exchange_Transaction' )->getMock();
+		$renewal_txn->method( 'get_products' )->willReturn( array(
+			array(
+				'product_id'       => $product->ID,
+				'product_subtotal' => '29.95'
+			)
+		) );
+
+		$renewal = $key->renew( $renewal_txn );
+
+		$this->assertEquals( '29.95', $renewal->get_revenue() );
+	}
+
+	public function test_statuses_exist() {
+
+		$statuses = Key::get_statuses();
+
+		$this->assertArrayHasKey( 'active', $statuses, 'Active status does not exist.' );
+		$this->assertArrayHasKey( 'disabled', $statuses, 'Disable status does not exist.' );
+		$this->assertArrayHasKey( 'expired', $statuses, 'Expired status does not exist.' );
+	}
+
+	public function test_set_status_rejects_invalid_status() {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1
+		) );
+
+		$key->set_status( 'disabled' );
+		$this->assertEquals( 'disabled', $key->get_status(), 'Valid status option was rejected.' );
 
 		$this->setExpectedException( '\InvalidArgumentException' );
 
-		$len = str_repeat( '.', 129 );
-
-		Key::create( $len, $stub_txn, $stub_product, $stub_customer, 5 );
+		$key->set_status( 'garbage' );
 	}
 }
