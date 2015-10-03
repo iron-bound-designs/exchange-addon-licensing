@@ -13,6 +13,17 @@ use ITELIC\Key;
  */
 class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 
+	public function test_invalid_key_length_is_rejected() {
+
+		$stub_txn      = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$stub_prod     = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
+		$stub_customer = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
+
+		$this->setExpectedException( '\InvalidArgumentException' );
+
+		Key::create( str_repeat( '-', 129 ), $stub_txn, $stub_prod, $stub_customer, 5 );
+	}
+
 	public function test_extending_key_does_not_alter_expiration_date_for_lifetime_keys() {
 
 		$product = $this->product_factory->create();
