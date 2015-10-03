@@ -30,8 +30,12 @@ class ITELIC_UnitTest_Factory_For_Products extends WP_UnitTest_Factory_For_Post 
 		}
 
 		$defaults = array(
-			'product_type'     => 'digital-downloads-product-type',
-			'show_in_store'    => true,
+			'product_type'  => 'digital-downloads-product-type',
+			'show_in_store' => true,
+			'limit'         => 2,
+			'key-type'      => 'random',
+			'version'       => '1.0',
+			'base-price'    => '99.00'
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -41,6 +45,13 @@ class ITELIC_UnitTest_Factory_For_Products extends WP_UnitTest_Factory_For_Post 
 		}
 
 		update_post_meta( $product_id, '_it-exchange-visibility', empty( $args['show_in_store'] ) ? 'hidden' : 'visible' );
+
+		it_exchange_update_product_feature( $product_id, 'licensing', array(
+			'enabled'  => true,
+			'limit'    => $args['limit'],
+			'key-type' => $args['key-type'],
+			'version'  => $args['version']
+		) );
 
 		return $product_id;
 	}
