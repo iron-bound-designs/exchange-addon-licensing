@@ -24,6 +24,26 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 		Key::create( str_repeat( '-', 129 ), $stub_txn, $stub_prod, $stub_customer, 5 );
 	}
 
+	public function test_data_to_cache() {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1
+		) );
+
+		$data = $key->get_data_to_cache();
+
+		$this->assertArrayHasKey( 'lkey', $data, 'lkey not cached.' );
+		$this->assertArrayHasKey( 'transaction_id', $data, 'transaction_id not cached.' );
+		$this->assertArrayHasKey( 'product', $data, 'product not cached.' );
+		$this->assertArrayHasKey( 'customer', $data, 'customer not cached.' );
+		$this->assertArrayHasKey( 'status', $data, 'status not cached.' );
+		$this->assertArrayHasKey( 'max', $data, 'max not cached.' );
+		$this->assertArrayHasKey( 'expires', $data, 'expires not cached.' );
+
+	}
+
 	public function test_extending_key_does_not_alter_expiration_date_for_lifetime_keys() {
 
 		$product = $this->product_factory->create();
