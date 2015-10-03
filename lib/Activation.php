@@ -132,7 +132,7 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		if ( $activation === null ) {
-			$activation = make_date_time();
+			$activation = make_date_time()->format( 'Y-m-d H:i:s' );
 		} else {
 			$activation = $activation->format( 'Y-m-d H:i:s' );
 		}
@@ -176,7 +176,6 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		$activation = self::get( $id );
-		$activation->get_key()->log_activation( $activation );
 
 		Cache::add( $activation );
 
@@ -592,7 +591,7 @@ class Activation extends Model implements API\Serializable {
 
 		unset( $data['key'] );
 		$data['lkey']    = $this->get_key()->get_key();
-		$data['release'] = $this->get_release()->get_pk();
+		$data['release'] = $this->get_release() ? $this->get_release()->get_pk() : null;
 
 		return $data;
 	}
