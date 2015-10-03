@@ -103,7 +103,7 @@ class Renewal extends Model {
 
 			$tid = $transaction->ID;
 
-			foreach ( it_exchange_get_transaction_products( $transaction ) as $product ) {
+			foreach ( $transaction->get_products() as $product ) {
 				if ( $product['product_id'] == $key->get_product()->ID ) {
 					$revenue = $product['product_subtotal'];
 
