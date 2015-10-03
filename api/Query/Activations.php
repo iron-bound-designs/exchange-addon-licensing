@@ -98,6 +98,10 @@ class Activations extends Complex_Query {
 			$where->qAnd( $key );
 		}
 
+		if ( ( $location = $this->parse_location() ) !== null ) {
+			$where->qAnd( $location );
+		}
+
 		if ( ( $location_search = $this->parse_location_search() ) !== null ) {
 			$where->qAnd( $location_search );
 		}

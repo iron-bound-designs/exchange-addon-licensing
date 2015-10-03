@@ -124,7 +124,7 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		if ( strlen( $location ) > 191 ) {
-			throw new \OverflowException( "The location field has a max length of 191 characters." );
+			throw new \LengthException( "The location field has a max length of 191 characters." );
 		}
 
 		if ( $key->get_max() && $key->get_active_count() >= $key->get_max() ) {
@@ -159,17 +159,13 @@ class Activation extends Model implements API\Serializable {
 
 		$db = Manager::make_simple_query_object( 'itelic-activations' );
 
-		try {
-			$id = $db->insert( $data );
-		}
-		catch ( DB_Exception $e ) {
+		$existing_activation = itelic_get_activation_by_location( $location, $key );
 
-			if ( $e->getCode() == 1062 ) {
-				throw new DB_Exception( __( "An activation with this same location already exists.", Plugin::SLUG ), $e->getCode(), $e );
-			} else {
-				throw $e;
-			}
+		if ( $existing_activation ) {
+			throw new \InvalidArgumentException( __( "An activation with this same location already exists.", Plugin::SLUG ) );
 		}
+
+		$id = $db->insert( $data );
 
 		if ( ! $id ) {
 			return null;
@@ -590,7 +586,7 @@ class Activation extends Model implements API\Serializable {
 		$data = parent::get_data_to_cache();
 
 		unset( $data['key'] );
-		$data['lkey']    = $this->get_key()->get_key();
+		$data['lkey']       = $this->get_key()->get_key();
 		$data['release_id'] = $this->get_release() ? $this->get_release()->get_pk() : null;
 
 		return $data;

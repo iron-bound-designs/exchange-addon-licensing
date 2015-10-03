@@ -129,11 +129,11 @@ class Key extends Model implements API\Serializable {
 	public static function create( $key, \IT_Exchange_Transaction $transaction, \IT_Exchange_Product $product, \IT_Exchange_Customer $customer, $max, \DateTime $expires = null, $status = '' ) {
 
 		if ( empty( $key ) ) {
-			throw new \InvalidArgumentException( "\$key must not be empty." );
+			throw new \LengthException( "\$key must not be empty." );
 		}
 
 		if ( strlen( $key ) > 128 ) {
-			throw new \InvalidArgumentException( "The maximum key length is 128 characters." );
+			throw new \LengthException( "The maximum key length is 128 characters." );
 		}
 
 		if ( empty( $status ) ) {

@@ -40,7 +40,7 @@ function itelic_get_activation( $id ) {
 function itelic_get_activation_by_location( $location, \ITELIC\Key $key ) {
 
 	$query = new \ITELIC_API\Query\Activations( array(
-		'location' => itelic_normalize_url( $location ),
+		'location' => $key->is_online_product() ? itelic_normalize_url( $location ) : $location,
 		'key'      => $key->get_key()
 	) );
 

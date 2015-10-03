@@ -19,7 +19,7 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 		$stub_prod     = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
 		$stub_customer = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
 
-		$this->setExpectedException( '\InvalidArgumentException' );
+		$this->setExpectedException( '\LengthException' );
 
 		Key::create( str_repeat( '-', 129 ), $stub_txn, $stub_prod, $stub_customer, 5 );
 	}

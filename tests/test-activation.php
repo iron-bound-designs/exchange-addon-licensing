@@ -26,7 +26,7 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 
 		$stub_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
 
-		$this->setExpectedException( '\OverflowException' );
+		$this->setExpectedException( '\LengthException' );
 
 		Activation::create( $stub_key, str_repeat( '-', 192 ) );
 	}
@@ -52,9 +52,26 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 
 		$key->set_max( '0' );
 
-		$activation = Activation::create( $key, 'loc' );
+		$activation = Activation::create( $key, 'loc.com' );
 
 		$this->assertInstanceOf( '\ITELIC\Activation', $activation );
+	}
+
+	public function test_exception_thrown_if_duplicate_location() {
+
+		$key = $this->key_factory->create_and_get( array(
+			'customer' => 1,
+			'product'  => $this->product_factory->create()
+		) );
+
+		$this->activation_factory->create( array(
+			'location' => 'test_exception_thrown_if_duplicate_location.com',
+			'key'      => $key
+		) );
+
+		$this->setExpectedException( '\InvalidArgumentException' );
+
+		Activation::create( $key, 'test_exception_thrown_if_duplicate_location.com' );
 	}
 
 	public function test_data_to_cache() {
