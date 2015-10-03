@@ -57,6 +57,28 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 		$this->assertInstanceOf( '\ITELIC\Activation', $activation );
 	}
 
+	public function test_data_to_cache() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$data = $activation->get_data_to_cache();
+
+		$this->assertArrayHasKey( 'lkey', $data, 'lkey not cached.' );
+		$this->assertArrayHasKey( 'location', $data, 'location not cached.' );
+		$this->assertArrayHasKey( 'status', $data, 'status not cached.' );
+		$this->assertArrayHasKey( 'activation', $data, 'activation not cached.' );
+		$this->assertArrayHasKey( 'deactivation', $data, 'deactivation not cached.' );
+		$this->assertArrayHasKey( 'release_id', $data, 'release_id not cached.' );
+
+	}
+
 	public function test_status_updated_on_deactivation() {
 
 		/** @var Activation $activation */
@@ -89,7 +111,7 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 		$this->assertEquals( \ITELIC\make_date_time()->getTimestamp(), $activation->get_deactivation()->getTimestamp(), '', 5 );
 	}
 
-	public function test_deactivation_date_set_on_deactivation_with_data_parameter() {
+	public function test_deactivation_date_set_on_deactivation_with_custom_date() {
 
 		/** @var Activation $activation */
 		$activation = $this->activation_factory->create_and_get( array(
@@ -156,6 +178,23 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 		$this->assertEquals( $activation->get_activation()->getTimestamp(), \ITELIC\make_date_time()->getTimestamp(), '', 5 );
 	}
 
+	public function test_activation_date_updated_on_reactivation_with_custom_date() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'status'   => Activation::DEACTIVATED,
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$activation->reactivate( \ITELIC\make_date_time( 'yesterday' ) );
+
+		$this->assertEquals( \ITELIC\make_date_time( 'yesterday' ), $activation->get_activation() );
+	}
+
 	/**
 	 * @depends test_deactivation_date_set_on_deactivation
 	 */
@@ -175,4 +214,30 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 
 		$this->assertNull( $activation->get_deactivation() );
 	}
+
+	public function test_status_updated_on_expiration() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$activation->expire();
+
+		$this->assertEquals( Activation::EXPIRED, $activation->get_status() );
+	}
+
+	public function test_statuses_exist() {
+
+		$statuses = Activation::get_statuses();
+
+		$this->assertArrayHasKey( 'active', $statuses, 'Active status does not exist.' );
+		$this->assertArrayHasKey( 'deactivated', $statuses, 'Deactivated status does not exist.' );
+		$this->assertArrayHasKey( 'expired', $statuses, 'Expired status does not exist.' );
+	}
+
 }

@@ -591,7 +591,7 @@ class Activation extends Model implements API\Serializable {
 
 		unset( $data['key'] );
 		$data['lkey']    = $this->get_key()->get_key();
-		$data['release'] = $this->get_release() ? $this->get_release()->get_pk() : null;
+		$data['release_id'] = $this->get_release() ? $this->get_release()->get_pk() : null;
 
 		return $data;
 	}
