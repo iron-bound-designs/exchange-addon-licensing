@@ -79,10 +79,67 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 			'customer' => 1
 		) );
 
-		$this->assertEquals( \ITELIC\make_date_time( '+1 month' ), $key->get_expires(),
-			'Expiry date is incorrectly set from recurring payments interval.' );
+		$this->assertEquals( \ITELIC\make_date_time( '+1 month' )->getTimestamp(), $key->get_expires()->getTimestamp(),
+			'Expiry date is incorrectly set from recurring payments interval.', 5 );
 
-		$this->assertEquals( \ITELIC\make_date_time( '+2 month' ), $key->extend(),
-			'Expiry date is incorrectly extended.' );
+		$this->assertEquals( \ITELIC\make_date_time( '+2 month' )->getTimestamp(), $key->extend()->getTimestamp(),
+			'Expiry date is incorrectly extended.', 5 );
+	}
+
+	/**
+	 * @depends test_extending_key_updates_expiration_date
+	 */
+	public function test_renewing_key_extends_expiration_date() {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create( array(
+				'interval'       => 'month',
+				'interval-count' => 1
+			) ),
+			'customer' => 1
+		) );
+
+		$key->renew();
+
+		$this->assertEquals( \ITELIC\make_date_time( '+2 month' )->getTimestamp(), $key->get_expires()->getTimestamp(),
+			"Key::renew did not extend the license key's expiration.", 5 );
+	}
+
+	public function test_renewing_key_updates_status_when_future_expiration_date() {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create( array(
+				'interval'       => 'month',
+				'interval-count' => 1
+			) ),
+			'customer' => 1
+		) );
+
+		$key->set_status( Key::EXPIRED );
+
+		$key->renew();
+
+		$this->assertEquals( Key::ACTIVE, $key->get_status(), "Key::renew did not update the status." );
+	}
+
+	public function test_renewing_key_does_not_update_status_when_past_expiration_date() {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create( array(
+				'interval'       => 'month',
+				'interval-count' => 1
+			) ),
+			'customer' => 1
+		) );
+
+		$key->set_status( Key::EXPIRED );
+		$key->set_expires( \ITELIC\make_date_time( '-1 year' ) );
+
+		$key->renew();
+
+		$this->assertEquals( Key::EXPIRED, $key->get_status(), "Key::renew updated status, despite date in the past." );
 	}
 }
