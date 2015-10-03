@@ -53,6 +53,17 @@ class ITELIC_UnitTest_Factory_For_Products extends WP_UnitTest_Factory_For_Post 
 			'version'  => $args['version']
 		) );
 
+		if ( isset( $args['interval'] ) ) {
+
+			it_exchange_update_product_feature( $product_id, 'recurring-payments', 'on' );
+			it_exchange_update_product_feature( $product_id, 'recurring-payments', $args['interval'], array(
+				'setting' => 'interval'
+			) );
+			it_exchange_update_product_feature( $product_id, 'recurring-payments', $args['interval-count'], array(
+				'setting' => 'interval-count'
+			) );
+		}
+
 		return $product_id;
 	}
 

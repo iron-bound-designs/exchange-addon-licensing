@@ -190,7 +190,7 @@ class Key extends Model implements API\Serializable {
 	 */
 	public function is_valid() {
 
-		if ( $this->get_active_count() >= $this->get_max() ) {
+		if ( $this->get_max() && $this->get_active_count() >= $this->get_max() ) {
 			return false;
 		}
 
@@ -268,7 +268,7 @@ class Key extends Model implements API\Serializable {
 	public function renew( \IT_Exchange_Transaction $transaction = null ) {
 
 		if ( $this->get_expires() === null ) {
-			throw new \InvalidArgumentException( __( "You can't renew a license key that doesn't expire.", Plugin::SLUG ) );
+			throw new \UnexpectedValueException( __( "You can't renew a license key that doesn't expire.", Plugin::SLUG ) );
 		}
 
 		if ( $transaction === null ) {
