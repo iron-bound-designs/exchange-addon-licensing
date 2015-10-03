@@ -236,7 +236,7 @@ class Activation extends Model implements API\Serializable {
 	public function reactivate( \DateTime $date = null ) {
 
 		if ( $this->get_status() != self::DEACTIVATED ) {
-			throw new \Exception( __( "Only deactivated activation records can be reactivated.", Plugin::SLUG ) );
+			throw new \UnexpectedValueException( __( "Only deactivated activation records can be reactivated.", Plugin::SLUG ) );
 		}
 
 		if ( $date === null ) {

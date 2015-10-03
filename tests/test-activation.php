@@ -56,4 +56,123 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 
 		$this->assertInstanceOf( '\ITELIC\Activation', $activation );
 	}
+
+	public function test_status_updated_on_deactivation() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$activation->deactivate();
+
+		$this->assertEquals( Activation::DEACTIVATED, $activation->get_status() );
+	}
+
+	public function test_deactivation_date_set_on_deactivation() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$activation->deactivate();
+
+		$this->assertEquals( \ITELIC\make_date_time()->getTimestamp(), $activation->get_deactivation()->getTimestamp(), '', 5 );
+	}
+
+	public function test_deactivation_date_set_on_deactivation_with_data_parameter() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$activation->deactivate( \ITELIC\make_date_time( '+1 month' ) );
+
+		$this->assertEquals( \ITELIC\make_date_time( '+1 month' ), $activation->get_deactivation() );
+	}
+
+	public function test_reactivation_rejected_if_status_not_deactivated() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$this->setExpectedException( '\UnexpectedValueException' );
+
+		$activation->reactivate();
+	}
+
+	public function test_status_updated_on_reactivation() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'status'   => Activation::DEACTIVATED,
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$activation->reactivate();
+
+		$this->assertEquals( 'active', $activation->get_status() );
+	}
+
+	public function test_activation_date_updated_on_reactivation() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location'   => 'loc.com',
+			'status'     => Activation::DEACTIVATED,
+			'activation' => \ITELIC\make_date_time( '-1 month' ),
+			'key'        => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$activation->reactivate();
+
+		$this->assertEquals( $activation->get_activation()->getTimestamp(), \ITELIC\make_date_time()->getTimestamp(), '', 5 );
+	}
+
+	/**
+	 * @depends test_deactivation_date_set_on_deactivation
+	 */
+	public function test_deactivation_date_cleared_on_reactivation() {
+
+		/** @var Activation $activation */
+		$activation = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$activation->deactivate();
+		$activation->reactivate();
+
+		$this->assertNull( $activation->get_deactivation() );
+	}
 }

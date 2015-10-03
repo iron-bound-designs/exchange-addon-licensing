@@ -223,7 +223,7 @@ function itelic_create_activation( $args ) {
 
 	try {
 		$activation = \ITELIC\Activation::create( $key, $location, $activation, $release, $status );
-		$activation->update_meta( $args['track'] );
+		$activation->add_meta( 'track', $args['track'] );
 	}
 	catch ( Exception $e ) {
 		return new WP_Error( $e->getCode(), $e->getMessage() );
