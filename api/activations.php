@@ -154,8 +154,80 @@ function itelic_normalize_url( $url ) {
 function itelic_activate_license_key( \ITELIC\Key $key, $location, DateTime $date = null, \ITELIC\Release $release = null, $track = 'stable' ) {
 
 	$record = \ITELIC\Activation::create( $key, $location, $date, $release );
-	$key->log_activation( $record );
 	$record->add_meta( 'track', $track );
 
 	return $record;
+}
+
+/**
+ * Create an activation record.
+ *
+ * @since 1.0
+ *
+ * @param array $args
+ *
+ * @return \ITELIC\Activation|WP_Error
+ */
+function itelic_create_activation( $args ) {
+
+	$defaults = array(
+		'key'        => '',
+		'location'   => '',
+		'activation' => '',
+		'release'    => '',
+		'status'     => '',
+		'track'      => 'stable'
+	);
+
+	$args = ITUtility::merge_defaults( $args, $defaults );
+
+	$key = is_string( $args['key'] ) ? itelic_get_key( $args['key'] ) : $args['key'];
+
+	if ( ! $key ) {
+		return new WP_Error( 'invalid_key', __( "Invalid Key", \ITELIC\Plugin::SLUG ) );
+	}
+
+	$location = $args['location'];
+
+	if ( ! empty( $args['activation'] ) ) {
+
+		if ( is_string( $args['activation'] ) ) {
+			$activation = \ITELIC\make_date_time( $args['activation'] );
+		} else {
+			$activation = $args['activation'];
+		}
+
+		if ( ! $activation instanceof DateTime ) {
+			return new WP_Error( 'invalid_activation', __( "Invalid activation date.", \ITELIC\Plugin::SLUG ) );
+		}
+	} else {
+		$activation = null;
+	}
+
+	if ( ! empty( $args['release'] ) ) {
+
+		if ( is_string( $args['release'] ) ) {
+			$release = itelic_get_release( $args['release'] );
+		} else {
+			$release = $args['release'];
+		}
+
+		if ( ! $activation instanceof \ITELIC\Release ) {
+			return new WP_Error( 'invalid_release', __( "Invalid release.", \ITELIC\Plugin::SLUG ) );
+		}
+	} else {
+		$release = null;
+	}
+
+	$status = $args['status'];
+
+	try {
+		$activation = \ITELIC\Activation::create( $key, $location, $activation, $release, $status );
+		$activation->update_meta( $args['track'] );
+	}
+	catch ( Exception $e ) {
+		return new WP_Error( $e->getCode(), $e->getMessage() );
+	}
+
+	return $activation;
 }

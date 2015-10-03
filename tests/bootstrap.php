@@ -40,6 +40,7 @@ require $_tests_dir . '/includes/bootstrap.php';
 
 require dirname( __FILE__ ) . '/framework/product-factory.php';
 require dirname( __FILE__ ) . '/framework/key-factory.php';
+require dirname( __FILE__ ) . '/framework/activation-factory.php';
 require dirname( __FILE__ ) . '/framework/test-case.php';
 
 if ( ! function_exists( 'load_it_exchange' ) ) {

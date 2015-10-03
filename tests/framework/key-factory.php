@@ -24,7 +24,7 @@ class ITELIC_UnitTest_Factory_For_Keys extends WP_UnitTest_Factory_For_Thing {
 	}
 
 	function update_object( $object, $fields ) {
-		throw new UnexpectedValueException( "ITELIC_Key_Factory::update_object not implemented." );
+		throw new UnexpectedValueException( __CLASS__ . '::update_object not implemented.' );
 	}
 
 	function get_object_by_id( $object_id ) {

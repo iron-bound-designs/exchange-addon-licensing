@@ -22,6 +22,11 @@ abstract class ITELIC_UnitTestCase extends WP_UnitTestCase {
 	public $key_factory;
 
 	/**
+	 * @var ITELIC_UnitTest_Factory_For_Activations
+	 */
+	public $activation_factory;
+
+	/**
 	 * @var IT_Exchange_Admin
 	 */
 	public $exchange_admin;
@@ -35,8 +40,9 @@ abstract class ITELIC_UnitTestCase extends WP_UnitTestCase {
 		it_exchange_temporarily_load_addon( 'digital-downloads-product-type' );
 		it_exchange_add_feature_support_to_product_type( 'recurring-payments', 'digital-downloads-product-type' );
 
-		$this->product_factory = new ITELIC_UnitTest_Factory_For_Products();
-		$this->key_factory     = new ITELIC_UnitTest_Factory_For_Keys( $this->factory );
+		$this->product_factory    = new ITELIC_UnitTest_Factory_For_Products();
+		$this->key_factory        = new ITELIC_UnitTest_Factory_For_Keys( $this->factory );
+		$this->activation_factory = new ITELIC_UnitTest_Factory_For_Activations( $this->factory );
 
 		$null                 = null;
 		$this->exchange_admin = new IT_Exchange_Admin( $null );

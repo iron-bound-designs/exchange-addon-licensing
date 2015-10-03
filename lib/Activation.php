@@ -105,17 +105,6 @@ class Activation extends Model implements API\Serializable {
 	}
 
 	/**
-	 * Instantiate an activation by the activation ID
-	 *
-	 * @param int $id
-	 *
-	 * @return Activation
-	 */
-	public static function with_id( $id ) {
-		return self::get( $id );
-	}
-
-	/**
 	 * Create an activation.
 	 *
 	 * @param Key       $key
@@ -135,7 +124,7 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		if ( strlen( $location ) > 191 ) {
-			throw new \InvalidArgumentException( "The location field has a max length of 191 characters." );
+			throw new \OverflowException( "The location field has a max length of 191 characters." );
 		}
 
 		if ( $key->get_max() && $key->get_active_count() >= $key->get_max() ) {

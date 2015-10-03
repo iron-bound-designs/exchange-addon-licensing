@@ -206,15 +206,6 @@ class Key extends Model implements API\Serializable {
 	}
 
 	/**
-	 * Log an activation of this license.
-	 *
-	 * @param Activation $activation
-	 */
-	public function log_activation( Activation $activation ) {
-		// nothing to do
-	}
-
-	/**
 	 * Extend the expiration date of this license,
 	 * by its length. For example, if a license has an
 	 * expiration date of one year after purchase,
