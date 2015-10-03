@@ -142,4 +142,17 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 
 		$this->assertEquals( Key::EXPIRED, $key->get_status(), "Key::renew updated status, despite date in the past." );
 	}
+
+	public function test_create_key_throws_exception_on_invalid_key_length() {
+
+		$stub_txn      = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$stub_product  = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
+		$stub_customer = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
+
+		$this->setExpectedException( '\InvalidArgumentException' );
+
+		$len = str_repeat( '.', 129 );
+
+		Key::create( $len, $stub_txn, $stub_product, $stub_customer, 5 );
+	}
 }
