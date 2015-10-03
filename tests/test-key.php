@@ -6,6 +6,7 @@
  * @since  1.0
  */
 
+use ITELIC\Activation;
 use ITELIC\Key;
 
 /**
@@ -97,6 +98,133 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 		$key->expire();
 
 		$this->assertEquals( \ITELIC\make_date_time(), $key->get_expires() );
+	}
+
+	public function test_expiring_license_expires_activations() {
+
+		/** @var Key $key1 */
+		$key1 = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1
+		) );
+
+		/** @var Key $key1 */
+		$key2 = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1
+		) );
+
+		$a1 = $this->activation_factory->create( array(
+			'location' => 'a.com',
+			'key'      => $key1
+		) );
+
+		$a2 = $this->activation_factory->create( array(
+			'location' => 'a.com',
+			'key'      => $key2
+		) );
+
+		$key1->expire();
+
+		$a1 = Activation::get( $a1 );
+		$a2 = Activation::get( $a2 );
+
+		$this->assertEquals( Activation::EXPIRED, $a1->get_status(),
+			"Key::expire did not set activation records status to expired." );
+
+		$this->assertEquals( Activation::ACTIVE, $a2->get_status(),
+			"Key::expire set activation record with a different key to expired." );
+	}
+
+	/**
+	 * @depends test_expiring_license_expires_activations
+	 */
+	public function test_expiring_license_does_not_expire_deactivated_activations() {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1
+		) );
+
+		$activation = $this->activation_factory->create( array(
+			'location'    => 'a.com',
+			'key'         => $key,
+			'status'      => Activation::DEACTIVATED,
+			'deactivated' => \ITELIC\make_date_time()
+		) );
+
+		$key->expire();
+
+		$activation = Activation::get( $activation );
+
+		$this->assertEquals( Activation::DEACTIVATED, $activation->get_status() );
+	}
+
+	public function test_key_get_activations_returns_only_activations_for_current_key() {
+
+		/** @var Key $key1 */
+		$key1 = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1
+		) );
+
+		/** @var Key $key1 */
+		$key2 = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1
+		) );
+
+		$a1 = $this->activation_factory->create_and_get( array(
+			'location' => 'a.com',
+			'key'      => $key1
+		) );
+
+		$this->activation_factory->create( array(
+			'location' => 'a.com',
+			'key'      => $key2
+		) );
+
+		$activations = array_values( $key1->get_activations() );
+
+		$this->assertEquals( array( $a1 ), $activations );
+	}
+
+	public function test_key_get_activations_returns_only_keys_with_status() {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1
+		) );
+
+		$this->activation_factory->create_and_get( array(
+			'location' => 'a.com',
+			'key'      => $key
+		) );
+
+		$a2 = $this->activation_factory->create_and_get( array(
+			'location' => 'b.com',
+			'key'      => $key,
+			'status'   => Activation::DEACTIVATED
+		) );
+
+		$activations = array_values( $key->get_activations( Activation::DEACTIVATED ) );
+
+		$this->assertEquals( array( $a2 ), $activations );
+	}
+
+	public function test_key_get_activations_rejects_invalid_status() {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1
+		) );
+
+		$this->setExpectedException( '\InvalidArgumentException' );
+
+		$key->get_activations( 'garbage' );
 	}
 
 	public function test_extending_key_updates_expiration_date() {

@@ -339,6 +339,11 @@ class Key extends Model implements API\Serializable {
 		);
 
 		if ( $status ) {
+
+			if ( ! array_key_exists( $status, Activation::get_statuses() ) ) {
+				throw new \InvalidArgumentException( "Invalid status" );
+			}
+
 			$args['status'] = $status;
 		}
 
