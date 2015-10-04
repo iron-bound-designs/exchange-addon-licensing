@@ -369,16 +369,19 @@ class Release extends Model {
 			 */
 			$prev_release = reset( $releases );
 
-			$download_id = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => 'update-file' ) );
+			if ( $prev_release ) {
 
-			$download_data           = get_post_meta( $download_id, '_it-exchange-download-info', true );
-			$download_data['source'] = wp_get_attachment_url( $prev_release->get_download()->ID );
+				$download_id = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => 'update-file' ) );
 
-			update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
+				$download_data           = get_post_meta( $download_id, '_it-exchange-download-info', true );
+				$download_data['source'] = wp_get_attachment_url( $prev_release->get_download()->ID );
 
-			it_exchange_update_product_feature( $this->get_product()->ID, 'licensing', array(
-				'version' => $prev_release->get_version()
-			) );
+				update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
+
+				it_exchange_update_product_feature( $this->get_product()->ID, 'licensing', array(
+					'version' => $prev_release->get_version()
+				) );
+			}
 		}
 
 		wp_cache_delete( $this->get_product()->ID, 'itelic-changelog' );

@@ -444,4 +444,51 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 
 		$this->assertEquals( wp_get_attachment_url( $file1 ), $download_data['source'] );
 	}
+
+	public function test_pausing_release_clears_changelog_cache() {
+
+		$product = $this->product_factory->create_and_get( array(
+			'update-file' => wp_insert_post( array(
+				'post_type' => 'it_exchange_download'
+			) )
+		) );
+
+		$file = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		wp_cache_set( $r->get_product()->ID, 'test', 'itelic-changelog' );
+
+		$r->pause();
+
+		$this->assertEmpty( wp_cache_get( $r->get_product()->ID, 'itelic-changelog' ) );
+	}
+
+	public function test_archiving_release_updates_status() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		$r->archive();
+
+		$this->assertEquals( Release::STATUS_ARCHIVED, $r->get_status() );
+	}
 }
