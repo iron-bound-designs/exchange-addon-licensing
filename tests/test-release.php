@@ -361,4 +361,87 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 
 		$this->assertEmpty( wp_cache_get( $r->get_product()->ID, 'itelic-changelog' ) );
 	}
+
+	public function test_pausing_release_updates_status() {
+
+		$product = $this->product_factory->create_and_get();
+
+		$file1 = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r1 */
+		$r1 = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file1,
+			'version' => '1.0',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		update_post_meta( $product->ID, '_itelic_first_release', $r1->get_pk() );
+
+		$file2 = $this->factory->attachment->create_object( 'file-1.1.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r2 */
+		$r2 = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file2,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$r2->pause();
+
+		$saved_version = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'version' ) );
+
+		$this->assertEquals( '1.0', $saved_version );
+	}
+
+	public function test_pausing_release_updates_url() {
+
+		$product = $this->product_factory->create_and_get( array(
+			'update-file' => wp_insert_post( array(
+				'post_type' => 'it_exchange_download'
+			) )
+		) );
+
+		$file1 = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r1 */
+		$r1 = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file1,
+			'version' => '1.0',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		update_post_meta( $product->ID, '_itelic_first_release', $r1->get_pk() );
+
+		$file2 = $this->factory->attachment->create_object( 'file - 1.1 . zip', $product->ID, array(
+			'post_mime_type' => 'application / zip'
+		) );
+
+		/** @var Release $r2 */
+		$r2 = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file2,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$r2->pause();
+
+		$download_id   = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'update-file' ) );
+		$download_data = get_post_meta( $download_id, '_it-exchange-download-info', true );
+
+		$this->assertEquals( wp_get_attachment_url( $file1 ), $download_data['source'] );
+	}
 }
