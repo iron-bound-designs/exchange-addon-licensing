@@ -586,4 +586,148 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 
 		$this->assertEmpty( $updates->get_results() );
 	}
+
+	public function test_updating_download_with_invalid_post_type_is_rejected() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		$this->setExpectedException( '\InvalidArgumentException' );
+
+		$post = $this->factory->post->create();
+		$r->set_download( $post );
+	}
+
+	public function test_updating_version_with_version_lower_than_current_is_rejected() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		$this->setExpectedException( '\InvalidArgumentException' );
+
+		$r->set_version( '1.0' );
+	}
+
+	public function test_updating_status_with_invalid_status_is_rejected() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		$this->setExpectedException( '\InvalidArgumentException' );
+
+		$r->set_status( 'garbage' );
+	}
+
+	public function test_updating_type_with_invalid_type_is_rejected() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		$this->setExpectedException( '\InvalidArgumentException' );
+
+		$r->set_type( 'garbage' );
+	}
+
+	public function test_updating_changelog_clears_cache() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		wp_cache_set( $product->ID, 'test', 'itelic-changelog' );
+
+		$r->set_changelog( 'content' );
+
+		$this->assertEmpty( wp_cache_get( $product->ID, 'itelic-changelog' ) );
+	}
+
+	public function test_replacing_changelog() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		$r->set_changelog( 'changes' );
+
+		$this->assertEquals( 'changes', $r->get_changelog() );
+	}
+
+	public function test_appending_to_changelog() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product'   => $product->ID,
+			'file'      => $file,
+			'version'   => '1.1',
+			'type'      => Release::TYPE_MAJOR,
+			'changelog' => 'first'
+		) );
+
+		$r->set_changelog( 'second', 'append' );
+
+		$this->assertEquals( 'firstsecond', $r->get_changelog() );
+	}
 }
