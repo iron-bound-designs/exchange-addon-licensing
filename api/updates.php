@@ -49,13 +49,13 @@ function itelic_create_update( $args ) {
 
 	$args = ITUtility::merge_defaults( $args, $defaults );
 
-	$activation = is_int( $args['activation'] ) ? itelic_get_activation( $args['activation'] ) : $args['activation'];
+	$activation = is_numeric( $args['activation'] ) ? itelic_get_activation( $args['activation'] ) : $args['activation'];
 
 	if ( ! $activation ) {
 		return new WP_Error( 'invalid_activation', __( "Invalid activation record.", \ITELIC\Plugin::SLUG ) );
 	}
 
-	$release = is_int( $args['release'] ) ? itelic_get_release( $args['release'] ) : $args['release'];
+	$release = is_numeric( $args['release'] ) ? itelic_get_release( $args['release'] ) : $args['release'];
 
 	if ( ! $release ) {
 		return new WP_Error( 'invalid_release', __( "Invalid release object.", \ITELIC\Plugin::SLUG ) );

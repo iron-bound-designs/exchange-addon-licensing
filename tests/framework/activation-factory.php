@@ -11,6 +11,13 @@
  */
 class ITELIC_UnitTest_Factory_For_Activations extends WP_UnitTest_Factory_For_Thing {
 
+	function __construct( $factory ) {
+
+		parent::__construct( $factory, array(
+			'location' => new WP_UnitTest_Generator_Sequence( 'www.test%s.com' ),
+		) );
+	}
+
 	function create_object( $args ) {
 
 		$activation = itelic_create_activation( $args );

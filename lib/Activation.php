@@ -437,7 +437,7 @@ class Activation extends Model implements API\Serializable {
 
 		$this->release = $release;
 
-		$this->update( 'release', $this->release->get_pk() );
+		$this->update( 'release_id', $this->release->get_pk() );
 	}
 
 	/**

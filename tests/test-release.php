@@ -6,6 +6,7 @@
  * @since  1.0
  */
 use ITELIC\Release;
+use ITELIC_API\Query\Updates;
 
 /**
  * Class ITELIC_Test_Release
@@ -490,5 +491,99 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 		$r->archive();
 
 		$this->assertEquals( Release::STATUS_ARCHIVED, $r->get_status() );
+	}
+
+	public function test_archiving_release_saves_stats_to_meta() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $product->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$activations = $this->activation_factory->create_many( 5, array(
+			'key' => $key
+		) );
+
+		foreach ( $activations as $activation ) {
+			$this->update_factory->create( array(
+				'activation'       => (int) $activation,
+				'release'          => $r,
+				'previous_version' => rand( 0, 1 ) ? '1.0' : '0.9'
+			) );
+		}
+
+		$updated = $r->get_total_updated( true );
+		$active  = $r->get_total_active_activations();
+		$top5    = $r->get_top_5_previous_versions();
+		$first14 = $r->get_first_14_days_of_upgrades();
+
+		$r->archive();
+
+		$this->assertEquals( $updated, $r->get_meta( 'updated', true ),
+			"Total updated stats not saved." );
+		$this->assertEquals( $active, $r->get_meta( 'activations', true ),
+			"Total activations stats not saved." );
+		$this->assertEquals( $top5, $r->get_meta( 'top5_prev_version', true ),
+			"Top 5 prev versions stats not saved." );
+		$this->assertEquals( $first14, $r->get_meta( 'first_14_days', true ),
+			"First 14 days of activations stats not saved." );
+	}
+
+	public function test_archiving_release_deletes_update_records() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $product->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$activations = $this->activation_factory->create_many( 5, array(
+			'key' => $key
+		) );
+
+		foreach ( $activations as $activation ) {
+			$this->update_factory->create( array(
+				'activation'       => (int) $activation,
+				'release'          => $r,
+				'previous_version' => rand( 0, 1 ) ? '1.0' : '0.9'
+			) );
+		}
+
+		$r->archive();
+
+		$updates = new Updates( array(
+			'release' => $r->get_ID()
+		) );
+
+		$this->assertEmpty( $updates->get_results() );
 	}
 }

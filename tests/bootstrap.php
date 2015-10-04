@@ -42,6 +42,7 @@ require dirname( __FILE__ ) . '/framework/product-factory.php';
 require dirname( __FILE__ ) . '/framework/key-factory.php';
 require dirname( __FILE__ ) . '/framework/activation-factory.php';
 require dirname( __FILE__ ) . '/framework/release-factory.php';
+require dirname( __FILE__ ) . '/framework/update-factory.php';
 require dirname( __FILE__ ) . '/framework/test-case.php';
 
 if ( ! function_exists( 'load_it_exchange' ) ) {

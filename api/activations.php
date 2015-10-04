@@ -226,7 +226,7 @@ function itelic_create_activation( $args ) {
 		$activation->add_meta( 'track', $args['track'] );
 	}
 	catch ( Exception $e ) {
-		return new WP_Error( $e->getCode(), $e->getMessage() );
+		return new WP_Error( 'exception', $e->getMessage() );
 	}
 
 	return $activation;

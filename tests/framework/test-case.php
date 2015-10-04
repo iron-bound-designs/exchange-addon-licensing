@@ -32,6 +32,11 @@ abstract class ITELIC_UnitTestCase extends WP_UnitTestCase {
 	public $release_factory;
 
 	/**
+	 * @var ITELIC_UnitTest_Factory_For_Updates
+	 */
+	public $update_factory;
+
+	/**
 	 * @var IT_Exchange_Admin
 	 */
 	public $exchange_admin;
@@ -49,6 +54,7 @@ abstract class ITELIC_UnitTestCase extends WP_UnitTestCase {
 		$this->key_factory        = new ITELIC_UnitTest_Factory_For_Keys( $this->factory );
 		$this->activation_factory = new ITELIC_UnitTest_Factory_For_Activations( $this->factory );
 		$this->release_factory    = new ITELIC_UnitTest_Factory_For_Releases( $this->factory );
+		$this->update_factory     = new ITELIC_UnitTest_Factory_For_Updates( $this->factory );
 
 		$null                 = null;
 		$this->exchange_admin = new IT_Exchange_Admin( $null );
