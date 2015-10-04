@@ -117,6 +117,6 @@ function itelic_create_release( $args ) {
 		return \ITELIC\Release::create( $product, $file, $version, $type, $status, $changelog );
 	}
 	catch ( InvalidArgumentException $e ) {
-		return new WP_Error( $e->getCode(), $e->getMessage() );
+		return new WP_Error( 'exception', $e->getMessage() );
 	}
 }

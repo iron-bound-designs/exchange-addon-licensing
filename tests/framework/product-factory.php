@@ -35,7 +35,8 @@ class ITELIC_UnitTest_Factory_For_Products extends WP_UnitTest_Factory_For_Post 
 			'limit'         => 2,
 			'key-type'      => 'random',
 			'version'       => '1.0',
-			'base-price'    => '99.00'
+			'base-price'    => '99.00',
+			'update-file'   => ''
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -47,10 +48,11 @@ class ITELIC_UnitTest_Factory_For_Products extends WP_UnitTest_Factory_For_Post 
 		update_post_meta( $product_id, '_it-exchange-visibility', empty( $args['show_in_store'] ) ? 'hidden' : 'visible' );
 
 		it_exchange_update_product_feature( $product_id, 'licensing', array(
-			'enabled'  => true,
-			'limit'    => $args['limit'],
-			'key-type' => $args['key-type'],
-			'version'  => $args['version']
+			'enabled'     => true,
+			'limit'       => $args['limit'],
+			'key-type'    => $args['key-type'],
+			'version'     => $args['version'],
+			'update-file' => $args['update-file']
 		) );
 
 		if ( isset( $args['interval'] ) ) {
