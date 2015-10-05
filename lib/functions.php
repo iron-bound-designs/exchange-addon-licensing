@@ -130,7 +130,7 @@ function generate_key_for_transaction_product( \IT_Exchange_Transaction $transac
  *
  * @return \DateInterval
  *
- * @throws \Exception if invalid interval spec.
+ * @throws \InvalidArgumentException if invalid interval spec.
  */
 function convert_rp_to_date_interval( $type, $count ) {
 
@@ -167,6 +167,10 @@ function convert_rp_to_date_interval( $type, $count ) {
 		 * @param int         $count         Recurrence count.
 		 */
 		$interval_spec = apply_filters( 'itelic_convert_rp_to_date_interval_unknown_designator', null, $type, $count );
+	}
+
+	if ( ! $interval_spec ) {
+		throw new \InvalidArgumentException( 'Invalid interval spec.' );
 	}
 
 	return new \DateInterval( "P$interval_spec" );
