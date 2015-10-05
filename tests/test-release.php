@@ -1047,4 +1047,88 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 		$this->assertEquals( 1, $first_14['2015-02-03'] );
 		$this->assertArrayNotHasKey( '2015-02-24', $first_14 );
 	}
+
+	public function test_get_top_5_previous_versions() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		$r->activate( \ITELIC\make_date_time( '2015-02-01' ) );
+
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $product->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$activations = $this->activation_factory->create_many( 7, array(
+			'key'        => $key,
+			'activation' => \ITELIC\make_date_time( '2015-01-01' )
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[0],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-01' ),
+			'previous_version' => '1.0'
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[1],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-01' ),
+			'previous_version' => '1.0'
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[2],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-01' ),
+			'previous_version' => '0.9'
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[3],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-01' ),
+			'previous_version' => '0.9.1'
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[4],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-01' ),
+			'previous_version' => '0.9.2'
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[5],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-01' ),
+			'previous_version' => '1.0.1'
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[6],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-01' ),
+			'previous_version' => '0.8'
+		) );
+
+		$top5 = $r->get_top_5_previous_versions();
+
+		$this->assertEquals( 5, count( $top5 ) );
+		$this->assertEquals( 2, $top5['1.0'] );
+		$this->assertEquals( 1, $top5['0.9'] );
+	}
 }

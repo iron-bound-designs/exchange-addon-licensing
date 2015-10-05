@@ -471,8 +471,12 @@ class Single extends Controller {
 			),
 		);
 
-		foreach ( $results as $i => $result ) {
-			$chart->add_data_set( $result->c, "v{$result->v}", $colors[ $i ] );
+		$i = 0;
+
+		foreach ( $results as $version => $count ) {
+			$chart->add_data_set( $count, "v{$version}", $colors[ $i ] );
+
+			$i ++;
 		}
 
 		return $chart;

@@ -870,10 +870,18 @@ class Release extends Model {
 
 		$id = $this->get_ID();
 
-		return $wpdb->get_results( $wpdb->prepare(
+		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT previous_version AS v, COUNT(ID) AS c FROM $tn WHERE release_id = %d
 			GROUP BY previous_version ORDER BY c DESC LIMIT 5",
 			$id ) );
+
+		$raw = array();
+
+		foreach ( $results as $result ) {
+			$raw[ $result->v ] = $result->c;
+		}
+
+		return $raw;
 	}
 
 	/**
