@@ -178,21 +178,7 @@ class Plugin {
 	 * @since 1.0
 	 */
 	public static function autoload() {
-
-		require_once( self::$dir . 'autoloader.php' );
-
-		$autoloader = new Psr4AutoloaderClass();
-		$autoloader->addNamespace( 'ITELIC', self::$dir . 'lib' );
-		$autoloader->addNamespace( 'ITELIC_API', self::$dir . 'api' );
-		$autoloader->addNamespace( 'IronBound', self::$dir . 'vendor/IronBound' );
-		$autoloader->addNamespace( 'IronBound\\WP_Notifications', self::$dir . 'vendor/IronBound/WP_Notifications/src' );
-		$autoloader->addNamespace( 'IronBound\\DB', self::$dir . 'vendor/IronBound/DB/src' );
-		$autoloader->addNamespace( 'IronBound\\Cache', self::$dir . 'vendor/IronBound/Cache/src' );
-		$autoloader->addNamespace( 'URL', self::$dir . 'vendor/URL' );
-
-		$autoloader->register();
-
-		require_once( self::$dir . 'vendor/Faker/src/autoload.php' );
+		require_once( dirname( __FILE__ ) . '/vendor/autoload.php' );
 	}
 }
 
