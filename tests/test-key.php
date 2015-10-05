@@ -17,7 +17,7 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 	public function test_invalid_key_length_is_rejected() {
 
 		$stub_txn      = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
-		$stub_prod     = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
+		$stub_prod     = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
 		$stub_customer = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
 
 		$this->setExpectedException( '\LengthException' );

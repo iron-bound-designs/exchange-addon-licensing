@@ -11,13 +11,15 @@
  */
 class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 
-	public function test_generate_key_for_transaction_product_activation_limits() {
+	public function test_generate_key_for_transaction_product_simple_activation_limits() {
 
-		$this->markTestSkipped();
-
-		$product = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
-
+		$product     = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
 		$product->ID = 1;
+
+		$product->expects( $this->once() )->method( 'get_feature' )->with(
+			'licensing',
+			array( 'field' => 'limit' )
+		)->willReturn( 5 );
 
 		$transaction = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
 		$transaction->method( 'get_products' )->willReturn( array(
@@ -26,9 +28,11 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			)
 		) );
 
-		$customer = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
-
+		$customer     = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
 		$customer->id = 1;
+
+		$factory = $this->getMockBuilder( '\ITELIC\Key\Factory' )->disableOriginalConstructor()->getMock();
+		$factory->method( 'make' )->willReturn( 'abcd-1234' );
 
 		WP_Mock::wpFunction( 'it_exchange_get_transaction_customer', array(
 			'args'   => array( $transaction ),
@@ -36,9 +40,63 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'return' => $customer
 		) );
 
-		$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product );
+		WP_Mock::wpFunction( 'itelic_get_product', array(
+			'args'   => array( 1 ),
+			'times'  => 1,
+			'return' => $product
+		) );
+
+		$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $factory );
 
 		$this->assertInstanceOf( '\ITELIC\Key', $key );
+		$this->assertEquals( 5, $key->get_max() );
+	}
+
+	public function test_generate_key_for_transaction_product_variant_activation_limits() {
+
+		$product     = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
+		$product->ID = 1;
+
+		$product->expects( $this->once() )->method( 'get_feature' )->with(
+			'licensing',
+			array(
+				'field'    => 'limit',
+				'for_hash' => 'var-hash'
+			)
+		)->willReturn( 2 );
+
+		$transaction = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction->method( 'get_products' )->willReturn( array(
+			array(
+				'product_id'    => 1,
+				'itemized_data' => serialize( array(
+					'it_variant_combo_hash' => 'var-hash'
+				) )
+			)
+		) );
+
+		$customer     = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
+		$customer->id = 1;
+
+		$factory = $this->getMockBuilder( '\ITELIC\Key\Factory' )->disableOriginalConstructor()->getMock();
+		$factory->method( 'make' )->willReturn( 'abcd-1234' );
+
+		WP_Mock::wpFunction( 'it_exchange_get_transaction_customer', array(
+			'args'   => array( $transaction ),
+			'times'  => 1,
+			'return' => $customer
+		) );
+
+		WP_Mock::wpFunction( 'itelic_get_product', array(
+			'args'   => array( 1 ),
+			'times'  => 1,
+			'return' => $product
+		) );
+
+		$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $factory );
+
+		$this->assertInstanceOf( '\ITELIC\Key', $key );
+		$this->assertEquals( 2, $key->get_max() );
 	}
 
 	/**
