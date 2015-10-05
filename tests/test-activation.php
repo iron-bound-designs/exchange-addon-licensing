@@ -257,4 +257,22 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 		$this->assertArrayHasKey( 'expired', $statuses, 'Expired status does not exist.' );
 	}
 
+	public function test_basic_meta_usage() {
+
+		/** @var Activation $a */
+		$a = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$this->assertInternalType( 'int', $a->add_meta( 'test', 'value' ) );
+		$this->assertEquals( 'value', $a->get_meta( 'test', true ) );
+		$this->assertTrue( $a->update_meta( 'test', 'different' ) );
+		$this->assertEquals( 'different', $a->get_meta( 'test', true ) );
+		$this->assertTrue( $a->delete_meta( 'test' ) );
+		$this->assertEmpty( $a->get_meta( 'test', true ) );
+	}
 }
