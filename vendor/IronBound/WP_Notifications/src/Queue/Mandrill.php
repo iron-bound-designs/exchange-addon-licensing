@@ -122,7 +122,10 @@ class Mandrill implements Queue {
 
 				$tag = str_replace( array( '{', '}' ), '', $tag );
 
-				$merge['vars'][ $tag ] = $val;
+				$merge['vars'][] = array(
+					'name'    => $tag,
+					'content' => $val
+				);
 			}
 
 			$merge_vars[] = $merge;
