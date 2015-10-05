@@ -848,7 +848,7 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 	public function test_get_total_active_activations() {
 
 		$p1 = $this->product_factory->create_and_get();
-		$f1    = $this->factory->attachment->create_object( 'file.zip', $p1->ID, array(
+		$f1 = $this->factory->attachment->create_object( 'file.zip', $p1->ID, array(
 			'post_mime_type' => 'application/zip'
 		) );
 
@@ -980,5 +980,71 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 		) );
 
 		$this->assertEquals( 3, $r->get_total_active_activations() );
+	}
+
+	public function test_get_first_14_days_of_updates() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR
+		) );
+
+		$r->activate( \ITELIC\make_date_time( '2015-02-01' ) );
+
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $product->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$activations = $this->activation_factory->create_many( 5, array(
+			'key'        => $key,
+			'activation' => \ITELIC\make_date_time( '2015-01-01' )
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[0],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-01' ),
+			'previous_version' => '1.0'
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[1],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-01' ),
+			'previous_version' => '1.0'
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[2],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-03' ),
+			'previous_version' => '1.0'
+		) );
+
+		$this->update_factory->create( array(
+			'activation'       => $activations[3],
+			'release'          => $r,
+			'update_date'      => \ITELIC\make_date_time( '2015-02-24' ),
+			'previous_version' => '1.0'
+		) );
+
+		$first_14 = $r->get_first_14_days_of_upgrades();
+
+		$this->assertEquals( 3, array_sum( $first_14 ) );
+
+		$this->assertEquals( 2, $first_14['2015-02-01'] );
+		$this->assertArrayNotHasKey( '2015-02-02', $first_14 );
+		$this->assertEquals( 1, $first_14['2015-02-03'] );
+		$this->assertArrayNotHasKey( '2015-02-24', $first_14 );
 	}
 }
