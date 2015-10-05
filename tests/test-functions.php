@@ -11,6 +11,36 @@
  */
 class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 
+	public function test_generate_key_for_transaction_product_activation_limits() {
+
+		$this->markTestSkipped();
+
+		$product = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
+
+		$product->ID = 1;
+
+		$transaction = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction->method( 'get_products' )->willReturn( array(
+			array(
+				'product_id' => 1
+			)
+		) );
+
+		$customer = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
+
+		$customer->id = 1;
+
+		WP_Mock::wpFunction( 'it_exchange_get_transaction_customer', array(
+			'args'   => array( $transaction ),
+			'times'  => 1,
+			'return' => $customer
+		) );
+
+		$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product );
+
+		$this->assertInstanceOf( '\ITELIC\Key', $key );
+	}
+
 	/**
 	 * @dataProvider rp_date_interval_provider
 	 */

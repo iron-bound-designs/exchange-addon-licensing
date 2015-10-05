@@ -50,18 +50,26 @@ abstract class ITELIC_UnitTestCase extends WP_UnitTestCase {
 		it_exchange_temporarily_load_addon( 'digital-downloads-product-type' );
 		it_exchange_add_feature_support_to_product_type( 'recurring-payments', 'digital-downloads-product-type' );
 
-		$this->product_factory    = new ITELIC_UnitTest_Factory_For_Products();
-		$this->key_factory        = new ITELIC_UnitTest_Factory_For_Keys( $this->factory );
-		$this->activation_factory = new ITELIC_UnitTest_Factory_For_Activations( $this->factory );
-		$this->release_factory    = new ITELIC_UnitTest_Factory_For_Releases( $this->factory );
-		$this->update_factory     = new ITELIC_UnitTest_Factory_For_Updates( $this->factory );
-
 		$null                 = null;
 		$this->exchange_admin = new IT_Exchange_Admin( $null );
 
 		it_exchange_save_option( 'settings_general',
 			$this->exchange_admin->set_general_settings_defaults( array() ) );
 		it_exchange_get_option( 'settings_general', true );
+
+		$this->product_factory    = new ITELIC_UnitTest_Factory_For_Products();
+		$this->key_factory        = new ITELIC_UnitTest_Factory_For_Keys( $this->factory );
+		$this->activation_factory = new ITELIC_UnitTest_Factory_For_Activations( $this->factory );
+		$this->release_factory    = new ITELIC_UnitTest_Factory_For_Releases( $this->factory );
+		$this->update_factory     = new ITELIC_UnitTest_Factory_For_Updates( $this->factory );
+
+		WP_Mock::setUp();
+	}
+
+	function tearDown() {
+		parent::tearDown();
+
+		WP_Mock::tearDown();
 	}
 
 	/**

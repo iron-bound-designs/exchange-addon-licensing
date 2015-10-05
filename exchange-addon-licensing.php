@@ -52,6 +52,11 @@ class Plugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'scripts_and_styles' ), 5 );
 
 		self::autoload();
+
+		if ( function_exists('tests_add_filter') ) {
+			\WP_Mock::setUsePatchwork( true );
+			\WP_Mock::bootstrap();
+		}
 	}
 
 	/**
