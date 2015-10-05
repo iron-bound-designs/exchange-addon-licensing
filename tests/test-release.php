@@ -5,6 +5,7 @@
  * @author Iron Bound Designs
  * @since  1.0
  */
+use ITELIC\Activation;
 use ITELIC\Release;
 use ITELIC_API\Query\Updates;
 
@@ -729,5 +730,255 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 		$r->set_changelog( 'second', 'append' );
 
 		$this->assertEquals( 'firstsecond', $r->get_changelog() );
+	}
+
+	public function test_basic_meta_usage() {
+
+		// WP already has comprehensive tests for metadata, we will only be testing very basic usage of our wrappers
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product'   => $product->ID,
+			'file'      => $file,
+			'version'   => '1.1',
+			'type'      => Release::TYPE_MAJOR,
+			'changelog' => 'first'
+		) );
+
+		$this->assertInternalType( 'int', $r->add_meta( 'test', 'value' ) );
+		$this->assertEquals( 'value', $r->get_meta( 'test', true ) );
+		$this->assertTrue( $r->update_meta( 'test', 'different' ) );
+		$this->assertEquals( 'different', $r->get_meta( 'test', true ) );
+		$this->assertTrue( $r->delete_meta( 'test' ) );
+		$this->assertEmpty( $r->get_meta( 'test', true ) );
+	}
+
+	public function test_get_total_updated() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $product->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$activations = $this->activation_factory->create_many( 5, array(
+			'key' => $key
+		) );
+
+		for ( $i = 0; $i < 3; $i ++ ) {
+			$this->update_factory->create( array(
+				'activation'       => (int) $activations[ $i ],
+				'release'          => $r,
+				'previous_version' => rand( 0, 1 ) ? '1.0' : '0.9'
+			) );
+		}
+
+		$this->assertEquals( 3, $r->get_total_updated() );
+	}
+
+	public function test_get_total_updated_uses_cache() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $product->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$activations = $this->activation_factory->create_many( 5, array(
+			'key' => $key
+		) );
+
+		foreach ( $activations as $activation ) {
+			$this->update_factory->create( array(
+				'activation'       => (int) $activation,
+				'release'          => $r,
+				'previous_version' => rand( 0, 1 ) ? '1.0' : '0.9'
+			) );
+		}
+
+		$r->get_total_updated();
+
+		/** @var \wpdb $wpdb */
+		global $wpdb;
+
+		$num_queries = $wpdb->num_queries;
+
+		$r->get_total_updated();
+
+		$this->assertEquals( $num_queries, $wpdb->num_queries, 'Release::get_total_updated() did not pull from cache.' );
+
+		$r->get_total_updated( true );
+
+		$this->assertEquals( $num_queries + 1, $wpdb->num_queries, 'Release::get_total_updated() did not break the cache.' );
+	}
+
+	public function test_get_total_active_activations() {
+
+		$p1 = $this->product_factory->create_and_get();
+		$f1    = $this->factory->attachment->create_object( 'file.zip', $p1->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r1 */
+		$r1 = $this->release_factory->create_and_get( array(
+			'product' => $p1->ID,
+			'file'    => $f1,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$k1 = $this->key_factory->create_and_get( array(
+			'product'  => $p1->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$this->activation_factory->create_many( 5, array(
+			'key'        => $k1,
+			'activation' => \ITELIC\make_date_time( 'yesterday' )
+		) );
+
+		$p2 = $this->product_factory->create_and_get();
+		$f2 = $this->factory->attachment->create_object( 'file.zip', $p2->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r2 */
+		$r2 = $this->release_factory->create_and_get( array(
+			'product' => $p2->ID,
+			'file'    => $f2,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$k2 = $this->key_factory->create_and_get( array(
+			'product'  => $p2->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$this->activation_factory->create_many( 3, array(
+			'key'        => $k2,
+			'activation' => \ITELIC\make_date_time( 'yesterday' )
+		) );
+
+		$this->assertEquals( 5, $r1->get_total_active_activations() );
+	}
+
+	public function test_get_total_active_activations_ignores_non_active_activations() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $product->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$this->activation_factory->create_many( 3, array(
+			'key'        => $key,
+			'activation' => \ITELIC\make_date_time( 'yesterday' )
+		) );
+
+		$this->activation_factory->create( array(
+			'key'        => $key,
+			'status'     => Activation::DEACTIVATED,
+			'activation' => \ITELIC\make_date_time( 'yesterday' )
+		) );
+
+		$this->activation_factory->create( array(
+			'key'        => $key,
+			'status'     => Activation::EXPIRED,
+			'activation' => \ITELIC\make_date_time( 'yesterday' )
+		) );
+
+		$this->assertEquals( 3, $r->get_total_active_activations() );
+	}
+
+	public function test_get_total_active_activations_ignores_activations_with_date_past_release_start_date() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product' => $product->ID,
+			'file'    => $file,
+			'version' => '1.1',
+			'type'    => Release::TYPE_MAJOR,
+			'status'  => Release::STATUS_ACTIVE
+		) );
+
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $product->ID,
+			'customer' => 1,
+			'limit'    => 10
+		) );
+
+		$this->activation_factory->create_many( 3, array(
+			'key'        => $key,
+			'activation' => \ITELIC\make_date_time( 'yesterday' )
+		) );
+
+		$this->activation_factory->create( array(
+			'key'        => $key,
+			'activation' => \ITELIC\make_date_time( 'tomorrow' )
+		) );
+
+		$this->activation_factory->create( array(
+			'key'        => $key,
+			'activation' => \ITELIC\make_date_time( '+1 month' )
+		) );
+
+		$this->assertEquals( 3, $r->get_total_active_activations() );
 	}
 }
