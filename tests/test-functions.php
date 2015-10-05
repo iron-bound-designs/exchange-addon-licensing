@@ -5,6 +5,7 @@
  * @author Iron Bound Designs
  * @since  1.0
  */
+use IronBound\WP_Notifications\Template\Listener;
 
 /**
  * Class ITELIC_Test_Functions
@@ -230,5 +231,31 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 
 		$this->assertInstanceOf( '\ITELIC\Key', $key );
 		$this->assertEquals( \ITELIC\make_date_time( '+1 year' ), $key->get_expires() );
+	}
+
+	public function test_shared_tags() {
+
+		WP_Mock::wpFunction( 'it_exchange_get_option', array(
+			'args'   => array( 'settings_general' ),
+			'times'  => 1,
+			'return' => 'store name'
+		) );
+
+		$listeners = \ITELIC\get_shared_tags();
+
+		$tags = array_map( function ( Listener $listener ) {
+			return $listener->get_tag();
+		}, $listeners );
+
+		$this->assertContains( 'full_customer_name', $tags,
+			'full_customer_name tag is not registered.' );
+		$this->assertContains( 'customer_first_name', $tags,
+			'customer_first_name tag is not registered.' );
+		$this->assertContains( 'customer_last_name', $tags,
+			'customer_last_name tag is not registered.' );
+		$this->assertContains( 'customer_email', $tags,
+			'customer_email tag is not registered.' );
+		$this->assertContains( 'store_name', $tags,
+			'store_name tag is not registered.' );
 	}
 }
