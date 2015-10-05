@@ -1131,4 +1131,52 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 		$this->assertEquals( 2, $top5['1.0'] );
 		$this->assertEquals( 1, $top5['0.9'] );
 	}
+
+	public function test_statuses_exist() {
+
+		$statuses = Release::get_statuses();
+
+		$this->assertArrayHasKey( 'draft', $statuses, 'Draft status does not exist.' );
+		$this->assertArrayHasKey( 'active', $statuses, 'Active status does not exist.' );
+		$this->assertArrayHasKey( 'paused', $statuses, 'Paused status does not exist.' );
+		$this->assertArrayHasKey( 'archived', $statuses, 'Archived status does not exist.' );
+
+	}
+
+	public function test_types_exist() {
+
+		$types = Release::get_types();
+
+		$this->assertArrayHasKey( 'major', $types, 'Major type does not exist.' );
+		$this->assertArrayHasKey( 'minor', $types, 'Minor type does not exist.' );
+		$this->assertArrayHasKey( 'security', $types, 'Security type does not exist.' );
+		$this->assertArrayHasKey( 'pre-release', $types, 'Pre-release type does not exist.' );
+	}
+
+	public function test_data_to_cache() {
+
+		$product = $this->product_factory->create_and_get();
+		$file    = $this->factory->attachment->create_object( 'file.zip', $product->ID, array(
+			'post_mime_type' => 'application/zip'
+		) );
+
+		/** @var Release $r */
+		$r = $this->release_factory->create_and_get( array(
+			'product'   => $product->ID,
+			'file'      => $file,
+			'version'   => '1.1',
+			'type'      => Release::TYPE_MAJOR,
+			'changelog' => 'first'
+		) );
+
+		$data = $r->get_data_to_cache();
+
+		$this->assertArrayHasKey( 'product', $data, 'product not cached.' );
+		$this->assertArrayHasKey( 'download', $data, 'download not cached.' );
+		$this->assertArrayHasKey( 'version', $data, 'version not cached.' );
+		$this->assertArrayHasKey( 'status', $data, 'status not cached.' );
+		$this->assertArrayHasKey( 'type', $data, 'type not cached.' );
+		$this->assertArrayHasKey( 'changelog', $data, 'changelog not cached.' );
+		$this->assertArrayHasKey( 'start_date', $data, 'start_date not cached.' );
+	}
 }
