@@ -212,7 +212,7 @@ function itelic_create_activation( $args ) {
 			$release = $args['release'];
 		}
 
-		if ( ! $activation instanceof \ITELIC\Release ) {
+		if ( ! $release instanceof \ITELIC\Release ) {
 			return new WP_Error( 'invalid_release', __( "Invalid release.", \ITELIC\Plugin::SLUG ) );
 		}
 	} else {

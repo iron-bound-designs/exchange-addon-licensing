@@ -72,7 +72,7 @@ class Updates implements Table {
 			'activation'       => '',
 			'release_id'       => '',
 			'previous_version' => '',
-			'upgrade_date'     => '',
+			'update_date'     => '',
 		);
 	}
 
