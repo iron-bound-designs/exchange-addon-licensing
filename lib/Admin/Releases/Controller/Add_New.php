@@ -61,13 +61,20 @@ class Add_New extends Controller {
 
 		$type = $_POST['type-select'];
 
-		if ( empty( $_POST['product'] ) || ! it_exchange_product_has_feature( $_POST['product'], 'licensing' ) ) {
-			$this->errors[] = __( "Product selected does not support licensing.", Plugin::SLUG );
+		try {
+			$product = itelic_get_product( $_POST['product'] );
+		}
+		catch ( \Exception $e ) {
+			$this->errors[] = $e->getMessage();
 
 			return;
 		}
 
-		$product = itelic_get_product( $_POST['product'] );
+		if ( $product->has_feature( 'licensing' ) ) {
+			$this->errors[] = __( "Product selected does not support licensing.", Plugin::SLUG );
+
+			return;
+		}
 
 		if ( empty( $_POST['version'] ) ) {
 			$this->errors[] = __( "Invalid version number entered.", Plugin::SLUG );

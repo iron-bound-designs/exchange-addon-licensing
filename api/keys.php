@@ -110,7 +110,7 @@ function itelic_create_key( $args ) {
 
 	$product = itelic_get_product( $args['product'] );
 
-	if ( ! it_exchange_product_has_feature( $product->ID, 'licensing' ) ) {
+	if ( ! $product->has_feature( 'licensing' ) ) {
 		return new WP_Error( 'invalid_product',
 			__( "Product does not have licensing enabled.", \ITELIC\Plugin::SLUG ) );
 	}
@@ -143,7 +143,7 @@ function itelic_create_key( $args ) {
 		}
 		$key = $product_id . '-' . md5( $itemized_data );
 
-		$products[ $key ]['product_base_price'] = it_exchange_get_product_feature( $product_id, 'base-price' );
+		$products[ $key ]['product_base_price'] = $product->get_feature( 'base-price' );
 		$products[ $key ]['product_subtotal']   = $products[ $key ]['product_base_price']; //need to add count
 		$products[ $key ]['product_name']       = get_the_title( $product_id );
 		$products[ $key ]['product_id']         = $product_id;
@@ -181,7 +181,9 @@ function itelic_create_key( $args ) {
 		$transaction = it_exchange_get_transaction( $tid );
 	}
 
-	$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $args['status'], $args['key'] );
+	$factory = new \ITELIC\Key\Factory( $product, $customer, $transaction );
+
+	$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $factory, $args['status'], $args['key'] );
 
 	if ( isset( $args['limit'] ) ) {
 

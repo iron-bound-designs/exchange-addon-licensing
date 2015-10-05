@@ -16,7 +16,7 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 
 	public function test_invalid_status_is_rejected() {
 
-		$mock_product = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
+		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
 		$mock_file    = new WP_Post( new stdClass() );
 
 		$version = '';
@@ -30,7 +30,7 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 
 	public function test_invalid_type_is_rejected() {
 
-		$mock_product = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
+		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
 		$mock_file    = new WP_Post( new stdClass() );
 
 		$version = '';
@@ -43,7 +43,7 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 
 	public function test_invalid_post_type_for_file_is_rejected() {
 
-		$mock_product         = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
+		$mock_product         = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
 		$mock_file            = new WP_Post( new stdClass() );
 		$mock_file->post_type = 'not-attachment';
 
@@ -57,7 +57,7 @@ class ITELIC_Test_Release extends ITELIC_UnitTestCase {
 
 	public function test_product_with_licensing_feature_disabled_is_rejected() {
 
-		$mock_product         = $this->getMockBuilder( '\IT_Exchange_Product' )->disableOriginalConstructor()->getMock();
+		$mock_product         = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
 		$mock_file            = new WP_Post( new stdClass() );
 		$mock_file->post_type = 'attachment';
 

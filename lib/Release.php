@@ -164,17 +164,17 @@ class Release extends Model {
 	 *
 	 * @since 1.0
 	 *
-	 * @param \IT_Exchange_Product $product
-	 * @param \WP_Post             $file Attachment of the download
-	 * @param string               $version
-	 * @param string               $type
-	 * @param string               $status
-	 * @param string               $changelog
+	 * @param Product  $product
+	 * @param \WP_Post $file Attachment of the download
+	 * @param string   $version
+	 * @param string   $type
+	 * @param string   $status
+	 * @param string   $changelog
 	 *
 	 * @return Release|null
 	 * @throws DB_Exception
 	 */
-	public static function create( \IT_Exchange_Product $product, \WP_Post $file, $version, $type, $status = '', $changelog = '' ) {
+	public static function create( Product $product, \WP_Post $file, $version, $type, $status = '', $changelog = '' ) {
 
 		if ( empty( $status ) ) {
 			$status = self::STATUS_DRAFT;
@@ -192,11 +192,11 @@ class Release extends Model {
 			throw new \InvalidArgumentException( "Invalid update file." );
 		}
 
-		if ( ! it_exchange_product_has_feature( $product->ID, 'licensing' ) ) {
+		if ( ! $product->has_feature( 'licensing' ) ) {
 			throw new \InvalidArgumentException( "Product given does not have the licensing feature enabled." );
 		}
 
-		$current_version = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'version' ) );
+		$current_version = $product->get_feature( 'licensing', array( 'field' => 'version' ) );
 
 		$first_release = itelic_get_release( get_post_meta( $product->ID, '_itelic_first_release', true ) );
 
@@ -270,13 +270,13 @@ class Release extends Model {
 	 *
 	 * @since 1.0
 	 *
-	 * @param \IT_Exchange_Product $product
-	 * @param \WP_Post             $file
-	 * @param string               $version
+	 * @param Product  $product
+	 * @param \WP_Post $file
+	 * @param string   $version
 	 */
-	protected static function do_activation( \IT_Exchange_Product $product, \WP_Post $file, $version ) {
+	protected static function do_activation( Product $product, \WP_Post $file, $version ) {
 
-		$download_id   = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'update-file' ) );
+		$download_id   = $product->get_feature( 'licensing', array( 'field' => 'update-file' ) );
 		$download_data = get_post_meta( $download_id, '_it-exchange-download-info', true );
 
 		// update the download url
@@ -285,7 +285,7 @@ class Release extends Model {
 		// save the new download
 		update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
 
-		it_exchange_update_product_feature( $product->ID, 'licensing', array(
+		$product->update_feature( 'licensing', array(
 			'version' => $version
 		) );
 	}
@@ -371,14 +371,14 @@ class Release extends Model {
 
 			if ( $prev_release ) {
 
-				$download_id = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => 'update-file' ) );
+				$download_id = $this->get_product()->get_feature( 'licensing', array( 'field' => 'update-file' ) );
 
 				$download_data           = get_post_meta( $download_id, '_it-exchange-download-info', true );
 				$download_data['source'] = wp_get_attachment_url( $prev_release->get_download()->ID );
 
 				update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
 
-				it_exchange_update_product_feature( $this->get_product()->ID, 'licensing', array(
+				$this->get_product()->update_feature( 'licensing', array(
 					'version' => $prev_release->get_version()
 				) );
 			}
@@ -520,7 +520,7 @@ class Release extends Model {
 	 */
 	public function set_version( $version ) {
 
-		$current_version = it_exchange_get_product_feature( $this->get_product()->ID, 'licensing', array( 'field' => 'version' ) );
+		$current_version = $this->get_product()->get_feature( 'licensing', array( 'field' => 'version' ) );
 
 		if ( version_compare( $version, $current_version, '<=' ) ) {
 			throw new \InvalidArgumentException( "New release version must be greater than the current product's version." );
@@ -797,7 +797,6 @@ class Release extends Model {
 		if ( ! $this->get_start_date() ) {
 			return 0;
 		}
-
 
 		$query = new Activations( array(
 			'status'       => Activation::ACTIVE,

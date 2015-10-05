@@ -8,6 +8,8 @@
 
 namespace ITELIC\Key;
 
+use ITELIC\Product;
+
 /**
  * Class Generator
  *
@@ -25,7 +27,7 @@ abstract class Generator {
 	protected $options = array();
 
 	/**
-	 * @var \IT_Exchange_Product
+	 * @var Product
 	 */
 	protected $product;
 
@@ -45,11 +47,11 @@ abstract class Generator {
 	 * @since 1.0
 	 *
 	 * @param array                    $options Key options
-	 * @param \IT_Exchange_Product     $product
+	 * @param Product                  $product
 	 * @param \IT_Exchange_Customer    $customer
 	 * @param \IT_Exchange_Transaction $transaction
 	 */
-	public function __construct( $options = array(), $product, $customer, $transaction ) {
+	public function __construct( $options = array(), Product $product, \IT_Exchange_Customer $customer, \IT_Exchange_Transaction $transaction ) {
 		$this->options     = $options;
 		$this->product     = $product;
 		$this->customer    = $customer;

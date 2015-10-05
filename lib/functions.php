@@ -38,11 +38,15 @@ function generate_keys_for_transaction( \IT_Exchange_Transaction $transaction, $
 			continue; // this is a renewal purchase we shouldn't generate keys here.
 		}
 
-		if ( it_exchange_product_has_feature( $product['product_id'], 'licensing' ) ) {
+		$product = itelic_get_product( $product['product_id'] );
 
-			$product = itelic_get_product( $product['product_id'] );
+		if ( $product->has_feature( 'licensing' ) ) {
 
-			if ( generate_key_for_transaction_product( $transaction, $product, $status ) ) {
+			$customer = it_exchange_get_transaction_customer( $transaction );
+
+			$factory = new Factory( $product, $customer, $transaction );
+
+			if ( generate_key_for_transaction_product( $transaction, $product, $factory, $status ) ) {
 				$result = true;
 			} else {
 				$result = false;
@@ -59,19 +63,19 @@ function generate_keys_for_transaction( \IT_Exchange_Transaction $transaction, $
  * @since 1.0
  *
  * @param \IT_Exchange_Transaction $transaction
- * @param \IT_Exchange_Product     $product
+ * @param Product                  $product
+ * @param Factory                  $factory
  * @param string                   $status
  * @param string                   $key
  *
  * @return Key
  */
-function generate_key_for_transaction_product( \IT_Exchange_Transaction $transaction, \IT_Exchange_Product $product, $status = '', $key = '' ) {
+function generate_key_for_transaction_product( \IT_Exchange_Transaction $transaction, Product $product, Factory $factory, $status = '', $key = '' ) {
 
 	$customer = it_exchange_get_transaction_customer( $transaction );
 
 	if ( ! $key ) {
-		$factory = new Factory( $product, $customer, $transaction );
-		$key     = $factory->make();
+		$key = $factory->make();
 	}
 
 	foreach ( $transaction->get_products() as $tran_product ) {
@@ -91,7 +95,7 @@ function generate_key_for_transaction_product( \IT_Exchange_Transaction $transac
 			if ( isset( $itemized['it_variant_combo_hash'] ) ) {
 				$hash = $itemized['it_variant_combo_hash'];
 
-				$max = it_exchange_get_product_feature( $product->ID, 'licensing', array(
+				$max = $product->get_feature( 'licensing', array(
 					'field'    => 'limit',
 					'for_hash' => $hash
 				) );
@@ -101,15 +105,15 @@ function generate_key_for_transaction_product( \IT_Exchange_Transaction $transac
 	}
 
 	if ( ! isset( $max ) ) {
-		$max = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'limit' ) );
+		$max = $product->get_feature( 'licensing', array( 'field' => 'limit' ) );
 	}
 
-	if ( ! it_exchange_product_has_feature( $product->ID, 'recurring-payments' ) ) {
+	if ( ! $product->has_feature( 'recurring-payments' ) ) {
 		$expires = null;
 	} else {
 
-		$type  = it_exchange_get_product_feature( $product->ID, 'recurring-payments', array( 'setting' => 'interval' ) );
-		$count = it_exchange_get_product_feature( $product->ID, 'recurring-payments', array( 'setting' => 'interval-count' ) );
+		$type  = $product->get_feature( 'recurring-payments', array( 'setting' => 'interval' ) );
+		$count = $product->get_feature( 'recurring-payments', array( 'setting' => 'interval-count' ) );
 
 		$interval = convert_rp_to_date_interval( $type, $count );
 
@@ -211,7 +215,8 @@ function get_key_for_transaction_product( $transaction_id, $product_id ) {
  * @since 1.0
  *
  * @param string $time
- * @param bool   $gmt If false, returns object set to the timezone specified in general settings.
+ * @param bool   $gmt If false, returns object set to the timezone specified in
+ *                    general settings.
  *
  * @return \DateTime
  */

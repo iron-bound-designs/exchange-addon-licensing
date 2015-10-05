@@ -11,6 +11,7 @@
 namespace ITELIC\Upgrades\Discount;
 
 use ITELIC\Key;
+use ITELIC\Product;
 
 /**
  * Class Discount
@@ -25,7 +26,7 @@ abstract class Discount implements I_Discount {
 	protected $key;
 
 	/**
-	 * @var \IT_Exchange_Product
+	 * @var Product
 	 */
 	protected $upgrade_product;
 
@@ -39,14 +40,14 @@ abstract class Discount implements I_Discount {
 	 *
 	 * @since 1.0
 	 *
-	 * @param Key                  $key
-	 * @param \IT_Exchange_Product $upgrade_product
-	 * @param string               $variant_hash
+	 * @param Key     $key
+	 * @param Product $upgrade_product
+	 * @param string  $variant_hash
 	 */
-	public function __construct( Key $key, \IT_Exchange_Product $upgrade_product, $variant_hash = '' ) {
+	public function __construct( Key $key, Product $upgrade_product, $variant_hash = '' ) {
 		$this->key = $key;
 
-		if ( ! it_exchange_product_has_feature( $upgrade_product->ID, 'licensing' ) ) {
+		if ( ! $upgrade_product->has_feature( 'licensing' ) ) {
 			throw new \InvalidArgumentException( "Upgrade product must have licensing enabled." );
 		}
 
@@ -85,11 +86,11 @@ abstract class Discount implements I_Discount {
 	 */
 	public function get_original_price( $format = false ) {
 
-		$base_price = it_exchange_get_product_feature( $this->upgrade_product->ID, 'base-price' );
+		$base_price = $this->upgrade_product->get_feature( 'base-price' );
 
 		if ( ! empty( $this->variant_hash ) ) {
 
-			$variants = it_exchange_get_product_feature( $this->upgrade_product->ID, 'base-price', array( 'setting' => 'variants' ) );
+			$variants = $this->upgrade_product->get_feature( 'base-price', array( 'setting' => 'variants' ) );
 
 			if ( isset( $variants[ $this->variant_hash ] ) ) {
 				$base_price = $variants[ $this->variant_hash ]['value'];

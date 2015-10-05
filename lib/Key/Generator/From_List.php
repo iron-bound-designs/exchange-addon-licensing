@@ -39,7 +39,7 @@ class From_List extends Generator {
 
 		$keys_list = implode( PHP_EOL, $keys );
 
-		it_exchange_update_product_feature( $this->product->ID, 'licensing', array( 'keys' => $keys_list ), array(
+		$this->product->update_feature( 'licensing', array( 'keys' => $keys_list ), array(
 			'key-type' => 'list'
 		) );
 

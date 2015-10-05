@@ -270,7 +270,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 		$product = itelic_get_product( $ID );
 
-		if ( ! $product || ! it_exchange_product_has_feature( $product->ID, 'licensing' ) ) {
+		if ( ! $product || ! $product->has_feature( 'licensing' ) ) {
 			WP_CLI::error( "Invalid product." );
 		}
 
@@ -298,7 +298,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 		if ( isset( $assoc_args['amount-paid'] ) ) {
 			$create_args['paid'] = $assoc_args['amount-paid'];
 		} else {
-			$create_args['paid'] = it_exchange_get_product_feature( $product->ID, 'base-price' );
+			$create_args['paid'] = $product->get_feature( 'base-price' );
 		}
 
 		parent::_create( $args, $assoc_args, function () use ( $create_args ) {
@@ -369,7 +369,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 				'customer' => $customer->id,
 				'date'     => $date->format( 'Y-m-d H:i:s' ),
 				'status'   => $this->get_status(),
-				'paid'     => it_exchange_get_product_feature( $product->ID, 'base-price' )
+				'paid'     => $product->get_feature( 'base-price' )
 			);
 
 			$key = itelic_create_key( $key_args );

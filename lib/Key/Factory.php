@@ -10,6 +10,7 @@ namespace ITELIC\Key;
 
 use ITELIC\Key\Generator\Pattern;
 use ITELIC\Key\Generator\Random;
+use ITELIC\Product;
 
 /**
  * Class Factory
@@ -38,11 +39,11 @@ class Factory {
 	 *
 	 * @since 1.0
 	 *
-	 * @param \IT_Exchange_Product     $product
+	 * @param Product                  $product
 	 * @param \IT_Exchange_Customer    $customer
 	 * @param \IT_Exchange_Transaction $transaction
 	 */
-	public function __construct( \IT_Exchange_Product $product, \IT_Exchange_Customer $customer, \IT_Exchange_Transaction $transaction ) {
+	public function __construct( Product $product, \IT_Exchange_Customer $customer, \IT_Exchange_Transaction $transaction ) {
 		$this->product     = $product;
 		$this->customer    = $customer;
 		$this->transaction = $transaction;
@@ -57,10 +58,10 @@ class Factory {
 	 */
 	public function make() {
 
-		$type  = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => 'key-type' ) );
+		$type  = $this->get_product()->get_feature( 'licensing', array( 'field' => 'key-type' ) );
 		$class = itelic_get_key_type_class( $type );
 
-		$options = it_exchange_get_product_feature( $this->product->ID, 'licensing', array( 'field' => "type.$type" ) );
+		$options = $this->get_product()->get_feature( 'licensing', array( 'field' => "type.$type" ) );
 
 		if ( class_exists( $class ) ) {
 
@@ -76,7 +77,7 @@ class Factory {
 	}
 
 	/**
-	 * @return \IT_Exchange_Product
+	 * @return Product
 	 */
 	public function get_product() {
 		return $this->product;

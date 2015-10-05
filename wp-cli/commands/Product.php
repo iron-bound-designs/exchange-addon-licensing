@@ -113,10 +113,10 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $ID ) = $args;
 
-		$this->fetcher->get_check( $ID );
+		$product = $this->fetcher->get_check( $ID );
 
-		$type = it_exchange_get_product_feature( $ID, 'licensing', array( 'field' => 'key-type' ) );
-		$item = it_exchange_get_product_feature( $ID, 'licensing', array( 'field' => "type.$type" ) );
+		$type = $product->get_feature( 'licensing', array( 'field' => 'key-type' ) );
+		$item = $product->get_feature( 'licensing', array( 'field' => "type.$type" ) );
 
 		if ( ! is_array( $item ) ) {
 			$item = array();
@@ -150,7 +150,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $ID ) = $args;
 
-		$this->fetcher->get_check( $ID );
+		$product = $this->fetcher->get_check( $ID );
 
 		$white_list = array(
 			'online-software',
@@ -173,17 +173,17 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			WP_CLI::error( sprintf( "Invalid key type '%s'", $assoc_args['key-type'] ) );
 		}
 
-		parent::_update( $args, $assoc_args, function ( $params ) use ( $ID ) {
+		parent::_update( $args, $assoc_args, function ( $params ) use ( $product ) {
 
 			if ( isset( $params['variants-enabled'] ) ) {
 				$params['enabled_variant_activations'] = $params['variants-enabled'];
 			}
 
 			if ( isset( $params['base-price'] ) ) {
-				it_exchange_update_product_feature( $ID, 'base-price', $params['base-price'] );
+				$product->update_feature( 'base-price', $params['base-price'] );
 			}
 
-			return it_exchange_update_product_feature( $ID, 'licensing', $params );
+			return $product->update_feature( 'licensing', $params );
 		} );
 	}
 
@@ -207,9 +207,9 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $ID ) = $args;
 
-		$this->fetcher->get_check( $ID );
+		$product = $this->fetcher->get_check( $ID );
 
-		$limits = it_exchange_get_product_feature( $ID, 'licensing', array(
+		$limits = $product->get_feature( 'licensing', array(
 			'field' => 'activation_variant'
 		) );
 
@@ -232,7 +232,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			$limits[ $hash ] = $val;
 		}
 
-		it_exchange_update_product_feature( $ID, 'licensing', array(
+		$product->update_feature( 'licensing', array(
 			'activation_variant' => $limits
 		) );
 
@@ -259,11 +259,11 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $ID ) = $args;
 
-		$this->fetcher->get_check( $ID );
+		$product = $this->fetcher->get_check( $ID );
 
-		$type = it_exchange_get_product_feature( $ID, 'licensing', array( 'field' => 'key-type' ) );
+		$type = $product->get_feature( 'licensing', array( 'field' => 'key-type' ) );
 
-		$current = it_exchange_get_product_feature( $ID, 'licensing', array( 'field' => "type.$type" ) );
+		$current = $product->get_feature( 'licensing', array( 'field' => "type.$type" ) );
 
 		if ( ! is_array( $current ) ) {
 			$current = array();
@@ -271,7 +271,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		$new = wp_parse_args( $assoc_args, $current );
 
-		it_exchange_update_product_feature( $ID, 'licensing', $new, array( 'key-type' => $type ) );
+		$product->update_feature( 'licensing', $new, array( 'key-type' => $type ) );
 
 		WP_CLI::success( 'Key type settings updated.' );
 	}
@@ -522,24 +522,26 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			return new WP_Error( 'product_error', 'Product not created.' );
 		}
 
+		$product = itelic_get_product( $product );
+
 		$faker    = \Faker\Factory::create();
 		$new_date = $faker->dateTimeBetween( '-2 years', '-1 months' )->format( 'Y-m-d H:i:s' );
 
 		wp_update_post( array(
-			'ID'            => $product,
+			'ID'            => $product->ID,
 			'post_date'     => $new_date,
 			'post_date_gmt' => get_gmt_from_date( $new_date )
 		) );
 
 		$download_data = array(
-			'product_id' => $product,
+			'product_id' => $product->ID,
 			'source'     => wp_get_attachment_url( $file->ID ),
 			'name'       => $file->post_title
 		);
 
-		it_exchange_update_product_feature( $product, 'downloads', $download_data );
+		$product->update_feature( 'downloads', $download_data );
 
-		$downloads   = it_exchange_get_product_feature( $product, 'downloads' );
+		$downloads   = $product->get_feature( 'downloads' );
 		$download_id = key( $downloads );
 
 		$feature_data = array(
@@ -551,19 +553,17 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			'version'         => $version
 		);
 
-		it_exchange_update_product_feature( $product, 'licensing', $feature_data );
+		$product->update_feature( 'licensing', $feature_data );
 
 		if ( isset( $params['interval'] ) ) {
-			it_exchange_update_product_feature( $product, 'recurring-payments', 'on' );
-			it_exchange_update_product_feature( $product, 'recurring-payments', $params['interval'], array(
+			$product->update_feature( 'recurring-payments', 'on' );
+			$product->update_feature( 'recurring-payments', $params['interval'], array(
 				'setting' => 'interval'
 			) );
-			it_exchange_update_product_feature( $product, 'recurring-payments', $params['interval-count'], array(
+			$product->update_feature( 'recurring-payments', $params['interval-count'], array(
 				'setting' => 'interval-count'
 			) );
 		}
-
-		$product = it_exchange_get_product( $product );
 
 		$type      = \ITELIC\Release::TYPE_MAJOR;
 		$status    = \ITELIC\Release::STATUS_PAUSED;
@@ -595,9 +595,9 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 
 		$data = get_object_vars( $product );
 
-		$data['base-price'] = it_exchange_get_product_feature( $product->ID, 'base-price' );
+		$data['base-price'] = $product->get_feature( 'base-price' );
 
-		$base = it_exchange_get_product_feature( $product->ID, 'licensing' );
+		$base = $product->get_feature( 'licensing' );
 
 		$data['online-software'] = $base['online-software'] ? 'yes' : 'no';
 
@@ -635,7 +635,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			'setting' => 'variants'
 		) );
 
-		$hashes = it_exchange_get_product_feature( $product->ID, 'licensing', array(
+		$hashes = $product->get_feature( 'licensing', array(
 				'field' => 'activation_variant'
 			)
 		);
@@ -679,7 +679,7 @@ class ITELIC_Product_Fetcher extends WP_CLI\Fetchers\Base {
 			return false;
 		}
 
-		if ( ! it_exchange_product_has_feature( $product->ID, 'licensing' ) ) {
+		if ( ! $product->has_feature( 'licensing' ) ) {
 			return false;
 		}
 

@@ -104,7 +104,13 @@ class Key extends Model implements API\Serializable {
 			$this->expires = make_date_time( $data->expires );
 		}
 
-		foreach ( array( 'transaction', 'product', 'customer' ) as $maybe_error ) {
+		foreach (
+			array(
+				'transaction',
+				'product',
+				'customer'
+			) as $maybe_error
+		) {
 			if ( ! $this->$maybe_error || is_wp_error( $this->$maybe_error ) ) {
 				throw new \InvalidArgumentException( "Invalid $maybe_error" );
 			}
@@ -220,8 +226,8 @@ class Key extends Model implements API\Serializable {
 			return null;
 		}
 
-		$type  = it_exchange_get_product_feature( $this->get_product()->ID, 'recurring-payments', array( 'setting' => 'interval' ) );
-		$count = it_exchange_get_product_feature( $this->get_product()->ID, 'recurring-payments', array( 'setting' => 'interval-count' ) );
+		$type  = $this->get_product()->get_feature( 'recurring-payments', array( 'setting' => 'interval' ) );
+		$count = $this->get_product()->get_feature( 'recurring-payments', array( 'setting' => 'interval-count' ) );
 
 		$interval = convert_rp_to_date_interval( $type, $count );
 		$expires  = $this->get_expires();
@@ -517,8 +523,7 @@ class Key extends Model implements API\Serializable {
 	 * @return bool
 	 */
 	public function is_online_product() {
-		return (bool) it_exchange_get_product_feature( $this->get_product()->ID,
-			'licensing', array( 'field' => 'online-software' ) );
+		return (bool) $this->get_product()->get_feature( 'licensing', array( 'field' => 'online-software' ) );
 	}
 
 	/**

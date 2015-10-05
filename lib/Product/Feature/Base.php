@@ -376,7 +376,7 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 
 			if ( $file->post_type == 'attachment' ) {
 
-				$product = it_exchange_get_product( $product_id );
+				$product = itelic_get_product( $product_id );
 
 				if ( isset( $data['version'] ) ) {
 					$version = $data['version'];

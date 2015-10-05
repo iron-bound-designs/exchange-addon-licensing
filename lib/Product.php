@@ -12,6 +12,7 @@ use ITELIC_API\Query\Releases;
 
 /**
  * Class Product
+ *
  * @package ITELIC
  */
 class Product extends \IT_Exchange_Product {
@@ -52,6 +53,49 @@ class Product extends \IT_Exchange_Product {
 		catch ( \Exception $e ) {
 			return null;
 		}
+	}
+
+	/**
+	 * Check if this product has a feature.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $feature
+	 * @param array  $options
+	 *
+	 * @return bool
+	 */
+	public function has_feature( $feature, $options = array() ) {
+		return it_exchange_product_has_feature( $this->ID, $feature, $options );
+	}
+
+	/**
+	 * Get a product feature.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $feature
+	 * @param array  $options
+	 *
+	 * @return mixed
+	 */
+	public function get_feature( $feature, $options = array() ) {
+		return it_exchange_get_product_feature( $this->ID, $feature, $options );
+	}
+
+	/**
+	 * Update a product feature.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $feature
+	 * @param mixed  $data
+	 * @param array  $options
+	 *
+	 * @return bool
+	 */
+	public function update_feature( $feature, $data, $options = array() ) {
+		return it_exchange_update_product_feature( $this->ID, $feature, $data, $options );
 	}
 
 	/**
@@ -102,7 +146,8 @@ class Product extends \IT_Exchange_Product {
 	/**
 	 * Get the latest release available for an activation record.
 	 *
-	 * By default, returns the latest version saved. But is used for getting pre-release or restricted versions.
+	 * By default, returns the latest version saved. But is used for getting
+	 * pre-release or restricted versions.
 	 *
 	 * @since 1.0
 	 *
@@ -128,7 +173,7 @@ class Product extends \IT_Exchange_Product {
 			) );
 
 			$releases = $query->get_results();
-			$release = reset( $releases );
+			$release  = reset( $releases );
 		}
 
 		/**

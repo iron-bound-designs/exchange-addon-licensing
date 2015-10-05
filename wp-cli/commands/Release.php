@@ -135,7 +135,7 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 
 		parent::_create( $args, $assoc_args, function ( $params ) {
 
-			$product = it_exchange_get_product( $params['product'] );
+			$product = itelic_get_product( $params['product'] );
 
 			if ( ! $product ) {
 				WP_CLI::error( 'Invalid product ID.' );

@@ -392,7 +392,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 	public function can_remote_activate( $options = array() ) {
 		$settings = it_exchange_get_option( 'addon_itelic' );
 
-		return $settings['enable-remote-activation'] && it_exchange_get_product_feature( $this->license->get_product()->ID,
+		return $settings['enable-remote-activation'] && $this->license->get_product()->get_feature(
 			'licensing', array( 'field' => 'online-software' ) );
 	}
 
@@ -408,7 +408,7 @@ class IT_Theme_API_License implements IT_Theme_API {
 	public function can_remote_deactivate( $options = array() ) {
 		$settings = it_exchange_get_option( 'addon_itelic' );
 
-		return $settings['enable-remote-deactivation'] && it_exchange_get_product_feature( $this->license->get_product()->ID,
+		return $settings['enable-remote-deactivation'] && $this->license->get_product()->get_feature(
 			'licensing', array( 'field' => 'online-software' ) );
 	}
 

@@ -17,6 +17,7 @@ use ITELIC\Plugin;
 
 /**
  * Class Product
+ *
  * @package ITELIC\API\Endpoint
  */
 class Product extends Endpoint implements Authenticatable {
@@ -41,7 +42,7 @@ class Product extends Endpoint implements Authenticatable {
 	 */
 	public function serve( \ArrayAccess $get, \ArrayAccess $post ) {
 
-		$readme = it_exchange_get_product_feature( $this->key->get_product()->ID, 'licensing-readme' );
+		$readme = $this->key->get_product()->get_feature( 'licensing-readme' );
 
 		$contributors = array();
 
@@ -58,7 +59,7 @@ class Product extends Endpoint implements Authenticatable {
 		$product = array(
 			'id'              => $this->key->get_product()->ID,
 			'name'            => $this->key->get_product()->post_title,
-			'description'     => it_exchange_get_product_feature( $this->key->get_product()->ID, 'description' ),
+			'description'     => $this->key->get_product()->get_feature( 'description' ),
 			'version'         => $release->get_version(),
 			'tested'          => $readme['tested'],
 			'requires'        => $readme['requires'],

@@ -76,7 +76,9 @@ class Renew_Key extends Base {
 			return;
 		}
 
-		if ( ! it_exchange_product_has_feature( $product_id, 'licensing' ) || ! it_exchange_product_has_feature( $product_id, 'recurring-payments' ) ) {
+		$product = itelic_get_product( $product_id) ;
+
+		if ( ! $product->has_feature( 'licensing' ) || ! $product->has_feature( 'recurring-payments' ) ) {
 			return;
 		}
 
@@ -385,7 +387,13 @@ class Renew_Key extends Base {
 	 */
 	public function apply_renewal_discount( $db_base_price, $product, $format ) {
 
-		if ( ! it_exchange_product_has_feature( $product['product_id'], 'licensing' ) ) {
+		try {
+			$product = itelic_get_product( $product['product_id'] );
+		} catch  ( \Exception $e ) {
+			return $db_base_price;
+		}
+
+		if ( ! $product->get_feature( 'licensing' ) ) {
 			return $db_base_price;
 		}
 

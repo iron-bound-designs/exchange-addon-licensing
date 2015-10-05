@@ -13,6 +13,7 @@ use ITELIC\Product;
 
 /**
  * Class Discount
+ *
  * @package ITELIC\Renewal
  */
 class Discount implements \Serializable {
@@ -51,7 +52,7 @@ class Discount implements \Serializable {
 	 */
 	public function __construct( Key $key ) {
 		$this->product      = $key->get_product();
-		$this->feature_data = it_exchange_get_product_feature( $key->get_product()->ID, 'licensing-discount' );
+		$this->feature_data = $this->product->get_feature( 'licensing-discount' );
 		$this->key          = $key;
 	}
 
@@ -162,7 +163,7 @@ class Discount implements \Serializable {
 		$txn      = $this->key->get_transaction();
 		$products = $txn->get_products();
 
-		$amount = it_exchange_get_product_feature( $this->product->ID, 'base-price' );
+		$amount = $this->product->get_feature( 'base-price' );
 
 		foreach ( $products as $product ) {
 
@@ -186,6 +187,7 @@ class Discount implements \Serializable {
 	/**
 	 * (PHP 5 &gt;= 5.1.0)<br/>
 	 * String representation of object
+	 *
 	 * @link http://php.net/manual/en/serializable.serialize.php
 	 * @return string the string representation of the object or null
 	 */
@@ -200,6 +202,7 @@ class Discount implements \Serializable {
 	/**
 	 * (PHP 5 &gt;= 5.1.0)<br/>
 	 * Constructs the object
+	 *
 	 * @link http://php.net/manual/en/serializable.unserialize.php
 	 *
 	 * @param string $serialized <p>
@@ -213,6 +216,6 @@ class Discount implements \Serializable {
 		$product = itelic_get_product( $serialized['product'] );
 
 		$this->product      = $product;
-		$this->feature_data = it_exchange_get_product_feature( $product->ID, 'licensing-discount' );
+		$this->feature_data = $this->product->get_feature( 'licensing-discount' );
 	}
 }

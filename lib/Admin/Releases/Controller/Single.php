@@ -72,10 +72,13 @@ class Single extends Controller {
 		$view->begin();
 		$view->title();
 
-		$current = it_exchange_get_product_feature( $release->get_product()->ID, 'licensing', array( 'field' => 'version' ) );
+		$current = $release->get_product()->get_feature( 'licensing', array( 'field' => 'version' ) );
 		$new     = $release->get_version();
 
-		$version_statuses = array( Release::STATUS_DRAFT, Release::STATUS_PAUSED );
+		$version_statuses = array(
+			Release::STATUS_DRAFT,
+			Release::STATUS_PAUSED
+		);
 
 		if ( in_array( $release->get_status(), $version_statuses ) && version_compare( $new, $current, '<=' ) ) {
 
@@ -332,6 +335,9 @@ class Single extends Controller {
 	 * @since 1.0
 	 */
 	private function enqueue() {
+
+		$release = itelic_get_release( $_GET['ID'] );
+
 		wp_enqueue_style( 'itelic-admin-releases-edit' );
 		wp_enqueue_script( 'itelic-admin-releases-edit' );
 		wp_localize_script( 'itelic-admin-releases-edit', 'ITELIC', array(
@@ -349,7 +355,7 @@ class Single extends Controller {
 			'update_nonce'   => wp_create_nonce( 'itelic-update-release-' . $_GET['ID'] ),
 			'ok'             => __( "Ok", Plugin::SLUG ),
 			'cancel'         => __( "Cancel", Plugin::SLUG ),
-			'currentVersion' => it_exchange_get_product_feature( itelic_get_release( $_GET['ID'] )->get_product()->ID,
+			'currentVersion' => $release->get_product()->get_feature(
 				'licensing', array( 'field' => 'version' ) )
 		) );
 

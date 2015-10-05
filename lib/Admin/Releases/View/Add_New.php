@@ -126,7 +126,7 @@ class Add_New extends View {
 			<option value="">– <?php _e( "Select", Plugin::SLUG ); ?> –</option>
 
 			<?php foreach ( $products as $product ): ?>
-				<?php $version = it_exchange_get_product_feature( $product->ID, 'licensing', array( 'field' => 'version' ) ); ?>
+				<?php $version = $product->get_feature( 'licensing', array( 'field' => 'version' ) ); ?>
 				<option value="<?php echo $product->ID; ?>" data-version="<?php echo esc_attr( $version ); ?>"
 					<?php selected( $selected, $product->ID ); ?>>
 					<?php echo $product->post_title; ?>
