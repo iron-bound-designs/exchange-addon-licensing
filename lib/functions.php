@@ -506,7 +506,7 @@ function validate_query_args( $query_args ) {
 	}
 
 	$args = array(
-		'activation' => $query_args['activation'],
+		'activation' => (int) $query_args['activation'],
 		'key'        => $query_args['key'],
 		'expires'    => (int) $query_args['expires']
 	);

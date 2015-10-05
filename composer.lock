@@ -131,20 +131,20 @@
         },
         {
             "name": "ironbound/db",
-            "version": "v1.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/iron-bound-designs/IronBound-DB.git",
-                "reference": "dc5c5cf93222d6155dbccc488eca0103d9018009"
+                "reference": "618b12315ded490491f7e7e37d134f51629519b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/iron-bound-designs/IronBound-DB/zipball/dc5c5cf93222d6155dbccc488eca0103d9018009",
-                "reference": "dc5c5cf93222d6155dbccc488eca0103d9018009",
+                "url": "https://api.github.com/repos/iron-bound-designs/IronBound-DB/zipball/618b12315ded490491f7e7e37d134f51629519b7",
+                "reference": "618b12315ded490491f7e7e37d134f51629519b7",
                 "shasum": ""
             },
             "require": {
-                "ironbound/cache": "1.*",
+                "ironbound/cache": "^1.0.0",
                 "php": ">=5.3.0"
             },
             "type": "library",
@@ -164,20 +164,20 @@
                 }
             ],
             "description": "Provides models and custom query objects for custom database tables in WordPress.",
-            "time": "2015-10-05 04:15:25"
+            "time": "2015-10-05 05:42:11"
         },
         {
             "name": "ironbound/wp-notifications",
-            "version": "v1.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/iron-bound-designs/wp-notifications.git",
-                "reference": "9482930b2f2433a010c564cfb717da5ca947a911"
+                "reference": "645dc2a1b5690102767db8dc81741ee66d1a2bff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/iron-bound-designs/wp-notifications/zipball/9482930b2f2433a010c564cfb717da5ca947a911",
-                "reference": "9482930b2f2433a010c564cfb717da5ca947a911",
+                "url": "https://api.github.com/repos/iron-bound-designs/wp-notifications/zipball/645dc2a1b5690102767db8dc81741ee66d1a2bff",
+                "reference": "645dc2a1b5690102767db8dc81741ee66d1a2bff",
                 "shasum": ""
             },
             "require": {
@@ -203,7 +203,7 @@
                 }
             ],
             "description": "Drop in framework for sending notifications in WordPress.",
-            "time": "2015-10-05 04:52:17"
+            "time": "2015-10-05 05:58:41"
         }
     ],
     "packages-dev": [

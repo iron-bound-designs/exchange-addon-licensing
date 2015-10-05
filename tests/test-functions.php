@@ -235,12 +235,6 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 
 	public function test_shared_tags() {
 
-		WP_Mock::wpFunction( 'it_exchange_get_option', array(
-			'args'   => array( 'settings_general' ),
-			'times'  => 1,
-			'return' => 'store name'
-		) );
-
 		$listeners = \ITELIC\get_shared_tags();
 
 		$tags = array_map( function ( Listener $listener ) {
@@ -257,5 +251,112 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'customer_email tag is not registered.' );
 		$this->assertContains( 'store_name', $tags,
 			'store_name tag is not registered.' );
+	}
+
+	public function test_generate_download_link() {
+
+		$key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$key->method( 'get_key' )->willReturn( 'abcd-1234' );
+
+		$activation = $this->getMockBuilder( '\ITELIC\Activation' )->disableOriginalConstructor()->getMock();
+		$activation->method( 'get_pk' )->willReturn( 1 );
+		$activation->method( 'get_key' )->willReturn( $key );
+
+		$link = \ITELIC\generate_download_link( $activation );
+
+		$this->assertEquals( 0, strpos( $link, 'http://example.org/itelic-api/download/' ),
+			"Download link does not start with API Endpoint." );
+
+		$args = array();
+		parse_str( parse_url( $link, PHP_URL_QUERY ), $args );
+
+		$this->assertArrayHasKey( 'activation', $args, 'activation query arg is missing.' );
+		$this->assertArrayHasKey( 'key', $args, 'key query arg is missing.' );
+		$this->assertArrayHasKey( 'expires', $args, 'expires query arg is missing.' );
+		$this->assertArrayHasKey( 'token', $args, 'token query arg is missing.' );
+
+		$this->assertEquals( 1, $args['activation'], 'activation query arg is incorrect' );
+		$this->assertEquals( 'abcd-1234', $args['key'], 'key query arg is incorrect' );
+		$this->assertEquals( \ITELIC\make_date_time( '+1 day' )->getTimestamp(), $args['expires'],
+			'expires query arg is incorrect', 5 );
+	}
+
+	/**
+	 * @depends test_generate_download_link
+	 */
+	public function test_download_link_args_are_valid() {
+
+		$key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$key->method( 'get_key' )->willReturn( 'abcd-1234' );
+
+		$activation = $this->getMockBuilder( '\ITELIC\Activation' )->disableOriginalConstructor()->getMock();
+		$activation->method( 'get_pk' )->willReturn( 1 );
+		$activation->method( 'get_key' )->willReturn( $key );
+
+		$link = \ITELIC\generate_download_link( $activation );
+
+		$args = array();
+		parse_str( parse_url( $link, PHP_URL_QUERY ), $args );
+
+		$this->assertTrue( \ITELIC\validate_query_args( $args ) );
+	}
+
+	/**
+	 * @dataProvider missing_download_link_query_args_provider
+	 */
+	public function test_download_link_is_invalid_if_missing_query_args( $args, $expected ) {
+		$this->assertEquals( $expected, \ITELIC\validate_query_args( $args ) );
+	}
+
+	public function missing_download_link_query_args_provider() {
+
+		$key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$key->method( 'get_key' )->willReturn( 'abcd-1234' );
+
+		$activation = $this->getMockBuilder( '\ITELIC\Activation' )->disableOriginalConstructor()->getMock();
+		$activation->method( 'get_pk' )->willReturn( 1 );
+		$activation->method( 'get_key' )->willReturn( $key );
+
+		$link = \ITELIC\generate_download_link( $activation );
+
+		$args = array();
+		parse_str( parse_url( $link, PHP_URL_QUERY ), $args );
+
+		$token   = $args['token'];
+		$expires = $args['expires'];
+
+		$test_cases = array();
+
+		unset( $args['key'] );
+		$test_cases['Link validates when missing key'] = array( $args, false );
+		$args['key']                                   = 'abcd-1234';
+
+		unset( $args['activation'] );
+		$test_cases['Link validates when missing activation'] = array( $args, false );
+		$args['activation']                                   = 1;
+
+		unset( $args['expires'] );
+		$test_cases['Link validates when missing expires'] = array( $args, false );
+		$args['expires']                                   = $expires;
+
+		unset( $args['token'] );
+		$test_cases['Link validates when missing token'] = array( $args, false );
+		$args['token']                                   = $token;
+
+		return $test_cases;
+	}
+
+	public function test_download_link_is_invalid_if_past_expiration() {
+
+		$key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$key->method( 'get_key' )->willReturn( 'abcd-1234' );
+
+		$activation = $this->getMockBuilder( '\ITELIC\Activation' )->disableOriginalConstructor()->getMock();
+		$activation->method( 'get_pk' )->willReturn( 1 );
+		$activation->method( 'get_key' )->willReturn( $key );
+
+		$args = \ITELIC\generate_download_query_args( $activation, \ITELIC\make_date_time( '-1 week' ) );
+
+		$this->assertFalse( \ITELIC\validate_query_args( $args ) );
 	}
 }
