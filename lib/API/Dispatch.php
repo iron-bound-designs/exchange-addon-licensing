@@ -201,6 +201,10 @@ class Dispatch {
 					return false;
 				}
 
+				if ( $key->get_status() != Key::ACTIVE ) {
+					return false;
+				}
+
 				if ( $activation->get_status() != Activation::ACTIVE ) {
 					return false;
 				}

@@ -219,7 +219,7 @@ class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
 		return $keys;
 	}
 
-	public function test_active_license_key_autho_mode_returns_valid_response_for_active_key() {
+	public function test_active_license_key_auth_mode_returns_valid_response_for_active_key() {
 
 		$response = new \ITELIC\API\Response();
 
@@ -245,6 +245,107 @@ class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
 		$this->assertEquals( $response, $dispatch->process( $mock_wp_query ) );
+	}
+
+	/**
+	 * @dataProvider valid_activation_auth_mode_data_provider
+	 */
+	public function test_valid_activation_auth_mode_combinations( $key, $activation, $expected ) {
+
+		$mock_endpoint = $this->getMockBuilder( '\ITELIC\API\Contracts\Authenticatable' )->getMock();
+
+		if ( $expected ) {
+			$mock_endpoint->expects( $this->once() )->method( 'serve' )->willReturn( new \ITELIC\API\Response( array(
+				'success' => true
+			) ) );
+		} else {
+			$mock_endpoint->expects( $this->never() )->method( 'serve' );
+		}
+		$mock_endpoint->expects( $this->atLeastOnce() )->method( 'get_auth_mode' )->willReturn( Authenticatable::MODE_VALID_ACTIVATION );
+
+		WP_Mock::wpFunction( 'itelic_get_key', array(
+			'times'  => 1,
+			'args'   => array( 'abcd-1234' ),
+			'return' => $key
+		) );
+
+		WP_Mock::wpFunction( 'itelic_get_activation', array(
+			'times'  => 1,
+			'args'   => array( '1' ),
+			'return' => $activation
+		) );
+
+		$_SERVER['PHP_AUTH_USER'] = 'abcd-1234';
+		$_SERVER['PHP_AUTH_PW']   = '1';
+
+		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
+		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+
+		$dispatch = new \ITELIC\API\Dispatch();
+		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+
+		$response = $dispatch->process( $mock_wp_query );
+		$data     = $response->get_data();
+
+		$this->assertEquals( $expected, $data['success'] );
+
+		if ( ! $expected ) {
+			$this->assertArrayHasKey( 'error', $data );
+		}
+	}
+
+	public function valid_activation_auth_mode_data_provider() {
+
+		$data = array();
+
+		$keys        = array();
+		$activations = array();
+
+		$active_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$active_key->method( 'get_key' )->willReturn( 'abcd-1234' );
+		$active_key->method( 'get_status' )->willReturn( \ITELIC\Key::ACTIVE );
+		$keys[] = $active_key;
+
+		$disabled_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$disabled_key->method( 'get_key' )->willReturn( 'abcd-1234' );
+		$disabled_key->method( 'get_status' )->willReturn( \ITELIC\Key::DISABLED );
+		$keys[] = $disabled_key;
+
+		$expired_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$expired_key->method( 'get_key' )->willReturn( 'abcd-1234' );
+		$expired_key->method( 'get_status' )->willReturn( \ITELIC\Key::EXPIRED );
+		$keys[] = $expired_key;
+
+		$active_activation = $this->getMockBuilder( '\ITELIC\Activation' )->disableOriginalConstructor()->getMock();
+		$active_activation->method( 'get_status' )->willReturn( \ITELIC\Activation::ACTIVE );
+		$activations[] = $active_activation;
+
+		$deactivated_activation = $this->getMockBuilder( '\ITELIC\Activation' )->disableOriginalConstructor()->getMock();
+		$deactivated_activation->method( 'get_status' )->willReturn( \ITELIC\Activation::DEACTIVATED );
+		$activations[] = $deactivated_activation;
+
+		$expired_activation = $this->getMockBuilder( '\ITELIC\Activation' )->disableOriginalConstructor()->getMock();
+		$expired_activation->method( 'get_status' )->willReturn( \ITELIC\Activation::EXPIRED );
+		$activations[] = $expired_activation;
+
+		for ( $k = 0; $k < 3; $k ++ ) {
+
+			for ( $a = 0; $a < 3; $a ++ ) {
+
+				$key        = $keys[ $k ];
+				$activation = $activations[ $a ];
+
+				$activation->method( 'get_key' )->willReturn( $key );
+
+				$label = sprintf( '%s key & %s activation', $key->get_status(), $activation->get_status() );
+
+				$success = $key->get_status() == \ITELIC\Key::ACTIVE && $activation->get_status() == \ITELIC\Activation::ACTIVE;
+
+				$data[ $label ] = array( $key, $activation, $success );
+			}
+		}
+
+		return $data;
 	}
 
 }
