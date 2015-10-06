@@ -67,5 +67,61 @@ class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
 		$this->assertEquals( $exception->getCode(), $data['error']['code'] );
 	}
 
+	public function test_existing_license_key_auth_mode_rejects_request_without_key() {
+
+		$mock_endpoint = $this->getMockBuilder( '\ITELIC\API\Contracts\Authenticatable' )->getMock();
+		$mock_endpoint->expects( $this->never() )->method( 'serve' );
+		$mock_endpoint->expects( $this->once() )->method( 'get_auth_mode' )->willReturn( \ITELIC\API\Contracts\Authenticatable::MODE_EXISTS );
+		$mock_endpoint->expects( $this->once() )->method( 'get_auth_error_code' )->willReturn( \ITELIC\API\Endpoint::CODE_INVALID_KEY );
+
+		WP_Mock::wpFunction( 'itelic_get_key', array(
+			'times'  => 1,
+			'args'   => array( 'abcd-1234' ),
+			'return' => false
+		) );
+
+		$_SERVER['PHP_AUTH_USER'] = 'abcd-1234';
+
+		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
+		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+
+		$dispatch = new \ITELIC\API\Dispatch();
+		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+
+		$response = $dispatch->process( $mock_wp_query );
+		$data     = $response->get_data();
+
+		$this->assertFalse( $data['success'] );
+		$this->assertArrayHasKey( 'error', $data );
+		$this->assertEquals( \ITELIC\API\Endpoint::CODE_INVALID_KEY, $data['error']['code'] );
+	}
+
+	public function test_existing_license_key_auth_mode_returns_valid_response_with_expired_key() {
+
+		$response = new \ITELIC\API\Response();
+
+		$mock_endpoint = $this->getMockBuilder( '\ITELIC\API\Contracts\Authenticatable' )->getMock();
+		$mock_endpoint->expects( $this->once() )->method( 'serve' )->willReturn( $response );
+		$mock_endpoint->expects( $this->once() )->method( 'get_auth_mode' )->willReturn( \ITELIC\API\Contracts\Authenticatable::MODE_EXISTS );
+
+		$mock_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$mock_key->method( 'get_status' )->willReturn( \ITELIC\Key::EXPIRED );
+
+		WP_Mock::wpFunction( 'itelic_get_key', array(
+			'times'  => 1,
+			'args'   => array( 'abcd-1234' ),
+			'return' => $mock_key
+		) );
+
+		$_SERVER['PHP_AUTH_USER'] = 'abcd-1234';
+
+		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
+		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+
+		$dispatch = new \ITELIC\API\Dispatch();
+		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+
+		$this->assertEquals( $response, $dispatch->process( $mock_wp_query ) );
+	}
 
 }
