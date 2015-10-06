@@ -8,9 +8,9 @@
 use ITELIC\API\Contracts\Authenticatable;
 
 /**
- * Class ITELIC_Test_HTTP_API
+ * Class ITELIC_Test_HTTP_API_Dispatch
  */
-class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
+class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 
 	public function test_unknown_response_generates_404() {
 

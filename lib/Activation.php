@@ -128,7 +128,7 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		if ( $key->get_max() && $key->get_active_count() >= $key->get_max() ) {
-			throw new \LogicException( __( "This license key has reached it's maximum number of activations.", Plugin::SLUG ) );
+			throw new \OverflowException( __( "This license key has reached it's maximum number of activations.", Plugin::SLUG ) );
 		}
 
 		if ( $activation === null ) {
@@ -233,6 +233,10 @@ class Activation extends Model implements API\Serializable {
 
 		if ( $this->get_status() != self::DEACTIVATED ) {
 			throw new \UnexpectedValueException( __( "Only deactivated activation records can be reactivated.", Plugin::SLUG ) );
+		}
+
+		if ( $this->get_key()->get_max() && $this->get_key()->get_active_count() >= $this->get_key()->get_max() ) {
+			throw new \OverflowException( __( "This license key has reached it's maximum number of activations.", Plugin::SLUG ) );
 		}
 
 		if ( $date === null ) {
@@ -563,7 +567,8 @@ class Activation extends Model implements API\Serializable {
 			'activation'   => $this->get_activation()->format( \DateTime::ISO8601 ),
 			'deactivation' => ( $d = $this->get_deactivation() ) === null ? "" : $d->format( \DateTime::ISO8601 ),
 			'location'     => $this->get_location(),
-			'status'       => $this->get_status()
+			'status'       => $this->get_status(),
+			'track'        => $this->get_meta( 'track', true ) ? $this->get_meta( 'track', true ) : 'stable'
 		);
 
 		return $data;
