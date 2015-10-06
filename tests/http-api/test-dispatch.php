@@ -45,7 +45,7 @@ class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
 
 	public function test_error_response_generated_if_api_exception_thrown() {
 
-		$exception = new API\Exception( 'Error', 5 );
+		$exception = new \ITELIC\API\Exception( 'Error', 5 );
 
 		$mock_endpoint = $this->getMockBuilder( '\ITELIC\API\Contracts\Endpoint' )->getMock();
 		$mock_endpoint->expects( $this->once() )->method( 'serve' )->will( $this->throwException( $exception ) );
@@ -64,7 +64,7 @@ class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
 		$this->assertArrayHasKey( 'message', $data['error'] );
 		$this->assertArrayHasKey( 'code', $data['error'] );
 		$this->assertEquals( $exception->getMessage(), $data['error']['message'] );
-		$this->assertEquals( $exception->getCode(), $data['message']['code'] );
+		$this->assertEquals( $exception->getCode(), $data['error']['code'] );
 	}
 
 

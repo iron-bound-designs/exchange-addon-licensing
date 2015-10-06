@@ -14,11 +14,12 @@ use ITELIC\API\Contracts\Endpoint;
 use ITELIC\API\Responder\Responder;
 use ITELIC\Plugin;
 use ITELIC\Key;
-use API\Exception;
+use ITELIC\API\Exception as API_Exception;
 use ITELIC\API\Contracts\Authenticatable;
 
 /**
  * Class Dispatch
+ *
  * @package ITELIC\API
  */
 class Dispatch {
@@ -75,7 +76,11 @@ class Dispatch {
 		 */
 		global $wp_query;
 
-		$this->send_response( $this->process( $wp_query ) );
+		$response = $this->process( $wp_query );
+
+		if ( $response ) {
+			$this->responder->respond( $response );
+		}
 	}
 
 	/**
@@ -122,6 +127,8 @@ class Dispatch {
 				return $response;
 			}
 		}
+
+		return null;
 	}
 
 	/**
@@ -253,7 +260,7 @@ class Dispatch {
 	 */
 	protected function generate_response_from_exception( \Exception $e ) {
 
-		if ( $e instanceof Exception ) {
+		if ( $e instanceof API_Exception ) {
 			$code    = $e->getCode();
 			$message = $e->getMessage();
 			$status  = 400;

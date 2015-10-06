@@ -12,7 +12,7 @@ use ITELIC\Activation;
 use ITELIC\API\Endpoint;
 use ITELIC\API\Contracts\Authenticatable;
 use ITELIC\API\Response;
-use API\Exception;
+use ITELIC\API\Exception;
 use ITELIC\Plugin;
 use ITELIC\Key;
 
