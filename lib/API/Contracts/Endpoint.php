@@ -8,7 +8,7 @@
 
 namespace ITELIC\API\Contracts;
 
-use API\Exception;
+use ITELIc\API\Exception;
 use ITELIC\API\Response;
 
 interface Endpoint {

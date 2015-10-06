@@ -37,7 +37,7 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 		$stub_key->method( 'get_max' )->willReturn( 1 );
 		$stub_key->method( 'get_active_count' )->willReturn( 1 );
 
-		$this->setExpectedException( '\LogicException' );
+		$this->setExpectedException( '\OverflowException' );
 
 		Activation::create( $stub_key, 'loc' );
 	}

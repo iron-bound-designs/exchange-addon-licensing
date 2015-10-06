@@ -66,15 +66,27 @@ class Activate extends Endpoint implements Authenticatable {
 
 		$activation = itelic_get_activation_by_location( $location, $this->key );
 
-		if ( $activation ) {
-			$activation->reactivate();
-			$activation->update_meta( 'track', $track );
+		try {
+			if ( $activation ) {
 
-			if ( $release ) {
-				$activation->set_release( $release );
+				if ( $activation->get_status() == Activation::DEACTIVATED ) {
+					$activation->reactivate();
+				}
+
+				$activation->update_meta( 'track', $track );
+
+				if ( $release ) {
+					$activation->set_release( $release );
+				}
+			} else {
+				$activation = itelic_activate_license_key( $this->key, $location, null, $release, $track );
 			}
-		} else {
-			$activation = itelic_activate_license_key( $this->key, $location, null, $release, $track );
+		}
+		catch ( \LengthException $e ) {
+			throw new Exception( $e->getMessage(), Endpoint::CODE_INVALID_LOCATION, $e );
+		}
+		catch ( \OverflowException $e ) {
+			throw new Exception( $e->getMessage(), Endpoint::CODE_MAX_ACTIVATIONS, $e );
 		}
 
 		return new Response( array(
@@ -88,7 +100,7 @@ class Activate extends Endpoint implements Authenticatable {
 	 *
 	 * @since 1.0
 	 *
-	 * @return string One of MODE_VALID, MODE_ACTIVE
+	 * @return string One of MODE_EXISTS, MODE_ACTIVE
 	 */
 	public function get_auth_mode() {
 		return Authenticatable::MODE_ACTIVE;

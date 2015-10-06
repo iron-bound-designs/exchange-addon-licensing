@@ -57,7 +57,7 @@ class Settings {
 			$defaults['renewal-discount-type']      = 'percent';
 			$defaults['renewal-discount-amount']    = '';
 			$defaults['renewal-discount-expiry']    = '';
-			$defaults['sell-online-software']       = false;
+			$defaults['sell-online-software']       = true;
 			$defaults['enable-remote-activation']   = false;
 			$defaults['enable-remote-deactivation'] = true;
 
