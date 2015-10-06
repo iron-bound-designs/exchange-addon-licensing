@@ -234,6 +234,11 @@ class Dispatch {
 		), 401 );
 
 		switch ( $endpoint->get_auth_mode() ) {
+
+			case Authenticatable::MODE_VALID_ACTIVATION:
+				$realm = __( "An active license key is required to access this resource, passed as the username, and the activation record ID as the password.", Plugin::SLUG );
+				break;
+
 			case Authenticatable::MODE_ACTIVE:
 				$realm = __( "An active license key is required to access this resource, passed as the username. Leave password blank.", Plugin::SLUG );
 				break;
