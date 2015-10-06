@@ -66,6 +66,31 @@ class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
 		$this->assertArrayHasKey( 'code', $data['error'] );
 		$this->assertEquals( $exception->getMessage(), $data['error']['message'] );
 		$this->assertEquals( $exception->getCode(), $data['error']['code'] );
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function test_error_response_generate_if_non_api_exception_thrown() {
+
+		$exception = new Exception( 'Error', 5 );
+
+		$mock_endpoint = $this->getMockBuilder( '\ITELIC\API\Contracts\Endpoint' )->getMock();
+		$mock_endpoint->expects( $this->once() )->method( 'serve' )->will( $this->throwException( $exception ) );
+
+		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
+		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+
+		$dispatch = new \ITELIC\API\Dispatch();
+		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+
+		$response = $dispatch->process( $mock_wp_query );
+		$data     = $response->get_data();
+
+		$this->assertFalse( $data['success'] );
+		$this->assertArrayHasKey( 'error', $data );
+		$this->assertArrayHasKey( 'message', $data['error'] );
+		$this->assertArrayHasKey( 'code', $data['error'] );
+		$this->assertEquals( 0, $data['error']['code'] );
+		$this->assertEquals( 500, $response->get_status() );
 	}
 
 	public function test_existing_license_key_auth_mode_rejects_request_without_key() {
