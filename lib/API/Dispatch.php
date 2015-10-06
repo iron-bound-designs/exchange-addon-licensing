@@ -74,7 +74,19 @@ class Dispatch {
 		 */
 		global $wp_query;
 
-		$action = $wp_query->get( self::TAG );
+		$this->send_response( $this->process( $wp_query ) );
+	}
+
+	/**
+	 * Dispatch the request.
+	 *
+	 * @param \WP_Query $query
+	 *
+	 * @return Response
+	 */
+	public function process( \WP_Query $query ) {
+
+		$action = $query->get( self::TAG );
 
 		if ( $action ) {
 
@@ -87,7 +99,7 @@ class Dispatch {
 					)
 				), 404 );
 
-				$this->send_response( $response );
+				return $response;
 			} else {
 				$endpoint = self::$endpoints[ $action ];
 
@@ -106,7 +118,7 @@ class Dispatch {
 					}
 				}
 
-				$this->send_response( $response );
+				return $response;
 			}
 		}
 	}

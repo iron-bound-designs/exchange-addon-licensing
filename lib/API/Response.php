@@ -13,18 +13,21 @@ namespace ITELIC\API;
  * @package ITELIC\API
  */
 class Response {
+
 	/**
 	 * @var mixed
 	 */
-	public $data;
+	protected $data;
+
 	/**
 	 * @var integer
 	 */
-	public $headers;
+	protected $headers;
+
 	/**
 	 * @var array
 	 */
-	public $status;
+	protected $status;
 
 	/**
 	 * Constructor
