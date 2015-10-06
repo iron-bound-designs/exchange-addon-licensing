@@ -14,8 +14,9 @@ use ITELIC\API\Endpoint\Download;
 use ITELIC\API\Endpoint\Info;
 use ITELIC\API\Endpoint\Product;
 use ITELIC\API\Endpoint\Version;
+use ITELIC\API\Responder\JSON_Responder;
 
-new Dispatch();
+$dispatch = new Dispatch();
 
 Dispatch::register_endpoint( new Activate(), 'activate' );
 Dispatch::register_endpoint( new Deactivate(), 'deactivate' );
@@ -23,3 +24,5 @@ Dispatch::register_endpoint( new Info(), 'info' );
 Dispatch::register_endpoint( new Version(), 'version' );
 Dispatch::register_endpoint( new Download(), 'download' );
 Dispatch::register_endpoint( new Product(), 'product' );
+
+$dispatch->set_responder( new JSON_Responder() );
