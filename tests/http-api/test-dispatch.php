@@ -195,6 +195,7 @@ class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
 		$this->assertFalse( $data['success'] );
 		$this->assertArrayHasKey( 'error', $data );
 		$this->assertEquals( \ITELIC\API\Endpoint::CODE_INVALID_KEY, $data['error']['code'] );
+		$this->assertArrayHasKey( 'WWW-Authenticate', $response->get_headers() );
 	}
 
 	/**
@@ -227,6 +228,7 @@ class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
 		$this->assertFalse( $data['success'] );
 		$this->assertArrayHasKey( 'error', $data );
 		$this->assertEquals( \ITELIC\API\Endpoint::CODE_INVALID_KEY, $data['error']['code'] );
+		$this->assertArrayHasKey( 'WWW-Authenticate', $response->get_headers() );
 	}
 
 	public function valid_license_key_auth_mode_data_provider() {
@@ -315,7 +317,10 @@ class ITELIC_Test_HTTP_API extends ITELIC_UnitTestCase {
 		$this->assertEquals( $expected, $data['success'] );
 
 		if ( ! $expected ) {
+			$this->assertArrayHasKey( 'WWW-Authenticate', $response->get_headers() );
 			$this->assertArrayHasKey( 'error', $data );
+		} else {
+			$this->assertArrayNotHasKey( 'WWW-Authenticate', $response->get_headers() );
 		}
 	}
 
