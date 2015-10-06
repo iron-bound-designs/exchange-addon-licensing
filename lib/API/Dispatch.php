@@ -10,6 +10,7 @@
 namespace ITELIC\API;
 
 use ITELIC\Activation;
+use ITELIC\API\Contracts\Endpoint;
 use ITELIC\API\Responder\Responder;
 use ITELIC\Plugin;
 use ITELIC\Key;
@@ -255,9 +256,11 @@ class Dispatch {
 		if ( $e instanceof Exception ) {
 			$code    = $e->getCode();
 			$message = $e->getMessage();
+			$status  = 400;
 		} else {
 			$code    = 0;
 			$message = sprintf( __( "Unknown error %s with code %d", Plugin::SLUG ), $e->getMessage(), $e->getCode() );
+			$status  = 500;
 		}
 
 		return new Response( array(
@@ -266,7 +269,7 @@ class Dispatch {
 				'code'    => $code,
 				'message' => $message
 			)
-		) );
+		), $status );
 	}
 
 	/**
