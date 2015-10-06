@@ -102,7 +102,7 @@ class Product extends Endpoint implements Authenticatable {
 	 * @return string
 	 */
 	public function get_auth_error_message() {
-		return __( "A license key is required.", Plugin::SLUG );
+		return __( "An active license key and valid activation record is required.", Plugin::SLUG );
 	}
 
 	/**
@@ -113,7 +113,7 @@ class Product extends Endpoint implements Authenticatable {
 	 * @return int
 	 */
 	public function get_auth_error_code() {
-		return self::CODE_INVALID_KEY;
+		return self::CODE_INVALID_ACTIVATION;
 	}
 
 	/**
