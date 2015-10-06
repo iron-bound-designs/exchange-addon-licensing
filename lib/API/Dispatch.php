@@ -10,6 +10,8 @@
 namespace ITELIC\API;
 
 use ITELIC\Activation;
+use ITELIC\API\Contracts\Endpoint;
+use ITELIC\API\Responder\Responder;
 use ITELIC\Plugin;
 use ITELIC\Key;
 use API\Exception;
@@ -20,6 +22,11 @@ use ITELIC\API\Contracts\Authenticatable;
  * @package ITELIC\API
  */
 class Dispatch {
+
+	/**
+	 * @var Responder
+	 */
+	private $responder;
 
 	/**
 	 * @var string
@@ -50,6 +57,15 @@ class Dispatch {
 	}
 
 	/**
+	 * Set the responder.
+	 *
+	 * @param Responder $responder
+	 */
+	public function set_responder( Responder $responder ) {
+		$this->responder = $responder;
+	}
+
+	/**
 	 * Dispatch an API request.
 	 */
 	public function dispatch() {
@@ -59,7 +75,19 @@ class Dispatch {
 		 */
 		global $wp_query;
 
-		$action = $wp_query->get( self::TAG );
+		$this->send_response( $this->process( $wp_query ) );
+	}
+
+	/**
+	 * Dispatch the request.
+	 *
+	 * @param \WP_Query $query
+	 *
+	 * @return Response
+	 */
+	public function process( \WP_Query $query ) {
+
+		$action = $query->get( self::TAG );
 
 		if ( $action ) {
 
@@ -72,7 +100,7 @@ class Dispatch {
 					)
 				), 404 );
 
-				$this->send_response( $response );
+				return $response;
 			} else {
 				$endpoint = self::$endpoints[ $action ];
 
@@ -91,7 +119,7 @@ class Dispatch {
 					}
 				}
 
-				$this->send_response( $response );
+				return $response;
 			}
 		}
 	}
@@ -107,33 +135,14 @@ class Dispatch {
 	 */
 	protected function send_response( Response $response ) {
 
-		$content_type = 'application/json';
-		$this->send_header( 'Content-Type', $content_type . '; charset=' . get_option( 'blog_charset' ) );
+		if ( is_null( $this->responder ) ) {
+			status_header( 500 );
+			echo 'An unexpected error occurred.';
 
-		$this->send_headers( $response->get_headers() );
-		$this->set_status( $response->get_status() );
-
-		$result = $this->response_to_data( $response );
-		$result = json_encode( $result );
-
-		$json_error_message = $this->get_json_last_error();
-
-		if ( $json_error_message ) {
-
-			$json_error_obj = new Response( array(
-				'success' => false,
-				'error'   => array(
-					'code'    => 500,
-					'message' => $json_error_message
-				),
-				500
-			) );
-
-			$result = $this->response_to_data( $json_error_obj );
-			$result = json_encode( $result );
+			die();
 		}
 
-		echo $result;
+		echo $this->responder->respond( $response );
 
 		die();
 	}
@@ -247,9 +256,11 @@ class Dispatch {
 		if ( $e instanceof Exception ) {
 			$code    = $e->getCode();
 			$message = $e->getMessage();
+			$status  = 400;
 		} else {
 			$code    = 0;
 			$message = sprintf( __( "Unknown error %s with code %d", Plugin::SLUG ), $e->getMessage(), $e->getCode() );
+			$status  = 500;
 		}
 
 		return new Response( array(
@@ -258,115 +269,7 @@ class Dispatch {
 				'code'    => $code,
 				'message' => $message
 			)
-		) );
-	}
-
-	/**
-	 * Convert a response to data to send
-	 *
-	 * @param Response $response Response object
-	 *
-	 * @return array
-	 */
-	public function response_to_data( Response $response ) {
-		$data = $this->prepare_response( $response->get_data() );
-
-		return $data;
-	}
-
-	/**
-	 * Returns if an error occurred during most recent JSON encode/decode
-	 * Strings to be translated will be in format like "Encoding error: Maximum
-	 * stack depth exceeded"
-	 *
-	 * @return boolean|string Boolean false or string error message
-	 */
-	protected function get_json_last_error() {
-		// see https://core.trac.wordpress.org/ticket/27799
-		if ( ! function_exists( 'json_last_error' ) ) {
-			return false;
-		}
-
-		$last_error_code = json_last_error();
-		if ( ( defined( 'JSON_ERROR_NONE' ) && $last_error_code === JSON_ERROR_NONE ) || empty( $last_error_code ) ) {
-			return false;
-		}
-
-		return json_last_error_msg();
-	}
-
-	/**
-	 * Send a HTTP status code
-	 *
-	 * @param int $code HTTP status
-	 */
-	protected function set_status( $code ) {
-		status_header( $code );
-	}
-
-	/**
-	 * Send a HTTP header
-	 *
-	 * @param string $key   Header key
-	 * @param string $value Header value
-	 */
-	protected function send_header( $key, $value ) {
-		// Sanitize as per RFC2616 (Section 4.2):
-		//   Any LWS that occurs between field-content MAY be replaced with a
-		//   single SP before interpreting the field value or forwarding the
-		//   message downstream.
-		$value = preg_replace( '/\s+/', ' ', $value );
-		header( sprintf( '%s: %s', $key, $value ) );
-	}
-
-	/**
-	 * Send multiple HTTP headers
-	 *
-	 * @param $headers array Map of header name to header value
-	 */
-	protected function send_headers( $headers ) {
-		foreach ( $headers as $key => $value ) {
-			$this->send_header( $key, $value );
-		}
-	}
-
-	/**
-	 * Prepares response data to be serialized to JSON
-	 *
-	 * @param mixed $data Native representation
-	 *
-	 * @return array|string Data ready for `json_encode()`
-	 */
-	public function prepare_response( $data ) {
-
-		switch ( gettype( $data ) ) {
-			case 'boolean':
-			case 'integer':
-			case 'double':
-			case 'string':
-			case 'NULL':
-				// These values can be passed through
-				return $data;
-
-			case 'array':
-				// Arrays must be mapped in case they also return objects
-				return array_map( array( $this, 'prepare_response' ), $data );
-
-			case 'object':
-
-				if ( $data instanceof Serializable ) {
-					$data = $data->get_api_data();
-				} else {
-					$data = get_object_vars( $data );
-				}
-
-				// Now, pass the array (or whatever was returned from
-				// jsonSerialize through.)
-				return $this->prepare_response( $data );
-
-			default:
-				return null;
-		}
+		), $status );
 	}
 
 	/**

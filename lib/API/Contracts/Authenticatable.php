@@ -15,7 +15,7 @@ use ITELIC\Key;
  * Interface Authenticatable
  * @package ITELIC\API\Contracts
  */
-interface Authenticatable {
+interface Authenticatable extends Endpoint {
 
 	/**
 	 * @var string. Used when the license key must be valid ( not expired ).

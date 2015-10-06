@@ -7,13 +7,13 @@
  */
 
 namespace ITELIC\API;
-use API\Exception;
+use ITELIC\API\Contracts\Endpoint as IEndpoint;
 
 /**
  * Class Endpoint
  * @package ITELIC\API
  */
-abstract class Endpoint {
+abstract class Endpoint implements IEndpoint {
 
 	/**
 	 * Max number of activations is reached during activation.
@@ -49,19 +49,4 @@ abstract class Endpoint {
 	 * Invalid activation ID used when getting latest version.
 	 */
 	const CODE_INVALID_ACTIVATION = 7;
-
-	/**
-	 * Serve the request to this endpoint.
-	 *
-	 * @param \ArrayAccess $get
-	 * @param \ArrayAccess $post
-	 *
-	 * @return Response
-	 *
-	 * @throws Exception|\Exception
-	 *         API Exceptions will be treated as expected errors, and will be displayed as such.
-	 *         All other exceptions will be treated as unexpected errors and will be displayed with error code 0.
-	 */
-	abstract public function serve( \ArrayAccess $get, \ArrayAccess $post );
-
 }
