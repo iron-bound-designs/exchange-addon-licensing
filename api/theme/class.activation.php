@@ -260,6 +260,10 @@ class IT_Theme_API_Activation implements IT_Theme_API {
 			'working' => __( "Deactivating", ITELIC\Plugin::SLUG )
 		);
 
+		if ( ! $this->activation ) {
+			return '';
+		}
+
 		$options = ITUtility::merge_defaults( $options, $defaults );
 
 		$label   = $options['label'];
