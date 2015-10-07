@@ -16,6 +16,8 @@ define( 'DOING_TESTS', true );
 
 require_once $_tests_dir . '/includes/functions.php';
 
+require_once dirname( __FILE__ ) . '/../vendor/antecedent/patchwork/Patchwork.php';
+
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 if ( ! defined( 'COOKIEHASH' ) ) {
@@ -55,3 +57,6 @@ if ( ! function_exists( 'load_it_exchange' ) ) {
 activate_plugin( 'exchange-addon-licensing/exchange-addon-licensing.php' );
 activate_plugin( 'exchange-addon-manual-purchases/exchange-addon-manual-purchases.php' );
 activate_plugin( 'exchange-addon-recurring-payments/exchange-addon-recurring-payments.php' );
+
+\WP_Mock::setUsePatchwork( true );
+\WP_Mock::bootstrap();

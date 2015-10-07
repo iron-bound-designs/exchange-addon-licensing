@@ -40,7 +40,12 @@ class Download extends Endpoint {
 			status_header( 403 );
 
 			_e( "This download link is invalid or has expired.", Plugin::SLUG );
-			die();
+
+			if ( ! defined( 'DOING_TESTS' ) || ! DOING_TESTS ) {
+				die();
+			} else {
+				return;
+			}
 		}
 
 		$activation = itelic_get_activation( $get['activation'] );
@@ -50,7 +55,12 @@ class Download extends Endpoint {
 			status_header( 403 );
 
 			_e( "This download link is invalid or has expired.", Plugin::SLUG );
-			die();
+
+			if ( ! defined( 'DOING_TESTS' ) || ! DOING_TESTS ) {
+				die();
+			} else {
+				return;
+			}
 		}
 
 		$release = $activation->get_key()->get_product()->get_latest_release_for_activation( $activation );
