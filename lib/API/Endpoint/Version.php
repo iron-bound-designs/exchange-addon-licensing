@@ -46,17 +46,14 @@ class Version extends Endpoint implements Authenticatable {
 	 */
 	public function serve( \ArrayAccess $get, \ArrayAccess $post ) {
 
-		$now     = new \DateTime( 'now', new \DateTimeZone( get_option( 'timezone_string' ) ) );
+		$now     = \ITELIC\make_date_time();
 		$expires = $now->add( new \DateInterval( "P1D" ) );
 
 		$release = $this->activation->get_key()->get_product()->get_latest_release_for_activation( $this->activation );
 
+		// this really is a safeguard.
 		if ( ! $release ) {
-			wp_send_json_error( array(
-				'message' => __( 'Invalid version number', Plugin::SLUG )
-			) );
-
-			die();
+			throw new \UnexpectedValueException( __( "No releases available for this product.", Plugin::SLUG ) );
 		}
 
 		if ( $release->get_type() == Release::TYPE_SECURITY ) {
