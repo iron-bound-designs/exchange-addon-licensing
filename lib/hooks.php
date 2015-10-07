@@ -78,22 +78,6 @@ function scripts_and_styles() {
 add_action( 'wp_enqueue_scripts', 'ITELIC\scripts_and_styles' );
 
 /* --------------------------------------------
-================= Notifications ===============
------------------------------------------------ */
-
-/**
- * Setup the notifications package.
- *
- * @since 1.0
- */
-function setup_notifications() {
-
-	Queue_Manager::register( 'itelic-wp-cron', new WP_Cron( new Options( 'itelic' ) ) );
-}
-
-add_action( 'init', 'ITELIC\setup_notifications' );
-
-/* --------------------------------------------
 ================== Renewals ===================
 ----------------------------------------------- */
 
