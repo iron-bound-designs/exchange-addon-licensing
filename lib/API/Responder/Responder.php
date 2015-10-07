@@ -13,6 +13,7 @@ use ITELIC\API\Serializable;
 
 /**
  * Class Responder
+ *
  * @package ITELIC\API\Responder
  */
 abstract class Responder {
@@ -77,7 +78,7 @@ abstract class Responder {
 	 *
 	 * @param mixed $data Native representation
 	 *
-	 * @return array|string
+	 * @return array|mixed
 	 */
 	public function prepare_response( $data ) {
 
@@ -98,6 +99,8 @@ abstract class Responder {
 
 				if ( $data instanceof Serializable ) {
 					$data = $data->get_api_data();
+				} else if ( $data instanceof \stdClass ) {
+					$data = (array) $data;
 				} else {
 					$data = get_object_vars( $data );
 				}
@@ -110,6 +113,5 @@ abstract class Responder {
 				return null;
 		}
 	}
-
 
 }
