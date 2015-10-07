@@ -332,6 +332,10 @@ class IT_Theme_API_License implements IT_Theme_API {
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
+		if ( ! $this->license ) {
+			return '';
+		}
+
 		$submit = $options['submit_label'];
 		$key    = $this->license->get_key();
 		$nonce  = wp_create_nonce( "itelic-remote-activate-$key" );
@@ -367,6 +371,10 @@ class IT_Theme_API_License implements IT_Theme_API {
 		);
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
+		if ( ! $this->license ) {
+			return '';
+		}
+
 		$link = itelic_generate_auto_renewal_url( $this->license );
 
 		switch ( $options['format'] ) {
@@ -390,6 +398,11 @@ class IT_Theme_API_License implements IT_Theme_API {
 	 * @return bool
 	 */
 	public function can_remote_activate( $options = array() ) {
+
+		if ( ! $this->license ) {
+			return false;
+		}
+
 		$settings = it_exchange_get_option( 'addon_itelic' );
 
 		return $settings['enable-remote-activation'] && $this->license->get_product()->get_feature(
@@ -406,6 +419,11 @@ class IT_Theme_API_License implements IT_Theme_API {
 	 * @return bool
 	 */
 	public function can_remote_deactivate( $options = array() ) {
+
+		if ( ! $this->license ) {
+			return false;
+		}
+
 		$settings = it_exchange_get_option( 'addon_itelic' );
 
 		return $settings['enable-remote-deactivation'] && $this->license->get_product()->get_feature(
