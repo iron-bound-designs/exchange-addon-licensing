@@ -101,21 +101,19 @@ class Discount implements \Serializable {
 	}
 
 	/**
-	 * Check if thie discount is still valid.
+	 * Check if the discount is still valid.
 	 *
 	 * @since 1.0
 	 *
-	 * @param Key $key
-	 *
 	 * @return bool
 	 */
-	public function is_discount_valid( Key $key ) {
+	public function is_discount_valid() {
 
-		if ( "" == $this->get_expiry_days() ) {
+		if ( '' === trim( $this->get_expiry_days() ) ) {
 			return true;
 		}
 
-		$expiry_date = $key->get_expires();
+		$expiry_date = $this->key->get_expires();
 
 		$diff = $expiry_date->diff( \ITELIC\make_date_time() );
 

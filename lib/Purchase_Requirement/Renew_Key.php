@@ -13,6 +13,7 @@ use ITELIC\Renewal\Discount;
 
 /**
  * Class Renew_Key
+ *
  * @package ITELIC\Purchase_Requirement
  */
 class Renew_Key extends Base {
@@ -24,7 +25,8 @@ class Renew_Key extends Base {
 	 *
 	 * @param string   $slug
 	 * @param array    $args
-	 * @param \Closure $complete Becomes the requirement met function. ($this) is passed as a parameter.
+	 * @param \Closure $complete Becomes the requirement met function. ($this)
+	 *                           is passed as a parameter.
 	 */
 	public function __construct( $slug, array $args, \Closure $complete ) {
 		parent::__construct( $slug, $args, $complete );
@@ -33,34 +35,67 @@ class Renew_Key extends Base {
 			$this,
 			'add_renew_button_to_sw'
 		) );
-		add_action( 'it_exchange_processing_super_widget_ajax_renew_key', array( $this, 'enter_renewal_process_sw' ) );
+		add_action( 'it_exchange_processing_super_widget_ajax_renew_key', array(
+			$this,
+			'enter_renewal_process_sw'
+		) );
 		add_action( 'wp_ajax_itelic_renew_product_purchase_requirement', array(
 			$this,
 			'process_purchase_requirement_renewal_ajax'
 		) );
-		add_action( 'init', array( $this, 'process_purchase_requirement_renewal_checkout' ) );
+		add_action( 'init', array(
+			$this,
+			'process_purchase_requirement_renewal_checkout'
+		) );
 
-		add_filter( 'it_exchange_set_inital_sw_state', array( $this, 'set_initial_state_to_login' ) );
-		add_action( 'it_exchange_super_widget_login_end_form', array( $this, 'add_renewal_key_to_login_form' ) );
-		add_action( 'wp_login', array( $this, 'add_product_to_cart_on_login' ), 10, 2 );
+		add_filter( 'it_exchange_set_inital_sw_state', array(
+			$this,
+			'set_initial_state_to_login'
+		) );
+		add_action( 'it_exchange_super_widget_login_end_form', array(
+			$this,
+			'add_renewal_key_to_login_form'
+		) );
+		add_action( 'wp_login', array(
+			$this,
+			'add_product_to_cart_on_login'
+		), 10, 2 );
 
-		add_filter( 'it_exchange_theme_api_cart-item_title', array( $this, 'modify_cart_item_title' ) );
+		add_filter( 'it_exchange_theme_api_cart-item_title', array(
+			$this,
+			'modify_cart_item_title'
+		) );
 
-		add_action( 'wp_enqueue_scripts', array( $this, 'remove_variant_options' ), 20 );
-		add_filter( 'it_exchange_multi_item_product_allowed', array( $this, 'disable_multi_item_product' ), 10, 2 );
-		add_filter( 'it_exchange_get_cart_product_base_price', array( $this, 'apply_renewal_discount' ), 20, 3 );
+		add_action( 'wp_enqueue_scripts', array(
+			$this,
+			'remove_variant_options'
+		), 20 );
+		add_filter( 'it_exchange_multi_item_product_allowed', array(
+			$this,
+			'disable_multi_item_product'
+		), 10, 2 );
+		add_filter( 'it_exchange_get_cart_product_base_price', array(
+			$this,
+			'apply_renewal_discount'
+		), 20, 3 );
 
 		add_filter( 'it_exchange_generate_transaction_object_products', array(
 			$this,
 			'save_renewal_info_to_transaction_object'
 		), 10, 3 );
 
-		add_filter( 'it_exchange_transaction_object', array( $this, 'clear_renewal_session_on_purchase' ) );
+		add_filter( 'it_exchange_transaction_object', array(
+			$this,
+			'clear_renewal_session_on_purchase'
+		) );
 		add_action( 'it_exchange_delete_cart_product', array(
 			$this,
 			'remove_renewal_info_on_cart_product_removal'
 		), 10, 2 );
-		add_action( 'it_exchange_empty_shopping_cart', array( $this, 'clear_cache_on_empty_cart' ) );
+		add_action( 'it_exchange_empty_shopping_cart', array(
+			$this,
+			'clear_cache_on_empty_cart'
+		) );
 	}
 
 	/**
@@ -76,7 +111,7 @@ class Renew_Key extends Base {
 			return;
 		}
 
-		$product = itelic_get_product( $product_id) ;
+		$product = itelic_get_product( $product_id );
 
 		if ( ! $product->has_feature( 'licensing' ) || ! $product->has_feature( 'recurring-payments' ) ) {
 			return;
@@ -95,8 +130,7 @@ class Renew_Key extends Base {
 		?>
 
 		<form method="POST" class="it-exchange-sw-purchase-options it-exchange-sw-itelic-renew">
-			<input type="hidden" name="it-exchange-renew-product" value="<?php echo esc_attr( $product_id ); ?>">
-			<?php wp_nonce_field( 'itelic-renew-' . $product_id, 'nonce' ); ?>
+			<input type="hidden" name="it-exchange-renew-product" value="<?php echo esc_attr( $product_id ); ?>"> <?php wp_nonce_field( 'itelic-renew-' . $product_id, 'nonce' ); ?>
 			<input type="submit" value="<?php esc_attr_e( "Renew", Plugin::SLUG ); ?>" class="itelic-renew-button" style="width:100%;">
 		</form>
 
@@ -104,7 +138,8 @@ class Renew_Key extends Base {
 	}
 
 	/**
-	 * Enter the renewal process when the renew button is pressed on the super widget.
+	 * Enter the renewal process when the renew button is pressed on the super
+	 * widget.
 	 *
 	 * @since 1.0
 	 */
@@ -218,7 +253,8 @@ class Renew_Key extends Base {
 	}
 
 	/**
-	 * When a user is renewing their key from a renewal URL, set the initial state to login.
+	 * When a user is renewing their key from a renewal URL, set the initial
+	 * state to login.
 	 *
 	 * @since 1.0
 	 *
@@ -389,7 +425,8 @@ class Renew_Key extends Base {
 
 		try {
 			$product = itelic_get_product( $product['product_id'] );
-		} catch  ( \Exception $e ) {
+		}
+		catch ( \Exception $e ) {
 			return $db_base_price;
 		}
 
@@ -407,6 +444,10 @@ class Renew_Key extends Base {
 		$key = itelic_get_key( $key );
 
 		$discount = new Discount( $key );
+
+		if ( ! $discount->is_discount_valid() ) {
+			return $db_base_price;
+		}
 
 		return $discount->get_discount_price( $format );
 	}
