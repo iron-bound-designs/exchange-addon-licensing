@@ -67,7 +67,10 @@ class Download extends Endpoint {
 
 		$file = $release->get_download();
 
-		Update::create( $activation, $release );
+		itelic_create_update( array(
+			'activation' => $activation,
+			'release'    => $release
+		) );
 
 		\ITELIC\serve_download( wp_get_attachment_url( $file->ID ) );
 	}
