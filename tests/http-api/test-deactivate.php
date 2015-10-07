@@ -81,6 +81,10 @@ class ITELIC_Test_HTTP_API_Deactivate extends ITELIC_UnitTestCase {
 
 		$deactivate->set_auth_license_key( $mock_key );
 
-		$deactivate->serve( new ArrayObject(), new ArrayObject( array( 'id' => 1 ) ) );
+		$response = $deactivate->serve( new ArrayObject(), new ArrayObject( array( 'id' => 1 ) ) );
+		$data     = $response->get_data();
+
+		$this->assertTrue( $data['success'] );
+		$this->assertEquals( $mock_activation, $data['body'] );
 	}
 }
