@@ -49,45 +49,23 @@ class Deactivate extends Endpoint implements Authenticatable {
 			throw new Exception( __( "Activation ID is required.", Plugin::SLUG ), self::CODE_NO_LOCATION_ID );
 		}
 
-		$location_id = absint( $post['id'] );
+		$activation_id = absint( $post['id'] );
 
-		try {
-			$activation = itelic_get_activation( $location_id );
+		$activation = itelic_get_activation( $activation_id );
 
-			if ( $activation ) {
-				if ( $activation->get_key()->get_key() !== $this->key->get_key() ) {
-					return $this->trigger_not_found();
-				} else {
-					$activation->deactivate();
-				}
+		if ( $activation ) {
+			if ( $activation->get_key()->get_key() !== $this->key->get_key() ) {
+				throw new Exception( __( "Activation record ID does not match license key.", Plugin::SLUG ), self::CODE_INVALID_LOCATION );
 			} else {
-				return $this->trigger_not_found();
+				$activation->deactivate();
 			}
-		}
-		catch ( Exception $e ) {
-			return $this->trigger_not_found();
+		} else {
+			throw new Exception( __( "Activation record could not be found.", Plugin::SLUG ), self::CODE_INVALID_LOCATION );
 		}
 
 		return new Response( array(
 			'success' => true,
 			'body'    => $activation
-		) );
-	}
-
-	/**
-	 * Trigger the location not found.
-	 *
-	 * @since 1.0
-	 *
-	 * @return Response
-	 */
-	protected function trigger_not_found() {
-		return new Response( array(
-			'success' => false,
-			'error'   => array(
-				'code'    => self::CODE_INVALID_LOCATION,
-				'message' => __( "Activation record could not be found.", Plugin::SLUG )
-			)
 		) );
 	}
 
