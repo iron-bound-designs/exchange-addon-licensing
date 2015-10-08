@@ -28,9 +28,9 @@ class CPT {
 	const SHORTCODE = 'itelic_renewal';
 
 	/**
-	 * Constructor.
+	 * Setup hooks.
 	 */
-	public function __construct() {
+	public function add_hooks() {
 		add_action( 'init', array( $this, 'register' ) );
 		add_filter( 'parent_file', array( $this, 'set_exchange_to_parent' ) );
 		add_action( 'add_meta_boxes_' . self::TYPE, array( $this, 'add_meta_box' ) );
@@ -176,15 +176,10 @@ class CPT {
 	 *
 	 * @param int $post_id The ID of the post being saved.
 	 */
-	function save_meta_box( $post_id ) {
+	public function save_meta_box( $post_id ) {
 
 		// Check if our nonce is set.
 		if ( ! isset( $_POST['itelic_reminder_nonce'] ) ) {
-			return;
-		}
-
-		// Verify that the nonce is valid.
-		if ( ! wp_verify_nonce( $_POST['itelic_reminder_nonce'], 'itelic-renewal-reminders-metabox' ) ) {
 			return;
 		}
 
@@ -193,17 +188,34 @@ class CPT {
 			return;
 		}
 
-		$days = absint( $_POST['itelic_reminder']['days'] );
+		$this->do_save( $post_id, $_POST );
+	}
 
-		if ( ! in_array( $_POST['itelic_reminder']['boa'], array( 'before', 'after' ) ) ) {
+	/**
+	 * Perform the actual saving of meta.
+	 *
+	 * @param int   $post_id
+	 * @param array $form
+	 */
+	public function do_save( $post_id, $form ) {
+
+		// Verify that the nonce is valid.
+		if ( ! wp_verify_nonce( $form['itelic_reminder_nonce'], 'itelic-renewal-reminders-metabox' ) ) {
+			return;
+		}
+
+		$days = absint( $form['itelic_reminder']['days'] );
+
+		if ( ! in_array( $form['itelic_reminder']['boa'], array( Reminder::TYPE_BEFORE, Reminder::TYPE_AFTER ) ) ) {
 			$boa = 'before';
 		} else {
-			$boa = $_POST['itelic_reminder']['boa'];
+			$boa = $form['itelic_reminder']['boa'];
 		}
 
 		update_post_meta( $post_id, '_itelic_renewal_reminder_days', $days );
 		update_post_meta( $post_id, '_itelic_renewal_reminder_boa', $boa );
 	}
+
 
 	/**
 	 * Get all renewal reminders.
@@ -264,7 +276,7 @@ class CPT {
 			$days = get_post_meta( $post_id, '_itelic_renewal_reminder_days', true );
 			$boa  = get_post_meta( $post_id, '_itelic_renewal_reminder_boa', true );
 
-			printf( "%d days %s expiration", $days, $boa );
+			printf( __( "%d days %s expiration", Plugin::SLUG ), $days, $boa );
 		}
 	}
 }

@@ -13,7 +13,9 @@ use IronBound\WP_Notifications\Template\Listener;
 use IronBound\WP_Notifications\Template\Manager;
 use ITELIC\Renewal\Discount;
 
-new CPT();
+$cpt = new CPT();
+$cpt->add_hooks();
+
 new Sender();
 
 /**
