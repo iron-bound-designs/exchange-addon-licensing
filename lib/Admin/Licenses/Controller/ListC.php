@@ -209,8 +209,8 @@ class ListC extends Controller {
 			) );
 		}
 
-		$key   = sanitize_text_field( $_POST['key'] );
-		$nonce = sanitize_text_field( $_POST['nonce'] );
+		$key   = $_POST['key'];
+		$nonce = $_POST['nonce'];
 
 		if ( ! wp_verify_nonce( $nonce, "itelic-extend-key-$key" ) ) {
 			wp_send_json_error( array(
@@ -258,8 +258,8 @@ class ListC extends Controller {
 			) );
 		}
 
-		$key   = sanitize_text_field( $_POST['key'] );
-		$nonce = sanitize_text_field( $_POST['nonce'] );
+		$key   = $_POST['key'];
+		$nonce = $_POST['nonce'];
 		$dir   = strtolower( sanitize_text_field( $_POST['dir'] ) );
 
 		if ( $dir == 'up' ) {
