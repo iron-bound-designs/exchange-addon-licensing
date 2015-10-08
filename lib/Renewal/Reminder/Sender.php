@@ -27,10 +27,7 @@ class Sender {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'it_exchange_itelic_daily_schedule', array(
-			$this,
-			'on_schedule'
-		) );
+		add_action( 'it_exchange_itelic_daily_schedule', array( $this, 'on_schedule' ) );
 	}
 
 	/**
