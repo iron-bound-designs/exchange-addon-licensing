@@ -91,43 +91,13 @@ class Single extends Controller {
 			) );
 		}
 
-		$key   = sanitize_text_field( $_POST['key'] );
-		$prop  = sanitize_text_field( $_POST['prop'] );
+		$key   = $_POST['key'];
+		$prop  = $_POST['prop'];
 		$val   = sanitize_text_field( $_POST['val'] );
-		$nonce = sanitize_text_field( $_POST['nonce'] );
-
-		if ( ! wp_verify_nonce( $nonce, "itelic-update-key-$key" ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, you don't have permission to do this.", Plugin::SLUG )
-			) );
-		}
-
-		$key = itelic_get_key( $key );
+		$nonce = $_POST['nonce'];
 
 		try {
-			switch ( $prop ) {
-				case 'status':
-					$key->set_status( $val );
-					break;
-				case 'max':
-					$key->set_max( $val );
-					break;
-				case 'expires':
-					$date = \ITELIC\make_date_time( $val, false );
-					$date = \ITELIC\convert_local_to_gmt( $date );
-					$key->set_expires( $date );
-					break;
-				default:
-					wp_send_json_error( array(
-						'message' => __( "Invalid request format.", Plugin::SLUG )
-					) );
-			}
+			$out = $this->do_update( itelic_get_key( $key ), $prop, $val, $nonce );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(
@@ -136,6 +106,51 @@ class Single extends Controller {
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Perform the update on the key.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Key    $key
+	 * @param string $prop
+	 * @param string $val
+	 * @param string $nonce
+	 *
+	 * @return bool
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	protected function do_update( Key $key, $prop, $val, $nonce ) {
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-update-key-{$key->get_key()}" ) ) {
+			throw new \InvalidArgumentException( __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			throw new \InvalidArgumentException( __( "Sorry, you don't have permission to do this.", Plugin::SLUG ) );
+		}
+
+		$key = itelic_get_key( $key );
+
+		switch ( $prop ) {
+			case 'status':
+				$key->set_status( $val );
+				break;
+			case 'max':
+				$key->set_max( $val );
+				break;
+			case 'expires':
+				$date = \ITELIC\make_date_time( $val, false );
+				$date = \ITELIC\convert_local_to_gmt( $date );
+				$key->set_expires( $date );
+				break;
+			default:
+				throw new \InvalidArgumentException( __( "Invalid request format.", Plugin::SLUG ) );
+		}
+
+		return true;
 	}
 
 	/**
@@ -151,23 +166,11 @@ class Single extends Controller {
 		}
 
 		$location = sanitize_text_field( $_POST['location'] );
-		$key      = sanitize_text_field( $_POST['key'] );
-		$nonce    = sanitize_text_field( $_POST['nonce'] );
-
-		if ( ! wp_verify_nonce( $nonce, "itelic-remote-activate-key-$key" ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, you don't have permission to do this.", Plugin::SLUG )
-			) );
-		}
+		$key      = $_POST['key'];
+		$nonce    = $_POST['nonce'];
 
 		try {
-			$record = itelic_activate_license_key( itelic_get_key( $key ), $location );
+			$html = $this->do_activation( itelic_get_key( $key ), $location, $nonce );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(
@@ -175,15 +178,41 @@ class Single extends Controller {
 			) );
 		}
 
-		if ( ! $record instanceof Activation ) {
-			wp_send_json_error( array(
-				'message' => __( "Something went wrong. Please refresh and try again.", Plugin::SLUG )
-			) );
+		wp_send_json_success( array(
+			'html' => $html
+		) );
+	}
+
+	/**
+	 * Perform the activation.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Key    $key
+	 * @param string $location
+	 * @param string $nonce
+	 *
+	 * @return string
+	 *
+	 * @throws \InvalidArgumentException|\UnexpectedValueException on error.
+	 */
+	protected function do_activation( Key $key, $location, $nonce ) {
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-remote-activate-key-{$key->get_key()}" ) ) {
+			throw new \InvalidArgumentException( __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
 		}
 
-		wp_send_json_success( array(
-			'html' => $this->get_view()->get_activation_row_html( $record )
-		) );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			throw new \InvalidArgumentException( __( "Sorry, you don't have permission to do this.", Plugin::SLUG ) );
+		}
+
+		$record = itelic_activate_license_key( $key, $location );
+
+		if ( ! $record instanceof Activation ) {
+			throw new \UnexpectedValueException( __( "Something went wrong. Please refresh and try again.", Plugin::SLUG ) );
+		}
+
+		return $this->get_view()->get_activation_row_html( $record );
 	}
 
 	/**
@@ -199,30 +228,10 @@ class Single extends Controller {
 		}
 
 		$id    = abs( $_POST['id'] );
-		$nonce = sanitize_text_field( $_POST['nonce'] );
-
-		if ( ! wp_verify_nonce( $nonce, "itelic-remote-deactivate-$id" ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, you don't have permission to do this.", Plugin::SLUG )
-			) );
-		}
-
-		$record = itelic_get_activation( $id );
-
-		if ( ! $record ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, we couldn't find that activation record. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
+		$nonce = $_POST['nonce'];
 
 		try {
-			$record->deactivate();
+			$html = $this->do_deactivation( itelic_get_activation( $id ), $nonce );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(
@@ -231,8 +240,33 @@ class Single extends Controller {
 		}
 
 		wp_send_json_success( array(
-			'html' => $this->get_view()->get_activation_row_html( $record )
+			'html' => $html
 		) );
+	}
+
+	/**
+	 * Do the deactivation.
+	 *
+	 * @param Activation $activation
+	 * @param string     $nonce
+	 *
+	 * @return string new HTML
+	 *
+	 * @throws \InvalidArgumentException on error.
+	 */
+	protected function do_deactivation( Activation $activation, $nonce ) {
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-remote-deactivate-{$activation->get_pk()}" ) ) {
+			throw new \InvalidArgumentException( __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			throw new \InvalidArgumentException( __( "Sorry, you don't have permission to do this.", Plugin::SLUG ) );
+		}
+
+		$activation->deactivate();
+
+		return $this->get_view()->get_activation_row_html( $activation );
 	}
 
 	/**
@@ -248,30 +282,10 @@ class Single extends Controller {
 		}
 
 		$id    = abs( $_POST['id'] );
-		$nonce = sanitize_text_field( $_POST['nonce'] );
-
-		if ( ! wp_verify_nonce( $nonce, "itelic-remote-delete-$id" ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, you don't have permission to do this.", Plugin::SLUG )
-			) );
-		}
-
-		$record = itelic_get_activation( $id );
-
-		if ( ! $record ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, we couldn't find that activation record. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
+		$nonce = $_POST['nonce'];
 
 		try {
-			$record->delete();
+			$this->do_delete( itelic_get_activation( $id ), $nonce );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(
@@ -279,9 +293,32 @@ class Single extends Controller {
 			) );
 		}
 
-		wp_send_json_success( array(
-			'html' => $this->get_view()->get_activation_row_html( $record )
-		) );
+		wp_send_json_success();
+	}
+
+	/**
+	 * Delete the activation.
+	 *
+	 * @param Activation $activation
+	 * @param string     $nonce
+	 *
+	 * @return bool
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function do_delete( Activation $activation, $nonce ) {
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-remote-delete-{$activation->get_pk()}" ) ) {
+			throw new \InvalidArgumentException( __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			throw new \InvalidArgumentException( __( "Sorry, you don't have permission to do this.", Plugin::SLUG ) );
+		}
+
+		$activation->delete();
+
+		return true;
 	}
 
 	/**
