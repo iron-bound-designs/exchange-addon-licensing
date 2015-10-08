@@ -11,8 +11,6 @@ namespace ITELIC\Renewal\Reminder;
 use IronBound\DB\Manager;
 use ITELIC\Key;
 use IronBound\WP_Notifications\Notification;
-use IronBound\WP_Notifications\Queue\Manager as Queue_Manager;
-use IronBound\WP_Notifications\Strategy\WP_Mail;
 use IronBound\WP_Notifications\Template\Factory;
 use IronBound\WP_Notifications\Template\Manager as Template_Manager;
 use ITELIC\Renewal\Discount;
@@ -20,6 +18,7 @@ use ITELIC\Renewal\Reminder;
 
 /**
  * Class Sender
+ *
  * @package ITELIC\Renewal\Reminder
  */
 class Sender {
@@ -28,11 +27,15 @@ class Sender {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'it_exchange_itelic_daily_schedule', array( $this, 'on_schedule' ) );
+		add_action( 'it_exchange_itelic_daily_schedule', array(
+			$this,
+			'on_schedule'
+		) );
 	}
 
 	/**
-	 * Fires on a scheduled event. Responsible for determining if and which reminders we should send.
+	 * Fires on a scheduled event. Responsible for determining if and which
+	 * reminders we should send.
 	 *
 	 * @since 1.0
 	 */
@@ -42,10 +45,29 @@ class Sender {
 		// this isn't provided during cron
 		remove_filter( 'it_exchange_get_currencies', 'it_exchange_stripe_addon_get_currency_options' );
 
+		$notifications = $this->get_notifications();
+
+		if ( empty( $notifications ) ) {
+			return;
+		}
+
+		$queue    = \ITELIC\get_queue_processor( 'itelic-renewal-reminder' );
+		$strategy = \ITELIC\get_notification_strategy();
+
+		$queue->process( $notifications, $strategy );
+	}
+
+	/**
+	 * Send the notifications.
+	 *
+	 * @return Notification[]
+	 */
+	public function get_notifications() {
+
 		$reminders = Reminder\CPT::get_reminders();
 
 		if ( empty( $reminders ) ) {
-			return;
+			return array();
 		}
 
 		$date_to_reminder = array();
@@ -64,11 +86,15 @@ class Sender {
 		// END manual first record
 
 		foreach ( $reminders as $reminder ) {
+
+			$interval = $reminder->get_interval();
+			$date     = $this->convert_interval_to_date( $interval );
+
 			// search for keys that expire any time during the day of the current reminder.
-			$sql .= " OR " . $this->convert_interval_to_between( $reminder->get_interval() );
+			$sql .= " OR " . $this->convert_datetime_to_between( $date );
 
 			// store a reference of that entire day to the reminder object for later use.
-			$date_to_reminder[ $this->convert_interval_to_date( $reminder->get_interval() )->format( "Y-m-d" ) ] = $reminder;
+			$date_to_reminder[ $date->format( "Y-m-d" ) ] = $reminder;
 		}
 
 		/*
@@ -80,7 +106,7 @@ class Sender {
 		$result = $GLOBALS['wpdb']->get_results( $sql );
 
 		if ( empty( $result ) ) {
-			return;
+			return array();
 		}
 
 		$expire_to_key = array();
@@ -96,8 +122,7 @@ class Sender {
 			$notifications[] = $this->make_notification( $date_to_reminder[ $expire ], $key, $manager );
 		}
 
-		$queue = \ITELIC\get_queue_processor( 'itelic-renewal-reminders' );
-		$queue->process( $notifications, \ITELIC\get_notification_strategy() );
+		return $notifications;
 	}
 
 	/**
@@ -143,9 +168,9 @@ class Sender {
 	 * @return \DateTime
 	 */
 	protected function convert_interval_to_date( \DateInterval $interval ) {
-		$now = new \DateTime();
+		$now = \ITELIC\make_date_time();
 
-		return $now->add( $interval );
+		return $now->sub( $interval );
 	}
 
 	/**

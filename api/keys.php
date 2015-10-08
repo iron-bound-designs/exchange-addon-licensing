@@ -197,10 +197,15 @@ function itelic_create_key( $args ) {
 	}
 
 	if ( isset( $args['expires'] ) ) {
-		if ( empty( $args['expires'] ) ) {
-			$expires = null;
-		} else {
+
+		if ( is_string( $args['expires'] ) ) {
 			$expires = \ITELIC\make_date_time( $args['expires'] );
+		} else {
+			$expires = $args['expires'];
+		}
+
+		if ( ! $expires instanceof DateTime ) {
+			$expires = null;
 		}
 
 		$key->set_expires( $expires );
