@@ -119,9 +119,9 @@ class Single extends Controller {
 		}
 
 		$release = intval( $_POST['release'] );
-		$prop    = sanitize_text_field( $_POST['prop'] );
+		$prop    = $_POST['prop'];
 		$val     = $_POST['val'];
-		$nonce   = sanitize_text_field( $_POST['nonce'] );
+		$nonce   = $_POST['nonce'];
 
 		if ( ! wp_verify_nonce( $nonce, "itelic-update-release-$release" ) ) {
 			wp_send_json_error( array(
@@ -275,6 +275,12 @@ class Single extends Controller {
 		if ( ! wp_verify_nonce( $nonce, "itelic-update-release-$release" ) ) {
 			wp_send_json_error( array(
 				'message' => __( "Request expired. Please refresh and try again.", Plugin::SLUG )
+			) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array(
+				'message' => __( "You don't have permission to do this.", Plugin::SLUG )
 			) );
 		}
 
