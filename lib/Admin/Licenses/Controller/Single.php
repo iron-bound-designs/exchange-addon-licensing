@@ -122,7 +122,7 @@ class Single extends Controller {
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function do_update( Key $key, $prop, $val, $nonce ) {
+	public function do_update( Key $key, $prop, $val, $nonce ) {
 
 		if ( ! wp_verify_nonce( $nonce, "itelic-update-key-{$key->get_key()}" ) ) {
 			throw new \InvalidArgumentException( __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
@@ -131,8 +131,6 @@ class Single extends Controller {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			throw new \InvalidArgumentException( __( "Sorry, you don't have permission to do this.", Plugin::SLUG ) );
 		}
-
-		$key = itelic_get_key( $key );
 
 		switch ( $prop ) {
 			case 'status':
@@ -170,7 +168,7 @@ class Single extends Controller {
 		$nonce    = $_POST['nonce'];
 
 		try {
-			$html = $this->do_activation( itelic_get_key( $key ), $location, $nonce );
+			$activation = $this->do_activation( itelic_get_key( $key ), $location, $nonce );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(
@@ -179,7 +177,7 @@ class Single extends Controller {
 		}
 
 		wp_send_json_success( array(
-			'html' => $html
+			'html' => $this->get_view()->get_activation_row_html( $activation )
 		) );
 	}
 
@@ -192,11 +190,11 @@ class Single extends Controller {
 	 * @param string $location
 	 * @param string $nonce
 	 *
-	 * @return string
+	 * @return Activation
 	 *
 	 * @throws \InvalidArgumentException|\UnexpectedValueException on error.
 	 */
-	protected function do_activation( Key $key, $location, $nonce ) {
+	public function do_activation( Key $key, $location, $nonce ) {
 
 		if ( ! wp_verify_nonce( $nonce, "itelic-remote-activate-key-{$key->get_key()}" ) ) {
 			throw new \InvalidArgumentException( __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
@@ -212,7 +210,7 @@ class Single extends Controller {
 			throw new \UnexpectedValueException( __( "Something went wrong. Please refresh and try again.", Plugin::SLUG ) );
 		}
 
-		return $this->get_view()->get_activation_row_html( $record );
+		return $record;
 	}
 
 	/**
@@ -231,7 +229,7 @@ class Single extends Controller {
 		$nonce = $_POST['nonce'];
 
 		try {
-			$html = $this->do_deactivation( itelic_get_activation( $id ), $nonce );
+			$activation = $this->do_deactivation( itelic_get_activation( $id ), $nonce );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(
@@ -240,7 +238,7 @@ class Single extends Controller {
 		}
 
 		wp_send_json_success( array(
-			'html' => $html
+			'html' => $this->get_view()->get_activation_row_html( $activation )
 		) );
 	}
 
@@ -250,11 +248,11 @@ class Single extends Controller {
 	 * @param Activation $activation
 	 * @param string     $nonce
 	 *
-	 * @return string new HTML
+	 * @return Activation
 	 *
 	 * @throws \InvalidArgumentException on error.
 	 */
-	protected function do_deactivation( Activation $activation, $nonce ) {
+	public function do_deactivation( Activation $activation, $nonce ) {
 
 		if ( ! wp_verify_nonce( $nonce, "itelic-remote-deactivate-{$activation->get_pk()}" ) ) {
 			throw new \InvalidArgumentException( __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
@@ -266,7 +264,7 @@ class Single extends Controller {
 
 		$activation->deactivate();
 
-		return $this->get_view()->get_activation_row_html( $activation );
+		return $activation;
 	}
 
 	/**
