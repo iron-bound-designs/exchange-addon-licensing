@@ -156,7 +156,7 @@ class Discount implements \Serializable {
 	 *
 	 * @return float
 	 */
-	protected function get_amount_paid() {
+	public function get_amount_paid() {
 
 		$txn      = $this->key->get_transaction();
 		$products = $txn->get_products();
@@ -191,7 +191,8 @@ class Discount implements \Serializable {
 	 */
 	public function serialize() {
 		$data = array(
-			'product' => $this->product->ID
+			'product' => $this->product->ID,
+			'key'     => $this->key->get_key()
 		);
 
 		return serialize( $data );
@@ -211,9 +212,10 @@ class Discount implements \Serializable {
 	 */
 	public function unserialize( $serialized ) {
 
-		$product = itelic_get_product( $serialized['product'] );
+		$data = unserialize( $serialized );
 
-		$this->product      = $product;
+		$this->product      = itelic_get_product( $data['product'] );
 		$this->feature_data = $this->product->get_feature( 'licensing-discount' );
+		$this->key          = itelic_get_key( $data['key'] );
 	}
 }
