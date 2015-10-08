@@ -94,8 +94,8 @@ class Installed_Versions extends Report implements Product_Filterable {
 		$atn = Manager::get( 'itelic-activations' )->get_table_name( $wpdb );
 		$ktn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
 
-		$raw = "SELECT COUNT(1) as c, `release` as d FROM $atn a JOIN $ktn k ON (k.lkey = a.lkey AND k.product = %d)
-				WHERE a.status = %s GROUP BY `release` LIMIT 5";
+		$raw = "SELECT COUNT(1) as c, `release_id` as d FROM $atn a JOIN $ktn k ON (k.lkey = a.lkey AND k.product = %d)
+				WHERE a.status = %s GROUP BY `release_id` LIMIT 5";
 
 		$results = $wpdb->get_results( $wpdb->prepare( $raw, $product, Activation::ACTIVE ) );
 
