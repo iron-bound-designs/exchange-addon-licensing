@@ -46,7 +46,8 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'recurring-payments'
 		)->willReturn( false );
 
-		$transaction = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction     = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction->ID = 1;
 		$transaction->method( 'get_products' )->willReturn( array(
 			array(
 				'product_id' => 1
@@ -69,6 +70,12 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'args'   => array( 1 ),
 			'times'  => 1,
 			'return' => $product
+		) );
+
+		WP_Mock::wpFunction( 'it_exchange_get_transaction', array(
+			'args'   => array( 1 ),
+			'times'  => 1,
+			'return' => $transaction
 		) );
 
 		$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $factory );
@@ -94,7 +101,8 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'recurring-payments'
 		)->willReturn( false );
 
-		$transaction = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction     = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction->ID = 1;
 		$transaction->method( 'get_products' )->willReturn( array(
 			array(
 				'product_id'    => 1,
@@ -122,6 +130,12 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'return' => $product
 		) );
 
+		WP_Mock::wpFunction( 'it_exchange_get_transaction', array(
+			'args'   => array( 1 ),
+			'times'  => 1,
+			'return' => $transaction
+		) );
+
 		$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $factory );
 
 		$this->assertInstanceOf( '\ITELIC\Key', $key );
@@ -142,7 +156,8 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'recurring-payments'
 		)->willReturn( false );
 
-		$transaction = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction     = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction->ID = 1;
 		$transaction->method( 'get_products' )->willReturn( array(
 			array(
 				'product_id' => 1
@@ -165,6 +180,12 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'args'   => array( 1 ),
 			'times'  => 1,
 			'return' => $product
+		) );
+
+		WP_Mock::wpFunction( 'it_exchange_get_transaction', array(
+			'args'   => array( 1 ),
+			'times'  => 1,
+			'return' => $transaction
 		) );
 
 		$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $factory );
@@ -202,7 +223,8 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'recurring-payments'
 		)->willReturn( true );
 
-		$transaction = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction     = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction->ID = 1;
 		$transaction->method( 'get_products' )->willReturn( array(
 			array(
 				'product_id' => 1
@@ -225,6 +247,12 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 			'args'   => array( 1 ),
 			'times'  => 1,
 			'return' => $product
+		) );
+
+		WP_Mock::wpFunction( 'it_exchange_get_transaction', array(
+			'args'   => array( 1 ),
+			'times'  => 1,
+			'return' => $transaction
 		) );
 
 		$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $factory );

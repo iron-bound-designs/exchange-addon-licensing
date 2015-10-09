@@ -28,7 +28,7 @@ class Product extends \IT_Exchange_Product {
 			throw new \InvalidArgumentException( "Product must have the digital downloads product type." );
 		}
 
-		parent::IT_Exchange_Product( $product->ID );
+		parent::__construct( $product->ID );
 	}
 
 	/**

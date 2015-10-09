@@ -37,7 +37,7 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 			'product_types' => array( 'digital-downloads-product-type' )
 		);
 
-		parent::IT_Exchange_Product_Feature_Abstract( $args );
+		parent::__construct( $args );
 
 		add_action( 'wp_ajax_itelic_get_key_type_settings', array(
 			$this,

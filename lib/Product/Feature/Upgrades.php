@@ -32,7 +32,7 @@ class Upgrades extends \IT_Exchange_Product_Feature_Abstract {
 			'product_types' => array( 'digital-downloads-product-type' )
 		);
 
-		parent::IT_Exchange_Product_Feature_Abstract( $args );
+		parent::__construct( $args );
 	}
 
 	/**

@@ -201,7 +201,7 @@ class ITELIC_Test_Admin_Releases_Single extends ITELIC_UnitTestCase {
 
 		$release = $this->getMockBuilder( '\ITELIC\Release' )->disableOriginalConstructor()->getMock();
 		$release->method( 'get_pk' )->willReturn( 1 );
-		$release->method( 'update_meta' )->with( 'security-message', 'new-message');
+		$release->method( 'update_meta' )->with( 'security-message', 'new-message' );
 
 		WP_Mock::wpFunction( 'wp_verify_nonce', array(
 			'times'  => 1,
@@ -216,6 +216,25 @@ class ITELIC_Test_Admin_Releases_Single extends ITELIC_UnitTestCase {
 		) );
 
 		$controller->do_update( $release, 'security-message', 'new-message', 'nonce' );
+	}
+
+	/**
+	 * @dataProvider listeners_data_provider
+	 */
+	public function test_registered_listeners( $listener ) {
+
+		$manager = \IronBound\WP_Notifications\Template\Factory::make( 'itelic-outdated-customers' );
+
+		$this->assertNotInstanceOf( '\IronBound\WP_Notifications\Template\Null_Listener', $manager->get_listener( $listener ) );
+	}
+
+	public function listeners_data_provider() {
+		return array(
+			'product name' => array( 'product_name' ),
+			'version'      => array( 'version' ),
+			'changelog'    => array( 'changelog' ),
+			'install list' => array( 'install_list' ),
+		);
 	}
 
 }

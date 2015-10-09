@@ -245,10 +245,12 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 			)
 		) );
 
+		$txn = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+
 		WP_Mock::wpFunction( 'it_exchange_get_transaction', array(
 			'times'  => 1,
 			'args'   => array( 1 ),
-			'return' => $this->getMock( '\IT_Exchange_Transaction' )
+			'return' => $txn
 		) );
 
 		WP_Mock::wpFunction( 'itelic_get_product', array(
@@ -349,7 +351,7 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 
 		$key = $this->_make_interval_key();
 
-		$renewal_txn = $this->getMockBuilder( '\IT_Exchange_Transaction' )->getMock();
+		$renewal_txn = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
 		$renewal_txn->method( 'get_products' )->willReturn( array(
 			array(
 				'product_id'       => $key->get_product()->ID,
