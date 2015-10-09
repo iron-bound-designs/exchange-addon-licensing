@@ -30,6 +30,8 @@ before_install:
   - sed -i "s/yourpasswordhere//" wp-tests-config.php
   # set up database
   - mysql -e 'CREATE DATABASE wordpress_test;' -uroot
+  # set up codecov
+  - pip install codecov
 
 before_script:
   - cd $TRAVIS_BUILD_DIR
@@ -42,11 +44,8 @@ script:
     phpunit
   fi
 
-after_script:
-- |
-  if [[ "$TRAVIS_PHP_VERSION" == '5.5' && "$WP_VERSION" == "latest" ]] ; then
-    bash <(curl -s https://codecov.io/bash)
-  fi
+after_success:
+  - codecov
 
 git:
   depth: 1
