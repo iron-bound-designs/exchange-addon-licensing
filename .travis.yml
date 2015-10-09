@@ -12,6 +12,10 @@ env:
 - WP_VERSION=latest WP_MULTISITE=0
 - WP_VERSION=4.2 WP_MULTISITE=0
 
+  global:
+    - CODECOV_TOKEN=:8263738d-f3f4-43a1-8339-87d5d2ac2ee1
+
+
 before_install:
   - composer self-update
   - composer install --no-interaction
@@ -31,7 +35,7 @@ before_install:
   # set up database
   - mysql -e 'CREATE DATABASE wordpress_test;' -uroot
   # set up codecov
-  - pip install codecov
+  - pip install --user codecov
 
 before_script:
   - cd $TRAVIS_BUILD_DIR
