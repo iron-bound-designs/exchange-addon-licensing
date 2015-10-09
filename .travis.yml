@@ -48,7 +48,9 @@ git:
 
 notifications:
   slack:
-    ironbounddesigns:fXMBlqSr9vvDBiwetLNm9ctD
+    rooms:
+      - ironbounddesigns:fXMBlqSr9vvDBiwetLNm9ctD#general
+
     on_success: change
     on_failure: always
     on_start: never
