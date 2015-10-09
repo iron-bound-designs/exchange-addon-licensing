@@ -15,55 +15,62 @@ class ITELIC_Test_Key_Types extends ITELIC_UnitTestCase {
 
 		$unique = md5( uniqid() );
 
-		itelic_register_key_type( $unique, 'Type Name', 'Class' );
+		$generator = $this->getMock( '\ITELIC\Key\Generator' );
+
+		itelic_register_key_type( $unique, 'Type Name', $generator );
 
 		$this->assertEquals( 'Type Name', itelic_get_key_type_name( $unique ) );
 	}
 
-	public function test_get_key_type_class() {
+	public function test_get_key_type_generator() {
 
 		$unique = md5( uniqid() );
 
-		itelic_register_key_type( $unique, 'Type Name', 'Class' );
+		$generator = $this->getMock( '\ITELIC\Key\Generator' );
 
-		$this->assertEquals( 'Class', itelic_get_key_type_class( $unique ) );
+		itelic_register_key_type( $unique, 'Type Name', $generator );
+
+		$this->assertSame( $generator, itelic_get_key_type_generator( $unique ) );
 	}
 
 	/**
-	 * @depends test_get_key_type_class
+	 * @depends test_get_key_type_generator
 	 */
 	public function test_cannot_register_key_type_more_than_once() {
 
 		$unique = md5( uniqid() );
 
-		$this->assertTrue( itelic_register_key_type( $unique, 'Name', 'Class_A' ) );
-		$this->assertFalse( itelic_register_key_type( $unique, 'Name', 'Class_B' ) );
+		$g1 = $this->getMock( '\ITELIC\Key\Generator' );
+		$g2 = $this->getMock( '\ITELIC\Key\Generator' );
 
-		$this->assertEquals( 'Class_A', itelic_get_key_type_class( $unique ) );
+		$this->assertTrue( itelic_register_key_type( $unique, 'Name', $g1 ) );
+		$this->assertFalse( itelic_register_key_type( $unique, 'Name', $g2 ) );
+
+		$this->assertSame( $g1, itelic_get_key_type_generator( $unique ) );
 	}
 
 	/**
-	 * @depends test_get_key_type_class
+	 * @depends test_get_key_type_generator
 	 */
 	public function test_get_key_type_class_must_be_overridden_with_a_sub_class() {
 
 		$unique = md5( uniqid() );
 
-		$this->assertTrue( itelic_register_key_type( $unique, 'Name', 'Class_A' ) );
+		$g1 = $this->getMock( '\ITELIC\Key\Generator' );
+		$g2 = $this->getMock( '\ITELIC\Key\Generator' );
 
-		$this->getMock( 'Class_A' );
-		$this->getMock( 'Class_B' );
+		$this->assertTrue( itelic_register_key_type( $unique, 'Name', $g1 ) );
 
-		add_filter( 'it_exchange_itelic_get_key_type_class', function ( $class, $slug ) use ( $unique ) {
+		add_filter( 'itelic_get_key_type_generator', function ( $generator, $slug ) use ( $unique, $g2 ) {
 
 			if ( $slug === $unique ) {
-				$class = 'Class_B';
+				$generator = $g2;
 			}
 
-			return $class;
+			return $generator;
 		}, 10, 2 );
 
-		$this->assertEquals( 'Class_A', itelic_get_key_type_class( $unique ) );
+		$this->assertSame( $g1, itelic_get_key_type_generator( $unique ) );
 	}
 
 	public function test_built_in_key_types_are_registered() {

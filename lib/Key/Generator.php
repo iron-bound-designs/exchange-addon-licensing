@@ -19,52 +19,20 @@ use ITELIC\Product;
  * @since   1.0
  * @package ITELIC\Key\Generator
  */
-abstract class Generator {
-
-	/**
-	 * @var array
-	 */
-	protected $options = array();
-
-	/**
-	 * @var Product
-	 */
-	protected $product;
-
-	/**
-	 * @var \IT_Exchange_Customer
-	 */
-	protected $customer;
-
-	/**
-	 * @var \IT_Exchange_Transaction
-	 */
-	protected $transaction;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.0
-	 *
-	 * @param array                    $options Key options
-	 * @param Product                  $product
-	 * @param \IT_Exchange_Customer    $customer
-	 * @param \IT_Exchange_Transaction $transaction
-	 */
-	public function __construct( $options = array(), Product $product, \IT_Exchange_Customer $customer, \IT_Exchange_Transaction $transaction ) {
-		$this->options     = $options;
-		$this->product     = $product;
-		$this->customer    = $customer;
-		$this->transaction = $transaction;
-	}
+interface Generator {
 
 	/**
 	 * Generate a license according to this method's algorithm.
 	 *
 	 * @since 1.0
 	 *
+	 * @param array                    $options
+	 * @param Product                  $product
+	 * @param \IT_Exchange_Customer    $customer
+	 * @param \IT_Exchange_Transaction $transaction
+	 *
 	 * @return string
 	 */
-	public abstract function generate();
+	public function generate( $options = array(), Product $product, \IT_Exchange_Customer $customer, \IT_Exchange_Transaction $transaction );
 
 }

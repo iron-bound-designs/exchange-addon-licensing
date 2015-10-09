@@ -9,48 +9,35 @@
 namespace ITELIC\Key\Generator;
 
 use ITELIC\Key\Generator;
+use ITELIC\Product;
 
 /**
  * Class Random
  *
  * @package ITELIC\Key\Generator
  */
-class Random extends Generator {
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.0
-	 *
-	 * @param array                    $options Key options
-	 * @param \IT_Exchange_Product     $product
-	 * @param \IT_Exchange_Customer    $customer
-	 * @param \IT_Exchange_Transaction $transaction
-	 */
-	public function __construct( $options = array(), $product, $customer, $transaction ) {
-
-		if ( ! isset( $options['length'] ) ) {
-			$options['length'] = 32;
-		}
-
-		if ( $options['length'] < 4 ) {
-			throw new \InvalidArgumentException( "Key length must be greater than 3." );
-		}
-
-		$options['length'];
-
-		parent::__construct( $options, $product, $customer, $transaction );
-	}
+class Random implements Generator {
 
 	/**
 	 * Generate a license according to this method's algorithm.
 	 *
 	 * @since 1.0
 	 *
+	 * @param array                    $options
+	 * @param Product                  $product
+	 * @param \IT_Exchange_Customer    $customer
+	 * @param \IT_Exchange_Transaction $transaction
+	 *
 	 * @return string
 	 */
-	public function generate() {
-		return $this->rand_sha1( $this->options['length'] );
+	public function generate( $options = array(), Product $product, \IT_Exchange_Customer $customer, \IT_Exchange_Transaction $transaction ) {
+
+		$defaults = array(
+			'length' => 32
+		);
+		$options  = wp_parse_args( $options, $defaults );
+
+		return $this->rand_sha1( $options['length'] );
 	}
 
 	/**

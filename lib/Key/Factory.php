@@ -58,22 +58,21 @@ class Factory {
 	 */
 	public function make() {
 
-		$type  = $this->get_product()->get_feature( 'licensing', array( 'field' => 'key-type' ) );
-		$class = itelic_get_key_type_class( $type );
-
+		$type      = $this->get_product()->get_feature( 'licensing', array( 'field' => 'key-type' ) );
 		$options = $this->get_product()->get_feature( 'licensing', array( 'field' => "type.$type" ) );
 
-		if ( class_exists( $class ) ) {
+		$generator = itelic_get_key_type_generator( $type );
 
-			/**
-			 * @var Generator $generator
-			 */
-			$generator = new $class( $options, $this->product, $this->customer, $this->transaction );
+		if ( $generator ) {
+			$key = $generator->generate(
+				$options, $this->get_product(),
+				$this->get_customer(), $this->get_transaction()
+			);
+
+			return substr( trim( $key ), 0, 128 );
 		} else {
-			throw new \UnexpectedValueException( "Invalid key type $type" );
+			throw new \UnexpectedValueException( "Invalid key type '$type''" );
 		}
-
-		return substr( trim( $generator->generate() ), 0, 128 );
 	}
 
 	/**

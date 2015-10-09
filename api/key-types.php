@@ -5,6 +5,7 @@
  * @author Iron Bound Designs
  * @since  1.0
  */
+use ITELIC\Key\Generator;
 
 /**
  * Register a key type.
@@ -13,14 +14,14 @@
  *
  * @since 1.0
  *
- * @param string $slug
- * @param string $name
- * @param string $class
+ * @param string    $slug
+ * @param string    $name
+ * @param Generator $generator
  *
  * @return boolean
  */
-function itelic_register_key_type( $slug, $name, $class ) {
-	return \ITELIC\Key\Types::register( $slug, $name, $class );
+function itelic_register_key_type( $slug, $name, Generator $generator ) {
+	return \ITELIC\Key\Types::register( $slug, $name, $generator );
 }
 
 /**
@@ -55,7 +56,7 @@ function itelic_get_key_type_name( $key_type ) {
 }
 
 /**
- * Get a key type class.
+ * Get a key type generator.
  *
  * @api
  *
@@ -63,41 +64,31 @@ function itelic_get_key_type_name( $key_type ) {
  *
  * @param string $slug
  *
- * @return string|bool
+ * @return Generator|Null
  */
-function itelic_get_key_type_class( $slug ) {
-	$key_type = \ITELIC\Key\Types::get( $slug );
-	$class    = is_array( $key_type ) ? $key_type['class'] : false;
+function itelic_get_key_type_generator( $slug ) {
+	$key_type  = \ITELIC\Key\Types::get( $slug );
+	$generator = is_array( $key_type ) ? $key_type['generator'] : false;
 
 	/**
-	 * Filter the class that corresponds to a key type.
+	 * Filter the generator that corresponds to a key type.
 	 *
 	 * This allows for add-ons to substitute their own subclass, if they wish,
 	 * for a particular key type.
 	 *
-	 * The returned class name from the filter MUST be a subclass of the original class.
-	 * If the returned class name is not a subclass of the original class, then the original class will be returned.
+	 * The returned generator from the filter MUST be a subclass of the original class.
+	 * If the returned generator is not a subclass of the original class, then the original class will be returned.
 	 *
 	 * @since 1.0
 	 *
-	 * @param string $class
-	 * @param string $slug of requested class.
+	 * @param Generator $generator
+	 * @param string    $slug of requested class.
 	 */
-	$filtered = apply_filters( 'it_exchange_itelic_get_key_type_class', $class, $slug );
+	$filtered = apply_filters( 'itelic_get_key_type_generator', $generator, $slug );
 
-	if ( $filtered != $class ) {
-
-		try {
-			$reflection_class = new ReflectionClass( $filtered );
-
-			if ( $reflection_class->isSubclassOf( $class ) ) {
-				$class = $filtered;
-			}
-		}
-		catch ( Exception $e ) {
-
-		}
+	if ( is_subclass_of( $filtered, get_class( $generator ) ) ) {
+		$generator = $filtered;
 	}
 
-	return $class;
+	return $generator;
 }

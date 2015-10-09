@@ -17,8 +17,8 @@ namespace ITELIC\Key;
  *
  * @internal You should use the convenience methods in api/key-types.php
  *
- * @since 1.0
- * @package ITELIC\Key\Types
+ * @since    1.0
+ * @package  ITELIC\Key\Types
  */
 final class Types {
 
@@ -32,22 +32,22 @@ final class Types {
 	 *
 	 * A type can only be registered once.
 	 *
-	 * @param string $slug
-	 * @param string $name
-	 * @param string $class
+	 * @param string    $slug
+	 * @param string    $name
+	 * @param Generator $generator
 	 *
 	 * @return bool
 	 */
-	public static function register( $slug, $name, $class ) {
+	public static function register( $slug, $name, Generator $generator ) {
 
 		if ( isset( self::$methods[ $slug ] ) ) {
 			return false;
 		}
 
 		self::$methods[ $slug ] = array(
-			'slug'  => $slug,
-			'name'  => $name,
-			'class' => $class
+			'slug'      => $slug,
+			'name'      => $name,
+			'generator' => $generator
 		);
 
 		return true;

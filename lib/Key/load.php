@@ -8,6 +8,9 @@
 
 namespace ITELIC\Key;
 
+use ITELIC\Key\Generator\From_List;
+use ITELIC\Key\Generator\Pattern;
+use ITELIC\Key\Generator\Random;
 use ITELIC\Plugin;
 
 /**
@@ -16,7 +19,7 @@ use ITELIC\Plugin;
  * @since 1.0
  */
 function register_key_pattern_type() {
-	itelic_register_key_type( 'pattern', __( "Pattern", Plugin::SLUG ), 'ITELIC\\Key\\Generator\\Pattern' );
+	itelic_register_key_type( 'pattern', __( "Pattern", Plugin::SLUG ), new Pattern() );
 }
 
 add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_pattern_type' );
@@ -27,7 +30,7 @@ add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register
  * @since 1.0
  */
 function register_key_random_type() {
-	itelic_register_key_type( 'random', __( "Random", Plugin::SLUG ), 'ITELIC\\Key\\Generator\\Random' );
+	itelic_register_key_type( 'random', __( "Random", Plugin::SLUG ), new Random() );
 }
 
 add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_random_type' );
@@ -38,7 +41,7 @@ add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register
  * @since 1.0
  */
 function register_key_list_type() {
-	itelic_register_key_type( 'list', __( "From List", Plugin::SLUG ), 'ITELIC\\Key\\Generator\\From_List' );
+	itelic_register_key_type( 'list', __( "From List", Plugin::SLUG ), new From_List() );
 }
 
 add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_list_type' );
@@ -84,8 +87,7 @@ function render_key_type_pattern_settings( $product, $prefix, $values = array() 
 
 	<p class="description">
 		<?php _e( "Preface X, X, 9, #, ? with a '\\' to get the literal character, without substitution.", Plugin::SLUG ); ?>
-		<br>
-		<?php _e( "Enter '\\\\' to get the backslash character.", Plugin::SLUG ); ?>
+		<br> <?php _e( "Enter '\\\\' to get the backslash character.", Plugin::SLUG ); ?>
 	</p>
 
 	<?php
@@ -138,7 +140,7 @@ function render_key_type_list_settings( $product, $prefix, $values = array() ) {
 	$defaults = array(
 		'keys' => ''
 	);
-	$values = \ITUtility::merge_defaults( $values, $defaults );
+	$values   = \ITUtility::merge_defaults( $values, $defaults );
 
 	?>
 	<label for="itelic-key-type-list"><?php _e( "License Keys", Plugin::SLUG ); ?></label>
