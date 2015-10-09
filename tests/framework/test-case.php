@@ -70,6 +70,12 @@ abstract class ITELIC_UnitTestCase extends WP_UnitTestCase {
 		parent::tearDown();
 
 		WP_Mock::tearDown();
+
+		unset( $this->product_factory );
+		unset( $this->key_factory );
+		unset( $this->activation_factory );
+		unset( $this->release_factory );
+		unset( $this->update_factory );
 	}
 
 	/**
