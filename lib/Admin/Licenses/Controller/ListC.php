@@ -38,13 +38,25 @@ class ListC extends Controller {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'load-exchange_page_it-exchange-licensing', array( $this, 'add_screen_options' ) );
-		add_action( 'load-exchange_page_it-exchange-licensing', array( $this, 'setup_table' ) );
+		add_action( 'load-exchange_page_it-exchange-licensing', array(
+			$this,
+			'add_screen_options'
+		) );
+		add_action( 'load-exchange_page_it-exchange-licensing', array(
+			$this,
+			'setup_table'
+		) );
 
 		add_action( 'admin_init', array( $this, 'process_delete_row_action' ) );
 
-		add_action( 'wp_ajax_itelic_admin_licenses_list_extend', array( $this, 'handle_ajax_extend' ) );
-		add_action( 'wp_ajax_itelic_admin_licenses_list_max', array( $this, 'handle_ajax_max' ) );
+		add_action( 'wp_ajax_itelic_admin_licenses_list_extend', array(
+			$this,
+			'handle_ajax_extend'
+		) );
+		add_action( 'wp_ajax_itelic_admin_licenses_list_max', array(
+			$this,
+			'handle_ajax_max'
+		) );
 
 		if ( ! empty( $_GET['msg'] ) && $_GET['msg'] == 'deleted' ) {
 			$this->message[ View::NOTICE_SUCCESS ] = __( "Key successfully deleted.", Plugin::SLUG );
@@ -212,28 +224,8 @@ class ListC extends Controller {
 		$key   = $_POST['key'];
 		$nonce = $_POST['nonce'];
 
-		if ( ! wp_verify_nonce( $nonce, "itelic-extend-key-$key" ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, you don't have permission to do this.", Plugin::SLUG )
-			) );
-		}
-
-		$key = itelic_get_key( $key );
-
-		if ( ! $key instanceof Key ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, we couldn't find that key. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
-
 		try {
-			$key->extend();
+			$key = $this->do_extend( itelic_get_key( $key ), $nonce );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(
@@ -245,6 +237,33 @@ class ListC extends Controller {
 			'expires' => $key->get_expires() === null ? __( "Forever", Plugin::SLUG ) : $key->get_expires()->format( get_option( 'date_format' ) ),
 			'status'  => $key->get_status( true )
 		) );
+	}
+
+	/**
+	 * Extend the key.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Key    $key
+	 * @param string $nonce
+	 *
+	 * @return Key
+	 */
+	public function do_extend( Key $key, $nonce ) {
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-extend-key-{$key->get_key()}" ) ) {
+			throw new \InvalidArgumentException(
+				__( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			throw new \InvalidArgumentException(
+				__( "Sorry, you don't have permission to do this.", Plugin::SLUG ) );
+		}
+
+		$key->extend();
+
+		return $key;
 	}
 
 	/**
@@ -260,40 +279,10 @@ class ListC extends Controller {
 
 		$key   = $_POST['key'];
 		$nonce = $_POST['nonce'];
-		$dir   = strtolower( sanitize_text_field( $_POST['dir'] ) );
-
-		if ( $dir == 'up' ) {
-			$alter = 1;
-		} elseif ( $dir == 'down' ) {
-			$alter = - 1;
-		} else {
-			wp_send_json_error( array(
-				'message' => __( "Invalid request format.", Plugin::SLUG )
-			) );
-		}
-
-		if ( ! wp_verify_nonce( $nonce, "itelic-max-key-$key" ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, you don't have permission to do this.", Plugin::SLUG )
-			) );
-		}
-
-		$key = itelic_get_key( $key );
-
-		if ( ! $key instanceof Key ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, we couldn't find that key. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
+		$dir   = strtolower( $_POST['dir'] );
 
 		try {
-			$key->set_max( $key->get_max() + $alter );
+			$key = $this->do_max( itelic_get_key( $key ), $dir, $nonce );
 		}
 		catch ( \Exception $e ) {
 			wp_send_json_error( array(
@@ -304,6 +293,42 @@ class ListC extends Controller {
 		wp_send_json_success( array(
 			'max' => $key->get_max()
 		) );
+	}
+
+	/**
+	 * Perform setting the max.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Key    $key
+	 * @param string $dir
+	 * @param string $nonce
+	 *
+	 * @return Key
+	 */
+	public function do_max( Key $key, $dir, $nonce ) {
+
+		if ( $dir == 'up' ) {
+			$alter = 1;
+		} elseif ( $dir == 'down' ) {
+			$alter = - 1;
+		} else {
+			throw new \InvalidArgumentException( __( "Invalid request format.", Plugin::SLUG ) );
+		}
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-max-key-{$key->get_key()}" ) ) {
+			throw new \InvalidArgumentException(
+				__( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			throw new \InvalidArgumentException(
+				__( "Sorry, you don't have permission to do this.", Plugin::SLUG ) );
+		}
+
+		$key->set_max( $key->get_max() + $alter );
+
+		return $key;
 	}
 
 	/**
