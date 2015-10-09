@@ -30,8 +30,6 @@ function _manually_load_plugin() {
 	if ( ! function_exists( 'load_it_exchange' ) ) {
 		require_once dirname( __FILE__ ) . '/../../ithemes-exchange/init.php';
 	}
-
-	require_once dirname( __FILE__ ) . '/../../exchange-addon-recurring-payments/exchange-addon-recurring-payments.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
@@ -51,7 +49,6 @@ if ( ! function_exists( 'load_it_exchange' ) ) {
 }
 
 activate_plugin( 'exchange-addon-licensing/exchange-addon-licensing.php' );
-activate_plugin( 'exchange-addon-manual-purchases/exchange-addon-manual-purchases.php' );
 
 \WP_Mock::setUsePatchwork( true );
 \WP_Mock::bootstrap();
