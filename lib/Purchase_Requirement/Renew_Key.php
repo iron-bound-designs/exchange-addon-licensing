@@ -436,11 +436,11 @@ class Renew_Key extends Base {
 
 		$session = $this->get_cache_data();
 
-		if ( ! isset( $session[ "p" . $product['product_id'] ] ) || $session[ "p" . $product['product_id'] ] === null ) {
+		if ( ! isset( $session[ "p" . $product->ID ] ) || $session[ "p" . $product->ID ] === null ) {
 			return $db_base_price;
 		}
 
-		$key = $session[ "p" . $product['product_id'] ];
+		$key = $session[ "p" . $product->ID ];
 		$key = itelic_get_key( $key );
 
 		$discount = new Discount( $key );
