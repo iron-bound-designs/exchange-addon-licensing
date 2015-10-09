@@ -71,7 +71,7 @@ class ITELIC_Test_Key_Types_Factory extends ITELIC_UnitTestCase {
 		$factory = new \ITELIC\Key\Factory( $product, $customer, $transaction );
 
 		$this->setExpectedException( '\UnexpectedValueException' );
-		
+
 		$factory->make();
 	}
 }

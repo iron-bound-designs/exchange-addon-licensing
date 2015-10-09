@@ -41,7 +41,7 @@ add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register
  * @since 1.0
  */
 function register_key_list_type() {
-	itelic_register_key_type( 'list', __( "From List", Plugin::SLUG ), new From_List() );
+	itelic_register_key_type( 'list', __( "From List", Plugin::SLUG ), new From_List( new Random() ) );
 }
 
 add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_list_type' );

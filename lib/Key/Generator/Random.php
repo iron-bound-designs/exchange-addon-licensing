@@ -37,6 +37,10 @@ class Random implements Generator {
 		);
 		$options  = wp_parse_args( $options, $defaults );
 
+		if ( $options['length'] < 1 ) {
+			throw new \InvalidArgumentException( "'length' >= 1" );
+		}
+
 		return $this->rand_sha1( $options['length'] );
 	}
 
