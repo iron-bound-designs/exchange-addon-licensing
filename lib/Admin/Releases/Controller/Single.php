@@ -299,38 +299,15 @@ class Single extends Controller {
 
 		$release = itelic_get_release( $release );
 
-		/** @var $wpdb \wpdb */
-		global $wpdb;
+		$notifications = $this->get_notifications( $release, $message, $subject );
 
-		$atn = Manager::get( 'itelic-activations' )->get_table_name( $wpdb );
-		$ktn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
-		$rtn = Manager::get( 'itelic-releases' )->get_table_name( $wpdb );
-
-		$results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT DISTINCT k.customer FROM $atn a JOIN $ktn k ON ( a.lkey = k.lkey AND k.`product` = %d )
-			 WHERE a.status = %s AND a.release_id IN (
-			 SELECT r.ID FROM $rtn r WHERE r.product = %d AND r.`start_date` < %s )",
-			$release->get_product()->ID, Activation::ACTIVE, $release->get_product()->ID, $release->get_start_date()->format( 'Y-m-d H:i:s' ) ) );
-
-		if ( empty( $results ) ) {
+		if ( empty( $notifications ) ) {
 			wp_send_json_error( array(
 				'message' => sprintf(
 					__( "All customers have already updated to version %s or later.", Plugin::SLUG ),
 					$release->get_version()
 				)
 			) );
-		}
-
-		$notifications = array();
-
-		foreach ( $results as $result ) {
-
-			$to = get_user_by( 'id', $result->customer );
-
-			$notification = new Notification( $to, Factory::make( 'itelic-outdated-customers' ), $message, $subject );
-			$notification->add_data_source( $release );
-
-			$notifications[] = $notification;
 		}
 
 		try {
@@ -346,6 +323,53 @@ class Single extends Controller {
 		wp_send_json_success( array(
 			'message' => sprintf( __( "Notifications to %d customers have been queued for sending", Plugin::SLUG ), count( $results ) )
 		) );
+	}
+
+	/**
+	 * Get notifications.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Release $release
+	 * @param string  $message
+	 * @param string  $subject
+	 *
+	 * @return Notification[]
+	 */
+	public function get_notifications( Release $release, $message, $subject ) {
+
+		/** @var $wpdb \wpdb */
+		global $wpdb;
+
+		$atn = Manager::get( 'itelic-activations' )->get_table_name( $wpdb );
+		$ktn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
+		$rtn = Manager::get( 'itelic-releases' )->get_table_name( $wpdb );
+
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"SELECT DISTINCT k.customer FROM $atn a JOIN $ktn k ON ( a.lkey = k.lkey AND k.`product` = %d )
+			 WHERE a.status = %s AND a.release_id IN (
+			 SELECT r.ID FROM $rtn r WHERE r.product = %d AND r.`start_date` < %s )",
+			$release->get_product()->ID, Activation::ACTIVE,
+			$release->get_product()->ID, $release->get_start_date()->format( 'Y-m-d H:i:s' )
+		) );
+
+		if ( empty( $results ) ) {
+			return array();
+		}
+
+		$notifications = array();
+
+		foreach ( $results as $result ) {
+
+			$to = get_user_by( 'id', $result->customer );
+
+			$notification = new Notification( $to, Factory::make( 'itelic-outdated-customers' ), $message, $subject );
+			$notification->add_data_source( $release );
+
+			$notifications[] = $notification;
+		}
+
+		return $notifications;
 	}
 
 	/**
