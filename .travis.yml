@@ -38,6 +38,9 @@ before_install:
   # set up database
   - mysql -e 'CREATE DATABASE wordpress_test;' -uroot
 
+before_script:
+  - cd $TRAVIS_BUILD_DIR
+
 script:
 - if [[ $TRAVIS_PHP_VERSION = '5.5' && $WP_VERSION = 'latest'
   ]]; then phpunit --coverage-clover=coverage.clover; else phpunit; fi
