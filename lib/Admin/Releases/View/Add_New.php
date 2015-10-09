@@ -24,21 +24,33 @@ class Add_New extends View {
 	 */
 	public function render() {
 
+		$selected = isset( $_POST['type-select'] ) ? $_POST['type-select'] : '';
+
+		if ( ! array_key_exists( $selected, Release::get_types() ) ) {
+			$selected = '';
+		}
+
+		if ( ! $selected ) {
+			$style = 'style="opacity: 0;"';
+		} else {
+			$style = '';
+		}
+
+		$security_msg_hidden = $selected == Release::TYPE_SECURITY ? '' : ' hidden';
 		?>
 		<form method="POST" action="<?php echo esc_attr( add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'releases' ) ) ); ?>">
-			<?php $this->render_types_tab(); ?>
+			<?php $this->render_types_tab( $selected ); ?>
 
-
-			<div class="main-editor" style="opacity: 0">
+			<div class="main-editor" <?php echo $style; ?>>
 
 				<div class="row row-one">
 
 					<div class="product-select-container">
-						<?php $this->render_product_select(); ?>
+						<?php $this->render_product_select( isset( $_POST['product'] ) ? $_POST['product'] : 0 ); ?>
 					</div>
 
 					<div class="version-number-container">
-						<?php $this->render_version_number(); ?>
+						<?php $this->render_version_number( isset( $_POST['version'] ) ? $_POST['version'] : 0 ); ?>
 					</div>
 				</div>
 
@@ -50,13 +62,13 @@ class Add_New extends View {
 
 				<div class="row row-three">
 					<div class="whats-changed-container">
-						<?php $this->render_whats_changed(); ?>
+						<?php $this->render_whats_changed( isset( $_POST['whats-changed'] ) ? $_POST['whats-changed'] : '' ); ?>
 					</div>
 				</div>
 
-				<div class="row row-five hidden" id="security-message-row">
+				<div class="row row-five <?php echo $security_msg_hidden; ?>" id="security-message-row">
 					<div class="security-message">
-						<?php $this->render_security_message(); ?>
+						<?php $this->render_security_message( isset( $_POST['security-message'] ) ? $_POST['security-message'] : '' ); ?>
 					</div>
 				</div>
 
@@ -93,7 +105,7 @@ class Add_New extends View {
 			<?php foreach ( Release::get_types( true ) as $type => $label ): ?>
 
 				<li class="<?php echo $type == $selected ? 'selected' : ''; ?>">
-					<input type="radio" name="type-select" id="type-select-<?php echo $type; ?>" value="<?php echo $type; ?>">
+					<input type="radio" name="type-select" <?php checked( $selected, $type ); ?> id="type-select-<?php echo $type; ?>" value="<?php echo $type; ?>">
 					<label for="type-select-<?php echo $type; ?>">
 						<span class="dashicons <?php echo $this->get_icon_for_type( $type ); ?>"></span>
 						<span class="type-description"><?php echo $label; ?></span>
@@ -182,15 +194,17 @@ class Add_New extends View {
 	 * Render the whats changed editor.
 	 *
 	 * @since 1.0
+	 *
+	 * @param string $content
 	 */
-	protected function render_whats_changed() {
+	protected function render_whats_changed( $content = '' ) {
 
 		?><label for="whats-changed">
 		<?php _e( "What's Changed", Plugin::SLUG ); ?>
 		<span class="tip" title="<?php _e( "Don't include the version number or date, they'll be added automatically.", Plugin::SLUG ) ?>">i</span>
 		</label>
 
-		<?php wp_editor( '', 'whats-changed', array(
+		<?php wp_editor( $content, 'whats-changed', array(
 			'media_buttons' => false,
 			'teeny'         => true,
 			'textarea_rows' => 5,
@@ -203,13 +217,15 @@ class Add_New extends View {
 	 * Allows for displaying a security message on the upgrade page.
 	 *
 	 * @since 1.0
+	 *
+	 * @param string $msg
 	 */
-	protected function render_security_message() {
+	protected function render_security_message( $msg = '' ) {
 
 		?>
 
 		<label for="security-message"><?php _e( "Security Message", Plugin::SLUG ); ?></label>
-		<textarea id="security-message" name="security-message" maxlength="200" rows="3"></textarea>
+		<textarea id="security-message" name="security-message" maxlength="200" rows="3"><?php echo $msg; ?></textarea>
 		<p class="description">
 			<?php _e( "Optionally display a security message on the software update page, alerting your customer to the urgency of the issue.", Plugin::SLUG ); ?>
 		</p>
