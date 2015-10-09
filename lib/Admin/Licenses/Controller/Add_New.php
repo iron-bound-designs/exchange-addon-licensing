@@ -57,6 +57,12 @@ class Add_New extends Controller {
 			return;
 		}
 
+		if ( empty( $_POST['product'] ) ) {
+			$this->message[ View::NOTICE_ERROR ] = __( "You must select a product.", Plugin::SLUG );
+
+			return;
+		}
+
 		$product = absint( $_POST['product'] );
 
 		if ( empty( $_POST['username'] ) ) {

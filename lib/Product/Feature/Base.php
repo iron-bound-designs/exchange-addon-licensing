@@ -149,7 +149,7 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 			<p class="description"><?php _e( "How should license keys be generated for this product.", Plugin::SLUG ); ?></p>
 
 			<div id="itelic-key-type-settings">
-				<?php if ( $data['key-type'] != - 1 ): ?>
+				<?php if ( ! empty( $data['key-type'] ) ): ?>
 					<?php $this->get_key_type_settings( $data['key-type'], isset( $post->ID ) ? $post->ID : 0 ); ?>
 				<?php endif; ?>
 			</div>
@@ -300,7 +300,7 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 		 * @param string $prefix
 		 * @param array  $values
 		 */
-		do_action( "it_exchange_itelic_render_key_type_{$type}_settings", $product, $prefix, $values );
+		do_action( "itelic_render_key_type_{$type}_settings", $product, $prefix, $values );
 	}
 
 	/**
