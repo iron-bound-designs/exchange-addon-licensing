@@ -123,59 +123,72 @@ class Single extends Controller {
 		$val     = $_POST['val'];
 		$nonce   = $_POST['nonce'];
 
-		if ( ! wp_verify_nonce( $nonce, "itelic-update-release-$release" ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG )
-			) );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => __( "Sorry, you don't have permission to do this.", Plugin::SLUG )
-			) );
-		}
-
-		$release = itelic_get_release( $release );
-
 		try {
-			switch ( $prop ) {
-				case 'status':
-					$release->set_status( $val );
-					break;
-
-				case 'type':
-					$release->set_type( $val );
-					break;
-
-				case 'version':
-					$release->set_version( sanitize_text_field( $val ) );
-					break;
-
-				case 'download':
-					$release->set_download( intval( $val ) );
-					break;
-
-				case 'changelog':
-					$release->set_changelog( $val );
-					break;
-
-				case 'security-message':
-					$release->update_meta( 'security-message', sanitize_text_field( $val ) );
-					break;
-
-				default:
-					wp_send_json_error( array(
-						'message' => __( "Invalid request format.", Plugin::SLUG )
-					) );
-			}
+			$this->do_update( itelic_get_release( $release ), $prop, $val, $nonce );
 		}
-		catch ( \Exception $e ) {
+		catch ( \InvalidArgumentException $e ) {
 			wp_send_json_error( array(
 				'message' => $e->getMessage()
 			) );
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Update a release's property.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Release $release
+	 * @param string  $prop
+	 * @param string  $val
+	 * @param string  $nonce
+	 *
+	 * @return Release
+	 */
+	public function do_update( Release $release, $prop, $val, $nonce ) {
+
+		if ( ! wp_verify_nonce( $nonce, "itelic-update-release-{$release->get_pk()}" ) ) {
+			throw new \InvalidArgumentException(
+				__( "Sorry, this page has expired. Please refresh and try again.", Plugin::SLUG ) );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			throw new \InvalidArgumentException(
+				__( "Sorry, you don't have permission to do this.", Plugin::SLUG ) );
+		}
+
+		switch ( $prop ) {
+			case 'status':
+				$release->set_status( $val );
+				break;
+
+			case 'type':
+				$release->set_type( $val );
+				break;
+
+			case 'version':
+				$release->set_version( sanitize_text_field( $val ) );
+				break;
+
+			case 'download':
+				$release->set_download( intval( $val ) );
+				break;
+
+			case 'changelog':
+				$release->set_changelog( $val );
+				break;
+
+			case 'security-message':
+				$release->update_meta( 'security-message', sanitize_text_field( $val ) );
+				break;
+
+			default:
+				throw new \InvalidArgumentException( "Invalid prop." );
+		}
+
+		return $release;
 	}
 
 	/**
