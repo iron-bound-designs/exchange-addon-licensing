@@ -22,7 +22,7 @@ function register_key_pattern_type() {
 	itelic_register_key_type( 'pattern', __( "Pattern", Plugin::SLUG ), new Pattern() );
 }
 
-add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_pattern_type' );
+add_action( 'itelic_register_key_types', __NAMESPACE__ . '\\register_key_pattern_type' );
 
 /**
  * Register the 'random' key type.
@@ -33,7 +33,7 @@ function register_key_random_type() {
 	itelic_register_key_type( 'random', __( "Random", Plugin::SLUG ), new Random() );
 }
 
-add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_random_type' );
+add_action( 'itelic_register_key_types', __NAMESPACE__ . '\\register_key_random_type' );
 
 /**
  * Register the 'list' key type.
@@ -44,14 +44,14 @@ function register_key_list_type() {
 	itelic_register_key_type( 'list', __( "From List", Plugin::SLUG ), new From_List( new Random() ) );
 }
 
-add_action( 'it_exchange_itelic_register_key_types', __NAMESPACE__ . '\\register_key_list_type' );
+add_action( 'itelic_register_key_types', __NAMESPACE__ . '\\register_key_list_type' );
 
 /**
  * Fires when key types should be registered.
  *
  * @since 1.0
  */
-do_action( 'it_exchange_itelic_register_key_types' );
+do_action( 'itelic_register_key_types' );
 
 /**
  * Output the settings form for the 'pattern' key type.
@@ -94,7 +94,7 @@ function render_key_type_pattern_settings( $product, $prefix, $values = array() 
 
 }
 
-add_action( 'it_exchange_itelic_render_key_type_pattern_settings', __NAMESPACE__ . '\\render_key_type_pattern_settings', 10, 3 );
+add_action( 'itelic_render_key_type_pattern_settings', __NAMESPACE__ . '\\render_key_type_pattern_settings', 10, 3 );
 
 /**
  * Output the settings form for the 'random' key type.
@@ -124,7 +124,7 @@ function render_key_type_random_settings( $product, $prefix, $values = array() )
 
 }
 
-add_action( 'it_exchange_itelic_render_key_type_random_settings', __NAMESPACE__ . '\\render_key_type_random_settings', 10, 3 );
+add_action( 'itelic_render_key_type_random_settings', __NAMESPACE__ . '\\render_key_type_random_settings', 10, 3 );
 
 /**
  * Output the settings form for the 'list' key type.
@@ -152,4 +152,4 @@ function render_key_type_list_settings( $product, $prefix, $values = array() ) {
 	<?php
 }
 
-add_action( 'it_exchange_itelic_render_key_type_list_settings', __NAMESPACE__ . '\\render_key_type_list_settings', 10, 3 );
+add_action( 'itelic_render_key_type_list_settings', __NAMESPACE__ . '\\render_key_type_list_settings', 10, 3 );
