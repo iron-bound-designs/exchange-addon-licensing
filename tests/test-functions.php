@@ -230,7 +230,8 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 		$key = \ITELIC\generate_key_for_transaction_product( $transaction, $product, $factory );
 
 		$this->assertInstanceOf( '\ITELIC\Key', $key );
-		$this->assertEquals( \ITELIC\make_date_time( '+1 year' ), $key->get_expires() );
+		$this->assertEquals( \ITELIC\make_date_time( '+1 year' )->getTimestamp(),
+			$key->get_expires()->getTimestamp(), '', 5 );
 	}
 
 	public function test_shared_tags() {
@@ -332,15 +333,24 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 		$args['key']                                   = 'abcd-1234';
 
 		unset( $args['activation'] );
-		$test_cases['Link validates when missing activation'] = array( $args, false );
+		$test_cases['Link validates when missing activation'] = array(
+			$args,
+			false
+		);
 		$args['activation']                                   = 1;
 
 		unset( $args['expires'] );
-		$test_cases['Link validates when missing expires'] = array( $args, false );
+		$test_cases['Link validates when missing expires'] = array(
+			$args,
+			false
+		);
 		$args['expires']                                   = $expires;
 
 		unset( $args['token'] );
-		$test_cases['Link validates when missing token'] = array( $args, false );
+		$test_cases['Link validates when missing token'] = array(
+			$args,
+			false
+		);
 		$args['token']                                   = $token;
 
 		return $test_cases;

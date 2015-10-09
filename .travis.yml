@@ -18,7 +18,6 @@ matrix:
   allow_failures:
   - php: hhvm
   - php: 7.0
-  fast_finish: true
 
 before_install:
   - composer self-update
@@ -55,4 +54,9 @@ git:
   depth: 1
 
 notifications:
-  slack: ironbounddesigns:fXMBlqSr9vvDBiwetLNm9ctD
+  slack:
+    ironbounddesigns:fXMBlqSr9vvDBiwetLNm9ctD
+    on_success: change
+    on_failure: always
+    on_start: never
+  email: false
