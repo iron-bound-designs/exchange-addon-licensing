@@ -43,7 +43,7 @@ script:
   fi
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -t :8263738d-f3f4-43a1-8339-87d5d2ac2ee1
+  - bash <(curl -s https://codecov.io/bash) -t 8263738d-f3f4-43a1-8339-87d5d2ac2ee1
 
 git:
   depth: 1
