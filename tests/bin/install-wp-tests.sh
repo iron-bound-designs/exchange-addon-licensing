@@ -35,7 +35,7 @@ install_exchange() {
 
 	cd $WP_CORE_DIR
 	cd wp-content/plugins
-	git clone --depth=1 git@bitbucket.org:ithemes/ithemes-exchange.git ithemes-exchange
+	git clone --depth=1 https://bitbucket.org/ithemes/ithemes-exchange.git ithemes-exchange
 }
 
 install_test_suite() {

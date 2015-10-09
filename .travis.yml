@@ -36,3 +36,6 @@ after_script:
 
 git:
   depth: 1
+
+notifications:
+  slack: ironbounddesigns:fXMBlqSr9vvDBiwetLNm9ctD
