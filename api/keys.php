@@ -125,7 +125,7 @@ function itelic_create_key( $args ) {
 
 	if ( ! $args['transaction'] ) {
 
-		if ( ! function_exists( 'it_exchange_register_manual_purchases_addon' ) ) {
+		if ( ! function_exists( 'it_exchange_manual_purchases_addon_transaction_uniqid' ) ) {
 			return new WP_Error( 'no_manual_purchases',
 				__( "Manual purchases add-on is not installed.", \ITELIC\Plugin::SLUG ) );
 		}

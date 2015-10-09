@@ -32,17 +32,13 @@ function _manually_load_plugin() {
 	}
 
 	require_once dirname( __FILE__ ) . '/../../exchange-addon-recurring-payments/exchange-addon-recurring-payments.php';
-	require_once dirname( __FILE__ ) . '/../../exchange-addon-manual-purchases/exchange-addon-manual-purchases.php';
-
-	// exchange pulls from a saved option to determine the current version
-	// which isn't yet saved when running unit tests
-	require_once dirname( __FILE__ ) . '/../../exchange-addon-manual-purchases/init.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 require $_tests_dir . '/includes/bootstrap.php';
 
+require dirname( __FILE__ ) . '/framework/shim.php';
 require dirname( __FILE__ ) . '/framework/product-factory.php';
 require dirname( __FILE__ ) . '/framework/key-factory.php';
 require dirname( __FILE__ ) . '/framework/activation-factory.php';
@@ -56,7 +52,6 @@ if ( ! function_exists( 'load_it_exchange' ) ) {
 
 activate_plugin( 'exchange-addon-licensing/exchange-addon-licensing.php' );
 activate_plugin( 'exchange-addon-manual-purchases/exchange-addon-manual-purchases.php' );
-activate_plugin( 'exchange-addon-recurring-payments/exchange-addon-recurring-payments.php' );
 
 \WP_Mock::setUsePatchwork( true );
 \WP_Mock::bootstrap();
