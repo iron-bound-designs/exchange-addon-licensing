@@ -70,7 +70,7 @@ class Add_New extends Controller {
 			return;
 		}
 
-		if ( $product->has_feature( 'licensing' ) ) {
+		if ( ! $product->has_feature( 'licensing' ) ) {
 			$this->errors[] = __( "Product selected does not support licensing.", Plugin::SLUG );
 
 			return;
@@ -158,7 +158,7 @@ class Add_New extends Controller {
 		?>
 
 		<div class="notice notice-error">
-			<p><?php implode( ', ', $this->errors ); ?>
+			<p><?php echo implode( ', ', $this->errors ); ?>
 			</p>
 		</div>
 
