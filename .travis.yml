@@ -19,11 +19,24 @@ matrix:
   - php: hhvm
   - php: 7.0
 
-before_script:
-- echo -e "Host bitbucket.org\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-- bash tests/bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-- composer self-update
-- composer install --no-interaction
+before_install:
+  - echo -e "Host bitbucket.org\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+  - git clone --depth=1 https://bitbucket.org/ithemes/ithemes-exchange.git ../ithemes-exchange
+  # set up WP install
+  - export WP_TESTS_DIR=/tmp/wordpress/
+  - mkdir -p $WP_TESTS_DIR
+  - git clone --depth=1 git://develop.git.wordpress.org/ $WP_TESTS_DIR
+  # set up tests config
+  - cd $WP_TESTS_DIR
+  - echo $WP_TESTS_DIR
+  - cp wp-tests-config-sample.php wp-tests-config.php
+  - sed -i "s/youremptytestdbnamehere/wordpress_test/" wp-tests-config.php
+  - sed -i "s/yourusernamehere/root/" wp-tests-config.php
+  - sed -i "s/yourpasswordhere//" wp-tests-config.php
+  # set up database
+  - mysql -e 'CREATE DATABASE wordpress_test;' -uroot
+  - composer self-update
+  - composer install --no-interaction
 
 script:
 - if [[ $TRAVIS_PHP_VERSION = '5.5' && $WP_VERSION = 'latest'
