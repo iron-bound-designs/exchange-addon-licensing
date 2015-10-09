@@ -20,6 +20,8 @@ matrix:
   - php: 7.0
 
 before_install:
+  - composer self-update
+  - composer install --no-interaction
   - echo -e "Host bitbucket.org\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - git clone --depth=1 https://bitbucket.org/ithemes/ithemes-exchange.git ../ithemes-exchange
   # set up WP install
@@ -35,8 +37,6 @@ before_install:
   - sed -i "s/yourpasswordhere//" wp-tests-config.php
   # set up database
   - mysql -e 'CREATE DATABASE wordpress_test;' -uroot
-  - composer self-update
-  - composer install --no-interaction
 
 script:
 - if [[ $TRAVIS_PHP_VERSION = '5.5' && $WP_VERSION = 'latest'
