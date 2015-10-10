@@ -177,14 +177,14 @@ class Add_New extends Controller {
 
 			echo __( "Request expired. Please refresh and try again.", Plugin::SLUG );
 
-			die( 0 );
+			die();
 		}
 
 		$ID = media_handle_upload( 'file', 0 );
 
 		echo $ID;
 
-		die( 1 );
+		die();
 	}
 
 	/**

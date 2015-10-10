@@ -66,14 +66,17 @@ jQuery(document).ready(function ($) {
 
 	var simple_activation = $(".itelic-activation-limit");
 	var variant_activation = $(".itelic-variants-activation-limit-table");
+	var variantNotice = $(".notice-container");
 
 	$("#itelic-enable-variant-activations").click(function (e) {
 		if ($(this).attr('checked') == 'checked') {
 			variant_activation.removeClass('hide-if-js').show();
+			variantNotice.removeClass('hide-if-js').show();
 			simple_activation.hide();
 		} else {
 			simple_activation.removeClass('hide-if-js').show();
 			variant_activation.hide();
+			variantNotice.hide();
 		}
 	});
 

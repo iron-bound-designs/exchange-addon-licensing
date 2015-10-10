@@ -169,7 +169,16 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 				<input type="number" name="itelic[limit]" id="itelic-limit" min="0" value="<?php echo esc_attr( $data['limit'] ); ?>">
 			</div>
 
-			<?php if ( $controller && $controller->post_meta ): ?>
+			<div class="notice-container <?php echo $data['enabled_variant_activations'] ? '' : 'hide-if-js'; ?>">
+
+				<?php if ( $controller && ! $controller->all_variant_combos_for_product ): ?>
+					<div class="notice notice-warning below-h2">
+						<p><?php _e( "You need to create Product Variants and save the product before setting variant activation limits.", Plugin::SLUG ); ?></p>
+					</div>
+				<?php endif; ?>
+			</div>
+
+			<?php if ( $controller && $controller->all_variant_combos_for_product ): ?>
 				<?php $hashes = $data['activation_variant']; ?>
 
 				<div class="itelic-variants-activation-limit-table<?php echo esc_attr( $hidden_variants ); ?>">
@@ -179,10 +188,11 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 						<div class="itelic-activation-limit-variant-header-cell itelic-activation-limit-variant-input-cell"><?php _e( "Limit", Plugin::SLUG ); ?></div>
 					</div>
 
-					<?php foreach ( $controller->post_meta as $hash => $variant ): ?>
+					<?php foreach ( $controller->all_variant_combos_for_product as $combo ): ?>
+						<?php $hash = $this->combo_to_hash( $combo ); ?>
 						<div class="itelic-activation-limit-variant-row">
 
-							<div class="itelic-activation-limit-variant-cell"><?php echo $variant['combos_title'] ?></div>
+							<div class="itelic-activation-limit-variant-cell"><?php echo $controller->generate_title_from_combos( $combo ); ?></div>
 
 							<div class="itelic-activation-limit-variant-cell itelic-activation-limit-variant-input-cell">
 								<input class="itelic-activation-limit-variant-input" name="itelic[activation_variant][<?php echo esc_attr( $hash ); ?>]"
@@ -211,9 +221,10 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 	protected function get_variants_controller( $product_id ) {
 
 		if ( function_exists( 'it_exchange_variants_addon_get_product_feature_controller' ) ) {
-			$controller = it_exchange_variants_addon_get_product_feature_controller( $product_id, 'base-price', array(
+			$controller = it_exchange_variants_addon_get_product_feature_controller( $product_id, '', array(
 				'setting' => 'variants'
 			) );
+			$controller->set_all_variant_combos_for_product( false );
 		} else {
 			$controller = null;
 		}
