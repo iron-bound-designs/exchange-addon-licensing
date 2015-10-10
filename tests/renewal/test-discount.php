@@ -146,6 +146,22 @@ class ITELIC_Test_Renewal_Discount extends ITELIC_UnitTestCase {
 		$this->assertTrue( $discount->is_discount_valid() );
 	}
 
+	public function test_discount_is_valid_if_now_is_less_than_key_expiration_and_diff_is_greater_than_discount_days_validity() {
+
+		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
+		$mock_product->method( 'get_feature' )->with( 'licensing-discount' )->willReturn( array(
+			'expiry' => 30
+		) );
+
+		$mock_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$mock_key->method( 'get_product' )->willReturn( $mock_product );
+		$mock_key->method( 'get_expires' )->willReturn( \ITELIC\make_date_time( '+2 month' ) );
+
+		$discount = new Discount( $mock_key );
+
+		$this->assertTrue( $discount->is_discount_valid() );
+	}
+
 	public function test_discount_is_invalid_if_now_is_after_discount_expiration() {
 
 		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();

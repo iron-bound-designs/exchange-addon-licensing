@@ -115,7 +115,13 @@ class Discount implements \Serializable {
 
 		$expiry_date = $this->key->get_expires();
 
-		$diff = $expiry_date->diff( \ITELIC\make_date_time() );
+		$now = \ITELIC\make_date_time();
+
+		if ( $expiry_date > $now ) {
+			return true;
+		}
+
+		$diff = $expiry_date->diff( $now );
 
 		return $diff->days < $this->get_expiry_days();
 	}

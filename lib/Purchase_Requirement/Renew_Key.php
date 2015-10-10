@@ -22,14 +22,52 @@ class Renew_Key extends Base {
 	 * Constructor.
 	 *
 	 * @since 1.0
-	 *
-	 * @param string   $slug
-	 * @param array    $args
-	 * @param \Closure $complete Becomes the requirement met function. ($this)
-	 *                           is passed as a parameter.
 	 */
-	public function __construct( $slug, array $args, \Closure $complete ) {
-		parent::__construct( $slug, $args, $complete );
+	public function __construct() {
+
+		$args = array(
+			'priority'               => 2,
+			'sw-template-part'       => 'itelic-renew-product',
+			'checkout-template-part' => 'itelic-renew-product',
+			'notification'           => __( "You need to select a license key to renew.", Plugin::SLUG ),
+		);
+
+		$complete = function ( Renew_Key $req ) {
+
+			$product_id = \ITELIC\get_current_product_id();
+			$session    = $req->get_cache_data();
+
+			// we are on checkout
+			if ( ! $product_id ) {
+				foreach ( $session as $product => $key ) {
+
+					// so all products marked for renewal must have a key
+					if ( $key === null ) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+
+			// we are on a product page
+
+			// if there is no record of this product in the session then the PR has been met
+			if ( ! array_key_exists( "p$product_id", $session ) ) {
+				return true;
+			}
+
+			return $session["p$product_id"] !== null;
+		};
+
+		parent::__construct( 'itelic-renew-product', $args, $complete );
+	}
+
+	/**
+	 * Register the purchase requirement with Exchange.
+	 */
+	public function register() {
+		parent::register();
 
 		add_action( 'it_exchange_super_widget_product_end_purchase_options_element', array(
 			$this,
@@ -174,6 +212,8 @@ class Renew_Key extends Base {
 			"p$product" => is_null( $key ) ? null : $key->get_key()
 		) );
 
+		$this->persist();
+
 		die( 1 );
 	}
 
@@ -214,6 +254,8 @@ class Renew_Key extends Base {
 		} else {
 			$this->remove_cache_data( "p{$product->ID}" );
 		}
+
+		$this->persist();
 
 		wp_send_json_success();
 	}
@@ -444,7 +486,7 @@ class Renew_Key extends Base {
 		$key = itelic_get_key( $key );
 
 		$discount = new Discount( $key );
-
+		
 		if ( ! $discount->is_discount_valid() ) {
 			return $db_base_price;
 		}

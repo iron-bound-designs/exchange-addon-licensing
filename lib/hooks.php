@@ -112,40 +112,18 @@ function auto_expire_licenses() {
 
 add_action( 'it_exchange_itelic_daily_schedule', 'ITELIC\auto_expire_licenses' );
 
-$purchase_req = new Renew_Key( 'itelic-renew-product', array(
-	'priority'               => 2,
-	'sw-template-part'       => 'itelic-renew-product',
-	'checkout-template-part' => 'itelic-renew-product',
-	'notification'           => __( "You need to select a license key to renew.", Plugin::SLUG ),
-), function ( Purchase_Requirement $req ) {
+/**
+ * Register the renewal purchase requirement with Exchange.
+ *
+ * @since 1.0
+ */
+function register_renewal_purchase_req() {
 
-	$product_id = get_current_product_id();
-	$session    = $req->get_cache_data();
+	$purchase_req = new Renew_Key();
+	$purchase_req->register();
+}
 
-	// we are on checkout
-	if ( ! $product_id ) {
-		foreach ( $session as $product => $key ) {
-
-			// so all products marked for renewal must have a key
-			if ( $key === null ) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	// we are on a product page
-
-	// if there is no record of this product in the session then the PR has been met
-	if ( ! array_key_exists( "p$product_id", $session ) ) {
-		return true;
-	}
-
-	return $session["p$product_id"] !== null;
-} );
-
-$purchase_req->register();
+add_action( 'init', 'ITELIC\register_renewal_purchase_req', 0 );
 
 /**
  * When a renewal purchase is made, renew the renewed key.
