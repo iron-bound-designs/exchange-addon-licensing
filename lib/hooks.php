@@ -8,10 +8,6 @@
 
 namespace ITELIC;
 
-use IronBound\WP_Notifications\Queue\Manager as Queue_Manager;
-use IronBound\WP_Notifications\Queue\Storage\Options;
-use IronBound\WP_Notifications\Queue\WP_Cron;
-use ITELIC\Purchase_Requirement\Base as Purchase_Requirement;
 use ITELIC\Purchase_Requirement\Renew_Key;
 use ITELIC_API\Query\Keys;
 use ITELIC_API\Query\Releases;
