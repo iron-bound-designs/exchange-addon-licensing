@@ -152,7 +152,7 @@
 			},
 			multiple: false,
 			library : {
-				type: 'application/zip,application/octet-stream'
+				type: ['application/zip', 'application/octet-stream']
 			}
 		});
 
