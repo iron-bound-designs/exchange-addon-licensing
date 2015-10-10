@@ -244,6 +244,43 @@ function archive_old_releases_on_new_activation( Release $release ) {
 
 add_action( 'itelic_activate_release', 'ITELIC\archive_old_releases_on_new_activation' );
 
+/**
+ * When a release is activated, set the last updated value in the readme product feature.
+ *
+ * @since 1.0
+ *
+ * @param Release $release
+ */
+function set_last_updated_value_in_readme_on_activate( Release $release ) {
+
+	if ( $release->get_type() != Release::TYPE_PRERELEASE && $release->get_product()->has_feature( 'licensing-readme' ) ) {
+		$release->get_product()->update_feature( 'licensing-readme', array(
+			'last_updated' => $release->get_start_date()->getTimestamp()
+		) );
+	}
+}
+
+add_action( 'itelic_activate_release', 'ITELIC\set_last_updated_value_in_readme_on_activate' );
+
+/**
+ * When a release is paused, set the last updated value to the previous release in the readme product feature.
+ *
+ * @since 1.0
+ *
+ * @param Release      $release
+ * @param Release|null $prev_release
+ */
+function set_last_updated_value_in_readme_on_pause( Release $release, Release $prev_release = null ) {
+
+	if ( $prev_release && $release->get_product()->has_feature( 'licensing-readme' ) ) {
+		$release->get_product()->update_feature( 'licensing-readme', array(
+			'last_updated' => $prev_release->get_start_date()->getTimestamp()
+		) );
+	}
+}
+
+add_action( 'itelic_pause_release', '\ITELIC\set_last_updated_value_in_readme_on_pause', 10, 2 );
+
 /* --------------------------------------------
 ============= Display License Key =============
 ----------------------------------------------- */

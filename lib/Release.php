@@ -235,6 +235,10 @@ class Release extends Model {
 
 			if ( $status == self::STATUS_ACTIVE ) {
 
+				if ( $type != self::TYPE_PRERELEASE ) {
+					self::do_activation( $product, $file, $version );
+				}
+
 				/**
 				 * Fires when a release is activated.
 				 *
@@ -243,10 +247,6 @@ class Release extends Model {
 				 * @param Release $release
 				 */
 				do_action( 'itelic_activate_release', $release );
-
-				if ( $type != self::TYPE_PRERELEASE ) {
-					self::do_activation( $product, $file, $version );
-				}
 			}
 
 			if ( in_array( $status, array(
@@ -384,6 +384,10 @@ class Release extends Model {
 			}
 		}
 
+		if ( ! isset( $prev_release ) ) {
+			$prev_release = null;
+		}
+
 		wp_cache_delete( $this->get_product()->ID, 'itelic-changelog' );
 
 		/**
@@ -392,8 +396,9 @@ class Release extends Model {
 		 * @since 1.0
 		 *
 		 * @param Release $this
+		 * @param Release $prev_release Release that we are reverting to.
 		 */
-		do_action( 'itelic_pause_release', $this );
+		do_action( 'itelic_pause_release', $this, $prev_release );
 	}
 
 	/**
