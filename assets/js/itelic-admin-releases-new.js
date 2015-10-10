@@ -123,8 +123,11 @@
 		uploadLabel.text(ITELIC.uploadLabel);
 		$("#upload-file").val('');
 		$(".trash-file").css('display', 'none');
+		$(".dz-message").show();
+
 		uploadProgress.hide();
 		dropzoneFile.removeAllFiles(true);
+		dropzoneFile.options.maxFiles = 1;
 	});
 
 	var dropzoneFile;
@@ -133,6 +136,7 @@
 		url            : ajaxurl,
 		params         : {
 			action: 'itelic_handle_release_file_upload',
+			nonce : ITELIC.nonce
 		},
 		paramName      : "file",
 		maxFiles       : 1,
@@ -144,7 +148,11 @@
 			dropzoneFile = this;
 
 			this.on('addedfile', function (file) {
-				uploadLabel.text(file.name);
+
+				if (!$("#upload-file").val().length) {
+					uploadLabel.text(file.name);
+				}
+
 				uploadProgress.show();
 			});
 
@@ -156,7 +164,10 @@
 
 				this.removeFile(file);
 
-				uploadLabel.text(ITELIC.uploadLabel);
+				if (!$("#upload-file").val().length) {
+					uploadLabel.text(ITELIC.uploadLabel);
+				}
+
 				uploadProgress.hide();
 				uploadProgress.val(0);
 
@@ -226,6 +237,9 @@
 			$("#upload-file").val(image_data.id);
 			$(".upload-inputs label").text(image_data.filename);
 			$(".trash-file").css('display', 'inline');
+
+			$(".dz-message").hide();
+			dropzoneFile.options.maxFiles = 0;
 		});
 
 		// Now display the actual file_frame

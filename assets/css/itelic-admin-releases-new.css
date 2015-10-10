@@ -154,6 +154,10 @@
 	position: relative;
 }
 
+.upload-container.dropzone {
+	min-height: 0 !important;
+}
+
 .upload-container .progress-container {
 	width: 40%;
 	margin: 0 auto;

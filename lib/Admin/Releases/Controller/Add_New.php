@@ -172,6 +172,14 @@ class Add_New extends Controller {
 			die( 0 );
 		}
 
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'itelic-new-release-file' ) ) {
+			status_header( 403 );
+
+			echo __( "Request expired. Please refresh and try again.", Plugin::SLUG );
+
+			die( 0 );
+		}
+
 		$ID = media_handle_upload( 'file', 0 );
 
 		echo $ID;
@@ -191,7 +199,8 @@ class Add_New extends Controller {
 			'prevVersion'  => __( "Current version: %s", Plugin::SLUG ),
 			'uploadTitle'  => __( "Choose Software File", Plugin::SLUG ),
 			'uploadButton' => __( "Select File", Plugin::SLUG ),
-			'uploadLabel'  => __( "Upload File", Plugin::SLUG )
+			'uploadLabel'  => __( "Upload File", Plugin::SLUG ),
+			'nonce'        => wp_create_nonce( 'itelic-new-release-file' )
 		) );
 
 		wp_enqueue_media();

@@ -268,11 +268,11 @@
 	opacity: 1;
 }
 
-/*.dropzone .dz-preview.dz-file-preview .dz-image {
+.dropzone .dz-preview.dz-file-preview .dz-image {
 	border-radius: 20px;
 	background: #999;
 	background: linear-gradient(to bottom, #eee, #ddd);
-}*/
+}
 
 .dropzone .dz-preview.dz-file-preview .dz-details {
 	opacity: 1;
