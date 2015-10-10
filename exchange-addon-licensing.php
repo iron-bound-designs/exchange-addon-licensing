@@ -110,6 +110,9 @@ class Plugin {
 		wp_register_script( 'select2', self::$url . 'assets/vendor/select2/select2.full.min.js', array( 'jquery' ), '4.0' );
 		wp_register_style( 'select2', self::$url . 'assets/vendor/select2/select2.min.css', array(), '4.0' );
 
+		wp_register_script( 'dropzone', self::$url . 'assets/vendor/dropzone/dropzone.js', array(), '4.0' );
+		wp_register_style( 'dropzone', self::$url . 'assets/vendor/dropzone/dropzone.css', array(), '4.0' );
+
 		wp_register_style( 'itelic-add-edit-product', self::$url . 'assets/css/itelic-add-edit-product.css', array(), self::VERSION );
 		wp_register_script( 'itelic-add-edit-product', self::$url . 'assets/js/itelic-add-edit-product.js', array( 'jquery' ), self::VERSION );
 
@@ -139,11 +142,15 @@ class Plugin {
 		wp_register_style( 'itelic-account-licenses', self::$url . 'assets/css/itelic-account-licenses.css', array(), self::VERSION );
 		wp_register_script( 'itelic-account-licenses', self::$url . 'assets/js/itelic-account-licenses.js', array( 'jquery' ), self::VERSION );
 
-		wp_register_style( 'itelic-admin-releases-new', self::$url . 'assets/css/itelic-admin-releases-new.css', array( 'select2' ), self::VERSION );
+		wp_register_style( 'itelic-admin-releases-new', self::$url . 'assets/css/itelic-admin-releases-new.css', array(
+			'select2',
+			'dropzone'
+		), self::VERSION );
 		wp_register_script( 'itelic-admin-releases-new', self::$url . 'assets/js/itelic-admin-releases-new.js', array(
 			'jquery-effects-slide',
 			'jquery-ui-tooltip',
-			'select2'
+			'select2',
+			'dropzone'
 		), self::VERSION );
 
 		wp_register_script( 'itelic-admin-releases-list', self::$url . 'assets/js/itelic-admin-releases-list.js', array(

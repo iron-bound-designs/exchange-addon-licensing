@@ -1,6 +1,8 @@
 (function ($) {
 	'use strict';
 
+	Dropzone.autoDiscover = false
+
 	var file_frame, image_data;
 
 	var product = $("#product");
@@ -108,15 +110,72 @@
 		$("#release").attr('disabled', false);
 	}
 
+	var uploadContainer = $(".upload-container");
+	var uploadProgress = $(".upload-inputs progress");
+	var uploadLabel = $(".upload-inputs label");
+
 	/**
 	 * When the trash file icon is clicked,
 	 * remove the currently listed file.
 	 */
 	$('.trash-file').click(function (e) {
 
-		$(".upload-inputs label").text(ITELIC.uploadLabel);
+		uploadLabel.text(ITELIC.uploadLabel);
 		$("#upload-file").val('');
 		$(".trash-file").css('display', 'none');
+		uploadProgress.hide();
+		dropzoneFile.removeAllFiles(true);
+	});
+
+	var dropzoneFile;
+
+	uploadContainer.dropzone({
+		url            : ajaxurl,
+		params         : {
+			action: 'itelic_handle_release_file_upload',
+		},
+		paramName      : "file",
+		maxFiles       : 1,
+		acceptedFiles  : 'application/zip,application/octet-stream',
+		clickable      : false,
+		previewTemplate: '<div class="dz-preview hidden" style="display:none!important;"></div>',
+		init           : function () {
+
+			dropzoneFile = this;
+
+			this.on('addedfile', function (file) {
+				uploadLabel.text(file.name);
+				uploadProgress.show();
+			});
+
+			this.on('uploadprogress', function (file, progress) {
+				uploadProgress.val(progress);
+			});
+
+			this.on('error', function (file, errorMessage) {
+
+				this.removeFile(file);
+
+				uploadLabel.text(ITELIC.uploadLabel);
+				uploadProgress.hide();
+				uploadProgress.val(0);
+
+				alert(errorMessage);
+			});
+
+			this.on('complete', function (file) {
+
+				if (file.status == 'success') {
+
+					var ID = file.xhr.responseText;
+
+					$("#upload-file").val(ID);
+
+					$(".trash-file").css('display', 'inline');
+				}
+			});
+		}
+
 	});
 
 	/**

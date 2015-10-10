@@ -55,7 +55,7 @@ class Add_New extends View {
 				</div>
 
 				<div class="row row-two">
-					<div class="upload-container">
+					<div class="upload-container dropzone">
 						<?php $this->render_upload(); ?>
 					</div>
 				</div>
@@ -182,6 +182,10 @@ class Add_New extends View {
 			<a href="javascript:">
 				<label for="file"><?php _e( "Upload File", Plugin::SLUG ); ?></label>
 			</a>
+
+			<div class="progress-container">
+				<progress max="100" value="0"></progress>
+			</div>
 			<input type="hidden" name="upload-file" id="upload-file">
 		</div>
 

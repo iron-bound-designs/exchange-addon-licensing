@@ -154,6 +154,17 @@
 	position: relative;
 }
 
+.upload-container .progress-container {
+	width: 40%;
+	margin: 0 auto;
+}
+
+.upload-container progress {
+	width: 100%;
+	margin-top: 15px;
+	display: none;
+}
+
 .trash-file {
 	color: #9a9a9a;
 	position: absolute;

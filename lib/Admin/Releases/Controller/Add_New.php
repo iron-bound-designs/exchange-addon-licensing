@@ -34,6 +34,7 @@ class Add_New extends Controller {
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'save_new_release' ) );
 		add_action( 'admin_notices', array( $this, 'display_errors' ) );
+		add_action( 'wp_ajax_itelic_handle_release_file_upload', array( $this, 'process_file_upload' ) );
 	}
 
 	/**
@@ -163,6 +164,19 @@ class Add_New extends Controller {
 		</div>
 
 		<?php
+	}
+
+	public function process_file_upload() {
+
+		if ( ! current_user_can( 'upload_files' ) ) {
+			die( 0 );
+		}
+
+		$ID = media_handle_upload( 'file', 0 );
+
+		echo $ID;
+
+		die( 1 );
 	}
 
 	/**
