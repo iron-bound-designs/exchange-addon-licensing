@@ -384,7 +384,7 @@ class Release extends Model {
 			}
 		}
 
-		if ( ! isset( $prev_release ) ) {
+		if ( ! isset( $prev_release ) || ! $prev_release instanceof Release ) {
 			$prev_release = null;
 		}
 
