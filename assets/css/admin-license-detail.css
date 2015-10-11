@@ -29,6 +29,7 @@
 	float: left;
 	width: 35.8%;
 	border-right: 1px solid #DFDFDF;
+	height: 120px;
 }
 
 #it-exchange-license-details .third-row div:first-child {
@@ -94,6 +95,12 @@
 
 .ui-datepicker-trigger {
 	display: none;
+}
+
+#it-exchange-license-details .editableform-loading {
+	margin: 10px 0 0 0 !important;
+	padding: 0;
+	width: 100%;
 }
 
 /** -----------------------------------------------------:[ license status ]:---------- */
@@ -373,6 +380,7 @@ table {
 		margin: 0;
 		border-right: none;
 		border-bottom: 1px solid #DFDFDF;
+		height: auto;
 	}
 
 	#it-exchange-license-details .third-row div.third:first-of-type {
@@ -392,6 +400,29 @@ table {
 
 	#it-exchange-license-details .misc-block h3 {
 		text-align: center;
+	}
+
+	#it-exchange-license-details .third .editable-container.editable-inline {
+		width: 100%;
+	}
+
+	#it-exchange-license-details .third .editable-container.editable-inline .editable-input {
+		text-align: center;
+		display: block;
+		width: 100%;
+		margin: 10px 0 0 0;
+		padding: 0;
+	}
+
+	#it-exchange-license-details .third .editable-container.editable-inline .editable-input input {
+		text-align: center;
+	}
+
+	#it-exchange-license-details .third .editable-inline .editableform-loading {
+		width: 100%;
+		margin: 5px 0 0 0;
+		padding: 0;
+		background-position: center center;
 	}
 
 	/* Force table to not be like tables anymore */

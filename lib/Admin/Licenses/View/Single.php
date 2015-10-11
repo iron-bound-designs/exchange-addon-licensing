@@ -58,6 +58,8 @@ class Single extends View {
 			'update_nonce' => wp_create_nonce( 'itelic-update-key-' . $this->key->get_key() ),
 			'statuses'     => json_encode( Key::get_statuses() )
 		) );
+
+		$jdf = it_exchange_php_date_format_to_jquery_datepicker_format( $this->get_short_df() );;
 		?>
 
 		<div id="it-exchange-license-details">
@@ -87,7 +89,7 @@ class Single extends View {
 				<div class="third expires">
 					<h4><?php _e( "Expires", Plugin::SLUG ); ?></h4>
 
-					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>">
+					<h3 title="<?php esc_attr_e( "Click to edit", Plugin::SLUG ); ?>" data-df="<?php echo $jdf; ?>">
 						<?php if ( null === ( $d = $this->key->get_expires() ) ) : ?>
 							<?php _e( "Never", Plugin::SLUG ); ?>
 						<?php else: ?>

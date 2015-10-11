@@ -20,6 +20,9 @@ jQuery(document).ready(function ($) {
 	var expiration = $("#expiration");
 
 	if (!Modernizr.touchevents || !Modernizr.inputtypes.date) {
+
+		expiration.prop('type', 'text');
+
 		expiration.datepicker({
 			prevText  : '',
 			nextText  : '',

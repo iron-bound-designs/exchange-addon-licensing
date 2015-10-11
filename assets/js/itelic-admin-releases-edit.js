@@ -579,6 +579,7 @@
 			placement  : "top",
 			title      : ' ',
 			mode       : 'inline',
+			clear      : false,
 			url        : function (params) {
 				return editable_ajax(params);
 			},

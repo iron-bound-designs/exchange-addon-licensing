@@ -51,6 +51,11 @@ jQuery(document).ready(function ($) {
 			return editable_ajax(params);
 		},
 		success    : function (response, newValue) {
+
+			if (newValue && Modernizr.touchevents) {
+				newValue = $.datepicker.formatDate($(".expires h3").data('df'), new Date(newValue));
+			}
+
 			return editable_success_callback(response, newValue);
 		}
 	};
