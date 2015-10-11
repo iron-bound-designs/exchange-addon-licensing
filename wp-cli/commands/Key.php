@@ -175,9 +175,37 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $key ) = $args;
 
-		$key = $this->fetcher->get_check( $key );
+		if ( substr( $key, - 3 ) == '...' ) {
+			$key = substr( $key, 0, strlen( $key ) - 3 );
 
-		$result = $key->extend();
+			if ( strlen( $key ) < 3 ) {
+				WP_CLI::error( 'At least the first three characters of the key must be provided to perform a partial match.' );
+			}
+
+			$keys = itelic_get_keys( array(
+				'key_like' => $key
+			) );
+
+			if ( empty( $keys ) ) {
+				WP_CLI::error( 'No partial match found.' );
+			}
+
+			if ( count( $keys ) > 1 ) {
+				WP_CLI::line( 'Multiple keys found.' );
+
+				$this->list_( array(), array(
+					'key_like' => $key
+				) );
+
+				return;
+			}
+
+			$object = reset( $keys );
+		} else {
+			$object = $this->fetcher->get_check( $key );
+		}
+
+		$result = $object->extend();
 
 		if ( ! $result ) {
 			WP_CLI::error( "This key does not have an expiry date." );
@@ -204,27 +232,54 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $key, $transaction ) = array_pad( $args, 2, 0 );
 
-		$key = $this->fetcher->get_check( $key );
+		if ( substr( $key, - 3 ) == '...' ) {
+			$key = substr( $key, 0, strlen( $key ) - 3 );
+
+			if ( strlen( $key ) < 3 ) {
+				WP_CLI::error( 'At least the first three characters of the key must be provided to perform a partial match.' );
+			}
+
+			$keys = itelic_get_keys( array(
+				'key_like' => $key
+			) );
+
+			if ( empty( $keys ) ) {
+				WP_CLI::error( 'No partial match found.' );
+			}
+
+			if ( count( $keys ) > 1 ) {
+				WP_CLI::line( 'Multiple keys found.' );
+
+				$this->list_( array(), array(
+					'key_like' => $key
+				) );
+
+				return;
+			}
+
+			$object = reset( $keys );
+		} else {
+			$object = $this->fetcher->get_check( $key );
+		}
 
 		if ( ! empty( $transaction ) ) {
-			$object = it_exchange_get_transaction( $transaction );
+			$transaction = it_exchange_get_transaction( $transaction );
 
-			if ( ! $object ) {
+			if ( ! $transaction ) {
 				WP_CLI::error( sprintf( "Invalid transaction with ID %d", $transaction ) );
 			}
 
-			$transaction = $object;
 		} else {
 			$transaction = null;
 		}
 
 		try {
-			$result = $key->renew( $transaction );
+			$result = $object->renew( $transaction );
 
 			if ( $result ) {
 				WP_CLI::success(
 					sprintf( "Key has been renewed. New expiration date is %s",
-						$key->get_expires()->format( DateTime::ISO8601 ) )
+						$object->get_expires()->format( DateTime::ISO8601 ) )
 				);
 
 				return;
@@ -256,7 +311,35 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $key, $when ) = array_pad( $args, 2, 'now' );
 
-		$key = $this->fetcher->get_check( $key );
+		if ( substr( $key, - 3 ) == '...' ) {
+			$key = substr( $key, 0, strlen( $key ) - 3 );
+
+			if ( strlen( $key ) < 3 ) {
+				WP_CLI::error( 'At least the first three characters of the key must be provided to perform a partial match.' );
+			}
+
+			$keys = itelic_get_keys( array(
+				'key_like' => $key
+			) );
+
+			if ( empty( $keys ) ) {
+				WP_CLI::error( 'No partial match found.' );
+			}
+
+			if ( count( $keys ) > 1 ) {
+				WP_CLI::line( 'Multiple keys found.' );
+
+				$this->list_( array(), array(
+					'key_like' => $key
+				) );
+
+				return;
+			}
+
+			$object = reset( $keys );
+		} else {
+			$object = $this->fetcher->get_check( $key );
+		}
 
 		try {
 			$when = \ITELIC\make_date_time( $when );
@@ -265,9 +348,59 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			WP_CLI::error( $e->getMessage() );
 		}
 
-		$key->expire( $when );
+		$object->expire( $when );
 
 		WP_CLI::success( "Key expired." );
+	}
+
+	/**
+	 * Disable a license key.
+	 *
+	 * ## Options
+	 *
+	 * <key>
+	 * : License key
+	 *
+	 * @param $args
+	 * @param $assoc_args
+	 */
+	public function disable( $args, $assoc_args ) {
+
+		list( $key ) = $args;
+
+		if ( substr( $key, - 3 ) == '...' ) {
+			$key = substr( $key, 0, strlen( $key ) - 3 );
+
+			if ( strlen( $key ) < 3 ) {
+				WP_CLI::error( 'At least the first three characters of the key must be provided to perform a partial match.' );
+			}
+
+			$keys = itelic_get_keys( array(
+				'key_like' => $key
+			) );
+
+			if ( empty( $keys ) ) {
+				WP_CLI::error( 'No partial match found.' );
+			}
+
+			if ( count( $keys ) > 1 ) {
+				WP_CLI::line( 'Multiple keys found.' );
+
+				$this->list_( array(), array(
+					'key_like' => $key
+				) );
+
+				return;
+			}
+
+			$object = reset( $keys );
+		} else {
+			$object = $this->fetcher->get_check( $key );
+		}
+
+		$object->set_status( \ITELIC\Key::DISABLED );
+
+		WP_CLI::success( "Key disabled." );
 	}
 
 	/**
