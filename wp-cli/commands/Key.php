@@ -40,13 +40,19 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 * ## Options
 	 *
 	 * <key>
-	 * : License key
+	 * : License key. A partial match can be performed by appending '...' to the first few characters of the key.
 	 *
 	 * [--fields=<fields>]
 	 * : Return designated object fields.
 	 *
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
+	 *
+	 * ## Examples
+	 *
+	 * wp itelic key get abcd-1234 --fields=key,customer
+	 *
+	 * wp itelic key get abcd...
 	 *
 	 * @param array $args
 	 * @param array $assoc_args
@@ -55,7 +61,35 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 
 		list( $key ) = $args;
 
-		$object = $this->fetcher->get_check( $key );
+		if ( substr( $key, - 3 ) == '...' ) {
+			$key = substr( $key, 0, strlen( $key ) - 3 );
+
+			if ( strlen( $key ) < 3 ) {
+				WP_CLI::error( 'At least the first three characters of the key must be provided to perform a partial match.' );
+			}
+
+			$keys = itelic_get_keys( array(
+				'key_like' => $key
+			) );
+
+			if ( empty( $keys ) ) {
+				WP_CLI::error( 'No partial match found.' );
+			}
+
+			if ( count( $keys ) > 1 ) {
+				WP_CLI::line( 'Multiple keys found.' );
+
+				$this->list_( array(), array(
+					'key_like' => $key
+				) );
+
+				return;
+			}
+
+			$object = reset( $keys );
+		} else {
+			$object = $this->fetcher->get_check( $key );
+		}
 
 		$fields = $this->get_fields_for_object( $object );
 

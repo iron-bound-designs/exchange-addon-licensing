@@ -45,6 +45,7 @@ class Keys extends Complex_Query {
 		$existing = parent::get_default_args();
 
 		$new = array(
+			'key_like'                => '',
 			'transaction'             => '',
 			'transaction__in'         => array(),
 			'transaction__not_in'     => array(),
@@ -104,6 +105,10 @@ class Keys extends Complex_Query {
 			$where->qAnd( $transaction );
 		}
 
+		if ( ( $key_like = $this->parse_key_like() ) !== null ) {
+			$where->qAnd( $key_like );
+		}
+
 		if ( ( $product = $this->parse_product() ) !== null ) {
 			$where->qAnd( $product );
 		}
@@ -143,6 +148,24 @@ class Keys extends Complex_Query {
 		}
 
 		return $builder->build();
+	}
+
+	/**
+	 * Parse a partial search for a key.
+	 *
+	 * @since 1.0
+	 *
+	 * @return Where|null
+	 */
+	protected function parse_key_like() {
+
+		if ( empty( $this->args['key_like'] ) ) {
+			return null;
+		}
+
+		$like = esc_sql( $this->args['key_like'] );
+
+		return new Where( 'lkey', 'LIKE', "%{$like}%" );
 	}
 
 	/**
