@@ -42,6 +42,9 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
 	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -51,7 +54,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 
 		$object = $this->fetcher->get_check( $activation );
 
-		$fields = $this->get_fields_for_object( $object );
+		$fields = $this->get_fields_for_object( $object, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 
 		if ( empty( $assoc_args['fields'] ) ) {
 			$assoc_args['fields'] = array_keys( $fields );
@@ -77,6 +80,9 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
+	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -120,6 +126,9 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
 	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
+	 *
 	 * @param $args
 	 * @param $assoc_args
 	 *
@@ -152,7 +161,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 		$items = array();
 
 		foreach ( $results as $item ) {
-			$items[] = $this->get_fields_for_object( $item );
+			$items[] = $this->get_fields_for_object( $item, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 		}
 
 		if ( empty( $assoc_args['fields'] ) ) {
@@ -365,10 +374,11 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 	 * Get data to display for a single key.
 	 *
 	 * @param \ITELIC\Activation $activation
+	 * @param bool               $raw
 	 *
 	 * @return array
 	 */
-	protected function get_fields_for_object( \ITELIC\Activation $activation ) {
+	protected function get_fields_for_object( \ITELIC\Activation $activation, $raw = false ) {
 
 		if ( $activation->get_deactivation() ) {
 			$deactivated = $activation->get_deactivation()->format( DateTime::ISO8601 );
@@ -380,7 +390,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 			'id'          => $activation->get_id(),
 			'key'         => $activation->get_key()->get_key(),
 			'location'    => $activation->get_location(),
-			'status'      => $activation->get_status( true ),
+			'status'      => $activation->get_status( ! $raw ),
 			'activated'   => $activation->get_activation()->format( DateTime::ISO8601 ),
 			'deactivated' => $deactivated,
 			'version'     => $activation->get_release() ? $activation->get_release()->get_version() : 'Unknown',

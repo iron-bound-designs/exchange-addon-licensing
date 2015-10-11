@@ -48,6 +48,9 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
 	 *
+	 * [--raw]
+	 * : Return raw values. ie a product's ID not title, and a customer ID not display name
+	 *
 	 * ## Examples
 	 *
 	 * wp itelic key get abcd-1234 --fields=key,customer
@@ -91,7 +94,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			$object = $this->fetcher->get_check( $key );
 		}
 
-		$fields = $this->get_fields_for_object( $object );
+		$fields = $this->get_fields_for_object( $object, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 
 		if ( empty( $assoc_args['fields'] ) ) {
 			$assoc_args['fields'] = array_keys( $fields );
@@ -114,6 +117,9 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
+	 *
+	 * [--raw]
+	 * : Return raw values. ie, IDs not human readable names.
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -138,7 +144,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 		$items = array();
 
 		foreach ( $results as $item ) {
-			$items[] = $this->get_fields_for_object( $item );
+			$items[] = $this->get_fields_for_object( $item, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 		}
 
 		if ( empty( $assoc_args['fields'] ) ) {
@@ -615,16 +621,17 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 	 * Get data to display for a single object.
 	 *
 	 * @param \ITELIC\Key $object
+	 * @param bool        $raw
 	 *
 	 * @return array
 	 */
-	protected function get_fields_for_object( \ITELIC\Key $object ) {
+	protected function get_fields_for_object( \ITELIC\Key $object, $raw = false ) {
 		return array(
 			'key'         => $object->get_key(),
-			'status'      => $object->get_status( true ),
-			'product'     => $object->get_product()->post_title,
-			'transaction' => it_exchange_get_transaction_order_number( $object->get_transaction() ),
-			'customer'    => $object->get_customer()->wp_user->display_name,
+			'status'      => $object->get_status( ! $raw ),
+			'product'     => $raw ? $object->get_product()->ID : $object->get_product()->post_title,
+			'transaction' => $raw ? $object->get_transaction()->ID : it_exchange_get_transaction_order_number( $object->get_transaction() ),
+			'customer'    => $raw ? $object->get_customer()->id : $object->get_customer()->wp_user->display_name,
 			'expires'     => $object->get_expires() ? $object->get_expires()->format( DateTime::ISO8601 ) : '-',
 			'max'         => $object->get_max() ? $object->get_max() : 'Unlimited',
 			'activations' => $object->get_active_count()

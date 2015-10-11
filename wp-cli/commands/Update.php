@@ -36,6 +36,9 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 	 * <ID>
 	 * : Update record ID
 	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -45,7 +48,7 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 
 		$object = $this->fetcher->get_check( $ID );
 
-		$fields = $this->get_fields_for_object( $object );
+		$fields = $this->get_fields_for_object( $object, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 
 		if ( empty( $assoc_args['fields'] ) ) {
 			$assoc_args['fields'] = array_keys( $fields );
@@ -65,6 +68,9 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * [--fields=<fields>]
 	 * : Limit fields returned.
+	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -89,7 +95,7 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 		$items = array();
 
 		foreach ( $results as $item ) {
-			$items[] = $this->get_fields_for_object( $item );
+			$items[] = $this->get_fields_for_object( $item, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 		}
 
 		if ( empty( $assoc_args['fields'] ) ) {
@@ -244,15 +250,16 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 	 * Get data to display for a single object.
 	 *
 	 * @param \ITELIC\Update $object
+	 * @param bool           $raw
 	 *
 	 * @return array
 	 */
-	protected function get_fields_for_object( \ITELIC\Update $object ) {
+	protected function get_fields_for_object( \ITELIC\Update $object, $raw = false ) {
 		return array(
 			'ID'               => $object->get_pk(),
 			'activation'       => $object->get_activation()->get_pk(),
 			'location'         => $object->get_activation()->get_location(),
-			'release'          => $object->get_release()->get_pk(),
+			'release'          => $raw ? $object->get_release()->get_pk() : $object->get_release()->get_version(),
 			'update_date'      => $object->get_update_date()->format( DateTime::ISO8601 ),
 			'previous_version' => $object->get_previous_version()
 		);

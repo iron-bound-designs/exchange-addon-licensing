@@ -31,7 +31,7 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 	 */
 	public function __construct() {
 		$this->fetcher = new ITELIC_Fetcher( '\ITELIC\Release' );
-		$this->faker = \Faker\Factory::create();
+		$this->faker   = \Faker\Factory::create();
 	}
 
 	/**
@@ -51,6 +51,9 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
 	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -60,7 +63,7 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 
 		$object = $this->fetcher->get_check( $release );
 
-		$fields = $this->get_fields_for_object( $object );
+		$fields = $this->get_fields_for_object( $object, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 
 		if ( empty( $assoc_args['fields'] ) ) {
 
@@ -470,6 +473,9 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
 	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
+	 *
 	 * @param $args
 	 * @param $assoc_args
 	 *
@@ -493,7 +499,7 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 		$items = array();
 
 		foreach ( $results as $item ) {
-			$items[] = $this->get_fields_for_object( $item );
+			$items[] = $this->get_fields_for_object( $item, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 		}
 
 		if ( empty( $assoc_args['fields'] ) ) {
@@ -706,10 +712,11 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 	 * Get data to display for a single key.
 	 *
 	 * @param \ITELIC\Activation|\ITELIC\Release $release
+	 * @param bool                               $raw
 	 *
 	 * @return array
 	 */
-	protected function get_fields_for_object( \ITELIC\Release $release ) {
+	protected function get_fields_for_object( \ITELIC\Release $release, $raw = false ) {
 
 		if ( $release->get_start_date() ) {
 			$started = $release->get_start_date()->format( DateTime::ISO8601 );
@@ -719,11 +726,11 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 
 		return array(
 			'ID'        => $release->get_ID(),
-			'product'   => $release->get_product()->post_title,
+			'product'   => $raw ? $release->get_product()->ID : $release->get_product()->post_title,
 			'version'   => $release->get_version(),
-			'type'      => $release->get_type( true ),
-			'status'    => $release->get_status( true ),
-			'download'  => $release->get_download()->ID,
+			'type'      => $release->get_type( ! $raw ),
+			'status'    => $release->get_status( ! $raw ),
+			'download'  => $raw ? $release->get_download()->ID : $release->get_download()->post_title,
 			'started'   => $started,
 			'changelog' => $release->get_changelog()
 		);

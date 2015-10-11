@@ -31,7 +31,7 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 	 */
 	public function __construct() {
 		$this->fetcher = new ITELIC_Fetcher( '\ITELIC\Renewal' );
-		$this->faker = \Faker\Factory::create();
+		$this->faker   = \Faker\Factory::create();
 	}
 
 	/**
@@ -45,6 +45,9 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--fields=<fields>]
 	 * : Return designated object fields.
 	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -54,7 +57,7 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 
 		$object = $this->fetcher->get_check( $ID );
 
-		$fields = $this->get_fields_for_object( $object );
+		$fields = $this->get_fields_for_object( $object, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 
 		if ( empty( $assoc_args['fields'] ) ) {
 			$assoc_args['fields'] = array_keys( $fields );
@@ -74,6 +77,9 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 	 *
 	 * [--fields=<fields>]
 	 * : Return designated object fields.
+	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
 	 *
 	 * @param $args
 	 * @param $assoc_args
@@ -98,7 +104,7 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 		$items = array();
 
 		foreach ( $results as $item ) {
-			$items[] = $this->get_fields_for_object( $item );
+			$items[] = $this->get_fields_for_object( $item, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 		}
 
 		if ( empty( $assoc_args['fields'] ) ) {
@@ -208,10 +214,11 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 	 * Get data to display for a single object.
 	 *
 	 * @param \ITELIC\Renewal $object
+	 * @param bool            $raw
 	 *
 	 * @return array
 	 */
-	protected function get_fields_for_object( \ITELIC\Renewal $object ) {
+	protected function get_fields_for_object( \ITELIC\Renewal $object, $raw = false ) {
 
 		if ( $object->get_transaction() ) {
 			$transaction = it_exchange_get_transaction_order_number( $object->get_transaction() );
@@ -225,7 +232,7 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 			'renewal_date' => $object->get_renewal_date()->format( DateTime::ISO8601 ),
 			'expired_date' => $object->get_key_expired_date()->format( DateTime::ISO8601 ),
 			'transaction'  => $transaction,
-			'revenue'      => $object->get_revenue( true )
+			'revenue'      => $object->get_revenue( ! $raw )
 		);
 	}
 }

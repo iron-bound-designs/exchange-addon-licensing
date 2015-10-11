@@ -50,6 +50,9 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
 	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
+	 *
 	 * @param $args
 	 * @param $assoc_args
 	 */
@@ -60,7 +63,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 		$product = $this->fetcher->get_check( $ID );
 
 		$formatter = $this->get_formatter( $assoc_args );
-		$formatter->display_item( $this->get_fields_for_object( $product ) );
+		$formatter->display_item( $this->get_fields_for_object( $product, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) ) );
 	}
 
 	/**
@@ -290,6 +293,9 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	 * [--format=<format>]
 	 * : Accepted values: table, json, csv. Default: table
 	 *
+	 * [--raw]
+	 * : Return raw values. IDs instead of human readable names.
+	 *
 	 * @param $args
 	 * @param $assoc_args
 	 *
@@ -302,7 +308,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 		$items = array();
 
 		foreach ( $products as $product ) {
-			$items[] = $this->get_fields_for_object( $product );
+			$items[] = $this->get_fields_for_object( $product, \WP_CLI\Utils\get_flag_value( $assoc_args, 'raw', false ) );
 		}
 
 		$formatter = $this->get_formatter( $assoc_args );
@@ -588,14 +594,19 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 	 * Get fields for object.
 	 *
 	 * @param \ITELIC\Product $product
+	 * @param bool            $raw
 	 *
 	 * @return array
 	 */
-	protected function get_fields_for_object( \ITELIC\Product $product ) {
+	protected function get_fields_for_object( \ITELIC\Product $product, $raw = false ) {
 
 		$data = get_object_vars( $product );
 
 		$data['base-price'] = $product->get_feature( 'base-price' );
+
+		if ( ! $raw ) {
+			$data['base-price'] = it_exchange_format_price( $data['base-price'] );
+		}
 
 		$base = $product->get_feature( 'licensing' );
 
