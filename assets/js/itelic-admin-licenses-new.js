@@ -19,11 +19,13 @@ jQuery(document).ready(function ($) {
 
 	var expiration = $("#expiration");
 
-	expiration.datepicker({
-		prevText  : '',
-		nextText  : '',
-		dateFormat: expiration.data('format')
-	});
+	if (!Modernizr.touchevents || !Modernizr.inputtypes.date) {
+		expiration.datepicker({
+			prevText  : '',
+			nextText  : '',
+			dateFormat: expiration.data('format')
+		});
+	}
 
 	var manualKeyLink = $("#trigger-manual-key");
 	var autoKeyLink = $("#trigger-automatic-key");
@@ -52,7 +54,7 @@ jQuery(document).ready(function ($) {
 	 * @param thousands_sep
 	 * @returns {string}
 	 */
-	function it_exchange_number_format( number, decimals, dec_point, thousands_sep ) {
+	function it_exchange_number_format(number, decimals, dec_point, thousands_sep) {
 		number = (number + '').replace(thousands_sep, ''); //remove thousands
 		number = (number + '').replace(dec_point, '.'); //turn number into proper float (if it is an improper float)
 		number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
@@ -61,10 +63,10 @@ jQuery(document).ready(function ($) {
 		sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
 		dec = (typeof dec_point === 'undefined') ? '.' : dec_point;
 		s = '',
-				toFixedFix = function (n, prec) {
-					var k = Math.pow(10, prec);
-					return '' + Math.round(n * k) / k;
-				};
+			toFixedFix = function (n, prec) {
+				var k = Math.pow(10, prec);
+				return '' + Math.round(n * k) / k;
+			};
 		// Fix for IE parseFloat(0.55).toFixed(0) = 0;
 		s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
 		if (s[0].length > 3) {
@@ -78,10 +80,10 @@ jQuery(document).ready(function ($) {
 	}
 
 	// Format base price
-	$( '#paid' ).on( 'focusout', function() {
-		if ( $( this ).data( 'symbol-position') == 'before' )
-			$( this ).val( $( this ).data( 'symbol') + it_exchange_number_format( $( this ).val(), 2, $( this ).data( 'decimals-separator' ), $( this ).data( 'thousands-separator' ) ) );
+	$('#paid').on('focusout', function () {
+		if ($(this).data('symbol-position') == 'before')
+			$(this).val($(this).data('symbol') + it_exchange_number_format($(this).val(), 2, $(this).data('decimals-separator'), $(this).data('thousands-separator')));
 		else
-			$( this ).val( it_exchange_number_format( $( this ).val(), 2, $( this ).data( 'decimals-separator' ), $( this ).data( 'thousands-separator' ) ) + $( this ).data( 'symbol' ) );
+			$(this).val(it_exchange_number_format($(this).val(), 2, $(this).data('decimals-separator'), $(this).data('thousands-separator')) + $(this).data('symbol'));
 	});
 });

@@ -70,7 +70,8 @@
 }
 
 #it-exchange-license-details input[type="text"]:read-write,
-#it-exchange-license-details input[type="number"]:read-write {
+#it-exchange-license-details input[type="number"]:read-write,
+#it-exchange-license-details input[type="date"]:read-write {
 	background: #fff;
 	border: 1px solid #d6d6d6;
 	border-radius: 3px;
@@ -86,7 +87,8 @@
 }
 
 #it-exchange-license-details .misc-block input[type="text"]:read-write,
-#it-exchange-license-details .misc-block input[type="number"]:read-write {
+#it-exchange-license-details .misc-block input[type="number"]:read-write,
+#it-exchange-license-details input[type="date"]:read-write {
 	width: 192px;
 }
 

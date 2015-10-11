@@ -149,7 +149,7 @@ class Add_New extends View {
 						<div class="expiration-container">
 
 							<label for="expiration"><?php _e( "Expiration Date", Plugin::SLUG ); ?></label>
-							<input type="text" id="expiration" name="expiration" value="<?php echo $form['expiration']; ?>" data-format="<?php echo esc_attr( $df ); ?>">
+							<input type="date" id="expiration" name="expiration" value="<?php echo $form['expiration']; ?>" data-format="<?php echo esc_attr( $df ); ?>">
 
 						</div>
 					</li>

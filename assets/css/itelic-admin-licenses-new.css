@@ -24,6 +24,7 @@
 .main-editor input[type="text"],
 .main-editor input[type="email"],
 .main-editor input[type="number"],
+.main-editor input[type="date"],
 .main-editor textarea {
 	font-weight: normal;
 	background: #fff;

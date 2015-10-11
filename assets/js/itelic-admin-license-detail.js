@@ -26,7 +26,7 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-	$(".expires h3").editable({
+	var expiresArgs = {
 		type       : 'date',
 		pk         : ITELIC.key,
 		name       : 'expires',
@@ -53,7 +53,20 @@ jQuery(document).ready(function ($) {
 		success    : function (response, newValue) {
 			return editable_success_callback(response, newValue);
 		}
-	});
+	};
+
+	if (Modernizr.touchevents && Modernizr.inputtypes.date) {
+		expiresArgs.type = 'text';
+		expiresArgs.tpl = '<input type="date">';
+
+		$(document).on('blur', '.expires .editable-input input[type="date"]', function () {
+
+			$(".expires .editableform").submit();
+		});
+	}
+
+	$(".expires h3").editable(expiresArgs);
+
 
 	$(".max-activations h3").editable({
 		type       : 'number',

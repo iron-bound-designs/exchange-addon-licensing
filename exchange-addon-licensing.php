@@ -105,6 +105,8 @@ class Plugin {
 			'jquery-ui-datepicker'
 		), '1.5.1' );
 
+		wp_register_script( 'itelic-modernizr', self::$url . 'assets/js/itelic-modernizr.min.js', array(), self::VERSION );
+
 		wp_register_script( 'jquery-blockUI', self::$url . 'assets/vendor/blockUI/js/jquery.blockUI.js', array( 'jquery' ), '2.70.0' );
 
 		wp_register_script( 'select2', self::$url . 'assets/vendor/select2/select2.full.min.js', array( 'jquery' ), '4.0' );
@@ -119,14 +121,16 @@ class Plugin {
 		wp_register_style( 'itelic-admin-licenses-new', self::$url . 'assets/css/itelic-admin-licenses-new.css', array( 'select2' ), self::VERSION );
 		wp_register_script( 'itelic-admin-licenses-new', self::$url . 'assets/js/itelic-admin-licenses-new.js', array(
 			'select2',
-			'jquery-ui-datepicker'
+			'jquery-ui-datepicker',
+			'itelic-modernizr'
 		), self::VERSION );
 
 		wp_register_style( 'itelic-admin-licenses-list', self::$url . 'assets/css/itelic-admin-licenses-list.css', array( 'select2' ), self::VERSION );
 		wp_register_script( 'itelic-admin-licenses-list', self::$url . 'assets/js/itelic-admin-licenses-list.js', array( 'select2' ), self::VERSION );
 		wp_register_script( 'itelic-admin-license-detail', self::$url . 'assets/js/itelic-admin-license-detail.js', array(
 			'jquery',
-			'jqueryui-editable'
+			'jqueryui-editable',
+			'itelic-modernizr'
 		), self::VERSION );
 
 		wp_register_style( 'itelic-admin-license-detail', self::$url . 'assets/css/admin-license-detail.css', array(
