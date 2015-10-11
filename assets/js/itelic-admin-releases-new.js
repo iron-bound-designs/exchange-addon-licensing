@@ -34,7 +34,7 @@
 		}
 	});
 
-	//product.select2();
+	product.select2();
 
 	/**
 	 * When a product is selected, display the previous version on the version input.
