@@ -38,7 +38,7 @@
 	 */
 	notify_button.click(function () {
 
-		if ( $(this).hasClass('button-disabled') ) {
+		if ($(this).hasClass('button-disabled')) {
 			return;
 		}
 
@@ -86,7 +86,7 @@
 	 */
 	full_notify_button.click(function () {
 
-		if ( $(this).hasClass('button-disabled') ) {
+		if ($(this).hasClass('button-disabled')) {
 			return;
 		}
 
@@ -131,9 +131,10 @@
 			// animate the progress bar back to 90% width and add back in the
 			// small notify button
 			$(".progress-container progress").animate({
-				width: '90%'
+				width: $('.progress-container').width() - 81 + 'px'
 			}, function () {
 				notify_button.fadeIn(100);
+				$(".progress-container progress").css('width', '');
 			});
 
 			// remove class designating that we in the detail view
@@ -301,22 +302,22 @@
 
 			var message = response.data.message;
 			var msgClass = response.success ? 'notice-success' : 'notice-warning';
-            msgClass += ' is-dismissible';
+			msgClass += ' is-dismissible';
 
-            var $notice = $('<div class="notice ' +  msgClass+ '"><p>' + message + '</p></div>');
-            $notice.css({
-                display: 'none'
-            });
+			var $notice = $('<div class="notice ' + msgClass + '"><p>' + message + '</p></div>');
+			$notice.css({
+				display: 'none'
+			});
 
-            $notice.insertBefore( ".notifications-editor h4" );
+			$notice.insertBefore(".notifications-editor h4");
 
-            $notice.slideDown();
+			$notice.slideDown();
 
-            setTimeout(function() {
-                $notice.slideUp(400, function() {
-                    $(this ).remove();
-                })
-            }, 5000);
+			setTimeout(function () {
+				$notice.slideUp(400, function () {
+					$(this).remove();
+				})
+			}, 5000);
 		});
 	});
 

@@ -33,7 +33,7 @@
 	margin: -2em 0;
 	padding: 2em 2em;
 	float: left;
-	width: 250px;
+	width: 35.8%;
 	border-right: 1px solid #DFDFDF;
 }
 
@@ -344,7 +344,7 @@
 	appearance: none;
 	border: none;
 
-	width: 90%;
+	width: calc(100% - 81px);
 	height: 25px;
 	margin-top: 10px;
 	display: inline-block;
@@ -372,7 +372,7 @@
 	content: attr(data-percent) '%';
 	position: absolute;
 	top: 13px;
-	right: 80px;
+	right: 90px;
 	color: rgb(94, 94, 94);
 	opacity: 0;
 	-webkit-transition-duration: 0.3s;
@@ -396,11 +396,11 @@
 }
 
 #release-details #notify-button {
-	width: 8%;
+	width: 68px;
 	display: inline-block;
 	float: left;
 	margin-top: 8px;
-	margin-left: 2%;
+	margin-left: 8px;
 	text-align: center;
 }
 
@@ -430,11 +430,19 @@
 	margin-bottom: 10px;
 }
 
+.progress-line-chart .chart {
+	width: calc(100% - 2em);
+}
+
 /** -----------------------------------------------------:[ versions pie chart ]:---------- */
 
 .versions-pie-chart h4 {
 	text-align: center;
 	margin-bottom: 15px !important;
+}
+
+.versions-pie-chart .chart {
+	width: calc(100% - 2em);
 }
 
 #pie-chart-legend ul {
@@ -457,6 +465,18 @@
 #notify-button-full {
 	width: 100%;
 	text-align: center;
+}
+
+@media screen and (max-width: 781px) {
+
+	#release-details progress[value],
+	#release-details .progress-bar {
+		height: 31px;
+	}
+
+	#release-details .progress-container::before {
+		top: 17px;
+	}
 }
 
 @media screen and (max-width: 600px) {
@@ -491,8 +511,16 @@
 	#release-details .misc-block h3 {
 		text-align: center;
 	}
+
 }
 
 @media screen and (max-width: 480px) {
 
+	/*#release-details progress {
+		width: 100%;
+	}
+
+	#release-details #notify-button {
+		width: 100%;
+	}*/
 }

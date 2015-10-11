@@ -459,7 +459,8 @@ class Single extends Controller {
 		$chart = new Chart\Line( $labels, 698, 200, array(
 			'scaleIntegersOnly' => true,
 			'scaleBeginAtZero'  => true,
-			'ibdLoadOn'         => 'loadProgressChart'
+			'ibdLoadOn'         => 'loadProgressChart',
+			'responsive'        => true
 		) );
 		$chart->add_data_set( array_values( $data ), '', array(
 			'fillColor'            => "rgba(151,187,205,0.2)",
@@ -494,6 +495,7 @@ class Single extends Controller {
 			'ibdLoadOn'       => 'loadVersionsChart',
 			'ibdShowLegend'   => '#pie-chart-legend',
 			'tooltipTemplate' => '<%= value %> install<%if (value != 1){%>s<%}%>',
+			'responsive'        => true
 		) );
 
 		$colors = array(

@@ -340,7 +340,9 @@ class Single extends View {
 
 				<h4><?php printf( __( "Updates over the first %d days", Plugin::SLUG ), $this->progress->get_total_items() ); ?></h4>
 
-				<?php $this->progress->graph(); ?>
+				<div class="chart">
+					<?php $this->progress->graph(); ?>
+				</div>
 
 			<?php endif; ?>
 
@@ -367,7 +369,9 @@ class Single extends View {
 
 			<h4><?php printf( __( "Top %d versions updated from", Plugin::SLUG ), $total ); ?></h4>
 
-			<?php $this->version->graph(); ?>
+			<div class="chart">
+				<?php $this->version->graph(); ?>
+			</div>
 
 			<div id="pie-chart-legend" class="chart-js-legend"></div>
 		</div>
