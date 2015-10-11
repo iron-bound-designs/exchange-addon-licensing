@@ -39,6 +39,22 @@ abstract class View {
 	 */
 	public function begin() {
 		echo '<div class="wrap">';
+		echo '<style type="text/css">
+			@media screen and (max-width: 480px) {
+
+				h3.nav-tab-wrapper {
+					padding: 0;
+				}
+
+				h3 .nav-tab {
+					width: 100%;
+					margin: 0;
+					display: block;
+					padding: 10px 0;
+					text-align: center;
+				}
+			}
+		</style>';
 	}
 
 	/**
@@ -66,7 +82,7 @@ abstract class View {
 			</h3>
 		</div>
 
-	<?php
+		<?php
 	}
 
 	/**
@@ -89,7 +105,7 @@ abstract class View {
 			<p><?php echo $message; ?></p>
 		</div>
 
-	<?php
+		<?php
 
 	}
 
