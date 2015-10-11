@@ -7,6 +7,7 @@
  */
 
 namespace ITELIC\Product\Feature;
+
 use ITELIC\Plugin;
 
 /**
@@ -81,7 +82,7 @@ class Readme extends \IT_Exchange_Product_Feature_Abstract {
 
 			<p class="description"><?php _e( "Link to banner. 1544x500 pixels, either a <b>png</b> or <b>jpg</b>.", Plugin::SLUG ); ?></p>
 		</div>
-	<?php
+		<?php
 	}
 
 	/**
@@ -101,7 +102,7 @@ class Readme extends \IT_Exchange_Product_Feature_Abstract {
 		$data           = $_POST['itelic_readme'];
 		$data['enable'] = isset( $data['enable'] ) ? it_exchange_str_true( $data['enable'] ) : false;
 
-		$last_updated         = new \DateTime( $data['last_updated'] );
+		$last_updated         = \ITELIC\make_local_time( $data['last_updated'] );
 		$data['last_updated'] = $last_updated->getTimestamp();
 
 

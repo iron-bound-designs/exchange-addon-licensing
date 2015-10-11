@@ -140,7 +140,7 @@ class Single extends Controller {
 				$key->set_max( $val );
 				break;
 			case 'expires':
-				$date = \ITELIC\make_date_time( $val, false );
+				$date = \ITELIC\make_local_time( $val );
 				$date = \ITELIC\convert_local_to_gmt( $date );
 				$key->set_expires( $date );
 				break;

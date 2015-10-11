@@ -233,6 +233,26 @@ function make_date_time( $time = 'now', $gmt = true ) {
 }
 
 /**
+ * Make a local time object.
+ *
+ * @param string $time
+ *
+ * @return \DateTime
+ */
+function make_local_time( $time = 'now' ) {
+
+	$tz_string = get_option( 'timezone_string' );
+
+	if ( ! empty( $tz_string ) ) {
+		$tz = new \DateTimeZone( $tz_string );
+
+		return new \DateTime( $time, $tz );
+	} else {
+		return new \DateTime( $time );
+	}
+}
+
+/**
  * Convert a GMT date to its localized equivalent.
  *
  * @since 1.0
