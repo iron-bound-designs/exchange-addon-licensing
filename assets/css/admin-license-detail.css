@@ -27,7 +27,7 @@
 	margin: -2em 0;
 	padding: 2em 2em;
 	float: left;
-	width: 250px;
+	width: 35.8%;
 	border-right: 1px solid #DFDFDF;
 }
 
@@ -233,6 +233,10 @@
 
 /** -----------------------------------------------------:[ license activations ]:---------- */
 
+table {
+	border-collapse: collapse;
+}
+
 #it-exchange-license-details .activations h3 {
 	margin: .25em 0 .8em 0;
 }
@@ -353,4 +357,117 @@
 #it-exchange-license-details .expires h3,
 #it-exchange-license-details .max-activations h3 {
 	cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+
+	#it-exchange-license-details .third-row {
+		padding: 2em 0 !important;
+	}
+
+	#it-exchange-license-details .third-row div.third {
+		width: 100%;
+		padding: 2em 0;
+		margin: 0;
+		border-right: none;
+		border-bottom: 1px solid #DFDFDF;
+	}
+
+	#it-exchange-license-details .third-row div.third:first-of-type {
+		margin-top: 0;
+		padding-top: 0;
+	}
+
+	#it-exchange-license-details .third-row div.third:last-of-type {
+		border-bottom: none;
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
+
+	#it-exchange-license-details .misc-block h4 {
+		text-align: center;
+	}
+
+	#it-exchange-license-details .misc-block h3 {
+		text-align: center;
+	}
+
+	/* Force table to not be like tables anymore */
+	#it-exchange-license-details table,
+	#it-exchange-license-details thead,
+	#it-exchange-license-details tbody,
+	#it-exchange-license-details th,
+	#it-exchange-license-details td,
+	#it-exchange-license-details tr {
+		display: block;
+	}
+
+	/* Hide table headers (but not display: none;, for accessibility) */
+	#it-exchange-license-details thead tr {
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+
+	#it-exchange-license-details tr {
+		border: 1px solid #ccc;
+	}
+
+	#it-exchange-license-details td {
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee;
+		position: relative;
+		padding-left: 40%;
+	}
+
+	#it-exchange-license-details td:before {
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 35%;
+		padding-right: 10px;
+		white-space: nowrap;
+	}
+
+	/*
+	Label the data
+	*/
+	#it-exchange-license-details td:nth-of-type(1):before {
+		content: attr(data-title);
+	}
+
+	#it-exchange-license-details td:nth-of-type(2):before {
+		content: attr(data-title);
+	}
+
+	#it-exchange-license-details td:nth-of-type(3):before {
+		content: attr(data-title);
+	}
+
+	#it-exchange-license-details td:nth-of-type(4):before {
+		content: attr(data-title);
+	}
+
+	#it-exchange-license-details td:nth-of-type(5):before {
+		content: attr(data-title);
+	}
+
+	#it-exchange-license-details td:nth-of-type(6):before {
+		content: attr(data-title);
+	}
+}
+
+@media screen and (max-width: 480px) {
+
+	#it-exchange-license-details #remote-activate-location {
+		width: 100%;
+	}
+
+	#it-exchange-license-details #remote-activate-submit {
+		width: 100%;
+		margin-top: 10px;
+	}
 }

@@ -753,8 +753,8 @@
 		if (version1 == version2) {
 			return 0;
 		}
-		var v1 = normalize(version1);
-		var v2 = normalize(version2);
+		var v1 = normalize(version1 + '');
+		var v2 = normalize(version2 + '');
 		var len = Math.max(v1.length, v2.length);
 
 		for (var i = 0; i < len; i++) {

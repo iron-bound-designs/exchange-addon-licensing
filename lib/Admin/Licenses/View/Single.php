@@ -197,10 +197,16 @@ class Single extends View {
 		?>
 
 		<tr>
-			<td><?php echo $activation->get_location(); ?></td>
-			<td><?php echo $activation->get_status( true ); ?></td>
-			<td><?php echo \ITELIC\convert_gmt_to_local( $activation->get_activation() )->format( $this->get_short_df() ); ?></td>
-			<td>
+			<td data-title="<?php _e( "Location", Plugin::SLUG ); ?>">
+				<?php echo $activation->get_location(); ?>
+			</td>
+			<td data-title="<?php _e( "Status", Plugin::SLUG ); ?>">
+				<?php echo $activation->get_status( true ); ?>
+			</td>
+			<td data-title="<?php _e( "Activation", Plugin::SLUG ); ?>">
+				<?php echo \ITELIC\convert_gmt_to_local( $activation->get_activation() )->format( $this->get_short_df() ); ?>
+			</td>
+			<td data-title="<?php _e( "Deactivation", Plugin::SLUG ); ?>">
 				<?php if ( null === ( $d = $activation->get_deactivation() ) ): ?>
 					<a href="javascript:" data-id="<?php echo esc_attr( $activation->get_id() ); ?>" data-nonce="<?php echo $n_deactivate; ?>" class="deactivate">
 						<?php _e( "Deactivate", Plugin::SLUG ); ?>
@@ -209,14 +215,14 @@ class Single extends View {
 					<?php echo \ITELIC\convert_gmt_to_local( $d )->format( $this->get_short_df() ); ?>
 				<?php endif; ?>
 			</td>
-			<td>
+			<td data-title="<?php _e( "Version", Plugin::SLUG ); ?>">
 				<?php if ( null === ( $r = $activation->get_release() ) ): ?>
 					<?php _e( "Unknown", Plugin::SLUG ); ?>
 				<?php else: ?>
 					<?php printf( 'v%s', $r->get_version() ); ?>
 				<?php endif; ?>
 			</td>
-			<td>
+			<td data-title="<?php _e( "Delete", Plugin::SLUG ); ?>">
 				<button data-id="<?php echo esc_attr( $activation->get_id() ); ?>" class="remove-item" data-nonce="<?php echo $n_delete; ?>">
 					x
 				</button>
