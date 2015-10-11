@@ -141,7 +141,7 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 
 		$activation->deactivate( \ITELIC\make_date_time( '+1 month' ) );
 
-		$this->assertEquals( \ITELIC\make_date_time( '+1 month' ), $activation->get_deactivation() );
+		$this->assertEquals( \ITELIC\make_date_time( '+1 month' )->getTimestamp(), $activation->get_deactivation()->getTimestamp(), '', 5 );
 	}
 
 	public function test_reactivation_rejected_if_status_not_deactivated() {
