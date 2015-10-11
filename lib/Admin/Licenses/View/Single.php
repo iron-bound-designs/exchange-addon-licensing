@@ -59,7 +59,9 @@ class Single extends View {
 			'statuses'     => json_encode( Key::get_statuses() )
 		) );
 
-		$jdf = it_exchange_php_date_format_to_jquery_datepicker_format( $this->get_short_df() );;
+		$jdf = it_exchange_php_date_format_to_jquery_datepicker_format( $this->get_short_df() );
+
+		$online = $this->key->is_online_product();
 		?>
 
 		<div id="it-exchange-license-details">
@@ -143,7 +145,7 @@ class Single extends View {
 				<h4><?php _e( "Remote Activate", Plugin::SLUG ); ?></h4>
 
 				<label for="remote-activate-location" class="screen-reader-text"><?php _e( "Install Location", Plugin::SLUG ); ?></label>
-				<input type="text" id="remote-activate-location" placeholder="<?php _e( "Install Location", Plugin::SLUG ); ?>">
+				<input type="<?php echo $online ? 'url' : 'text'; ?>" id="remote-activate-location" placeholder="<?php _e( "Install Location", Plugin::SLUG ); ?>">
 				<input type="submit" id="remote-activate-submit" class="it-exchange-button" value="<?php esc_attr_e( "Activate", Plugin::SLUG ); ?>">
 				<input type="hidden" id="remote-activate-key" value="<?php echo esc_attr( $this->key->get_key() ); ?>">
 				<?php wp_nonce_field( 'itelic-remote-activate-key-' . $this->key->get_key() ) ?>

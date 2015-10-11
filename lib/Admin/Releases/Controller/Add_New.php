@@ -62,6 +62,12 @@ class Add_New extends Controller {
 
 		$type = $_POST['type-select'];
 
+		if ( empty( $_POST['product'] ) ) {
+			$this->errors[] = __( "You must select a product.", Plugin::SLUG );
+
+			return;
+		}
+
 		try {
 			$product = itelic_get_product( $_POST['product'] );
 		}
