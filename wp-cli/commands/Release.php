@@ -492,9 +492,7 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 			'ID' => 'DESC'
 		);
 
-		$query = new \ITELIC_API\Query\Releases( $query_args );
-
-		$results = $query->get_results();
+		$results = itelic_get_releases( $query_args );
 
 		$items = array();
 

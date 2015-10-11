@@ -343,30 +343,24 @@ class Release extends Model {
 
 		if ( $this->get_type() != self::TYPE_PRERELEASE ) {
 
-			$query = new Releases( array(
-				'items_per_page'      => 1,
-				'page'                => 1,
-				'sql_calc_found_rows' => false,
-				'product'             => $this->get_product()->ID,
-				'type'                => array(
+			$releases = itelic_get_releases( array(
+				'items_per_page' => 1,
+				'page'           => 1,
+				'product'        => $this->get_product()->ID,
+				'type'           => array(
 					self::TYPE_MAJOR,
 					self::TYPE_MINOR,
 					self::TYPE_SECURITY
 				),
-				'status'              => array(
+				'status'         => array(
 					self::STATUS_ACTIVE,
 					self::STATUS_ARCHIVED
 				),
-				'order'               => array(
+				'order'          => array(
 					'start_date' => 'DESC'
 				)
 			) );
 
-			$releases = $query->get_results();
-
-			/**
-			 * @var Release $prev_release
-			 */
 			$prev_release = reset( $releases );
 
 			if ( $prev_release ) {
@@ -425,11 +419,11 @@ class Release extends Model {
 			$this->update( 'status', self::STATUS_ARCHIVED );
 		}
 
-		$update_query = new Updates( array(
+		$updates = itelic_get_updates( array(
 			'release' => $this->get_ID()
 		) );
 
-		foreach ( $update_query->get_results() as $update ) {
+		foreach ( $updates as $update ) {
 			$update->delete();
 		}
 

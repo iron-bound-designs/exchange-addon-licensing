@@ -33,11 +33,9 @@ class Licenses extends Base {
 	 * @return Key[]
 	 */
 	protected function get_keys() {
-		$query = new Keys( array(
+		return itelic_get_keys( array(
 			'customer' => $this->user->ID
 		) );
-
-		return $query->get_results();
 	}
 
 	/**

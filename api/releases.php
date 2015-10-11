@@ -9,6 +9,27 @@
  */
 
 /**
+ * Get releases.
+ *
+ * @since 1.0
+ *
+ * @param array $args
+ *
+ * @return \ITELIC\Release[]
+ */
+function itelic_get_releases( $args = array() ) {
+
+	$defaults = array(
+		'sql_calc_found_rows' => false
+	);
+	$args     = wp_parse_args( $args, $defaults );
+
+	$query = new \ITELIC_API\Query\Releases( $args );
+
+	return $query->get_results();
+}
+
+/**
  * Get a release record.
  *
  * @since 1.0
@@ -41,12 +62,13 @@ function itelic_get_release( $id ) {
  */
 function itelic_get_release_by_version( $product_id, $version ) {
 
-	$query = new \ITELIC_API\Query\Releases( array(
-		'product' => absint( $product_id ),
-		'version' => $version
+	$query = itelic_get_releases( array(
+		'product'        => absint( $product_id ),
+		'version'        => $version,
+		'items_per_page' => 1
 	) );
 
-	foreach ( $query->get_results() as $release ) {
+	foreach ( $query as $release ) {
 		return $release;
 	}
 

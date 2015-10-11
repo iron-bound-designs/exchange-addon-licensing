@@ -154,9 +154,7 @@ class ITELIC_Activation_Command extends \WP_CLI\CommandWithDBObject {
 			'activation' => 'DESC'
 		);
 
-		$query = new \ITELIC_API\Query\Activations( $query_args );
-
-		$results = $query->get_results();
+		$results = itelic_get_activations( $query_args );
 
 		$items = array();
 

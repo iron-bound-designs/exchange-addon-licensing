@@ -471,11 +471,11 @@ class Activation extends Model implements API\Serializable {
 
 		parent::delete();
 
-		$updates = new Updates( array(
+		$updates = itelic_get_updates( array(
 			'activation' => $this->get_pk()
 		) );
 
-		foreach ( $updates->get_results() as $update ) {
+		foreach ( $updates as $update ) {
 			$update->delete();
 		}
 

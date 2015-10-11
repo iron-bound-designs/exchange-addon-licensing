@@ -97,9 +97,7 @@ class ITELIC_Renewal_Command extends \WP_CLI\CommandWithDBObject {
 			'id' => 'DESC'
 		);
 
-		$query = new \ITELIC_API\Query\Renewals( $query_args );
-
-		$results = $query->get_results();
+		$results = itelic_get_renewals( $query_args );
 
 		$items = array();
 

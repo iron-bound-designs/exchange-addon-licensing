@@ -7,6 +7,27 @@
  */
 
 /**
+ * Get activations.
+ *
+ * @since 1.0
+ *
+ * @param array $args
+ *
+ * @return \ITELIC\Activation[]
+ */
+function itelic_get_activations( $args = array() ) {
+
+	$defaults = array(
+		'sql_calc_found_rows' => false
+	);
+	$args     = wp_parse_args( $args, $defaults );
+
+	$query = new \ITELIC_API\Query\Activations( $args );
+
+	return $query->get_results();
+}
+
+/**
  * Get an activation.
  *
  * @since 1.0
@@ -39,12 +60,11 @@ function itelic_get_activation( $id ) {
  */
 function itelic_get_activation_by_location( $location, \ITELIC\Key $key ) {
 
-	$query = new \ITELIC_API\Query\Activations( array(
-		'location' => $key->is_online_product() ? itelic_normalize_url( $location ) : $location,
-		'key'      => $key->get_key()
+	$activations = itelic_get_activations( array(
+		'location'       => $key->is_online_product() ? itelic_normalize_url( $location ) : $location,
+		'key'            => $key->get_key(),
+		'items_per_page' => 1
 	) );
-
-	$activations = $query->get_results();
 
 	if ( empty( $activations ) ) {
 		return null;

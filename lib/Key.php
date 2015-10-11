@@ -353,9 +353,7 @@ class Key extends Model implements API\Serializable {
 			$args['status'] = $status;
 		}
 
-		$query = new Activations( $args );
-
-		return $query->get_results();
+		return itelic_get_activations( $args );
 	}
 
 	/**
@@ -574,19 +572,19 @@ class Key extends Model implements API\Serializable {
 		 */
 		do_action( 'itelic_delete_key', $this );
 
-		$activations = new Activations( array(
+		$activations = itelic_get_activations( array(
 			'key' => $this->get_key()
 		) );
 
-		foreach ( $activations->get_results() as $activation ) {
+		foreach ( $activations as $activation ) {
 			$activation->delete();
 		}
 
-		$renewals = new Renewals( array(
+		$renewals = itelic_get_renewals( array(
 			'key' => $this->get_key()
 		) );
 
-		foreach ( $renewals->get_results() as $renewal ) {
+		foreach ( $renewals as $renewal ) {
 			$renewal->delete();
 		}
 

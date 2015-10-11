@@ -137,9 +137,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			'transaction' => 'DESC'
 		);
 
-		$query = new \ITELIC_API\Query\Keys( $query_args );
-
-		$results = $query->get_results();
+		$results = itelic_get_keys( $query_args );
 
 		$items = array();
 
@@ -661,7 +659,7 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			$types[] = \ITELIC\Release::TYPE_PRERELEASE;
 		}
 
-		$query = new \ITELIC_API\Query\Releases( array(
+		$releases = itelic_get_releases( array(
 			'product'             => $key->get_product()->ID,
 			'order'               => array(
 				'start_date' => 'DESC'
@@ -673,8 +671,6 @@ class ITELIC_Key_Command extends \WP_CLI\CommandWithDBObject {
 			'sql_calc_found_rows' => false,
 			'type'                => $types
 		) );
-
-		$releases = $query->get_results();
 
 		return reset( $releases );
 	}

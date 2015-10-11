@@ -85,16 +85,11 @@ add_action( 'wp_enqueue_scripts', 'ITELIC\scripts_and_styles' );
  */
 function auto_expire_licenses() {
 
-	$query = new Keys( array(
+	$keys = itelic_get_keys( array(
 		'expires' => array(
 			'before' => make_date_time()->format( 'Y-m-d H:i:s' )
 		)
 	) );
-
-	/**
-	 * @var Key[] $keys
-	 */
-	$keys = $query->get_results();
 
 	$now = new \DateTime();
 
@@ -219,21 +214,17 @@ function archive_old_releases_on_new_activation( Release $release ) {
 
 	// we are paginating the number of releases we want to keep, and start on page 2 to get all that don't match
 	// we don't need to calculate the number of total rows because we don't need the pagination, just the limit
-	$query = new Releases( array(
+	$releases = itelic_get_releases( array(
 		'items_per_page'      => itelic_keep_last_n_releases( $release->get_product() ),
 		'page'                => 2,
 		'status'              => Release::STATUS_ACTIVE,
 		'product'             => $release->get_product()->ID,
-		'sql_calc_found_rows' => false,
 		'order'               => array(
 			'start_date' => 'DESC'
 		),
 	) );
 
-	/**
-	 * @var Release $release
-	 */
-	foreach ( $query->get_results() as $release ) {
+	foreach ( $releases as $release ) {
 		$release->archive();
 	}
 }

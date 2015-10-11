@@ -9,6 +9,27 @@
  */
 
 /**
+ * Get updates.
+ *
+ * @since 1.0
+ *
+ * @param array $args
+ *
+ * @return \ITELIC\Update[]
+ */
+function itelic_get_updates( $args = array() ) {
+
+	$defaults = array(
+		'sql_calc_found_rows' => false
+	);
+	$args     = wp_parse_args( $args, $defaults );
+
+	$query = new \ITELIC_API\Query\Updates( $args );
+
+	return $query->get_results();
+}
+
+/**
  * Get an update record.
  *
  * @since 1.0

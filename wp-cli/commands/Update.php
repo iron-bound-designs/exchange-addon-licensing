@@ -88,9 +88,7 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 			'update_date' => 'DESC'
 		);
 
-		$query = new \ITELIC_API\Query\Updates( $query_args );
-
-		$results = $query->get_results();
+		$results = itelic_get_updates( $query_args );
 
 		$items = array();
 
@@ -134,16 +132,12 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 			WP_CLI::error( "Invalid product ID" );
 		}
 
-		$query = new \ITELIC_API\Query\Releases( array(
+		$releases = itelic_get_releases( array(
 			'product' => $product->ID,
 			'order'   => array(
 				'start_date' => 'ASC'
 			)
 		) );
-
-		/** @var \ITELIC\Release[] $releases */
-		$releases = $query->get_results();
-		unset( $query );
 
 		$notify = \WP_CLI\Utils\make_progress_bar( sprintf( "Generating Updates: %d", $product->ID ), count( $releases ) );
 
@@ -176,20 +170,14 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 
 			$total_activations = $total_activations->get_results();
 
-			$activation_query = new \ITELIC_API\Query\Activations( array(
+			$activations = itelic_get_activations( array(
 				'activation'          => array(
 					'before' => $release->get_start_date()->format( 'Y-m-d H:i:s' )
 				),
 				'product'             => $product->ID,
 				'order'               => 'rand',
-				'items_per_page'      => $total_activations * ( $percent_updated / 100 ),
-				'sql_calc_found_rows' => false
+				'items_per_page'      => $total_activations * ( $percent_updated / 100 )
 			) );
-
-			/** @var \ITELIC\Activation[] $activations */
-			$activations = $activation_query->get_results();
-
-			unset( $activation_query );
 
 			foreach ( $activations as $activation ) {
 

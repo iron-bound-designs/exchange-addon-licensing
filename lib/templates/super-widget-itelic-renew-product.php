@@ -6,15 +6,11 @@
  * @since  1.0
  */
 
-$query = new \ITELIC_API\Query\Keys( array(
+$query =itelic_get_keys( array(
 	'customer' => it_exchange_get_current_customer_id(),
 	'product'  => \ITELIC\get_current_product_id()
 ) );
 
-/**
- * @var \ITELIC\Key[] $keys
- */
-$keys = $query->get_results();
 ?>
 
 <style type="text/css">

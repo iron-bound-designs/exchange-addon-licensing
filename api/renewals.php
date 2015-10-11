@@ -7,6 +7,27 @@
  */
 
 /**
+ * Get renewals.
+ *
+ * @since 1.0
+ *
+ * @param array $args
+ *
+ * @return \ITELIC\Renewal[]
+ */
+function itelic_get_renewals( $args = array() ) {
+
+	$defaults = array(
+		'sql_calc_found_rows' => false
+	);
+	$args     = wp_parse_args( $args, $defaults );
+
+	$query = new \ITELIC_API\Query\Renewals( $args );
+
+	return $query->get_results();
+}
+
+/**
  * Get a renewal record.
  *
  * @since 1.0

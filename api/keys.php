@@ -17,6 +17,11 @@
  */
 function itelic_get_keys( $args = array() ) {
 
+	$defaults = array(
+		'sql_calc_found_rows' => false
+	);
+	$args     = wp_parse_args( $args, $defaults );
+
 	$query = new \ITELIC_API\Query\Keys( $args );
 
 	return $query->get_results();

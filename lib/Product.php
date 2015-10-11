@@ -113,22 +113,16 @@ class Product extends \IT_Exchange_Product {
 
 		if ( ! $log ) {
 
-			$query = new Releases( array(
-				'product'             => $this->ID,
-				'status'              => array(
+			$releases = itelic_get_releases( array(
+				'product'        => $this->ID,
+				'status'         => array(
 					Release::STATUS_ACTIVE,
 					Release::STATUS_ARCHIVED,
 					Release::STATUS_PAUSED
 				),
-				'order'               => array( 'start_date' => 'DESC' ),
-				'items_per_page'      => $num_releases,
-				'sql_calc_found_rows' => false
+				'order'          => array( 'start_date' => 'DESC' ),
+				'items_per_page' => $num_releases
 			) );
-
-			/**
-			 * @var Release[] $releases
-			 */
-			$releases = $query->get_results();
 
 			$log = '';
 
@@ -163,17 +157,15 @@ class Product extends \IT_Exchange_Product {
 			$version = it_exchange_get_product_feature( $this->ID, 'licensing', array( 'field' => 'version' ) );
 			$release = itelic_get_release_by_version( $this->ID, $version );
 		} else {
-			$query = new Releases( array(
-				'product'             => $activation->get_key()->get_product()->ID,
-				'order'               => array(
+			$releases = itelic_get_releases( array(
+				'product'        => $activation->get_key()->get_product()->ID,
+				'order'          => array(
 					'start_date' => 'DESC'
 				),
-				'items_per_page'      => 1,
-				'sql_calc_found_rows' => false
+				'items_per_page' => 1
 			) );
 
-			$releases = $query->get_results();
-			$release  = reset( $releases );
+			$release = reset( $releases );
 		}
 
 		/**
