@@ -51,14 +51,26 @@
 }
 
 .main-editor {
-	width: 699px;
-	padding: 2em;
+	width: 100%;
+	max-width: 699px;
 	background: white;
 	border: #ccc solid 1px;
 	-webkit-transition-duration: 0.3s;
 	transition-duration: 0.3s;
 	-webkit-transition-property: color, background-color, opacity;
 	transition-property: color, background-color, opacity;
+}
+
+.main-editor div.row:first-of-type {
+	padding-top: 2em;
+}
+
+.main-editor .row {
+	padding: 0 2em;
+}
+
+.main-editor div.row:last-of-type {
+	padding-bottom: 2em;
 }
 
 .main-editor .row:before,
@@ -103,7 +115,8 @@
 	font-size: 18px;
 	padding: 10px;
 	color: #3d4142;
-	width: 260px;
+	max-width: 260px;
+	width: 100%;
 	-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
 	box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
 	outline: 0;

@@ -186,7 +186,6 @@ class Add_New extends View {
 					</li>
 				</ol>
 				<p class="buttons">
-					<input type="reset" class="button button-secondary" value="<?php _e( "Clear", Plugin::SLUG ); ?>">
 					<?php submit_button( __( "Create", Plugin::SLUG ), 'primary', 'itelic-add-new-key', false ); ?>
 				</p>
 			</div>

@@ -1,6 +1,8 @@
 .main-editor {
-	width: 699px;
-	padding: 2em;
+	max-width: 700px;
+	width: 100%;
+	padding: 0;
+	margin: 0;
 	background: white;
 	border: #ccc solid 1px;
 	-webkit-transition-duration: 0.3s;
@@ -38,6 +40,9 @@
 	transition: .05s border-color ease-in-out;
 }
 
+.main-editor ol {
+	padding: 2em 2em 0 2em;
+}
 
 .main-editor ol li,
 .main-editor ol li label {
@@ -109,4 +114,9 @@
 .main-editor .buttons {
 	margin: 0;
 	float: right;
+	padding: 0 2em 2em 0;
+}
+
+.main-editor .buttons .button {
+	vertical-align: top;
 }
