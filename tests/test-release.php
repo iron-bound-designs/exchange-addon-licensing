@@ -7,7 +7,7 @@
  */
 use ITELIC\Activation;
 use ITELIC\Release;
-use ITELIC_API\Query\Updates;
+use ITELIC\Query\Updates;
 
 /**
  * Class ITELIC_Test_Release

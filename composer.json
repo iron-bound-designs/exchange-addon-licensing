@@ -22,8 +22,7 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "ITELIC\\"    : "lib/",
-            "ITELIC_API\\": "api/"
+            "ITELIC\\"    : "lib/"
         }
     }
 }

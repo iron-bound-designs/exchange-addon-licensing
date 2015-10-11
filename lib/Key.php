@@ -13,8 +13,8 @@ use IronBound\Cache\Cache;
 use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
-use ITELIC_API\Query\Activations;
-use ITELIC_API\Query\Renewals;
+use ITELIC\Query\Activations;
+use ITELIC\Query\Renewals;
 
 /**
  * Class ITELIC\Key

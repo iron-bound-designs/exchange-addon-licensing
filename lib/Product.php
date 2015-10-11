@@ -8,7 +8,7 @@
 
 namespace ITELIC;
 
-use ITELIC_API\Query\Releases;
+use ITELIC\Query\Releases;
 
 /**
  * Class Product

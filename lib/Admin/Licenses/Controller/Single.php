@@ -15,7 +15,7 @@ use ITELIC\Admin\Licenses\View\Single as Single_View;
 use ITELIC\Key;
 use ITELIC\Plugin;
 use ITELIC\Renewal;
-use ITELIC_API\Query\Renewals;
+use ITELIC\Query\Renewals;
 
 /**
  * Class Single

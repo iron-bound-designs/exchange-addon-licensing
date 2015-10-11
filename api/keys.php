@@ -22,7 +22,7 @@ function itelic_get_keys( $args = array() ) {
 	);
 	$args     = wp_parse_args( $args, $defaults );
 
-	$query = new \ITELIC_API\Query\Keys( $args );
+	$query = new \ITELIC\Query\Keys( $args );
 
 	return $query->get_results();
 }

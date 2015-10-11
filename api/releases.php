@@ -24,7 +24,7 @@ function itelic_get_releases( $args = array() ) {
 	);
 	$args     = wp_parse_args( $args, $defaults );
 
-	$query = new \ITELIC_API\Query\Releases( $args );
+	$query = new \ITELIC\Query\Releases( $args );
 
 	return $query->get_results();
 }

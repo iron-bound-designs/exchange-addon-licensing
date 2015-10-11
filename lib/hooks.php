@@ -9,8 +9,8 @@
 namespace ITELIC;
 
 use ITELIC\Purchase_Requirement\Renew_Key;
-use ITELIC_API\Query\Keys;
-use ITELIC_API\Query\Releases;
+use ITELIC\Query\Keys;
+use ITELIC\Query\Releases;
 
 /**
  * When a new transaction is created, generate necessary license keys if

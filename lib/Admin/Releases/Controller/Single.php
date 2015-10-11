@@ -21,7 +21,7 @@ use ITELIC\Admin\Tab\Dispatch;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 use ITELIC\Release;
-use ITELIC_API\Query\Activations;
+use ITELIC\Query\Activations;
 
 /**
  * Class Single

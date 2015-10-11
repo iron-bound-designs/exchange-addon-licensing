@@ -13,7 +13,7 @@ use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
 use IronBound\DB\Exception as DB_Exception;
-use ITELIC_API\Query\Updates;
+use ITELIC\Query\Updates;
 
 /**
  * Class ITELIC_Activation

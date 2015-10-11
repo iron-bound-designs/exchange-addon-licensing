@@ -24,7 +24,7 @@ function itelic_get_updates( $args = array() ) {
 	);
 	$args     = wp_parse_args( $args, $defaults );
 
-	$query = new \ITELIC_API\Query\Updates( $args );
+	$query = new \ITELIC\Query\Updates( $args );
 
 	return $query->get_results();
 }

@@ -22,7 +22,7 @@ function itelic_get_renewals( $args = array() ) {
 	);
 	$args     = wp_parse_args( $args, $defaults );
 
-	$query = new \ITELIC_API\Query\Renewals( $args );
+	$query = new \ITELIC\Query\Renewals( $args );
 
 	return $query->get_results();
 }

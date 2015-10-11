@@ -22,7 +22,7 @@ function itelic_get_activations( $args = array() ) {
 	);
 	$args     = wp_parse_args( $args, $defaults );
 
-	$query = new \ITELIC_API\Query\Activations( $args );
+	$query = new \ITELIC\Query\Activations( $args );
 
 	return $query->get_results();
 }

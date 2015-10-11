@@ -15,7 +15,7 @@ use ITELIC\Plugin;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Key;
 use ITELIC\Admin\Tab\Dispatch as Tab_Dispatch;
-use ITELIC_API\Query\Keys;
+use ITELIC\Query\Keys;
 
 /**
  * Class ListC

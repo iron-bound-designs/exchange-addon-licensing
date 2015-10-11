@@ -160,7 +160,7 @@ class ITELIC_Update_Command extends \WP_CLI\CommandWithDBObject {
 					throw new InvalidArgumentException( "Invalid release type." );
 			}
 
-			$total_activations = new \ITELIC_API\Query\Activations( array(
+			$total_activations = new \ITELIC\Query\Activations( array(
 				'activation'   => array(
 					'before' => $release->get_start_date()->format( 'Y-m-d H:i:s' )
 				),

@@ -10,7 +10,7 @@ namespace ITELIC\Admin\Profile;
 
 use ITELIC\Key;
 use ITELIC\Plugin;
-use ITELIC_API\Query\Keys;
+use ITELIC\Query\Keys;
 
 /**
  * Class Licenses

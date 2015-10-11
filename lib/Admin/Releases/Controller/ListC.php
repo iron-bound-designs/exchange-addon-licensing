@@ -15,7 +15,7 @@ use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 use ITELIC\Key;
 use ITELIC\Release;
-use ITELIC_API\Query\Releases;
+use ITELIC\Query\Releases;
 
 /**
  * Class ListC

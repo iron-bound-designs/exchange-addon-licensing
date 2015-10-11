@@ -6,7 +6,7 @@
  * @since  1.0
  */
 
-namespace ITELIC_API\Query;
+namespace ITELIC\Query;
 
 use IronBound\DB\Model;
 use IronBound\DB\Query\Complex_Query;
