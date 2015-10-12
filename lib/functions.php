@@ -496,7 +496,7 @@ function generate_download_link( Activation $activation ) {
 function generate_download_query_args( Activation $activation, \DateTime $expires ) {
 
 	$args = array(
-		'activation' => $activation->get_pk(),
+		'activation' => (int) $activation->get_pk(),
 		'key'        => $activation->get_key()->get_key(),
 		'expires'    => (int) $expires->getTimestamp()
 	);
