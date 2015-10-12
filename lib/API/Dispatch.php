@@ -79,7 +79,9 @@ class Dispatch {
 		$response = $this->process( $wp_query );
 
 		if ( $response ) {
-			$this->responder->respond( $response );
+			echo $this->responder->respond( $response );
+
+			die();
 		}
 	}
 
