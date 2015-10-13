@@ -11,6 +11,7 @@
 namespace ITELIC\API;
 
 use ITELIC\API\Endpoint\Activate;
+use ITELIC\API\Endpoint\Changelog;
 use ITELIC\API\Endpoint\Deactivate;
 use ITELIC\API\Endpoint\Download;
 use ITELIC\API\Endpoint\Info;
@@ -26,5 +27,6 @@ Dispatch::register_endpoint( new Info(), 'info' );
 Dispatch::register_endpoint( new Version(), 'version' );
 Dispatch::register_endpoint( new Download(), 'download' );
 Dispatch::register_endpoint( new Product(), 'product' );
+Dispatch::register_endpoint( new Changelog(), 'changelog' );
 
 $dispatch->set_responder( new JSON_Responder() );
