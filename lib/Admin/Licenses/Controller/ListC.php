@@ -420,9 +420,9 @@ class ListC extends Controller {
 			'status'          => $key->get_status( true ),
 			'product'         => '<a href="' . get_edit_post_link( $key->get_product()->ID ) . '">' . $key->get_product()->post_title . '</a>',
 			'customer'        => $key->get_customer()->wp_user->display_name,
-			'expires'         => $key->get_expires() === null ? __( "Forever", Plugin::SLUG ) : $key->get_expires()->format( get_option( 'date_format' ) ),
+			'expires'         => $key->get_expires() === null ? __( "Never", Plugin::SLUG ) : $key->get_expires()->format( get_option( 'date_format' ) ),
 			'active_installs' => $key->get_active_count(),
-			'max_active'      => $key->get_max(),
+			'max_active'      => $key->get_max() ? $key->get_max() : '&infin;',
 			'transaction'     => '<a href="' . get_edit_post_link( $key->get_transaction()->ID ) . '">'
 			                     . it_exchange_get_transaction_order_number( $key->get_transaction() ) . '</a>'
 		);

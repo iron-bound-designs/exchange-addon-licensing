@@ -185,8 +185,10 @@ class IT_Theme_API_License implements IT_Theme_API {
 		$options  = ITUtility::merge_defaults( $options, $defaults );
 
 		if ( $this->license ) {
-			$format = '%1$d / %2$d';
-			$value  = sprintf( $format, $this->license->get_active_count(), $this->license->get_max() );
+			$format = '%1$d / %2$s';
+			$max = $this->license->get_max() ? $this->license->get_max() : '&infin;';
+
+			$value  = sprintf( $format, $this->license->get_active_count(), $max );
 		} else {
 			$value = '';
 		}
