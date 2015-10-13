@@ -377,6 +377,10 @@ class IT_Theme_API_License implements IT_Theme_API {
 			return '';
 		}
 
+		if ( ! $this->license->is_renewable() ) {
+			return '';
+		}
+
 		$link = itelic_generate_auto_renewal_url( $this->license );
 
 		switch ( $options['format'] ) {
