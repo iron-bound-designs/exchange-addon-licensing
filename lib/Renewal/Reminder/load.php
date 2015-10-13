@@ -58,6 +58,15 @@ function register_listeners( Manager $manager ) {
 		return it_exchange_get_transaction_order_number( $key->get_transaction() );
 	} ) );
 
+	$manager->listen( new Listener( 'renewal_link', function ( Key $key ) {
+
+		if ( $key->is_renewable() ) {
+			return itelic_generate_auto_renewal_url( $key );
+		} else {
+			return get_permalink( $key->get_product()->ID );
+		}
+	} ) );
+
 	$manager->listen( new Listener( 'discount_amount', function ( Discount $discount ) {
 		return $discount->get_amount( true );
 	} ) );

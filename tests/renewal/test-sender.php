@@ -33,7 +33,8 @@ class ITELIC_Test_Renewal_Sender extends ITELIC_UnitTestCase {
 			'days from expiration' => array( 'key_days_from_expiry' ),
 			'product name'         => array( 'product_name' ),
 			'transaction order no' => array( 'transaction_order_number' ),
-			'discount amount'      => array( 'discount_amount' )
+			'discount amount'      => array( 'discount_amount' ),
+			'renewal link'         => array( 'renewal_link' )
 		);
 	}
 
