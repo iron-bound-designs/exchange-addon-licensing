@@ -230,7 +230,10 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 	protected function _make_interval_key() {
 		$product     = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
 		$product->ID = 1;
-		$product->method( 'has_feature' )->with( 'licensing' )->willReturn( true );
+		$product->method( 'has_feature' )->willReturnMap( array(
+			array( 'licensing', array(), true ),
+			array( 'recurring-payments', array(), true )
+		) );
 		$product->method( 'get_feature' )->willReturnMap( array(
 			array( 'base-price', array(), '50.00' ),
 			array(
