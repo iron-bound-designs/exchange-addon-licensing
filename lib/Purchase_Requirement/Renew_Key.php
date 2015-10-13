@@ -10,6 +10,7 @@
 
 namespace ITELIC\Purchase_Requirement;
 
+use ITELIC\Key;
 use ITELIC\Plugin;
 use ITELIC\Renewal\Discount;
 
@@ -163,6 +164,10 @@ class Renew_Key extends Base {
 				'customer' => it_exchange_get_current_customer_id()
 			) );
 
+			$keys = array_filter( $keys, function ( Key $key ) {
+				return $key->is_renewable();
+			} );
+
 			if ( empty( $keys ) ) {
 				return;
 			}
@@ -203,6 +208,10 @@ class Renew_Key extends Base {
 			'product'  => $product,
 			'customer' => it_exchange_get_current_customer_id()
 		) );
+
+		$keys = array_filter( $keys, function ( Key $key ) {
+			return $key->is_renewable();
+		} );
 
 		if ( count( $keys ) == 1 ) {
 			$key = reset( $keys );
@@ -488,7 +497,7 @@ class Renew_Key extends Base {
 		$key = itelic_get_key( $key );
 
 		$discount = new Discount( $key );
-		
+
 		if ( ! $discount->is_discount_valid() ) {
 			return $db_base_price;
 		}

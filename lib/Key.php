@@ -256,6 +256,22 @@ class Key extends Model implements API\Serializable {
 	}
 
 	/**
+	 * Check if a key is renewable.
+	 *
+	 * @since 1.0
+	 *
+	 * @return bool
+	 */
+	public function is_renewable() {
+
+		if ( $this->get_expires() === null ) {
+			return false;
+		}
+
+		return $this->product->has_feature( 'recurring-payments' );
+	}
+
+	/**
 	 * Renew this license.
 	 *
 	 * @since 1.0
@@ -266,7 +282,7 @@ class Key extends Model implements API\Serializable {
 	 */
 	public function renew( \IT_Exchange_Transaction $transaction = null ) {
 
-		if ( $this->get_expires() === null ) {
+		if ( ! $this->is_renewable() ) {
 			throw new \UnexpectedValueException( __( "You can't renew a license key that doesn't expire.", Plugin::SLUG ) );
 		}
 
