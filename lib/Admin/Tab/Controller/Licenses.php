@@ -2,8 +2,10 @@
 /**
  * Roster tab controller
  *
- * @author Iron Bound Designs
- * @since  1.0
+ * @author    Iron Bound Designs
+ * @since     1.0
+ * @license   AGPL
+ * @copyright Iron Bound Designs, 2015.
  */
 
 namespace ITELIC\Admin\Tab\Controller;

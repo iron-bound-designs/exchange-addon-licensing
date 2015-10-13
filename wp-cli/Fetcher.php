@@ -2,10 +2,10 @@
 /**
  * CLI Model fetcher.
  *
- * @author      Iron Bound Designs
- * @since       1.0
- * @copyright   2015 (c) Iron Bound Designs.
- * @license     GPLv2
+ * @author    Iron Bound Designs
+ * @since     1.0
+ * @license   AGPL
+ * @copyright Iron Bound Designs, 2015.
  */
 
 /**

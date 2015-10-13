@@ -4,8 +4,10 @@
  *
  * Each time a site is activated, a new record should be inserted.
  *
- * @author Iron Bound Designs
- * @since  1.0
+ * @author    Iron Bound Designs
+ * @since     1.0
+ * @license   AGPL
+ * @copyright Iron Bound Designs, 2015.
  */
 
 namespace ITELIC\DB\Table;

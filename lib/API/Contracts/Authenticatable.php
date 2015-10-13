@@ -2,8 +2,10 @@
 /**
  * Interface to be used on endpoints that require authentication.
  *
- * @author Iron Bound Designs
- * @since  1.0
+ * @author    Iron Bound Designs
+ * @since     1.0
+ * @license   AGPL
+ * @copyright Iron Bound Designs, 2015.
  */
 
 namespace ITELIC\API\Contracts;

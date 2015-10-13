@@ -2,8 +2,12 @@
 /**
  * Class for handling responses.
  *
- * @author WP API
- * @since  1.0
+ * @author    Iron Bound Designs
+ * @since     1.0
+ * @license   AGPL
+ * @copyright Iron Bound Designs, 2015.
+ *
+ * Code borrowed from WP API
  */
 
 namespace ITELIC\API;

@@ -2,8 +2,10 @@
 /**
  * Theme API class for looping through a customer's licenses.
  *
- * @author Iron Bound Designs
- * @since  1.0
+ * @author    Iron Bound Designs
+ * @since     1.0
+ * @license   AGPL
+ * @copyright Iron Bound Designs, 2015.
  */
 use ITELIC\Key;
 

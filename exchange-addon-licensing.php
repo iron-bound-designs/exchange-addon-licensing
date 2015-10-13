@@ -6,7 +6,7 @@ Description: Sell licenses for your digital products.
 Version: 1.0
 Author: Iron Bound Designs
 Author URI: http://ironbounddesigns.com
-License: GPLv2
+License: AGPL
 Text Domain: ibd-exchange-addon-licensing
 Domain Path: /lang
 */
