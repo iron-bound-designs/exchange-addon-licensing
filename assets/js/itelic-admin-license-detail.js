@@ -181,7 +181,7 @@ jQuery(document).ready(function ($) {
 			} else {
 				var html = response.data.html;
 
-				$("#activations-table tr:last").after(html);
+				$("#activations-table tbody:last-child").append(html);
 
 				$("#remote-activate-location").val("");
 			}
