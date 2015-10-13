@@ -323,7 +323,7 @@ class Single extends Controller {
 		}
 
 		wp_send_json_success( array(
-			'message' => sprintf( __( "Notifications to %d customers have been queued for sending", Plugin::SLUG ), count( $results ) )
+			'message' => sprintf( __( "Notifications to %d customers have been queued for sending", Plugin::SLUG ), count( $notifications ) )
 		) );
 	}
 
@@ -497,7 +497,7 @@ class Single extends Controller {
 			'ibdLoadOn'       => 'loadVersionsChart',
 			'ibdShowLegend'   => '#pie-chart-legend',
 			'tooltipTemplate' => '<%= value %> install<%if (value != 1){%>s<%}%>',
-			'responsive'        => true
+			'responsive'      => true
 		) );
 
 		$colors = array(
