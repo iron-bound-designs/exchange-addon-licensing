@@ -86,7 +86,7 @@ class Add_New extends Controller {
 		}
 
 		$activations = intval( $_POST['activations'] );
-		$expiration  = $_POST['expiration'];
+		$expiration  = \ITELIC\make_local_time( $_POST['expiration'] );
 		$key         = $_POST['license'];
 		$paid        = $_POST['paid'];
 
@@ -96,7 +96,7 @@ class Add_New extends Controller {
 			'customer' => $customer,
 			'paid'     => $paid,
 			'limit'    => $activations,
-			'expires'  => $expiration
+			'expires'  => \ITELIC\convert_local_to_gmt( $expiration )
 		) );
 
 		if ( is_wp_error( $key ) ) {
