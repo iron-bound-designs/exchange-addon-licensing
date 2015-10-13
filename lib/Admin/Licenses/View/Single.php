@@ -230,7 +230,7 @@ class Single extends View {
 			</td>
 			<td data-title="<?php _e( "Delete", Plugin::SLUG ); ?>">
 				<button data-id="<?php echo esc_attr( $activation->get_id() ); ?>" class="remove-item" data-nonce="<?php echo $n_delete; ?>">
-					x
+					&times;
 				</button>
 			</td>
 		</tr>
