@@ -145,7 +145,7 @@ class Table extends \WP_List_Table {
 			return $columns;
 		}
 
-		$columns['cb'] = '<input type="checkbox" />';
+		//$columns['cb'] = '<input type="checkbox" />';
 
 		foreach ( $this->keys[0] as $key => $value ) {
 
