@@ -3,7 +3,7 @@
 Plugin Name: iThemes Exchange - Licensing Add-on
 Plugin URI: http://ironbounddesigns.com
 Description: Sell licenses for your digital products.
-Version: 1.0
+Version: 1.0-alpha
 Author: Iron Bound Designs
 Author URI: http://ironbounddesigns.com
 License: AGPL
@@ -23,7 +23,7 @@ class Plugin {
 	/**
 	 * Plugin Version
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0-alpha';
 
 	/**
 	 * Translation SLUG
