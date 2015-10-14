@@ -30,17 +30,22 @@ class Help {
 	 */
 	public function __construct() {
 
-		$fn = array( $this, 'register' );
+		$register = array( $this, 'register' );
 
-		add_action( 'load-exchange_page_it-exchange-licensing', $fn );
+		add_action( 'load-exchange_page_it-exchange-licensing', $register );
 
-		add_action( 'load-edit.php', function () use ( $fn ) {
+		$maybe_render = function () use ( $register ) {
+
 			$screen = get_current_screen();
 
 			if ( $screen->post_type == CPT::TYPE ) {
-				call_user_func( $fn );
+				call_user_func( $register );
 			}
-		} );
+		};
+
+		add_action( 'load-post.php', $maybe_render );
+		add_action( 'load-post-new.php', $maybe_render );
+		add_action( 'load-edit.php', $maybe_render );
 	}
 
 	/**
@@ -82,6 +87,11 @@ class Help {
 				) );
 			}
 		}
+
+		add_action( 'admin_head', function () {
+			echo '<style type="text/css">.contextual-help-tabs-wrap h4 { margin-bottom: 0; }
+		.contextual-help-tabs-wrap h4 + p {	margin-top: .5em; }	</style>';
+		} );
 	}
 
 	/**
@@ -96,7 +106,7 @@ class Help {
 		$html = '<h4>' . __( "For more information:", Plugin::SLUG ) . '</h4>';
 
 		$html .= '<p>' . sprintf( '<a href="%s">%s</a>', 'https://ironbounddesigns.com/contact?reason=support',
-			__( "Talk to a human", Plugin::SLUG ) ) . '</p>';
+				__( "Talk to a human", Plugin::SLUG ) ) . '</p>';
 
 		$html .= '<p>' . sprintf( '<a href="%s">%s</a>', 'https://ironbounddesigns.zendesk.com/hc/en-us',
 				__( "View the documentation", Plugin::SLUG ) ) . '</p>';
