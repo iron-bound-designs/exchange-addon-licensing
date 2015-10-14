@@ -217,11 +217,11 @@ function archive_old_releases_on_new_activation( Release $release ) {
 	// we are paginating the number of releases we want to keep, and start on page 2 to get all that don't match
 	// we don't need to calculate the number of total rows because we don't need the pagination, just the limit
 	$releases = itelic_get_releases( array(
-		'items_per_page'      => itelic_keep_last_n_releases( $release->get_product() ),
-		'page'                => 2,
-		'status'              => Release::STATUS_ACTIVE,
-		'product'             => $release->get_product()->ID,
-		'order'               => array(
+		'items_per_page' => itelic_keep_last_n_releases( $release->get_product() ),
+		'page'           => 2,
+		'status'         => Release::STATUS_ACTIVE,
+		'product'        => $release->get_product()->ID,
+		'order'          => array(
 			'start_date' => 'DESC'
 		),
 	) );
@@ -234,7 +234,8 @@ function archive_old_releases_on_new_activation( Release $release ) {
 add_action( 'itelic_activate_release', 'ITELIC\archive_old_releases_on_new_activation' );
 
 /**
- * When a release is activated, set the last updated value in the readme product feature.
+ * When a release is activated, set the last updated value in the readme
+ * product feature.
  *
  * @since 1.0
  *
@@ -252,7 +253,8 @@ function set_last_updated_value_in_readme_on_activate( Release $release ) {
 add_action( 'itelic_activate_release', 'ITELIC\set_last_updated_value_in_readme_on_activate' );
 
 /**
- * When a release is paused, set the last updated value to the previous release in the readme product feature.
+ * When a release is paused, set the last updated value to the previous release
+ * in the readme product feature.
  *
  * @since 1.0
  *
@@ -269,6 +271,66 @@ function set_last_updated_value_in_readme_on_pause( Release $release, Release $p
 }
 
 add_action( 'itelic_pause_release', '\ITELIC\set_last_updated_value_in_readme_on_pause', 10, 2 );
+
+/* --------------------------------------------
+=============== Exchange Hooks ================
+----------------------------------------------- */
+
+/**
+ * When a transaction is refunded, disable the key.
+ *
+ * @since 1.0
+ *
+ * @param \IT_Exchange_Transaction $transaction
+ * @param float                    $amount
+ */
+function disable_key_on_refund( $transaction, $amount ) {
+
+	if ( ! $transaction ) {
+		return;
+	}
+
+	if ( $transaction->get_total() != 0 ) {
+		return;
+	}
+
+	$keys = itelic_get_keys( array(
+		'transaction' => $transaction->ID
+	) );
+
+	foreach ( $keys as $key ) {
+		$key->set_status( Key::DISABLED );
+	}
+}
+
+add_action( 'it_exchange_add_refund_to_transaction', '\ITELIC\disable_key_on_refund', 10, 2 );
+
+/**
+ * Disable a key when a transaction's status changes.
+ *
+ * @since 1.0
+ *
+ * @param \IT_Exchange_Transaction $txn
+ * @param string                   $old_status
+ * @param bool                     $old_status_cleared
+ */
+function disable_key_on_transaction_status_change( $txn, $old_status, $old_status_cleared ) {
+
+	$txn = it_exchange_get_transaction( $txn );
+
+	if ( $old_status_cleared && it_exchange_transaction_is_cleared_for_delivery( $txn ) ) {
+
+		$keys = itelic_get_keys( array(
+			'transaction' => $txn->ID
+		) );
+
+		foreach ( $keys as $key ) {
+			$key->set_status( Key::DISABLED );
+		}
+	}
+}
+
+add_action( 'it_exchange_update_transaction_status', '\ITELIC\disable_key_on_transaction_status_change', 10, 3 );
 
 /* --------------------------------------------
 ============= Display License Key =============
