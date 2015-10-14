@@ -12,6 +12,7 @@ namespace ITELIC\Admin\Tab;
 
 /**
  * Class Dispatch
+ *
  * @package ITELIC\Admin\Tab
  */
 class Dispatch {
@@ -119,6 +120,14 @@ class Dispatch {
 	 */
 	public static function is_current_view( $tab ) {
 		if ( ! isset( self::$tabs[ $tab ] ) ) {
+			return false;
+		}
+
+		if ( ! isset( $_GET['page'] ) ) {
+			return false;
+		}
+
+		if ( ! $_GET['page'] == 'it-exchange-licensing' ) {
 			return false;
 		}
 
