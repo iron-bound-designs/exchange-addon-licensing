@@ -10,12 +10,20 @@
 
 namespace ITELIC;
 
+use IronBound\DB\Table\Table;
 use IronBound\WP_Notifications\Queue\Mandrill as Mandrill_Queue;
 use IronBound\WP_Notifications\Strategy\Mandrill as Mandrill_Strategy;
 use IronBound\WP_Notifications\Queue\Storage\Options;
 use IronBound\WP_Notifications\Queue\WP_Cron;
 use IronBound\WP_Notifications\Strategy\iThemes_Exchange;
 use IronBound\WP_Notifications\Template\Listener;
+use ITELIC\DB\Table\Activation_Meta;
+use ITELIC\DB\Table\Activations;
+use ITELIC\DB\Table\Keys;
+use ITELIC\DB\Table\Release_Meta;
+use ITELIC\DB\Table\Releases;
+use ITELIC\DB\Table\Renewals;
+use ITELIC\DB\Table\Updates;
 use Mandrill as Mandrill_API;
 use ITELIC\Key\Factory;
 use ITELIC\API\Dispatch;
@@ -654,4 +662,27 @@ function page_rewrites( $page ) {
 	);
 
 	return $rewrites;
+}
+
+/* --------------------------------------------
+==================== Database =================
+----------------------------------------------- */
+
+/**
+ * Get all custom tables used.
+ *
+ * @since 1.0
+ *
+ * @return Table[]
+ */
+function get_tables() {
+	return array(
+		new Keys(),
+		new Activations(),
+		new Renewals(),
+		new Releases(),
+		new Updates(),
+		new Release_Meta(),
+		new Activation_Meta()
+	);
 }

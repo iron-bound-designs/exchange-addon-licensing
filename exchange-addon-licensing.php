@@ -13,6 +13,8 @@ Domain Path: /lang
 
 namespace ITELIC;
 
+use IronBound\DB\Manager;
+
 /**
  * Class ITELIC
  */
@@ -71,6 +73,25 @@ class Plugin {
 			do_action( 'itelic_upgrade', self::VERSION, $current_version );
 
 			update_option( 'itelic_version', self::VERSION );
+		}
+
+		foreach ( get_tables() as $table ) {
+			if ( ! Manager::is_table_installed( $table ) ) {
+
+				add_action( 'all_admin_notices', function () {
+					echo '<div class="notice notice-error"><p>';
+					_e( "We weren't able to install the tables necessary for Licensing to work. Please contact support.", Plugin::SLUG );
+					echo '</p></div>';
+				} );
+
+				if ( ! function_exists( '\deactivate_plugins' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/plugin.php';
+				}
+
+				\deactivate_plugins( __FILE__ );
+
+				break;
+			}
 		}
 	}
 

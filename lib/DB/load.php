@@ -19,13 +19,9 @@ use ITELIC\DB\Table\Releases;
 use ITELIC\DB\Table\Renewals;
 use ITELIC\DB\Table\Updates;
 
-Manager::register( new Keys() );
-Manager::register( new Activations() );
-Manager::register( new Renewals() );
-Manager::register( new Releases() );
-Manager::register( new Updates() );
-Manager::register( new Release_Meta() );
-Manager::register( new Activation_Meta() );
+foreach ( \ITELIC\get_tables() as $table ) {
+	Manager::register( $table );
+}
 
 global $wpdb;
 
@@ -51,16 +47,12 @@ add_filter( 'sanitize_key', function ( $sanitized, $original ) {
  *
  * @since 1.0
  */
-function itelic_install_tables() {
+function install_tables() {
 
-	Manager::maybe_install_table( new Keys() );
-	Manager::maybe_install_table( new Activations() );
-	Manager::maybe_install_table( new Renewals() );
-	Manager::maybe_install_table( new Releases() );
-	Manager::maybe_install_table( new Updates() );
-	Manager::maybe_install_table( new Release_Meta() );
-	Manager::maybe_install_table( new Activation_Meta() );
+	foreach ( \ITELIC\get_tables() as $table ) {
+		Manager::maybe_install_table( $table );
+	}
 }
 
-add_action( 'itelic_activate', __NAMESPACE__ . '\\itelic_install_tables' );
-add_action( 'itelic_upgrade', __NAMESPACE__ . '\\itelic_install_tables' );
+add_action( 'itelic_activate', __NAMESPACE__ . '\\install_tables' );
+add_action( 'itelic_upgrade', __NAMESPACE__ . '\\install_tables' );

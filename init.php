@@ -11,6 +11,11 @@
 namespace ITELIC;
 
 /**
+ * Load the main plugin functions.
+ */
+require_once( Plugin::$dir . 'lib/functions.php' );
+
+/**
  * Load the DBs
  */
 require_once( Plugin::$dir . 'lib/DB/load.php' );
@@ -54,11 +59,6 @@ require_once( Plugin::$dir . 'api/misc.php' );
  * Load the Theme API methods.
  */
 require_once( Plugin::$dir . 'api/theme/load.php' );
-
-/**
- * Load the main plugin functions.
- */
-require_once( Plugin::$dir . 'lib/functions.php' );
 
 /**
  * Load the main plugin hooks
