@@ -467,6 +467,7 @@ function get_notification_strategy() {
 
 	return apply_filters( 'itelic_get_queue_processor', $strategy );
 }
+
 /* --------------------------------------------
 =============== Count Functions ===============
 ----------------------------------------------- */
@@ -557,6 +558,7 @@ function count_releases( $status = '' ) {
 /* --------------------------------------------
 ============ Purchase Requirements ============
 ----------------------------------------------- */
+
 /**
  * Exchange isn't very consistent in getting access to the current product.
  *
@@ -586,7 +588,7 @@ function get_current_product_id() {
 }
 
 /**
- * Generate a download link.
+ * Generate a download link for an activation record.
  *
  * @internal
  *
@@ -605,7 +607,26 @@ function generate_download_link( Activation $activation ) {
 
 	$download_ep = Dispatch::get_url( 'download' );
 
-	return add_query_arg( $args, $download_ep );
+	$link = add_query_arg( $args, $download_ep );
+
+	/**
+	 * Filters the download link for an activation.
+	 *
+	 * Download links are specific to activations, not products.
+	 * This allows for pausing releases, and pre-release tracks.
+	 *
+	 * If you are going to override the download link, you need
+	 * to be able dynamically serve the download based on the current
+	 * state of the releases, and the activation track.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string     $link
+	 * @param Activation $activation
+	 */
+	$link = apply_filters( 'itelic_generate_download_link', $link, $activation );
+
+	return $link;
 }
 
 /**
@@ -648,10 +669,12 @@ function generate_download_query_args( Activation $activation, \DateTime $expire
  */
 function validate_query_args( $query_args ) {
 
+	$valid = true;
+
 	if ( ! isset( $query_args['key'] ) || ! isset( $query_args['expires'] ) ||
 	     ! isset( $query_args['token'] ) || ! isset( $query_args['activation'] )
 	) {
-		return false;
+		$valid = false;
 	}
 
 	$args = array(
@@ -660,16 +683,33 @@ function validate_query_args( $query_args ) {
 		'expires'    => (int) $query_args['expires']
 	);
 
-	$token = hash_hmac( 'md5', serialize( $args ), wp_salt() );
+	if ( $valid ) {
 
-	if ( ! hash_equals( $token, $query_args['token'] ) ) {
-		return false;
+		$token = hash_hmac( 'md5', serialize( $args ), wp_salt() );
+
+		if ( ! hash_equals( $token, $query_args['token'] ) ) {
+			$valid = false;
+		}
 	}
 
-	$now     = make_date_time();
-	$expires = make_date_time( "@{$args['expires']}" );
+	if ( $valid ) {
+		$now     = make_date_time();
+		$expires = make_date_time( "@{$args['expires']}" );
 
-	return $now < $expires;
+		$valid = $now < $expires;
+	}
+
+	/**
+	 * Filter whether the download link query args are valid.
+	 *
+	 * @since 1.0
+	 *
+	 * @param bool  $valid
+	 * @param array $query_args
+	 */
+	$valid = apply_filters( 'itelic_validate_download_link_query_args', $valid, $query_args );
+
+	return $valid;
 }
 
 /**
