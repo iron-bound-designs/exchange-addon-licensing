@@ -177,6 +177,8 @@ function itelic_create_release( $args ) {
 		if ( isset( $args['security-message'] ) ) {
 			$release->add_meta( 'security-message', $args['security-message'] );
 		}
+
+		return $release;
 	}
 	catch ( InvalidArgumentException $e ) {
 		return new WP_Error( 'exception', $e->getMessage() );
