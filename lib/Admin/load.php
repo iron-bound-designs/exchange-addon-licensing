@@ -22,13 +22,13 @@ use ITELIC\Admin\Tab\Dispatch;
 function register_admin_menus() {
 
 	add_submenu_page( 'it-exchange', __( "Licensing", Plugin::SLUG ), __( "Licensing", Plugin::SLUG ),
-		apply_filters( 'it_exchange_admin_menu_capability', 'manage_options' ), Dispatch::PAGE_SLUG, array(
+		it_exchange_get_admin_menu_capability( 'licensing' ), Dispatch::PAGE_SLUG, array(
 			new Dispatch(),
 			'dispatch'
 		) );
 }
 
-add_action( 'admin_menu', 'ITELIC\Admin\register_admin_menus', 85 );
+add_action( 'admin_menu', __NAMESPACE__ . '\\register_admin_menus', 85 );
 
 /**
  * Save the per page option for the licenses list table.
