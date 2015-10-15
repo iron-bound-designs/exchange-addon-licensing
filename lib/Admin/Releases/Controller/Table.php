@@ -20,6 +20,7 @@ if ( ! class_exists( '\WP_List_Table' ) ) {
 
 /**
  * Class Table
+ *
  * @package ITELIC\Admin\Releases\Controller
  */
 class Table extends \WP_List_Table {
@@ -42,6 +43,11 @@ class Table extends \WP_List_Table {
 	private $products = array();
 
 	/**
+	 * @var array
+	 */
+	private $counts;
+
+	/**
 	 * Set up data.
 	 *
 	 * Use parent constructor and populate custom fields.
@@ -54,6 +60,7 @@ class Table extends \WP_List_Table {
 		$this->keys     = $keys;
 		$this->total    = $total;
 		$this->products = $products;
+		$this->counts   = \ITELIC\count_releases();
 
 		//Set parent defaults
 		parent::__construct( array(
@@ -72,10 +79,11 @@ class Table extends \WP_List_Table {
 	}
 
 	/**
-	 * Recommended. This method is called when the parent class can't find a method
-	 * specifically build for a given column.
+	 * Recommended. This method is called when the parent class can't find a
+	 * method specifically build for a given column.
 	 *
-	 * @param array  $item        A singular item (one full row's worth of data)
+	 * @param array  $item        A singular item (one full row's worth of
+	 *                            data)
 	 * @param string $column_name The name/slug of the column to be processed
 	 *
 	 * @return string Text or HTML to be placed inside the column <td>
@@ -131,12 +139,13 @@ class Table extends \WP_List_Table {
 	}
 
 	/**
-	 * REQUIRED! This method dictates the table's columns and titles. This should
-	 * return an array where the key is the column slug (and class) and the value
-	 * is the column's title text.
+	 * REQUIRED! This method dictates the table's columns and titles. This
+	 * should return an array where the key is the column slug (and class) and
+	 * the value is the column's title text.
 	 *
 	 * @see WP_List_Table::::single_row_columns()
-	 * @return array An associative array containing column information: 'slugs'=>'Visible Titles'
+	 * @return array An associative array containing column information:
+	 *               'slugs'=>'Visible Titles'
 	 */
 	public function get_columns() {
 		$columns = array();
@@ -160,10 +169,11 @@ class Table extends \WP_List_Table {
 	}
 
 	/**
-	 * This method merely defines which columns should be sortable and makes them
-	 * clickable - it does not handle the actual sorting.
+	 * This method merely defines which columns should be sortable and makes
+	 * them clickable - it does not handle the actual sorting.
 	 *
-	 * @return array An associative array containing all the columns that should be sortable: 'slugs'=>array('data_values',bool)
+	 * @return array An associative array containing all the columns that
+	 *               should be sortable: 'slugs'=>array('data_values',bool)
 	 */
 	public function get_sortable_columns() {
 		$sortable_columns = array();
@@ -201,7 +211,9 @@ class Table extends \WP_List_Table {
 		$links = array();
 
 		foreach ( $statuses as $status => $label ) {
-			$links[ $status ] = sprintf( '<a href="%1$s">%2$s</a>', $this->get_view_link( $status ), $label );
+			$links[ $status ] = sprintf( '<a href="%1$s">%2$s</a>',
+					$this->get_view_link( $status ),
+					$label ) . " ({$this->counts[ $status ]})";
 		}
 
 		$selected = isset( $_GET['status'] ) ? $_GET['status'] : 'any';
