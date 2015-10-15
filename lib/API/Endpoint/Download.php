@@ -10,11 +10,11 @@
 
 namespace ITELIC\API\Endpoint;
 
+use ITELIC\Activation;
 use ITELIC\API\Endpoint;
 use ITELIC\Key;
 use ITELIC\API\Response;
 use ITELIC\Plugin;
-use ITELIC\Update;
 
 /**
  * Class Download
@@ -37,6 +37,19 @@ class Download extends Endpoint {
 	 * @return Response
 	 */
 	public function serve( \ArrayAccess $get, \ArrayAccess $post ) {
+
+		/**
+		 * Fires before the download query args are validated.
+		 *
+		 * If add-ons are completely overriding how product updates
+		 * are delivered. They should use this action.
+		 *
+		 * @since 1.0
+		 *
+		 * @param \ArrayAccess $get
+		 * @param \ArrayAccess $post
+		 */
+		do_action( 'itelic_pre_validate_download', $get, $post );
 
 		if ( ! \ITELIC\validate_query_args( $get ) ) {
 			status_header( 403 );
@@ -73,6 +86,23 @@ class Download extends Endpoint {
 			'activation' => $activation,
 			'release'    => $release
 		) );
+
+		/**
+		 * Fires before a download is served.
+		 *
+		 * Download links are only generated from the Product endpoint
+		 * if both the license key and activation records are valid.
+		 *
+		 * If you are generating download links differently, you should
+		 * probably validate the activation status and key status again.
+		 *
+		 * @since 1.0
+		 *
+		 * @param \WP_Post   $file       WordPress attachment object for the software update.
+		 * @param Key        $key        License key used for validation.
+		 * @param Activation $activation Activation the download is being delivered to.
+		 */
+		do_action( 'itelic_pre_serve_download', $file, $key, $activation );
 
 		\ITELIC\serve_download( wp_get_attachment_url( $file->ID ) );
 	}
