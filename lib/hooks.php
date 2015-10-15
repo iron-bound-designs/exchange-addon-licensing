@@ -543,7 +543,7 @@ add_filter( 'it_exchange_get_transaction_product_feature', 'ITELIC\add_renewal_i
  */
 function register_email_notification_shortcodes( $shortcodes ) {
 
-	$shortcodes['license_keys'] = 'itelic_render_license_keys_email_notification_shortcode';
+	$shortcodes['license_keys'] = 'ITELIC\render_license_keys_email_notification_shortcode';
 
 	return $shortcodes;
 }
