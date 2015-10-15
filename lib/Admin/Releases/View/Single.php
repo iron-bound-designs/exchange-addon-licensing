@@ -268,10 +268,11 @@ class Single extends View {
 			$hidden = '';
 		}
 
+		$tip = __( "Update notifications can't be sent for archived releases.", Plugin::SLUG );
+
 		if ( $this->release->get_status() == Release::STATUS_ARCHIVED ) {
 			$disabled = ' button-disabled';
-			$title = __( "Update notifications can't be sent for archived releases.", Plugin::SLUG );
-			$title = " title=\"$title\"";
+			$title = " title=\"$tip\"";
 		} else {
 			$disabled = '';
 			$title = '';
@@ -293,7 +294,7 @@ class Single extends View {
 					</div>
 				</progress>
 
-				<button class="button <?php echo $disabled; ?>" id="notify-button"<?php echo $title; ?>>
+				<button class="button <?php echo $disabled; ?>" id="notify-button"<?php echo $title; ?> data-tip="<?php echo $tip; ?>">
 					<?php _e( "Notify", Plugin::SLUG ); ?>
 				</button>
 			</div>

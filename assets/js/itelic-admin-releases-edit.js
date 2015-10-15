@@ -28,8 +28,14 @@
 	var type_span = $(".type h3");
 
 	$('.tip').tooltip();
-	notify_button.tooltip();
-	full_notify_button.tooltip();
+
+	if (notify_button.hasClass('button-disabled')) {
+		notify_button.tooltip();
+	}
+
+	if (full_notify_button.hasClass('button-disabled')) {
+		full_notify_button.tooltip();
+	}
 
 	/**
 	 * When the notify button next to the upgrade progress bar is clicked
@@ -488,6 +494,17 @@
 
 				upgrades.slideDown();
 			});
+		}
+
+		if (params.newValue == 'archived') {
+			notify_button.addClass('button-disabled');
+			full_notify_button.addClass('button-disabled');
+
+			notify_button.attr('title', notify_button.data('tip'));
+			full_notify_button.attr('title', notify_button.data('tip'));
+
+			notify_button.tooltip();
+			full_notify_button.tooltip();
 		}
 	});
 
