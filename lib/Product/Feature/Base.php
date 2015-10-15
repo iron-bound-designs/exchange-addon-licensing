@@ -406,9 +406,19 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 				if ( $version ) {
 
 					try {
-						$release = Release::create( $product, $file, $version, $type, $status, $changelog );
 
-						if ( $release ) {
+						$args = array(
+							'product'   => $product,
+							'file'      => $file,
+							'version'   => $version,
+							'type'      => $type,
+							'status'    => $status,
+							'changelog' => $changelog
+						);
+
+						$release = itelic_create_release( $args );
+
+						if ( $release && ! is_wp_error( $release ) ) {
 							update_post_meta( $product_id, '_itelic_first_release', $release->get_pk() );
 						}
 					}

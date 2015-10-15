@@ -118,15 +118,23 @@ function itelic_create_release( $args ) {
 	);
 	$args     = wp_parse_args( $args, $defaults );
 
-	$product = itelic_get_product( $args['product'] );
+	if ( is_numeric( $args['product'] ) ) {
+		$product = itelic_get_product( $args['product'] );
+	} else {
+		$product = $args['product'];
+	}
 
 	if ( ! $product ) {
 		return new WP_Error( 'invalid_product', __( 'Invalid Product', \ITELIC\Plugin::SLUG ) );
 	}
 
-	$file = get_post( $args['file'] );
+	if ( is_numeric( $args['file'] ) ) {
+		$file = get_post( $args['file'] );
+	} else {
+		$file = $args['file'];
+	}
 
-	if ( ! $file ) {
+	if ( ! $file || get_post_type( $file ) != 'attachment' ) {
 		return new WP_Error( 'invalid_file', __( "Invalid File", \ITELIC\Plugin::SLUG ) );
 	}
 

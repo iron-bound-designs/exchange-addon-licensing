@@ -165,7 +165,21 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 			$changelog = $params['changelog'];
 
 			try {
-				$release = \ITELIC\Release::create( $product, $file, $version, $type, $status, $changelog );
+
+				$args = array(
+					'product'   => $product,
+					'file'      => $file,
+					'version'   => $version,
+					'type'      => $type,
+					'status'    => $status,
+					'changelog' => $changelog
+				);
+
+				$release = itelic_create_release( $args );
+
+				if ( is_wp_error( $release ) ) {
+					return $release;
+				}
 
 				return $release->get_pk();
 			}
@@ -605,7 +619,13 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 
 		$changelog = $this->generate_changelog( $adds, $tweaks, $fixes );
 
-		return \ITELIC\Release::create( $product, $file, $version, $type, '', $changelog );
+		return itelic_create_release( array(
+			'product'   => $product,
+			'file'      => $file,
+			'version'   => $version,
+			'type'      => $type,
+			'changelog' => $changelog
+		) );
 	}
 
 	/**
@@ -633,7 +653,13 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 
 		$changelog = $this->generate_changelog( $adds, $tweaks, $fixes );
 
-		return \ITELIC\Release::create( $product, $file, $version, $type, '', $changelog );
+		return itelic_create_release( array(
+			'product'   => $product,
+			'file'      => $file,
+			'version'   => $version,
+			'type'      => $type,
+			'changelog' => $changelog
+		) );
 	}
 
 	/**

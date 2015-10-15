@@ -576,7 +576,21 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 		$changelog = '<ul><li>' . __( "Initial release.", \ITELIC\Plugin::SLUG ) . '</li></ul>';
 
 		try {
-			$release = \ITELIC\Release::create( $product, $file, $version, $type, $status, $changelog );
+
+			$args = array(
+				'product'   => $product,
+				'file'      => $file,
+				'version'   => $version,
+				'type'      => $type,
+				'status'    => $status,
+				'changelog' => $changelog
+			);
+
+			$release = itelic_create_release( $args );
+
+			if ( is_wp_error( $release ) ) {
+				return $release;
+			}
 
 			$when = new DateTime( $product->post_date );
 			$release->activate( $when );
