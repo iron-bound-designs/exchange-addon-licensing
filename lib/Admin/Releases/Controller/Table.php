@@ -57,10 +57,11 @@ class Table extends \WP_List_Table {
 	 * @param array $products
 	 */
 	function __construct( $keys, $total, $products ) {
-		$this->keys     = $keys;
-		$this->total    = $total;
-		$this->products = $products;
-		$this->counts   = \ITELIC\count_releases();
+		$this->keys          = $keys;
+		$this->total         = $total;
+		$this->products      = $products;
+		$this->counts        = \ITELIC\count_releases();
+		$this->counts['any'] = array_sum( $this->counts );
 
 		//Set parent defaults
 		parent::__construct( array(
@@ -218,7 +219,7 @@ class Table extends \WP_List_Table {
 
 		$selected = isset( $_GET['status'] ) ? $_GET['status'] : 'any';
 
-		$links[ $selected ] = "<strong>{$statuses[$selected]}</strong>";
+		$links[ $selected ] = "<strong>{$statuses[$selected]} ({$this->counts[$selected]})</strong>";
 
 		return $links;
 	}
