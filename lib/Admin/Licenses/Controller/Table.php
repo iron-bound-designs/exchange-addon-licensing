@@ -255,6 +255,15 @@ class Table extends \WP_List_Table {
 			'delete' => __( "Delete", Plugin::SLUG )
 		);
 
+		/**
+		 * Filters the bulk actions used on the licenses list table.
+		 *
+		 * @since 1.0
+		 *
+		 * @param array $actions
+		 */
+		$actions = apply_filters( 'itelic_licenses_list_table_bulk_actions', $actions );
+
 		return $actions;
 	}
 

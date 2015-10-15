@@ -145,9 +145,19 @@ class ListC extends Controller {
 				}
 
 				return sprintf( __( "Deleted %d keys", Plugin::SLUG ), count( $keys ) );
-		}
+			default:
 
-		return '';
+				/**
+				 * Fires when an unknown bulk action should be processed.
+				 *
+				 * @since 1.0
+				 *
+				 * @param string $action
+				 * @param Key[]  $keys
+				 */
+				do_action( 'itelic_licenses_list_table_process_bulk_action', $action, $keys );
+				return '';
+		}
 	}
 
 	/**
@@ -426,6 +436,16 @@ class ListC extends Controller {
 			'transaction'     => '<a href="' . get_edit_post_link( $key->get_transaction()->ID ) . '">'
 			                     . it_exchange_get_transaction_order_number( $key->get_transaction() ) . '</a>'
 		);
+
+		/**
+		 * Filter the columns on the license key list table.
+		 *
+		 * @since 1.0
+		 *
+		 * @param array $data
+		 * @param Key   $key
+		 */
+		$data = apply_filters( 'itelic_licenses_list_table_columns', $data, $key );
 
 		return $data;
 	}

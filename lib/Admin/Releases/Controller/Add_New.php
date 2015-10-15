@@ -110,13 +110,44 @@ class Add_New extends Controller {
 
 		try {
 
-			$release = Release::create( $product, $attachment, $version, $type, $status, $changelog );
+			$args = array(
+				'product'          => $product,
+				'file'             => $attachment,
+				'version'          => $version,
+				'type'             => $type,
+				'status'           => $status,
+				'changelog'        => $changelog,
+				'security-message' => $security_message
+			);
 
-			if ( $security_message ) {
-				$release->add_meta( 'security-message', $security_message, true );
+			/**
+			 * Filters the add new release args.
+			 *
+			 * @since 1.0
+			 *
+			 * @param array $args
+			 */
+			$args = apply_filters( 'itelic_add_new_release_args', $args );
+
+			$release = itelic_create_release( $args );
+
+			if ( is_wp_error( $release ) ) {
+				$this->errors[] = $release->get_error_message();
+
+				return;
 			}
 
 			if ( $release ) {
+
+				/**
+				 * Fires when a new release is saved.
+				 *
+				 * @since 1.0
+				 *
+				 * @param Release $release
+				 */
+				do_action( 'itelic_add_new_release_save', $release );
+
 				$url = add_query_arg( array(
 					'ID'   => $release->get_ID(),
 					'view' => 'single',

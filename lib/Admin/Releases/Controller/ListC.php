@@ -152,6 +152,16 @@ class ListC extends Controller {
 			'start_date' => $start_date
 		);
 
+		/**
+		 * Filter the columns on the releases list table.
+		 *
+		 * @since 1.0
+		 *
+		 * @param array   $data
+		 * @param Release $release
+		 */
+		$data = apply_filters( 'itelic_releases_list_table_columns', $data, $release );
+
 		return $data;
 	}
 

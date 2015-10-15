@@ -380,4 +380,13 @@ add_action( 'init', function () {
 	}, function () {
 		return get_current_screen()->post_type == CPT::TYPE;
 	} );
+
+	/**
+	 * Fires when additional help tabs should be registered.
+	 *
+	 * @since 1.0
+	 *
+	 * @param Help $help
+	 */
+	do_action( 'itelic_register_help_tabs', $help );
 } );

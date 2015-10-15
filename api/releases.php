@@ -136,7 +136,11 @@ function itelic_create_release( $args ) {
 	$changelog = $args['changelog'];
 
 	try {
-		return \ITELIC\Release::create( $product, $file, $version, $type, $status, $changelog );
+		$release = \ITELIC\Release::create( $product, $file, $version, $type, $status, $changelog );
+
+		if ( isset( $args['security-message'] ) ) {
+			$release->add_meta( 'security-message', $args['security-message'] );
+		}
 	}
 	catch ( InvalidArgumentException $e ) {
 		return new WP_Error( 'exception', $e->getMessage() );

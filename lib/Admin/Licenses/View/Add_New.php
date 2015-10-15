@@ -70,7 +70,12 @@ class Add_New extends View {
 
 		<form method="POST" action="<?php echo esc_attr( add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'licenses' ) ) ); ?>">
 			<div class="main-editor">
+
+				<?php do_action( 'itelic_add_new_license_screen_before_steps' ); ?>
+
 				<ol>
+					<?php do_action( 'itelic_add_new_license_screen_begin_steps' ); ?>
+
 					<li>
 						<label for="product"><?php _e( "Select a Product", Plugin::SLUG ); ?></label>
 
@@ -186,7 +191,12 @@ class Add_New extends View {
 
 						</div>
 					</li>
+
+					<?php do_action( 'itelic_add_new_license_screen_end_steps' ); ?>
 				</ol>
+
+				<?php do_action( 'itelic_add_new_license_screen_after_steps' ); ?>
+
 				<p class="buttons">
 					<?php submit_button( __( "Create", Plugin::SLUG ), 'primary', 'itelic-add-new-key', false ); ?>
 				</p>

@@ -41,9 +41,16 @@ class Add_New extends View {
 		$security_msg_hidden = $selected == Release::TYPE_SECURITY ? '' : ' hidden';
 		?>
 		<form method="POST" action="<?php echo esc_attr( add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'releases' ) ) ); ?>">
+
+			<?php do_action( 'itelic_add_new_release_screen_before_types' ); ?>
 			<?php $this->render_types_tab( $selected ); ?>
+			<?php do_action( 'itelic_add_new_release_screen_after_types' ); ?>
+
+			<?php do_action( 'itelic_add_new_release_screen_before' ); ?>
 
 			<div class="main-editor" <?php echo $style; ?>>
+
+				<?php do_action( 'itelic_add_new_release_screen_begin' ); ?>
 
 				<div class="row row-one">
 
@@ -80,11 +87,15 @@ class Add_New extends View {
 					</div>
 				</div>
 
+				<?php do_action( 'itelic_add_new_release_screen_end' ); ?>
+
 			</div>
 
 			<input type="hidden" name="itelic-action" value="add-new-release">
 
 			<?php wp_nonce_field( 'itelic-add-new-release' ); ?>
+
+			<?php do_action( 'itelic_add_new_release_screen_after' ); ?>
 		</form>
 
 		<?php

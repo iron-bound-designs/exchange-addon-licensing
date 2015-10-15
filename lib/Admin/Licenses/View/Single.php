@@ -182,9 +182,28 @@ class Single extends View {
 
 			<?php endif; ?>
 
+			<?php
+			/**
+			 * Fires at the end of the single license screen.
+			 *
+			 * @since 1.0
+			 *
+			 * @param Key $key
+			 */
+			do_action( 'itelic_single_license_screen_end', $this->key ); ?>
+
 		</div>
 
 		<?php
+
+		/**
+		 * Fires after the main single license screen.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Key $key
+		 */
+		do_action( 'itelic_single_license_screen_after', $this->key );
 	}
 
 	/**

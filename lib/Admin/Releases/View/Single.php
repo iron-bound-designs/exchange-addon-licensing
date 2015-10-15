@@ -150,6 +150,14 @@ class Single extends View {
 
 		<?php
 
+		/**
+		 * Fires after the main single release screen.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Release $release
+		 */
+		do_action( 'itelic_single_release_screen_after', $this->release );
 	}
 
 	/**

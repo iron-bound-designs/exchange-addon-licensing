@@ -90,14 +90,34 @@ class Add_New extends Controller {
 		$key         = $_POST['license'];
 		$paid        = $_POST['paid'];
 
-		$key = itelic_create_key( array(
+		$args = array(
 			'key'      => $key,
 			'product'  => $product,
 			'customer' => $customer,
 			'paid'     => $paid,
 			'limit'    => $activations,
 			'expires'  => \ITELIC\convert_local_to_gmt( $expiration )
-		) );
+		);
+
+		/**
+		 * Filters the args used to create a new license key.
+		 *
+		 * @since 1.0
+		 *
+		 * @param array $args
+		 */
+		$args = apply_filters( 'itelic_add_new_license_args', $args );
+
+		$key = itelic_create_key( $args );
+
+		/**
+		 * Fires when a new license key is created from the add new form.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Key $key
+		 */
+		do_action( 'itelic_add_new_license_save', $key );
 
 		if ( is_wp_error( $key ) ) {
 			$this->message[ View::NOTICE_ERROR ] = $key->get_error_message();
@@ -112,7 +132,7 @@ class Add_New extends Controller {
 			 * @param bool $send
 			 * @param Key  $key
 			 */
-			$send_notification = apply_filters( 'itelic_send_new_user_notification_on_create_key', true, $key );
+			$send_notification = apply_filters( 'itelic_add_new_license_send_new_user_notification', true, $key );
 
 			if ( $send_notification ) {
 				wp_new_user_notification( $customer, null, 'both' );

@@ -126,7 +126,27 @@ class SingleV extends View {
 			<?php return; ?>
 		<?php endif; ?>
 
+		<?php
+		/**
+		 * Fires before the single report screen.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Report $report
+		 */
+		do_action( 'itelic_report_single_screen_before', $this->report ); ?>
+
 		<div class="report report-<?php echo $this->report->get_slug(); ?>">
+
+			<?php
+			/**
+			 * Fires in the single report screen before the report has been rendered.
+			 *
+			 * @since 1.0
+			 *
+			 * @param Report $report
+			 */
+			do_action( 'itelic_report_single_screen_begin', $this->report ); ?>
 
 			<h3><?php echo $this->report->get_title(); ?></h3>
 
@@ -140,7 +160,27 @@ class SingleV extends View {
 
 			<div id="legend-<?php echo $this->report->get_slug(); ?>" class="chart-js-legend"></div>
 
+			<?php
+			/**
+			 * Fires in the single report screen after the report has been rendered.
+			 *
+			 * @since 1.0
+			 *
+			 * @param Report $report
+			 */
+			do_action( 'itelic_report_single_screen_end', $this->report ); ?>
+
 		</div>
+
+		<?php
+		/**
+		 * Fires after the single report screen.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Report $report
+		 */
+		do_action( 'itelic_report_single_screen_after', $this->report ); ?>
 
 		<?php
 

@@ -42,15 +42,21 @@ class ListV extends View {
 	 */
 	public function render() {
 
+		do_action( 'itelic_reports_list_screen_before' );
 		?>
 
 		<div class="reports-list">
+			<?php do_action( 'itelic_reports_list_screen_begin' ); ?>
+
 			<?php foreach ( $this->reports as $report ): ?>
 				<?php $this->render_report( $report ); ?>
 			<?php endforeach; ?>
+
+			<?php do_action( 'itelic_reports_list_screen_end' ); ?>
 		</div>
 
 		<?php
+		do_action( 'itelic_reports_list_screen_after' );
 	}
 
 	/**
