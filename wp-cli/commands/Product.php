@@ -539,6 +539,9 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 			'post_date_gmt' => get_gmt_from_date( $new_date )
 		) );
 
+		// refresh object to get new dates
+		$product = itelic_get_product( $product->ID );
+
 		$download_data = array(
 			'product_id' => $product->ID,
 			'source'     => wp_get_attachment_url( $file->ID ),
@@ -592,7 +595,7 @@ class ITELIC_Product_Command extends \WP_CLI\CommandWithDBObject {
 				return $release;
 			}
 
-			$when = new DateTime( $product->post_date );
+			$when = \ITELIC\make_date_time( $product->post_date_gmt );
 			$release->activate( $when );
 		}
 		catch ( Exception $e ) {
