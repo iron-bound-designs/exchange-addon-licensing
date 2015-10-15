@@ -33,6 +33,7 @@ class CPT {
 		add_action( 'add_meta_boxes_' . self::TYPE, array( $this, 'add_meta_box' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts_and_styles' ) );
 		add_action( 'save_post_' . self::TYPE, array( $this, 'save_meta_box' ) );
+		add_filter( 'enter_title_here', array( $this, 'enter_title_here' ), 10, 2 );
 		add_filter( 'manage_' . self::TYPE . '_posts_columns', array( $this, 'add_custom_columns' ) );
 		add_action( 'manage_' . self::TYPE . '_posts_custom_column', array( $this, 'render_custom_columns' ), 10, 2 );
 	}
@@ -213,6 +214,24 @@ class CPT {
 		update_post_meta( $post_id, '_itelic_renewal_reminder_boa', $boa );
 	}
 
+	/**
+	 * Modify the 'Enter title here' placeholder for renewal reminders.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $title
+	 * @param \WP_Post $post
+	 *
+	 * @return string
+	 */
+	public function enter_title_here( $title, $post ) {
+
+		if ( $post->post_type == self::TYPE ) {
+			$title = __( "Enter subject line here", Plugin::SLUG );
+		}
+
+		return $title;
+	}
 
 	/**
 	 * Get all renewal reminders.
