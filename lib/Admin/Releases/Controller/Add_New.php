@@ -148,11 +148,9 @@ class Add_New extends Controller {
 				 */
 				do_action( 'itelic_add_new_release_save', $release );
 
-				$url = add_query_arg( array(
-					'ID'   => $release->get_ID(),
-					'view' => 'single',
-					'new'  => true
-				), Dispatch::get_tab_link( 'releases' ) );
+				$url = add_query_arg( 'new', true,
+					itelic_get_admin_edit_release_link( $release->get_pk() )
+				);
 
 				wp_redirect( $url );
 				die();

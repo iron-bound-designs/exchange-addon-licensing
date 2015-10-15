@@ -98,6 +98,22 @@ function itelic_keep_last_n_releases( IT_Exchange_Product $product ) {
 }
 
 /**
+ * Get the admin edit link for a particular release.
+ *
+ * @since 1.0
+ *
+ * @param int $release Release ID
+ *
+ * @return string
+ */
+function itelic_get_admin_edit_release_link( $release ) {
+	return add_query_arg( array(
+		'view' => 'single',
+		'ID'  => (string) $release,
+	), \ITELIC\Admin\Tab\Dispatch::get_tab_link( 'releases' ) );
+}
+
+/**
  * Create a release.
  *
  * @since 1.0
