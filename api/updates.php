@@ -11,6 +11,8 @@
 /**
  * Get updates.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param array $args
@@ -32,6 +34,8 @@ function itelic_get_updates( $args = array() ) {
 /**
  * Get an update record.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param int $id
@@ -52,6 +56,8 @@ function itelic_get_update( $id ) {
 
 /**
  * Create an update record.
+ *
+ * @api
  *
  * @since 1.0
  *

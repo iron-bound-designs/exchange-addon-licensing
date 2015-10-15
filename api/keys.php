@@ -11,6 +11,8 @@
 /**
  * Get license keys.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param array $args
@@ -31,6 +33,8 @@ function itelic_get_keys( $args = array() ) {
 
 /**
  * Get a key.
+ *
+ * @api
  *
  * @since 1.0
  *
@@ -53,6 +57,8 @@ function itelic_get_key( $key ) {
 /**
  * Get a key from data pulled from the DB.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param stdClass $data
@@ -65,6 +71,8 @@ function itelic_get_key_from_data( stdClass $data ) {
 
 /**
  * Get the admin edit link for a particular key.
+ *
+ * @api
  *
  * @since 1.0
  *
@@ -81,6 +89,8 @@ function itelic_get_admin_edit_key_link( $key ) {
 
 /**
  * Create a license key.
+ *
+ * @api
  *
  * @param array $args        {
  *

@@ -16,6 +16,8 @@ use ITELIC\Purchase_Requirement\Renew_Key;
  * When a new transaction is created, generate necessary license keys if
  * applicable.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param int $transaction_id
@@ -28,6 +30,8 @@ add_action( 'it_exchange_add_transaction_success', 'ITELIC\on_add_transaction_ge
 
 /**
  * Register our template paths
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -45,6 +49,8 @@ add_filter( 'it_exchange_possible_template_paths', 'ITELIC\add_template_paths' )
 
 /**
  * Enqueue scripts and styles.
+ *
+ * @internal
  *
  * @since 1.0
  */
@@ -81,6 +87,8 @@ add_action( 'wp_enqueue_scripts', 'ITELIC\scripts_and_styles' );
  * Automatically set the licenses expiry status when their expiry date has
  * passed.
  *
+ * @internal
+ *
  * @since 1.0
  */
 function auto_expire_licenses() {
@@ -106,6 +114,8 @@ add_action( 'it_exchange_itelic_daily_schedule', 'ITELIC\auto_expire_licenses' )
 /**
  * Register the renewal purchase requirement with Exchange.
  *
+ * @internal
+ *
  * @since 1.0
  */
 function register_renewal_purchase_req() {
@@ -118,6 +128,8 @@ add_action( 'init', 'ITELIC\register_renewal_purchase_req', 0 );
 
 /**
  * When a renewal purchase is made, renew the renewed key.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -143,6 +155,8 @@ add_action( 'it_exchange_add_transaction_success', 'ITELIC\renew_key_on_renewal_
 
 /**
  * When a transaction's expiration is updated, renew the key.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -206,6 +220,8 @@ add_action( 'updated_post_meta', 'ITELIC\renew_key_on_update_expirations', 10, 4
 /**
  * When a new release is activated, automatically archive the old releases.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param Release $release
@@ -235,6 +251,8 @@ add_action( 'itelic_activate_release', 'ITELIC\archive_old_releases_on_new_activ
  * When a release is activated, set the last updated value in the readme
  * product feature.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param Release $release
@@ -253,6 +271,8 @@ add_action( 'itelic_activate_release', 'ITELIC\set_last_updated_value_in_readme_
 /**
  * When a release is paused, set the last updated value to the previous release
  * in the readme product feature.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -276,6 +296,8 @@ add_action( 'itelic_pause_release', '\ITELIC\set_last_updated_value_in_readme_on
 
 /**
  * When a transaction is refunded, disable the key.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -305,6 +327,8 @@ add_action( 'it_exchange_add_refund_to_transaction', '\ITELIC\disable_key_on_ref
 
 /**
  * Disable a key when a transaction's status changes.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -338,6 +362,8 @@ add_action( 'it_exchange_update_transaction_status', '\ITELIC\disable_key_on_tra
  * Display the license key for a transaction product on the payments detail
  * page.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param \WP_Post $post
@@ -361,6 +387,8 @@ add_action( 'it_exchange_transaction_details_begin_product_details', 'ITELIC\dis
 
 /**
  * Display renewal information on the confirmation page.
+ *
+ * @internal
  *
  * @since 1.0
  */
@@ -389,6 +417,8 @@ add_action( 'it_exchange_content_purchases_end_product_info_loop', 'ITELIC\displ
 /**
  * Display renewal information on the confirmation page.
  *
+ * @internal
+ *
  * @since 1.0
  */
 function display_renewal_on_confirmation_page() {
@@ -408,6 +438,8 @@ add_action( 'it_exchange_content_purchases_end_product_info_loop', 'ITELIC\displ
 
 /**
  * Add the renewal info to the payments screen.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -434,6 +466,8 @@ add_action( 'it_exchange_transaction_details_begin_product_details', 'ITELIC\add
 /**
  * Add renewal info to the cart description for a product.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param string $description
@@ -454,6 +488,8 @@ add_filter( 'it_exchange_get_cart_description_for_product', 'ITELIC\add_renewal_
 
 /**
  * Add trial info to the product title transaction feature.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -497,6 +533,8 @@ add_filter( 'it_exchange_get_transaction_product_feature', 'ITELIC\add_renewal_i
 /**
  * Register custom email notification shortcodes.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param array $shortcodes
@@ -514,6 +552,8 @@ add_filter( 'it_exchange_email_notification_shortcode_functions', 'ITELIC\regist
 
 /**
  * Render the license keys email notification shortcode tag.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -546,6 +586,8 @@ function render_license_keys_email_notification_shortcode( \IT_Exchange_Email_No
 /**
  * Display our custom email notification shortcodes on the settings page.
  *
+ * @internal
+ *
  * @since 1.0
  */
 function display_email_notification_shortcodes() {
@@ -560,6 +602,8 @@ add_action( 'it_exchange_email_template_tags_list', 'ITELIC\display_email_notifi
 
 /**
  * Register the account/classes page.
+ *
+ * @internal
  *
  * @since 1.0
  */
@@ -586,6 +630,8 @@ add_action( 'init', 'ITELIC\register_account_licenses_page' );
 /**
  * Protect licenses page, and register as a profile page.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param array $pages
@@ -606,6 +652,8 @@ add_filter( 'it_exchange_customer_menu_pages', 'ITELIC\register_protect_licenses
 
 /**
  * AJAX handler for deactivating a location.
+ *
+ * @internal
  *
  * @since 1.0
  */
@@ -652,6 +700,8 @@ add_action( 'wp_ajax_itelic_account_licenses_deactivate_location', 'ITELIC\accou
 
 /**
  * AJAX handler for remote activating a location.
+ *
+ * @internal
  *
  * @since 1.0
  */

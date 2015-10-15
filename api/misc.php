@@ -11,6 +11,8 @@
 /**
  * Get all Exchange products that have licensing enabled.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param array $args
@@ -34,6 +36,8 @@ function itelic_get_products_with_licensing_enabled( $args = array() ) {
 
 /**
  * Retrieve a product.
+ *
+ * @api
  *
  * @since 1.0
  *

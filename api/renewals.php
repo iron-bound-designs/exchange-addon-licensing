@@ -11,6 +11,8 @@
 /**
  * Get renewals.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param array $args
@@ -31,6 +33,8 @@ function itelic_get_renewals( $args = array() ) {
 
 /**
  * Get a renewal record.
+ *
+ * @api
  *
  * @since 1.0
  *
@@ -53,6 +57,8 @@ function itelic_get_renewal_record( $id ) {
 /**
  * Generate an automatic renewal URL.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param \ITELIC\Key $key
@@ -72,6 +78,8 @@ function itelic_generate_auto_renewal_url( \ITELIC\Key $key ) {
 
 /**
  * Create a renewal record.
+ *
+ * @api
  *
  * @since 1.0
  *
@@ -132,6 +140,8 @@ function itelic_create_renewal( $args ) {
 
 /**
  * Create a renewal transaction key.
+ *
+ * @api
  *
  * @param array $args {
  *

@@ -11,6 +11,8 @@
 /**
  * Get activations.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param array $args
@@ -32,6 +34,8 @@ function itelic_get_activations( $args = array() ) {
 /**
  * Get an activation.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param int $id
@@ -51,7 +55,9 @@ function itelic_get_activation( $id ) {
 }
 
 /**
- * Get an activation record by its location
+ * Get an activation record by its location.
+ *
+ * @api
  *
  * @since 1.0
  *
@@ -77,6 +83,8 @@ function itelic_get_activation_by_location( $location, \ITELIC\Key $key ) {
 
 /**
  * Check if a URL is a dev site.
+ *
+ * @api
  *
  * @since 1.0
  *
@@ -141,6 +149,8 @@ function itelic_is_url_dev_site( $url ) {
  *
  * If passed an IP address, just saves the IP address, doesn't normalize.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param string $url
@@ -160,6 +170,8 @@ function itelic_normalize_url( $url ) {
 
 /**
  * Activate a license key.
+ *
+ * @api
  *
  * @since 1.0
  *
@@ -183,6 +195,8 @@ function itelic_activate_license_key( \ITELIC\Key $key, $location, DateTime $dat
 
 /**
  * Create an activation record.
+ *
+ * @api
  *
  * @since 1.0
  *

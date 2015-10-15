@@ -32,6 +32,8 @@ use ITELIC\API\Dispatch;
 /**
  * Generate license keys for a transaction.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param \IT_Exchange_Transaction $transaction
@@ -70,6 +72,8 @@ function generate_keys_for_transaction( \IT_Exchange_Transaction $transaction, $
 
 /**
  * Generate a key for a certain transaction product.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -138,6 +142,8 @@ function generate_key_for_transaction_product( \IT_Exchange_Transaction $transac
 /**
  * Convert a recurring payments interval to a DateInterval object.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param string $type
@@ -194,6 +200,8 @@ function convert_rp_to_date_interval( $type, $count ) {
 /**
  * Get the license key for a particular transaction product.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param int $transaction_id
@@ -223,6 +231,8 @@ function get_key_for_transaction_product( $transaction_id, $product_id ) {
 /**
  * Make a DateTime object.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param string $time
@@ -246,6 +256,8 @@ function make_date_time( $time = 'now', $gmt = true ) {
 /**
  * Make a local time object.
  *
+ * @internal
+ *
  * @param string $time
  *
  * @return \DateTime
@@ -265,6 +277,8 @@ function make_local_time( $time = 'now' ) {
 
 /**
  * Convert a GMT date to its localized equivalent.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -324,6 +338,8 @@ function convert_gmt_to_local( \DateTime $time ) {
 /**
  * Convert a localized date to its GMT equivalent.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param \DateTime $time
@@ -343,6 +359,8 @@ function convert_local_to_gmt( \DateTime $time ) {
 
 /**
  * Get tags that are shared between managers.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -372,6 +390,8 @@ function get_shared_tags() {
 
 /**
  * Get the notifications queue processor to use.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -415,6 +435,8 @@ function get_queue_processor( $batch_name ) {
 /**
  * Get the notification strategy.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @return \IronBound\WP_Notifications\Strategy\Strategy
@@ -451,6 +473,8 @@ function get_notification_strategy() {
 
 /**
  * Count the number of keys belonging to each status.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -490,6 +514,8 @@ function count_keys( $status = '' ) {
 
 /**
  * Count the number of releases belonging to each status.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -537,6 +563,10 @@ function count_releases( $status = '' ) {
  * This function tries to abstract that away and provide all the possible means
  * of getting the product.
  *
+ * @internal
+ *
+ * @since 1.0
+ *
  * @return int
  */
 function get_current_product_id() {
@@ -558,6 +588,8 @@ function get_current_product_id() {
 /**
  * Generate a download link.
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param Activation $activation
@@ -578,6 +610,8 @@ function generate_download_link( Activation $activation ) {
 
 /**
  * Generates query args to be appended to the download URL.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -603,6 +637,8 @@ function generate_download_query_args( Activation $activation, \DateTime $expire
 
 /**
  * Validate a download link.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -641,6 +677,8 @@ function validate_query_args( $query_args ) {
  *
  * Essentially a clone of it_exchange_serve_product_download(), but works for
  * arbitrary URLs.
+ *
+ * @internal
  *
  * @since 1.0
  *
@@ -723,6 +761,8 @@ function serve_download( $url ) {
 /**
  * Get page rewrites for it_exchange_register_page
  *
+ * @internal
+ *
  * @since 1.0
  *
  * @param string $page
@@ -753,6 +793,8 @@ function page_rewrites( $page ) {
 
 /**
  * Get all custom tables used.
+ *
+ * @internal
  *
  * @since 1.0
  *

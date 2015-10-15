@@ -11,6 +11,8 @@
 /**
  * Get releases.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param array $args
@@ -32,6 +34,8 @@ function itelic_get_releases( $args = array() ) {
 /**
  * Get a release record.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param int $id
@@ -52,6 +56,8 @@ function itelic_get_release( $id ) {
 
 /**
  * Get a release by its version number.
+ *
+ * @api
  *
  * @since 1.0
  *
@@ -78,6 +84,8 @@ function itelic_get_release_by_version( $product_id, $version ) {
 /**
  * How many releases should be kept with full data until they are archived.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param IT_Exchange_Product $product
@@ -100,6 +108,8 @@ function itelic_keep_last_n_releases( IT_Exchange_Product $product ) {
 /**
  * Get the admin edit link for a particular release.
  *
+ * @api
+ *
  * @since 1.0
  *
  * @param int $release Release ID
@@ -115,6 +125,8 @@ function itelic_get_admin_edit_release_link( $release ) {
 
 /**
  * Create a release.
+ *
+ * @api
  *
  * @since 1.0
  *
