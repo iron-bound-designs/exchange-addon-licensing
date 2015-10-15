@@ -25,11 +25,6 @@ class CPT {
 	const TYPE = 'it_exchange_licrenew';
 
 	/**
-	 * @var string
-	 */
-	const SHORTCODE = 'itelic_renewal';
-
-	/**
 	 * Setup hooks.
 	 */
 	public function add_hooks() {

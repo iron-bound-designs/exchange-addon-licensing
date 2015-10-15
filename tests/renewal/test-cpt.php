@@ -17,10 +17,6 @@ class ITELIC_Test_Renewal_CPT extends ITELIC_UnitTestCase {
 		$this->assertEquals( 'it_exchange_licrenew', CPT::TYPE );
 	}
 
-	public function test_shortcode_name() {
-		$this->assertEquals( 'itelic_renewal', CPT::SHORTCODE );
-	}
-
 	public function test_post_type_exists() {
 		$this->assertNotNull( get_post_type_object( CPT::TYPE ) );
 	}

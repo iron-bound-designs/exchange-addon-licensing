@@ -187,33 +187,6 @@ class Key extends Model implements API\Serializable {
 	}
 
 	/**
-	 * Check if this license is valid.
-	 *
-	 * The license is valid as long as:
-	 *      The number of activations, is less than the max.
-	 *      The transaction is cleared for delivery.
-	 *      The subscription is not expired.
-	 *
-	 * @return bool
-	 */
-	public function is_valid() {
-
-		if ( $this->get_max() && $this->get_active_count() >= $this->get_max() ) {
-			return false;
-		}
-
-		if ( ! it_exchange_transaction_is_cleared_for_delivery( $this->get_transaction() ) ) {
-			return false;
-		}
-
-		if ( $this->get_transaction()->get_transaction_meta( 'subscriber_status' ) != 'active' ) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
 	 * Extend the expiration date of this license,
 	 * by its length. For example, if a license has an
 	 * expiration date of one year after purchase,

@@ -29,10 +29,6 @@ class Single extends Controller {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'load-exchange_page_it-exchange-licensing', array(
-			$this,
-			'add_screen_options'
-		) );
 
 		add_action( 'wp_ajax_itelic_admin_licenses_single_update', array(
 			$this,
@@ -50,18 +46,6 @@ class Single extends Controller {
 			$this,
 			'handle_ajax_delete'
 		) );
-	}
-
-	/**
-	 * Add help tabs.
-	 *
-	 * @since 1.0
-	 */
-	public function add_screen_options() {
-		if ( Dispatch::is_current_view( 'single' ) ) {
-			$screen = get_current_screen();
-			// todo render help tabs
-		}
 	}
 
 	/**

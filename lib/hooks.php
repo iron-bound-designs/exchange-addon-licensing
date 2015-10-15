@@ -10,10 +10,7 @@
 
 namespace ITELIC;
 
-use IronBound\DB\Manager;
 use ITELIC\Purchase_Requirement\Renew_Key;
-use ITELIC\Query\Keys;
-use ITELIC\Query\Releases;
 
 /**
  * When a new transaction is created, generate necessary license keys if
