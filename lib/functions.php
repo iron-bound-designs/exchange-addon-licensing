@@ -688,27 +688,26 @@ function validate_query_args( $query_args ) {
 		$valid = false;
 	}
 
-	$args = array(
-		'activation' => (int) $query_args['activation'],
-		'key'        => $query_args['key'],
-		'expires'    => (int) $query_args['expires']
-	);
-
 	if ( $valid ) {
+
+		$args = array(
+			'activation' => (int) $query_args['activation'],
+			'key'        => $query_args['key'],
+			'expires'    => (int) $query_args['expires']
+		);
 
 		$token = hash_hmac( 'md5', serialize( $args ), wp_salt() );
 
 		if ( ! hash_equals( $token, $query_args['token'] ) ) {
 			$valid = false;
+		} else {
+			$now     = make_date_time();
+			$expires = make_date_time( "@{$args['expires']}" );
+
+			$valid = $now < $expires;
 		}
 	}
 
-	if ( $valid ) {
-		$now     = make_date_time();
-		$expires = make_date_time( "@{$args['expires']}" );
-
-		$valid = $now < $expires;
-	}
 
 	/**
 	 * Filter whether the download link query args are valid.
