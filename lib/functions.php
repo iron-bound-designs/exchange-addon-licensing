@@ -10,6 +10,7 @@
 
 namespace ITELIC;
 
+use IronBound\DB\Manager;
 use IronBound\DB\Table\Table;
 use IronBound\WP_Notifications\Queue\Mandrill as Mandrill_Queue;
 use IronBound\WP_Notifications\Strategy\Mandrill as Mandrill_Strategy;
@@ -443,6 +444,88 @@ function get_notification_strategy() {
 	 */
 
 	return apply_filters( 'itelic_get_queue_processor', $strategy );
+}
+/* --------------------------------------------
+=============== Count Functions ===============
+----------------------------------------------- */
+
+/**
+ * Count the number of keys belonging to each status.
+ *
+ * @since 1.0
+ *
+ * @param string $status
+ *
+ * @return array
+ */
+function count_keys( $status = '' ) {
+
+	/** @var $wpdb \wpdb */
+	global $wpdb;
+
+	$tn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
+
+	$raw = $wpdb->get_results(
+		"SELECT COUNT(1) AS C, k.status AS S FROM $tn k GROUP BY k.status"
+	);
+
+	$counts = array();
+
+	foreach ( $raw as $result ) {
+		$counts[ $result->S ] = $result->C;
+	}
+
+	$counts = wp_parse_args( $counts, array(
+		Key::ACTIVE   => 0,
+		Key::DISABLED => 0,
+		Key::EXPIRED  => 0
+	) );
+
+	if ( $status ) {
+		return $counts[ $status ];
+	}
+
+	return $counts;
+}
+
+/**
+ * Count the number of releases belonging to each status.
+ *
+ * @since 1.0
+ *
+ * @param string $status
+ *
+ * @return array
+ */
+function count_releases( $status = '' ) {
+
+	/** @var $wpdb \wpdb */
+	global $wpdb;
+
+	$tn = Manager::get( 'itelic-releases' )->get_table_name( $wpdb );
+
+	$raw = $wpdb->get_results(
+		"SELECT COUNT(1) AS C, r.status AS S FROM $tn r GROUP BY r.status"
+	);
+
+	$counts = array();
+
+	foreach ( $raw as $result ) {
+		$counts[ $result->S ] = $result->C;
+	}
+
+	$counts = wp_parse_args( $counts, array(
+		Release::STATUS_ACTIVE   => 0,
+		Release::STATUS_ARCHIVED => 0,
+		Release::STATUS_DRAFT    => 0,
+		Release::STATUS_PAUSED   => 0,
+	) );
+
+	if ( $status ) {
+		return $counts[ $status ];
+	}
+
+	return $counts;
 }
 
 /* --------------------------------------------
