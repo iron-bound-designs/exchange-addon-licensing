@@ -280,12 +280,24 @@ class Release extends Model {
 
 		$download_id   = $product->get_feature( 'licensing', array( 'field' => 'update-file' ) );
 		$download_data = get_post_meta( $download_id, '_it-exchange-download-info', true );
+		$old_url       = $download_data['source'];
 
 		// update the download url
 		$download_data['source'] = wp_get_attachment_url( $file->ID );
 
 		// save the new download
 		update_post_meta( $download_id, '_it-exchange-download-info', $download_data );
+
+		$download = get_post( $download_id );
+
+		// check if the download name is being stored as the plugin file
+		// if it is, we want to update the download name.
+		if ( preg_replace( '/\.[^.]+$/', '', basename( $old_url ) ) == $download->post_title ) {
+			wp_update_post( array(
+				'ID'         => $download_id,
+				'post_title' => preg_replace( '/\.[^.]+$/', '', basename( get_attached_file( $file->ID ) ) )
+			) );
+		}
 
 		$product->update_feature( 'licensing', array(
 			'version' => $version
