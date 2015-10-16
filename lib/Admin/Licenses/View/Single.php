@@ -64,6 +64,12 @@ class Single extends View {
 		$jdf = it_exchange_php_date_format_to_jquery_datepicker_format( $this->get_short_df() );
 
 		$online = $this->key->is_online_product();
+
+		$disable_activate = $this->key->get_status() != Key::ACTIVE;
+		$disable_tip = __( "Disabled or expired licenses cannot be activated.", Plugin::SLUG );
+		$disable_title = $disable_activate ? "title=\"$disable_tip\"" : '';
+		$disable_class = $disable_activate ? 'button-disabled' : '';
+		$disabled_input = $disable_activate ? ' disabled' : '';
 		?>
 
 		<div id="it-exchange-license-details">
@@ -147,8 +153,10 @@ class Single extends View {
 				<h4><?php _e( "Remote Activate", Plugin::SLUG ); ?></h4>
 
 				<label for="remote-activate-location" class="screen-reader-text"><?php _e( "Install Location", Plugin::SLUG ); ?></label>
-				<input type="<?php echo $online ? 'url' : 'text'; ?>" id="remote-activate-location" placeholder="<?php _e( "Install Location", Plugin::SLUG ); ?>">
-				<input type="submit" id="remote-activate-submit" class="it-exchange-button" value="<?php esc_attr_e( "Activate", Plugin::SLUG ); ?>">
+				<input type="<?php echo $online ? 'url' : 'text'; ?>" id="remote-activate-location"
+				       placeholder="<?php _e( "Install Location", Plugin::SLUG ); ?>"<?php echo $disabled_input; ?>>
+				<input type="submit" id="remote-activate-submit" class="it-exchange-button <?php echo $disable_class; ?>"
+				       value="<?php esc_attr_e( "Activate", Plugin::SLUG ); ?>" data-tip="<?php echo $disable_tip; ?>"<?php echo $disable_title; ?>>
 				<input type="hidden" id="remote-activate-key" value="<?php echo esc_attr( $this->key->get_key() ); ?>">
 				<?php wp_nonce_field( 'itelic-remote-activate-key-' . $this->key->get_key() ) ?>
 			</div>

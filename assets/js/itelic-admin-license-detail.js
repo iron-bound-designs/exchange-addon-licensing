@@ -7,6 +7,8 @@
 
 jQuery(document).ready(function ($) {
 
+	$("#remote-activate-submit" ).tooltip();
+
 	var status_span = $(".status span");
 
 	status_span.editable({
@@ -146,6 +148,25 @@ jQuery(document).ready(function ($) {
 		});
 
 		container.addClass('status-' + params.newValue);
+
+		var remoteActivate = $("#remote-activate-submit");
+
+		if (params.newValue == 'active') {
+			if (remoteActivate.hasClass('button-disabled')) {
+				remoteActivate.removeClass('button-disabled');
+				remoteActivate.prop('title', '');
+				$("#remote-activate-location" ).prop('disabled', false);
+			}
+		} else {
+
+			if (! remoteActivate.hasClass('button-disabled')) {
+				remoteActivate.addClass( 'button-disabled' );
+				remoteActivate.prop('title',remoteActivate.data('tip'));
+				/*remoteActivate.tooltip();*/
+				$("#remote-activate-location" ).prop('disabled',true);
+			}
+
+		}
 	});
 
 
@@ -161,6 +182,10 @@ jQuery(document).ready(function ($) {
 	$(document).on('click', '#remote-activate-submit', function (e) {
 
 		e.preventDefault();
+
+		if ($(this ).hasClass('button-disabled')) {
+			return;
+		}
 
 		var data = {
 			action  : 'itelic_admin_licenses_single_activate',

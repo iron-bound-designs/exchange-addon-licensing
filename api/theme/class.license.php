@@ -411,6 +411,10 @@ class IT_Theme_API_License implements IT_Theme_API {
 			return false;
 		}
 
+		if ( $this->license->get_status() != ITELIC\Key::ACTIVE ) {
+			return false;
+		}
+
 		$settings = it_exchange_get_option( 'addon_itelic' );
 
 		return $settings['enable-remote-activation'] && $this->license->get_product()->get_feature(
