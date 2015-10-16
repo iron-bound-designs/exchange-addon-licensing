@@ -180,6 +180,11 @@ class Table extends \WP_List_Table {
 	 * @return string
 	 */
 	public function column_max_active( $item ) {
+
+		if ( $item['max_active'] == '&infin;' ) {
+			return $item['max_active'];
+		}
+
 		//Build row actions
 		$actions = array(
 			'decrease' => sprintf( '<a href="javascript:" data-dir="down" data-key="%1$s" data-nonce="%2$s">%3$s</a>', $item['key'],
