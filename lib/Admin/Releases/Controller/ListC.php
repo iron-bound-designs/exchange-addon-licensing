@@ -21,6 +21,7 @@ use ITELIC\Query\Releases;
 
 /**
  * Class ListC
+ *
  * @package ITELIC\Admin\Releases\Controller
  */
 class ListC extends Controller {
@@ -173,6 +174,11 @@ class ListC extends Controller {
 	 * @return array
 	 */
 	protected function generate_query_args() {
+
+		if ( ! isset( $_GET['orderby'] ) ) {
+			$_GET['orderby'] = 'start_date';
+			$_GET['order']   = 'desc';
+		}
 
 		$args = array(
 			'items_per_page' => $this->get_items_per_page( 'itelic_releases_list_table_per_page' ),

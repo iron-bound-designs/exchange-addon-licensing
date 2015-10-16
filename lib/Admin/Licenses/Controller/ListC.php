@@ -352,10 +352,6 @@ class ListC extends Controller {
 			return;
 		}
 
-		if ( ! isset( $_GET['orderby'] ) ) {
-			$_GET['orderby'] = 'transaction';
-		}
-
 		try {
 
 			$msg = $this->process_bulk_actions();
@@ -458,6 +454,11 @@ class ListC extends Controller {
 	 * @return array
 	 */
 	protected function generate_get_key_args() {
+
+		if ( ! isset( $_GET['orderby'] ) ) {
+			$_GET['orderby'] = 'transaction';
+			$_GET['order']   = 'desc';
+		}
 
 		$args = array(
 			'items_per_page' => $this->get_items_per_page( 'itelic_licenses_list_table_per_page' ),
