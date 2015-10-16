@@ -57,10 +57,11 @@ class Table extends \WP_List_Table {
 	 * @param array $products
 	 */
 	function __construct( $keys, $total, $products ) {
-		$this->keys     = $keys;
-		$this->total    = $total;
-		$this->products = $products;
-		$this->counts   = \ITELIC\count_keys();
+		$this->keys          = $keys;
+		$this->total         = $total;
+		$this->products      = $products;
+		$this->counts        = \ITELIC\count_keys();
+		$this->counts['any'] = array_sum( $this->counts );
 
 		//Set parent defaults
 		parent::__construct( array(
@@ -285,28 +286,23 @@ class Table extends \WP_List_Table {
 
 		$statuses = Key::get_statuses();
 
-		$statuses['any'] = __( "All", Plugin::SLUG );
-
-		$links = array(
-			'any'         =>
-				sprintf( '<a href="%1$s">%2$s</a>', $this->get_view_link( 'any' ), $statuses['any'] ),
-			Key::ACTIVE   =>
-				sprintf( '<a href="%1$s">%2$s</a>',
-					$this->get_view_link( Key::ACTIVE ),
-					$statuses[ Key::ACTIVE ] ) . " ({$this->counts[Key::ACTIVE]})",
-			Key::DISABLED =>
-				sprintf( '<a href="%1$s">%2$s</a>',
-					$this->get_view_link( Key::DISABLED ),
-					$statuses[ Key::DISABLED ] ) . " ({$this->counts[Key::DISABLED]})",
-			Key::EXPIRED  =>
-				sprintf( '<a href="%1$s">%2$s</a>',
-					$this->get_view_link( Key::EXPIRED ),
-					$statuses[ Key::EXPIRED ] ) . " ({$this->counts[Key::EXPIRED]})"
+		$any = array(
+			'any' => __( "All", Plugin::SLUG )
 		);
+
+		$statuses = $any + $statuses;
+
+		$links = array();
+
+		foreach ( $statuses as $status => $label ) {
+			$links[ $status ] = sprintf( '<a href="%1$s">%2$s</a>',
+					$this->get_view_link( $status ),
+					$label ) . " ({$this->counts[ $status ]})";
+		}
 
 		$selected = isset( $_GET['status'] ) ? $_GET['status'] : 'any';
 
-		$links[ $selected ] = "<strong>{$statuses[$selected]}</strong>";
+		$links[ $selected ] = "<strong>{$statuses[$selected]} ({$this->counts[$selected]})</strong>";
 
 		return $links;
 	}
