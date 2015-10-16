@@ -354,6 +354,62 @@ function disable_key_on_transaction_status_change( $txn, $old_status, $old_statu
 
 add_action( 'it_exchange_update_transaction_status', '\ITELIC\disable_key_on_transaction_status_change', 10, 3 );
 
+/**
+ * Delete license keys when the generating transaction is deleted.
+ *
+ * @since 1.0
+ *
+ * @param int $post_id
+ */
+function delete_keys_when_transaction_is_deleted( $post_id ) {
+
+	if ( get_post_type( $post_id ) != 'it_exchange_tran' ) {
+		return;
+	}
+
+	$keys = itelic_get_keys( array(
+		'transaction' => $post_id
+	) );
+
+	foreach ( $keys as $key ) {
+		$key->delete();
+	}
+}
+
+add_action( 'before_delete_post', '\ITELIC\delete_keys_when_transaction_is_deleted' );
+
+/**
+ * Delete license keys when the product is deleted.
+ *
+ * @since 1.0
+ *
+ * @param int $post_id
+ */
+function delete_keys_and_releases_when_product_is_deleted( $post_id ) {
+
+	if ( get_post_type( $post_id ) != 'it_exchange_prod' ) {
+		return;
+	}
+
+	$keys = itelic_get_keys( array(
+		'product' => $post_id
+	) );
+
+	foreach ( $keys as $key ) {
+		$key->delete();
+	}
+
+	$releases = itelic_get_releases( array(
+		'product' => $post_id
+	) );
+
+	foreach ( $releases as $release ) {
+		$release->delete();
+	}
+}
+
+add_action( 'before_delete_post', '\ITELIC\delete_keys_and_releases_when_product_is_deleted' );
+
 /* --------------------------------------------
 ============= Display License Key =============
 ----------------------------------------------- */
