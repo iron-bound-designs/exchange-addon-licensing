@@ -572,7 +572,7 @@ function count_releases( $status = '' ) {
  * @return int
  */
 function get_current_product_id() {
-	if ( isset( $GLOBALS['it_exchange']['product'] ) ) {
+	if ( isset( $GLOBALS['it_exchange']['product'] ) && is_object( $GLOBALS['it_exchange']['product'] ) ) {
 		$id = $GLOBALS['it_exchange']['product']->ID;
 	} elseif ( isset( $GLOBALS['post'] ) ) {
 		$id = $GLOBALS['post']->ID;
