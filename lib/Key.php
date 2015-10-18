@@ -10,7 +10,6 @@
 
 namespace ITELIC;
 
-use Faker\Provider\tr_TR\DateTime;
 use IronBound\Cache\Cache;
 use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
@@ -539,6 +538,7 @@ class Key extends Model implements API\Serializable {
 			'customer'    => $this->get_customer()->wp_user->ID,
 			'status'      => $this->get_status(),
 			'max'         => $this->get_max(),
+			'expires'     => $this->get_expires() ? $this->get_expires()->format( \DateTime::ISO8601 ) : '',
 			'activations' => array(
 				'count'        => count( $activations ),
 				'count_active' => $this->get_active_count(),
