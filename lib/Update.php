@@ -91,7 +91,7 @@ class Update extends Model {
 			$update_date = make_date_time();
 		}
 
-		if ( empty( $previous_version ) ) {
+		if ( empty( $previous_version ) && $activation->get_release() ) {
 			$previous_version = $activation->get_release()->get_version();
 		}
 
