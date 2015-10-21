@@ -63,7 +63,7 @@ abstract class View {
 	 * Render the page title.
 	 */
 	public function title() {
-		echo '<h2>' . $this->get_title() . '</h2>';
+		echo '<h1>' . $this->get_title() . '</h1>';
 	}
 
 	/**

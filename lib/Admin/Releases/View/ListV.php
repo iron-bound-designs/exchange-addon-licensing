@@ -77,10 +77,10 @@ class ListV extends View {
 	 * @since 1.0
 	 */
 	public function title() {
-		echo '<h2>' . $this->get_title() . ' ';
-		echo '<a href="' . add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'releases' ) ) . '" class="add-new-h2">';
+		echo '<h1>' . $this->get_title() . ' ';
+		echo '<a href="' . add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'releases' ) ) . '" class="page-title-action">';
 		echo __( "Add New", Plugin::SLUG );
 		echo '</a>';
-		echo '</h2>';
+		echo '</h1>';
 	}
 }
