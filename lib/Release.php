@@ -280,7 +280,7 @@ class Release extends Model {
 
 		$download_id   = $product->get_feature( 'licensing', array( 'field' => 'update-file' ) );
 		$download_data = get_post_meta( $download_id, '_it-exchange-download-info', true );
-		$old_url       = $download_data['source'];
+		$old_url       = isset( $download_data['source'] ) ? $download_data['source'] : '';
 
 		// update the download url
 		$download_data['source'] = wp_get_attachment_url( $file->ID );

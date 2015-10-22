@@ -41,6 +41,31 @@ class ITELIC_UnitTest_Factory_For_Products extends WP_UnitTest_Factory_For_Post 
 
 		$args = wp_parse_args( $args, $defaults );
 
+		if ( empty( $args['update-file'] ) ) {
+
+			$name = get_the_title( $product_id );
+			$name .= '.zip';
+
+			$attachment_factory = new WP_UnitTest_Factory_For_Attachment();
+
+			$attachment_id = $attachment_factory->create_object( $name, $product_id, array(
+				'post_mime_type' => 'application/zip'
+			) );
+
+			$download_id = parent::create_object( array(
+				'post_type' => 'it_exchange_download'
+			) );
+
+			update_post_meta( $download_id, '_it-exchange-download-info', array(
+				'source'      => wp_get_attachment_url( $attachment_id ),
+				'product_id'  => $product_id,
+				'download_id' => $download_id,
+				'name'        => $name
+			) );
+
+			$args['update-file'] = $download_id;
+		}
+
 		if ( ! empty( $args['product_type'] ) ) {
 			update_post_meta( $product_id, '_it_exchange_product_type', $args['product_type'] );
 		}
