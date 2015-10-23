@@ -340,7 +340,7 @@ function disable_key_on_transaction_status_change( $txn, $old_status, $old_statu
 
 	$txn = it_exchange_get_transaction( $txn );
 
-	if ( $old_status_cleared && it_exchange_transaction_is_cleared_for_delivery( $txn ) ) {
+	if ( $old_status_cleared && ! it_exchange_transaction_is_cleared_for_delivery( $txn ) ) {
 
 		$keys = itelic_get_keys( array(
 			'transaction' => $txn->ID
