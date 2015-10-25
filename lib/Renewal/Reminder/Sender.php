@@ -17,6 +17,7 @@ use IronBound\WP_Notifications\Template\Factory;
 use IronBound\WP_Notifications\Template\Manager as Template_Manager;
 use ITELIC\Renewal\Discount;
 use ITELIC\Renewal\Reminder;
+use ITELIC\Utils\Guest_Notification;
 
 /**
  * Class Sender
@@ -139,6 +140,12 @@ class Sender {
 
 		$template     = $reminder->get_post();
 		$notification = new Notification( $key->get_customer()->wp_user, $manager, $template->post_content, $template->post_title );
+
+		$transaction = $key->get_transaction();
+
+		if ( ! empty( $transaction->cart_details->is_guest_checkout ) ) {
+			$notification = new Guest_Notification( $notification, $transaction );
+		}
 
 		$notification->add_data_source( $key );
 		$notification->add_data_source( new Discount( $key ) );
