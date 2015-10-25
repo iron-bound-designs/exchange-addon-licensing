@@ -16,10 +16,10 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 
 		$dispatch = new \ITELIC\API\Dispatch();
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'garbage' );
+		$mock_wp             = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'garbage' );
 
-		$response = $dispatch->process( $mock_wp_query );
+		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
 
 		$this->assertEquals( 404, $response->get_status() );
@@ -35,13 +35,13 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_endpoint = $this->getMockBuilder( '\ITELIC\API\Contracts\Endpoint' )->getMock();
 		$mock_endpoint->expects( $this->once() )->method( 'serve' )->willReturn( $response );
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
-		$this->assertEquals( $response, $dispatch->process( $mock_wp_query ) );
+		$this->assertEquals( $response, $dispatch->process( $mock_wp ) );
 	}
 
 	public function test_error_response_generated_if_api_exception_thrown() {
@@ -51,13 +51,13 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_endpoint = $this->getMockBuilder( '\ITELIC\API\Contracts\Endpoint' )->getMock();
 		$mock_endpoint->expects( $this->once() )->method( 'serve' )->will( $this->throwException( $exception ) );
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
-		$response = $dispatch->process( $mock_wp_query );
+		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
 
 		$this->assertFalse( $data['success'] );
@@ -76,13 +76,13 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_endpoint = $this->getMockBuilder( '\ITELIC\API\Contracts\Endpoint' )->getMock();
 		$mock_endpoint->expects( $this->once() )->method( 'serve' )->will( $this->throwException( $exception ) );
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
-		$response = $dispatch->process( $mock_wp_query );
+		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
 
 		$this->assertFalse( $data['success'] );
@@ -108,13 +108,13 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 
 		$_SERVER['PHP_AUTH_USER'] = 'abcd-1234';
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
-		$response = $dispatch->process( $mock_wp_query );
+		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
 
 		$this->assertFalse( $data['success'] );
@@ -141,13 +141,13 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 
 		$_SERVER['PHP_AUTH_USER'] = 'abcd-1234';
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
-		$this->assertEquals( $response, $dispatch->process( $mock_wp_query ) );
+		$this->assertEquals( $response, $dispatch->process( $mock_wp ) );
 	}
 
 	public function existing_license_key_auth_mode_data_provider() {
@@ -183,13 +183,13 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 
 		$_SERVER['PHP_AUTH_USER'] = 'abcd-1234';
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
-		$response = $dispatch->process( $mock_wp_query );
+		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
 
 		$this->assertFalse( $data['success'] );
@@ -216,13 +216,13 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 
 		$_SERVER['PHP_AUTH_USER'] = 'abcd-1234';
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
-		$response = $dispatch->process( $mock_wp_query );
+		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
 
 		$this->assertFalse( $data['success'] );
@@ -265,13 +265,13 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 
 		$_SERVER['PHP_AUTH_USER'] = 'abcd-1234';
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
-		$this->assertEquals( $response, $dispatch->process( $mock_wp_query ) );
+		$this->assertEquals( $response, $dispatch->process( $mock_wp ) );
 	}
 
 	/**
@@ -288,6 +288,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		} else {
 			$mock_endpoint->expects( $this->never() )->method( 'serve' );
 		}
+
 		$mock_endpoint->expects( $this->atLeastOnce() )->method( 'get_auth_mode' )->willReturn( Authenticatable::MODE_VALID_ACTIVATION );
 
 		WP_Mock::wpFunction( 'itelic_get_key', array(
@@ -305,13 +306,13 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$_SERVER['PHP_AUTH_USER'] = 'abcd-1234';
 		$_SERVER['PHP_AUTH_PW']   = '1';
 
-		$mock_wp_query = $this->getMockBuilder( '\WP_Query' )->disableOriginalConstructor()->getMock();
-		$mock_wp_query->expects( $this->once() )->method( 'get' )->with( 'itelic_api' )->willReturn( 'mock' );
+		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
+		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
 		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
 
-		$response = $dispatch->process( $mock_wp_query );
+		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
 
 		$this->assertEquals( $expected, $data['success'] );

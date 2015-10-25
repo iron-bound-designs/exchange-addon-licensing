@@ -45,7 +45,7 @@ class Dispatch {
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_rewrites' ) );
-		add_action( 'template_redirect', array( $this, 'dispatch' ) );
+		add_action( 'parse_request', array( $this, 'dispatch' ) );
 	}
 
 	/**
@@ -69,15 +69,12 @@ class Dispatch {
 
 	/**
 	 * Dispatch an API request.
+	 *
+	 * @param \WP $wp
 	 */
-	public function dispatch() {
+	public function dispatch( \WP $wp ) {
 
-		/**
-		 * @var \WP_Query $wp_query
-		 */
-		global $wp_query;
-
-		$response = $this->process( $wp_query );
+		$response = $this->process( $wp );
 
 		if ( $response ) {
 			echo $this->responder->respond( $response );
@@ -89,13 +86,13 @@ class Dispatch {
 	/**
 	 * Dispatch the request.
 	 *
-	 * @param \WP_Query $query
+	 * @param \WP $wp
 	 *
 	 * @return Response
 	 */
-	public function process( \WP_Query $query ) {
+	public function process( \WP $wp ) {
 
-		$action = $query->get( self::TAG );
+		$action = $wp->query_vars[ self::TAG ];
 
 		if ( $action ) {
 
