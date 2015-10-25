@@ -97,9 +97,23 @@ class Key extends Model implements API\Serializable {
 		$this->key         = $data->lkey;
 		$this->transaction = it_exchange_get_transaction( $data->transaction_id );
 		$this->product     = itelic_get_product( $data->product );
-		$this->customer    = it_exchange_get_customer( $data->customer );
-		$this->status      = $data->status;
-		$this->max         = $data->max;
+
+		// account for guest checkouts
+		if ( $data->customer ) {
+			$this->customer = it_exchange_get_customer( $data->customer );
+		} else {
+			$customer = it_exchange_get_transaction_customer( $this->transaction );
+
+			if ( ! $customer instanceof \IT_Exchange_Customer ) {
+				$customer                        = new \IT_Exchange_Customer( $customer );
+				$customer->wp_user->display_name = sprintf( __( "Guest (%s)", Plugin::SLUG ), $customer->wp_user->user_email );
+			}
+
+			$this->customer = $customer;
+		}
+
+		$this->status = $data->status;
+		$this->max    = $data->max;
 
 		if ( ! empty( $data->expires ) && $data->expires != '0000-00-00 00:00:00' ) {
 			$this->expires = make_date_time( $data->expires );
@@ -609,6 +623,11 @@ class Key extends Model implements API\Serializable {
 
 		$data['lkey']           = $this->get_key();
 		$data['transaction_id'] = $this->get_transaction()->ID;
+
+		// account for guest checkouts
+		if ( ! is_int( $data['customer'] ) ) {
+			$data['customer'] = 0;
+		}
 
 		return $data;
 	}

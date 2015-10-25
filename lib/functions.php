@@ -57,6 +57,10 @@ function generate_keys_for_transaction( \IT_Exchange_Transaction $transaction, $
 
 			$customer = it_exchange_get_transaction_customer( $transaction );
 
+			if ( ! $customer instanceof \IT_Exchange_Customer ) {
+				$customer = new \IT_Exchange_Customer( $customer );
+			}
+
 			$factory = new Factory( $product, $customer, $transaction );
 
 			if ( generate_key_for_transaction_product( $transaction, $product, $factory, $status ) ) {
@@ -88,6 +92,10 @@ function generate_keys_for_transaction( \IT_Exchange_Transaction $transaction, $
 function generate_key_for_transaction_product( \IT_Exchange_Transaction $transaction, Product $product, Factory $factory, $status = '', $key = '' ) {
 
 	$customer = it_exchange_get_transaction_customer( $transaction );
+
+	if ( ! $customer instanceof \IT_Exchange_Customer ) {
+		$customer = new \IT_Exchange_Customer( $customer );
+	}
 
 	if ( ! $key ) {
 		$key = $factory->make();
@@ -658,9 +666,9 @@ function generate_download_query_args( Activation $activation, \DateTime $expire
 	 *
 	 * @since 1.0
 	 *
-	 * @param array      $args        Query args.
-	 * @param Activation $activation  Activation record download is delivered to.
-	 * @param \DateTime  $expires     Expiration date for arguments. Link MUST function until time given.
+	 * @param array      $args       Query args.
+	 * @param Activation $activation Activation record download is delivered to.
+	 * @param \DateTime  $expires    Expiration date for arguments. Link MUST function until time given.
 	 */
 	$args = apply_filters( 'itelic_generate_download_query_args', $args, $activation, $expires );
 
