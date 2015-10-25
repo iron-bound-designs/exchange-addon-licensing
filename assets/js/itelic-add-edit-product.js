@@ -84,8 +84,9 @@ jQuery(document).ready(function ($) {
 		var override = $("#itelic-discount-override");
 		var options = $("input, select", ".itelic-discount-settings");
 
-		if ($(this).attr('checked') == 'checked') {
+		if ($(this).is(':checked')) {
 			override.prop('disabled', true);
+			override.prop('checked', false);
 
 			options.each(function () {
 				$(this).prop('disabled', true);
