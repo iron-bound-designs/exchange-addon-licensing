@@ -151,7 +151,7 @@ class Settings {
 		}
 
 		$erd_class    = $form->get_option( 'enable-renewal-discounts' ) ? '' : 'hide-if-js';
-		$era_disabled = $form->get_option( 'enable-remote-activation' ) ? array() : array( 'disabled' => 'disabled' );
+		$era_disabled = $form->get_option( 'sell-online-software' ) ? array() : array( 'disabled' => 'disabled' );
 		?>
 
 		<div class="it-exchange-addon-settings it-exchange-itelic-addon-settings">
@@ -256,6 +256,7 @@ class Settings {
 						remote_activation_checkbox.prop('disabled', false);
 					} else {
 						remote_activation_checkbox.prop('disabled', true);
+						remote_activation_checkbox.prop('checked', false);
 					}
 				});
 			});
