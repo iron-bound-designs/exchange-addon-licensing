@@ -92,7 +92,7 @@ class Dispatch {
 	 */
 	public function process( \WP $wp ) {
 
-		$action = $wp->query_vars[ self::TAG ];
+		$action = isset( $wp->query_vars[ self::TAG ] ) ? $wp->query_vars[ self::TAG ] : '';
 
 		if ( $action ) {
 
