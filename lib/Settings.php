@@ -214,7 +214,7 @@ class Settings {
 
 				<?php $form->add_text_box( 'renewal-discount-expiry' ); ?>
 
-				<p class="description"><?php _e( "how many days after the key expires should the renewal discount be offered.", Plugin::SLUG ); ?></p>
+				<p class="description"><?php _e( "For how many days after the license key expires should the renewal discount be applied.", Plugin::SLUG ); ?></p>
 			</div>
 
 		</div>
