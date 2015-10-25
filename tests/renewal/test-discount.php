@@ -11,8 +11,116 @@ use ITELIC\Renewal\Discount;
 
 /**
  * Class ITELIC_Test_Renewal_Discount
+ *
+ * @group renewal
  */
 class ITELIC_Test_Renewal_Discount extends ITELIC_UnitTestCase {
+
+	/**
+	 * Do custom initialization.
+	 */
+	public function setUp() {
+		parent::setUp();
+
+		$this->_toggle_global_renewal_discount( true );
+	}
+
+	/**
+	 * Tear down after each test.
+	 */
+	public function tearDown() {
+		parent::tearDown();
+
+		$this->_toggle_global_renewal_discount( false );
+	}
+
+	/**
+	 * Toggle whether renewal discounts should be enabled globally.
+	 *
+	 * @param bool $enable
+	 */
+	protected function _toggle_global_renewal_discount( $enable ) {
+
+		$options                             = it_exchange_get_option( 'addon_itelic', true, true );
+		$options['enable-renewal-discounts'] = $enable;
+		it_exchange_save_option( 'addon_itelic', $options );
+		it_exchange_get_option( 'addon_itelic', true, true );
+	}
+
+	public function test_is_disabled_if_globally_disabled() {
+
+		$this->_toggle_global_renewal_discount( false );
+
+		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
+		$mock_product->method( 'get_feature' )->with( 'licensing-discount' )->willReturn( array(
+			'type'   => Discount::TYPE_FLAT,
+			'amount' => '5'
+		) );
+
+		$mock_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$mock_key->method( 'get_product' )->willReturn( $mock_product );
+
+		$discount = new Discount( $mock_key );
+
+		$this->assertTrue( $discount->is_disabled() );
+	}
+
+	public function test_is_disabled_if_disabled_for_product() {
+
+		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
+		$mock_product->method( 'get_feature' )->with( 'licensing-discount' )->willReturn( array(
+			'type'    => Discount::TYPE_FLAT,
+			'amount'  => '5',
+			'disable' => true
+		) );
+
+		$mock_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$mock_key->method( 'get_product' )->willReturn( $mock_product );
+
+		$discount = new Discount( $mock_key );
+
+		$this->assertTrue( $discount->is_disabled() );
+	}
+
+	public function test_is_not_disabled_if_enabled_on_product_but_disabled_globally() {
+
+		$this->_toggle_global_renewal_discount( false );
+
+		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
+		$mock_product->method( 'get_feature' )->with( 'licensing-discount' )->willReturn( array(
+			'type'     => Discount::TYPE_FLAT,
+			'amount'   => '5',
+			'override' => true
+		) );
+
+		$mock_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$mock_key->method( 'get_product' )->willReturn( $mock_product );
+
+		$discount = new Discount( $mock_key );
+
+		$this->assertFalse( $discount->is_disabled() );
+	}
+
+	/**
+	 * @depends test_is_disabled_if_globally_disabled
+	 */
+	public function test_discount_amount_is_0_if_disabled() {
+
+		$this->_toggle_global_renewal_discount( false );
+
+		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
+		$mock_product->method( 'get_feature' )->with( 'licensing-discount' )->willReturn( array(
+			'type'   => Discount::TYPE_FLAT,
+			'amount' => '5'
+		) );
+
+		$mock_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$mock_key->method( 'get_product' )->willReturn( $mock_product );
+
+		$discount = new Discount( $mock_key );
+
+		$this->assertEquals( 0, $discount->get_amount() );
+	}
 
 	public function test_get_type() {
 

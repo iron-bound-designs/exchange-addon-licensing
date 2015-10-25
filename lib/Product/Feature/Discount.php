@@ -9,6 +9,7 @@
  */
 
 namespace ITELIC\Product\Feature;
+
 use ITELIC\Plugin;
 use ITELIC\Renewal\Discount as Renewal_Discount;
 
@@ -40,11 +41,12 @@ class Discount extends \IT_Exchange_Product_Feature_Abstract {
 	 * @param \WP_Post $post
 	 */
 	function print_metabox( $post ) {
-		$data   = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, $this->slug, array( 'db' => true ) );
+		$data   = it_exchange_get_product_feature( isset( $post->ID ) ? $post->ID : 0, $this->slug, array( 'db' => false ) );
 		$hidden = $data['override'] ? '' : ' hide-if-js';
 
-		$types = array( Renewal_Discount::TYPE_FLAT    => __( "Flat", Plugin::SLUG ),
-		                Renewal_Discount::TYPE_PERCENT => __( "Percent", Plugin::SLUG )
+		$types = array(
+			Renewal_Discount::TYPE_FLAT    => __( "Flat", Plugin::SLUG ),
+			Renewal_Discount::TYPE_PERCENT => __( "Percent", Plugin::SLUG )
 		);
 		?>
 
@@ -82,7 +84,7 @@ class Discount extends \IT_Exchange_Product_Feature_Abstract {
 
 			<p class="description"><?php _e( "how many days after the key expires should the renewal discount be offered.", Plugin::SLUG ); ?></p>
 		</div>
-	<?php
+		<?php
 	}
 
 	/**
@@ -152,7 +154,7 @@ class Discount extends \IT_Exchange_Product_Feature_Abstract {
 		$values   = get_post_meta( $product_id, '_it_exchange_itelic_renewal_discount', true );
 		$raw_meta = \ITUtility::merge_defaults( $values, $defaults );
 
-		if ( ( ! $raw_meta['override'] ) && ( ! isset( $options['db'] ) || $options['db'] == false ) ) {
+		if ( ! $raw_meta['override'] && empty( $options['db'] ) ) {
 			$settings = it_exchange_get_option( 'addon_itelic', true );
 
 			$raw_meta['type']   = $settings['renewal-discount-type'];

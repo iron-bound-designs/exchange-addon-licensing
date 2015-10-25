@@ -189,9 +189,9 @@ class Settings {
 			<div class="enable-renewal-discounts-container">
 
 				<?php $form->add_check_box( 'enable-renewal-discounts' ); ?>
-				<label for="enable-renewal-discounts"><?php _e( "Enable Global Renewal Discounts?", Plugin::SLUG ); ?></label>
+				<label for="enable-renewal-discounts"><?php _e( "Enable a Global Renewal Discount?", Plugin::SLUG ); ?></label>
 
-				<p class="description"><?php _e( "Don't worry, this can be overwritten on a per-product basis.", Plugin::SLUG ); ?></p>
+				<p class="description"><?php _e( "Don't worry, this can be overridden on a per-product basis.", Plugin::SLUG ); ?></p>
 			</div>
 
 			<div class="renewal-discount-type-container <?php echo esc_attr( $erd_class ); ?>">

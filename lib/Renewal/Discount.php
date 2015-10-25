@@ -59,6 +59,32 @@ class Discount implements \Serializable {
 	}
 
 	/**
+	 * Check if the discount is disabled for this product.
+	 *
+	 * @since 1.0
+	 *
+	 * @return bool
+	 */
+	public function is_disabled() {
+
+		$options = it_exchange_get_option( 'addon_itelic' );
+
+		if ( ! empty( $this->feature_data['override'] ) ) {
+			return false;
+		}
+
+		if ( ! empty( $this->feature_data['disable'] ) ) {
+			return true;
+		}
+
+		if ( ! $options['enable-renewal-discounts'] ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get the type of discount.
 	 *
 	 * @since 1.0
@@ -77,7 +103,12 @@ class Discount implements \Serializable {
 	 * @return float|string
 	 */
 	public function get_amount( $format = false ) {
-		$amount = (float) $this->feature_data['amount'];
+
+		if ( $this->is_disabled() ) {
+			$amount = 0.00;
+		} else {
+			$amount = (float) $this->feature_data['amount'];
+		}
 
 		if ( $format ) {
 
