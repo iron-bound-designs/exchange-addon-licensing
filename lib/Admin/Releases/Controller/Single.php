@@ -527,7 +527,10 @@ class Single extends Controller {
 		$i = 0;
 
 		foreach ( $results as $version => $count ) {
-			$chart->add_data_set( $count, "v{$version}", $colors[ $i ] );
+
+			$label = empty( $version ) ? __( "Unknown", Plugin::SLUG ) : "v{$version}";
+
+			$chart->add_data_set( $count, $label, $colors[ $i ] );
 
 			$i ++;
 		}
