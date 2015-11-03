@@ -582,6 +582,36 @@ function add_renewal_info_to_product_title_transaction_feature( $value, $product
 
 add_filter( 'it_exchange_get_transaction_product_feature', 'ITELIC\add_renewal_info_to_product_title_transaction_feature', 10, 3 );
 
+/**
+ * On the downloads page, exclude transactions that are renewing a key.
+ *
+ * @since 1.0
+ *
+ * @param \IT_Exchange_Transaction[] $transactions
+ * @param \IT_Exchange_Customer      $customer
+ *
+ * @return \IT_Exchange_Transaction[]
+ */
+function exclude_renewals_from_downloads_page( $transactions, $customer ) {
+
+	if ( it_exchange_is_page( 'downloads' ) ) {
+		$transactions = array_filter( $transactions, function ( \IT_Exchange_Transaction $transaction ) {
+
+			foreach ( $transaction->get_products() as $product ) {
+				if ( ! empty( $product['renewed_key'] ) ) {
+					return false;
+				}
+			}
+
+			return true;
+		} );
+	}
+
+	return $transactions;
+}
+
+add_filter( 'it_exchange_get_customer_transactions', 'ITELIC\exclude_renewals_from_downloads_page', 10, 2 );
+
 /* --------------------------------------------
 ============== Confirmation Email =============
 ----------------------------------------------- */
@@ -667,15 +697,15 @@ function register_account_licenses_page() {
 
 	// Profile
 	$options = array(
-		'slug'          => 'licenses',
-		'name'          => __( 'Licenses', Plugin::SLUG ),
-		'rewrite-rules' => array( 128, 'ITELIC\page_rewrites' ),
-		'url'           => 'it_exchange_get_core_page_urls',
-		'settings-name' => __( 'Licenses Page', Plugin::SLUG ),
-		'tip'           => __( 'A list of a customer\'s licenses.', Plugin::SLUG ),
-		'type'          => 'exchange',
-		'menu'          => true,
-		'optional'      => true,
+		'slug'            => 'licenses',
+		'name'            => __( 'Licenses', Plugin::SLUG ),
+		'rewrite - rules' => array( 128, 'ITELIC\page_rewrites' ),
+		'url'             => 'it_exchange_get_core_page_urls',
+		'settings - name' => __( 'Licenses Page', Plugin::SLUG ),
+		'tip'             => __( 'A list of a customer\'s licenses.', Plugin::SLUG ),
+		'type'            => 'exchange',
+		'menu'            => true,
+		'optional'        => true,
 	);
 
 	it_exchange_register_page( 'licenses', $options );
