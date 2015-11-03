@@ -33,8 +33,8 @@ to create demo products and releases.
 
 From the main plugin directory run the following commands:
 
-cd wp-cli
 ```
+cd wp-cli
 ./demo-data.sh <size>
 ```
 
@@ -63,3 +63,40 @@ Mandrill's HTTP API instead of `wp_mail()`. This should significantly improve th
 ## Help
 
 Formal documentation will be available at launch, but every admin page has a _Help_ tab with inline help for that screen.
+
+## HTTP API
+
+Licensing comes with an HTTP API for handling product updates, site activations and deactivations, etc... The API is
+authenticated using Basic Auth for providing license keys and activation records.
+
+A sample [Plugin Updater](https://github.com/iron-bound-designs/itelic-plugin-updater) and 
+[Theme Updater](https://github.com/iron-bound-designs/itelic-theme-updater) are provided. You can check these out
+to see how the API can be consumed.
+
+An issue describing the initial API can be seen [here](https://github.com/iron-bound-designs/exchange-addon-licensing/issues/8),
+but things have changed since the original specification.
+
+## WP CLI
+
+Licensing has robust support for WP CLI. Just about anything you can do from the admin UI can be done via the command line.
+All commands are under the main `itelic` command followed by a grouping command. 
+
+For example this following will list the first 20 license keys:
+
+```
+wp itelic key list
+```
+
+This will disable the license key `abcd-1234`
+
+```
+wp itelic key disable abcd-1234
+```
+
+You can create a new release from the command line like so. This will create a new _major_ release for the product with 
+an id of _7_. The new version will be _1.2_ and the file ID used for updates is _7_. This can be used in combination with the
+`wp media import` command to streamline how you release new updates for your software.
+
+```
+wp itelic release create --product=5 --version=1.2 --file=7 --type=major
+```
