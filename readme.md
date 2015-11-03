@@ -1,6 +1,6 @@
 # Licensing add-on for iThemes Exchange
 
-[![Build Status](https://magnum.travis-ci.com/iron-bound-designs/exchange-addon-licensing.svg?token=pfFazQh7W5eMQVveDHSd&branch=master)](https://magnum.travis-ci.com/iron-bound-designs/exchange-addon-licensing) [![codecov.io](http://codecov.io/github/iron-bound-designs/exchange-addon-licensing/coverage.svg?branch=master&token=l8Gr12jRC3)](http://codecov.io/github/iron-bound-designs/exchange-addon-licensing?branch=master)
+[![Build Status](https://travis-ci.org/iron-bound-designs/exchange-addon-licensing.svg?branch=master)](https://travis-ci.org/iron-bound-designs/exchange-addon-licensing) [![codecov.io](http://codecov.io/github/iron-bound-designs/exchange-addon-licensing/coverage.svg?branch=master&token=l8Gr12jRC3)](http://codecov.io/github/iron-bound-designs/exchange-addon-licensing?branch=master)
 
 Licensing for iThemes Exchange allows you to sell license keys for your digital products. Licensing is currently in beta.
 
@@ -112,19 +112,33 @@ wp itelic release create --product=5 --version=1.2 --file=7 --type=major
 
 ### Releases
 
+#### New
+
 ![New Release](/screenshots/new-release.png?raw=true "New Release")
+
+#### Overview
 
 ![Release Overview](/screenshots/release-overview.png?raw=true "Release Overview")
 
+#### Stats
+
 ![Release Stats](/screenshots/release-stats.png?raw=true "Release Stats")
+
+#### Notification Editor
 
 ![Release Notify](/screenshots/release-notify.png?raw=true "Release Notify")
 
 ### Reports
 
+#### Renewals
+
 ![Renewal Report](/screenshots/report-renewals.png?raw=true "Renewal Report")
 
+#### Licenses
+
 ![Licenses Report](/screenshots/report-licenses.png?raw=true "Licenses Report")
+
+#### Installed Versions
 
 ![Versions Report](/screenshots/report-versions.png?raw=true "Versions Report")
 
