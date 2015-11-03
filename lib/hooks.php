@@ -410,6 +410,22 @@ function delete_keys_and_releases_when_product_is_deleted( $post_id ) {
 
 add_action( 'before_delete_post', '\ITELIC\delete_keys_and_releases_when_product_is_deleted' );
 
+/**
+ * Delete a customer's license keys when the customer is deleted.
+ *
+ * @since 1.0
+ *
+ * @param int $id
+ */
+function delete_keys_when_customer_deleted( $id ) {
+
+	foreach ( itelic_get_keys( array( 'customer' => $id ) ) as $key ) {
+		$key->delete();
+	}
+}
+
+add_action( 'delete_user', 'ITELIC\delete_keys_when_customer_deleted' );
+
 /* --------------------------------------------
 ============= Display License Key =============
 ----------------------------------------------- */
