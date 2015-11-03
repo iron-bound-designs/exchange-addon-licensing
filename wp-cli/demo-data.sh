@@ -129,6 +129,6 @@ elif [ "$SIZE" = "giant" ] ; then
 	done
 
 else
-	echo "Usage setup.sh <size>"
+	echo "Usage demo-data.sh <size>"
 	exit 0
 fi
