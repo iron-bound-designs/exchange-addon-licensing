@@ -29,6 +29,7 @@ class CPT {
 	 */
 	public function add_hooks() {
 		add_action( 'init', array( $this, 'register' ) );
+		add_filter( 'post_updated_messages', array( $this, 'post_updated_messages' ) );
 		add_filter( 'parent_file', array( $this, 'set_exchange_to_parent' ) );
 		add_action( 'add_meta_boxes_' . self::TYPE, array( $this, 'add_meta_box' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts_and_styles' ) );
@@ -76,6 +77,34 @@ class CPT {
 		);
 
 		register_post_type( self::TYPE, $args );
+	}
+
+	/**
+	 * Override the post updated messages for renewal reminders.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $messages
+	 *
+	 * @return array
+	 */
+	public function post_updated_messages( $messages ) {
+
+		$messages[ self::TYPE ] = array(
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Renewal reminder updated.', Plugin::SLUG ),
+			2  => __( 'Custom field updated.' ),
+			3  => __( 'Custom field deleted.' ),
+			4  => __( 'Renewal reminder updated.' ),
+			5  => false,
+			6  => __( 'Renewal reminder published.', Plugin::SLUG ),
+			7  => __( 'Renewal reminder saved.', Plugin::SLUG ),
+			8  => __( 'Renewal reminder submitted.', Plugin::SLUG ),
+			9  => __( 'Renewal reminder scheduled.', Plugin::SLUG ),
+			10 => __( 'Renewal reminder draft updated.', Plugin::SLUG ),
+		);
+
+		return $messages;
 	}
 
 	/**
@@ -219,7 +248,7 @@ class CPT {
 	 *
 	 * @since 1.0
 	 *
-	 * @param string $title
+	 * @param string   $title
 	 * @param \WP_Post $post
 	 *
 	 * @return string
