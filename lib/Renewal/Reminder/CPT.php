@@ -141,6 +141,8 @@ class CPT {
 			$this,
 			'render_meta_box'
 		), self::TYPE, 'side' );
+
+		remove_meta_box( 'slugdiv', null, 'normal' );
 	}
 
 	/**
