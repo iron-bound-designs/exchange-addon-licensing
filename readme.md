@@ -103,3 +103,31 @@ an id of _7_. The new version will be _1.2_ and the file ID used for updates is 
 ```
 wp itelic release create --product=5 --version=1.2 --file=7 --type=major
 ```
+
+## Screenshots
+
+### Licenses
+
+![Edit License](/screenshots/edit-license.png?raw=true "Edit License")
+
+### Releases
+
+![New Release](/screenshots/new-release.png?raw=true "New Release")
+
+![Release Overview](/screenshots/release-overview.png?raw=true "Release Overview")
+
+![Release Stats](/screenshots/release-stats.png?raw=true "Release Stats")
+
+![Release Notify](/screenshots/release-notify.png?raw=true "Release Notify")
+
+### Reports
+
+![Renewal Report](/screenshots/report-renewals.png?raw=true "Renewal Report")
+
+![Licenses Report](/screenshots/report-licenses.png?raw=true "Licenses Report")
+
+![Versions Report](/screenshots/report-versions.png?raw=true "Versions Report")
+
+### Product
+
+![Edit Product](/screenshots/product.png?raw=true "Edit Product")
