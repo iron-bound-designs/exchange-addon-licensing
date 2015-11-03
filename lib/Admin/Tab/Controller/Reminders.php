@@ -9,6 +9,7 @@
  */
 
 namespace ITELIC\Admin\Tab\Controller;
+
 use ITELIC\Admin\Tab\Controller;
 use ITELIC\Admin\Tab\View\Reminders as Reminders_View;
 use ITELIC\Renewal\Reminder;
@@ -23,8 +24,24 @@ class Reminders extends Controller {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'views_edit-it_exchange_licrenew', array( $this, 'render' ) );
+		add_action( 'views_edit-it_exchange_licrenew', array( $this, 'override_views' ) );
 		add_action( 'edit_form_top', array( $this, 'tabs_on_edit' ) );
+	}
+
+	/**
+	 * Override the views to output our tab links.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $views
+	 *
+	 * @return array
+	 */
+	public function override_views( $views ) {
+
+		$this->render();
+
+		return $views;
 	}
 
 	/**
