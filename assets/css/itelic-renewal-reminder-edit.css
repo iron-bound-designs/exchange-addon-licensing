@@ -26,3 +26,23 @@
 #itelic-renewal-reminder-scheduling textarea {
 	line-height: 1.6;
 }
+
+#save-post {
+	margin-top: 10px;
+}
+
+#minor-publishing-actions {
+	padding: 0 10px 0 10px;
+}
+
+#minor-publishing-actions .spinner {
+	display: none;
+}
+
+#visibility {
+	display: none;
+}
+
+.curtime {
+	display: none;
+}
