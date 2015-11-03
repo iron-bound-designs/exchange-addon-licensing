@@ -60,6 +60,9 @@ license key is about to expire. Additionally, emails can be sent to customers wh
 version of your products. By installing the wpMandrill plugin, these notifications will be automatically sent out using
 Mandrill's HTTP API instead of `wp_mail()`. This should significantly improve the speed notifications are sent at.
 
+5. [Manual Purchases](https://ithemes.com/purchase/manual-purchases-add-on/). The Manual Purchases add-on allows you
+to manually create license keys if needed.
+
 ## Help
 
 Formal documentation will be available at launch, but every admin page has a _Help_ tab with inline help for that screen.
