@@ -44,6 +44,15 @@ class Factory {
 			$dispatch = $filtered;
 		}
 
+		/**
+		 * Fires when custom API endpoints should be registered with the dispatcher.
+		 *
+		 * @since 1.0
+		 *
+		 * @param \ITELIC\API\Dispatch $dispatch
+		 */
+		do_action( 'itelic_api_register_endpoints', $dispatch );
+
 		return $dispatch;
 	}
 }

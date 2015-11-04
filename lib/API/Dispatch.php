@@ -345,6 +345,17 @@ class Dispatch {
 	}
 
 	/**
+	 * Get all endpoints registered.
+	 *
+	 * @since 1.0
+	 *
+	 * @return Contracts\Endpoint[]
+	 */
+	public function get_endpoints() {
+		return $this->endpoints;
+	}
+
+	/**
 	 * Get the URL for an API Endpoint.
 	 *
 	 * @since 1.0
