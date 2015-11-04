@@ -423,7 +423,7 @@ class ListC extends Controller {
 	protected function prepare_key( Key $key ) {
 		$data = array(
 			'key'             => $key->get_key(),
-			'status'          => $key->get_status( true ),
+			'status'          => $key->get_status( false ),
 			'product'         => '<a href="' . get_edit_post_link( $key->get_product()->ID ) . '">' . $key->get_product()->post_title . '</a>',
 			'customer'        => $key->get_customer()->wp_user->display_name,
 			'expires'         => $key->get_expires() === null ? __( "Never", Plugin::SLUG ) : $key->get_expires()->format( get_option( 'date_format' ) ),

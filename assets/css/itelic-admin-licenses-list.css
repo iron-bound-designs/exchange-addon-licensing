@@ -9,3 +9,20 @@
 .product-filter-container .select2 {
 	margin-bottom: -10px;
 }
+
+.status-indicator::before {
+	content: "\f159";
+}
+
+
+.status-indicator.status-active {
+	color: #8cc53e;
+}
+
+.status-indicator.status-expired {
+	color: #ffba00;
+}
+
+.status-indicator.status-disabled {
+	color: #dd3d36;
+}

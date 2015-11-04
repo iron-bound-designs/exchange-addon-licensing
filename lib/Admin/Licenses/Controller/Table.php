@@ -141,6 +141,16 @@ class Table extends \WP_List_Table {
 		);
 	}
 
+	public function column_status( $item ) {
+
+		$status = $item['status'];
+
+		$labels = Key::get_statuses();
+
+		return sprintf( '<span class="dashicons dashicons-before status-indicator status-%s"></span> %s',
+			$status, $labels[ $status ] );
+	}
+
 	/**
 	 * Add an extend link to the expires column.
 	 *
