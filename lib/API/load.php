@@ -21,12 +21,12 @@ use ITELIC\API\Responder\JSON_Responder;
 
 $dispatch = new Dispatch();
 
-Dispatch::register_endpoint( new Activate(), 'activate' );
-Dispatch::register_endpoint( new Deactivate(), 'deactivate' );
-Dispatch::register_endpoint( new Info(), 'info' );
-Dispatch::register_endpoint( new Version(), 'version' );
-Dispatch::register_endpoint( new Download(), 'download' );
-Dispatch::register_endpoint( new Product(), 'product' );
-Dispatch::register_endpoint( new Changelog(), 'changelog' );
+$dispatch->register_endpoint( new Activate(), 'activate' );
+$dispatch->register_endpoint( new Deactivate(), 'deactivate' );
+$dispatch->register_endpoint( new Info(), 'info' );
+$dispatch->register_endpoint( new Version(), 'version' );
+$dispatch->register_endpoint( new Download(), 'download' );
+$dispatch->register_endpoint( new Product(), 'product' );
+$dispatch->register_endpoint( new Changelog(), 'changelog' );
 
 $dispatch->set_responder( new JSON_Responder() );

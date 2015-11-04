@@ -39,7 +39,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
-		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$this->assertEquals( $response, $dispatch->process( $mock_wp ) );
 	}
@@ -55,7 +55,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
-		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
@@ -79,8 +79,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
-		$dispatch = new \ITELIC\API\Dispatch();
-		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
@@ -112,7 +111,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
-		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
@@ -145,7 +144,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
-		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$this->assertEquals( $response, $dispatch->process( $mock_wp ) );
 	}
@@ -187,7 +186,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
-		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
@@ -220,7 +219,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
-		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();
@@ -269,7 +268,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
-		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$this->assertEquals( $response, $dispatch->process( $mock_wp ) );
 	}
@@ -310,7 +309,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
 		$dispatch = new \ITELIC\API\Dispatch();
-		\ITELIC\API\Dispatch::register_endpoint( $mock_endpoint, 'mock' );
+		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$response = $dispatch->process( $mock_wp );
 		$data     = $response->get_data();

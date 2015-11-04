@@ -38,7 +38,7 @@ class Dispatch {
 	/**
 	 * @var Endpoint[]
 	 */
-	private static $endpoints = array();
+	private $endpoints = array();
 
 	/**
 	 * Constructor.
@@ -123,7 +123,7 @@ class Dispatch {
 	 */
 	protected function process_action( $action ) {
 
-		if ( ! isset( self::$endpoints[ $action ] ) ) {
+		if ( ! isset( $this->endpoints[ $action ] ) ) {
 			$response = new Response( array(
 				'success' => false,
 				'error'   => array(
@@ -134,7 +134,7 @@ class Dispatch {
 
 			return $response;
 		} else {
-			$endpoint = self::$endpoints[ $action ];
+			$endpoint = $this->endpoints[ $action ];
 
 			if ( $endpoint instanceof Authenticatable ) {
 				if ( ! $this->handle_auth( $endpoint ) ) {
@@ -330,8 +330,8 @@ class Dispatch {
 	 * @param Endpoint $endpoint
 	 * @param string   $action Action this endpoint responds to.
 	 */
-	public static function register_endpoint( Endpoint $endpoint, $action ) {
-		self::$endpoints[ (string) $action ] = $endpoint;
+	public function register_endpoint( Endpoint $endpoint, $action ) {
+		$this->endpoints[ (string) $action ] = $endpoint;
 	}
 
 	/**
