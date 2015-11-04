@@ -32,6 +32,82 @@ class ITELIC_Test_Functions extends ITELIC_UnitTestCase {
 		);
 	}
 
+	public function test_key_not_generated_if_renewal() {
+
+		$num_queries = $GLOBALS['wpdb']->num_queries;
+
+		$mock_txn = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$mock_txn->method( 'get_products' )->willReturn( array(
+			array(
+				'renewed_key' => 'abcd-1234'
+			)
+		) );
+
+		\ITELIC\generate_keys_for_transaction( $mock_txn );
+
+		$this->assertEquals( $num_queries, $GLOBALS['wpdb']->num_queries );
+	}
+
+	public function test_key_not_generated_for_non_licensing_product() {
+
+		$num_queries = $GLOBALS['wpdb']->num_queries;
+
+		$mock_txn = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$mock_txn->method( 'get_products' )->willReturn( array(
+			array(
+				'product_id' => 1
+			)
+		) );
+
+		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
+		$mock_product->method( 'has_feature' )->willReturn( false );
+
+		WP_Mock::wpFunction( 'itelic_get_product', array(
+			'times'  => 1,
+			'args'   => array( 1 ),
+			'return' => $mock_product
+		) );
+
+		\ITELIC\generate_keys_for_transaction( $mock_txn );
+
+		$this->assertEquals( $num_queries, $GLOBALS['wpdb']->num_queries );
+	}
+
+	public function test_key_created_when_generating_keys_for_transaction() {
+
+		$mock_txn = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$mock_txn->method( 'get_products' )->willReturn( array(
+			array(
+				'product_id' => 1
+			)
+		) );
+
+		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
+		$mock_product->method( 'has_feature' )->willReturn( true );
+
+		$mock_customer = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
+
+		WP_Mock::wpFunction( 'itelic_get_product', array(
+			'times'  => 1,
+			'args'   => array( 1 ),
+			'return' => $mock_product
+		) );
+
+		WP_Mock::wpFunction( 'it_exchange_get_transaction_customer', array(
+			'times'  => 1,
+			'args'   => array( $mock_txn ),
+			'return' => $mock_customer
+		) );
+
+		WP_Mock::wpFunction( 'ITELIC\generate_key_for_transaction_product', array(
+			'times'  => 1,
+			'args'   => array( $mock_txn, $mock_product, \WP_Mock\Functions::type( 'ITELIC\Key\Factory' ), '' ),
+			'return' => true
+		) );
+
+		$this->assertTrue( \ITELIC\generate_keys_for_transaction( $mock_txn ) );
+	}
+
 	public function test_generate_key_for_transaction_product_simple_activation_limits() {
 
 		$product     = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
