@@ -493,26 +493,33 @@ function get_notification_strategy() {
  */
 function count_keys( $status = '' ) {
 
-	/** @var $wpdb \wpdb */
-	global $wpdb;
+	$counts = wp_cache_get( 'itelic-key-counts' );
 
-	$tn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
+	if ( ! is_array( $counts ) ) {
 
-	$raw = $wpdb->get_results(
-		"SELECT COUNT(1) AS C, k.status AS S FROM $tn k GROUP BY k.status"
-	);
+		/** @var $wpdb \wpdb */
+		global $wpdb;
 
-	$counts = array();
+		$tn = Manager::get( 'itelic-keys' )->get_table_name( $wpdb );
 
-	foreach ( $raw as $result ) {
-		$counts[ $result->S ] = $result->C;
+		$raw = $wpdb->get_results(
+			"SELECT COUNT(1) AS C, k.status AS S FROM $tn k GROUP BY k.status"
+		);
+
+		$counts = array();
+
+		foreach ( $raw as $result ) {
+			$counts[ $result->S ] = $result->C;
+		}
+
+		$counts = wp_parse_args( $counts, array(
+			Key::ACTIVE   => 0,
+			Key::DISABLED => 0,
+			Key::EXPIRED  => 0
+		) );
+
+		wp_cache_set( 'itelic-key-counts', $counts );
 	}
-
-	$counts = wp_parse_args( $counts, array(
-		Key::ACTIVE   => 0,
-		Key::DISABLED => 0,
-		Key::EXPIRED  => 0
-	) );
 
 	if ( $status ) {
 		return $counts[ $status ];

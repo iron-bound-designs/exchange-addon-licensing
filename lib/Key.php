@@ -429,8 +429,21 @@ class Key extends Model implements API\Serializable {
 			throw new \InvalidArgumentException( __( "Invalid value for key status.", Plugin::SLUG ) );
 		}
 
+		$old_status = $this->status;
+
 		$this->status = $status;
 		$this->update( 'status', $this->get_status() );
+
+		/**
+		 * Fires when a key's status is transitioned.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Key    $this
+		 * @param string $old_status
+		 * @param string $status
+		 */
+		do_action( 'itelic_transition_key_status', $this, $old_status, $status );
 	}
 
 	/**

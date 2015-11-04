@@ -321,6 +321,22 @@ add_action( 'itelic_deactivate_activation', 'ITELIC\clear_key_active_count_cache
 add_action( 'itelic_reactivate_activation', 'ITELIC\clear_key_active_count_cache' );
 add_action( 'itelic_delete_activation', 'ITELIC\clear_key_active_count_cache' );
 
+/**
+ * Clear our cache of the key status counts.
+ *
+ * @since 1.0
+ *
+ * @see   \ITELIC\count_keys()
+ */
+function clear_key_status_count_cache() {
+
+	wp_cache_delete( 'itelic-key-counts' );
+}
+
+add_action( 'itelic_create_key', 'ITELIC\clear_key_status_count_cache' );
+add_action( 'itelic_delete_key', 'ITELIC\clear_key_status_count_cache' );
+add_action( 'itelic_transition_key_status', 'ITELIC\clear_key_status_count_cache' );
+
 
 /* --------------------------------------------
 =============== Exchange Hooks ================
