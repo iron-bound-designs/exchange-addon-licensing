@@ -331,7 +331,17 @@ class Dispatch {
 	 * @param string   $action Action this endpoint responds to.
 	 */
 	public function register_endpoint( Endpoint $endpoint, $action ) {
-		$this->endpoints[ (string) $action ] = $endpoint;
+
+		if ( isset( $this->endpoints[ $action ] ) ) {
+
+			$original = $this->endpoints[ $action ];
+
+			if ( ! $endpoint instanceof $original ) {
+				throw new \InvalidArgumentException( "The '{$action}' has already been registered. Endpoint class must be a subclass." );
+			}
+		}
+
+		$this->endpoints[ $action ] = $endpoint;
 	}
 
 	/**
