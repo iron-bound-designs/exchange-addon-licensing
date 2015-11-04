@@ -153,6 +153,7 @@
 					uploadLabel.text(file.name);
 				}
 
+				$(".dz-message").css('display', 'none');
 				uploadProgress.show();
 			});
 
