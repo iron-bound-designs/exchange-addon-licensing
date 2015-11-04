@@ -42,6 +42,11 @@ abstract class View {
 	public function begin() {
 		echo '<div class="wrap">';
 		echo '<style type="text/css">
+
+			h3.nav-tab-wrapper {
+				margin-bottom: 1em;
+			}
+
 			@media screen and (max-width: 480px) {
 
 				h3.nav-tab-wrapper {

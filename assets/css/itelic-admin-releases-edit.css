@@ -212,6 +212,7 @@
 	font-size: 24px;
 	margin: 0;
 	padding: 0;
+	font-weight: 400;
 }
 
 #release-details .header-block .product-name::after {
