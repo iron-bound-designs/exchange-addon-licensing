@@ -50,6 +50,19 @@ class Activate extends Endpoint implements Authenticatable {
 			throw new Exception( __( "Activation location is required.", Plugin::SLUG ), self::CODE_NO_LOCATION );
 		}
 
+		/**
+		 * Fires when the activate API endpoint is being validated.
+		 *
+		 * This occurs after authentication has taken place. You can return an error response by throwing an
+		 * \ITELIC\API\Exception in your callback.
+		 *
+		 * @since 1.0
+		 *
+		 * @param \ArrayAccess $get
+		 * @param \ArrayAccess $post
+		 */
+		do_action( 'itelic_api_validate_activate_request', $get, $post );
+
 		$location = sanitize_text_field( $post['location'] );
 
 		$version = isset( $post['version'] ) ? $post['version'] : '';
@@ -90,6 +103,17 @@ class Activate extends Endpoint implements Authenticatable {
 		catch ( \OverflowException $e ) {
 			throw new Exception( $e->getMessage(), Endpoint::CODE_MAX_ACTIVATIONS, $e );
 		}
+
+		/**
+		 * Fires when an activation is activated via the HTTP API.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation   $activation
+		 * @param \ArrayAccess $get
+		 * @param \ArrayAccess $post
+		 */
+		do_action( 'itelic_api_activate_key', $activation, $get, $post );
 
 		return new Response( array(
 			'success' => true,
