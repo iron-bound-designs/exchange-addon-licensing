@@ -11,3 +11,23 @@
 .product-filter-container .select2 {
 	margin-left: -8px;
 }
+
+.status-indicator::before {
+	content: "\f159";
+}
+
+.status-indicator.status-active {
+	color: #8cc53e;
+}
+
+.status-indicator.status-paused {
+	color: #ffba00;
+}
+
+.status-indicator.status-draft {
+	color: #454545;
+}
+
+.status-indicator.status-archived {
+	color: #3F88C5;
+}

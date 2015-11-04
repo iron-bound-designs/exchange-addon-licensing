@@ -141,6 +141,13 @@ class Table extends \WP_List_Table {
 		);
 	}
 
+	/**
+	 * Display the column status.
+	 *
+	 * @param $item array
+	 *
+	 * @return string
+	 */
 	public function column_status( $item ) {
 
 		$status = $item['status'];

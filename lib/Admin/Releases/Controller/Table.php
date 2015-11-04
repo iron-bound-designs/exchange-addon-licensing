@@ -140,6 +140,23 @@ class Table extends \WP_List_Table {
 	}
 
 	/**
+	 * Display the column status.
+	 *
+	 * @param $item array
+	 *
+	 * @return string
+	 */
+	public function column_status( $item ) {
+
+		$status = $item['status'];
+
+		$labels = Release::get_statuses();
+
+		return sprintf( '<span class="dashicons dashicons-before status-indicator status-%s"></span> %s',
+			$status, $labels[ $status ] );
+	}
+
+	/**
 	 * REQUIRED! This method dictates the table's columns and titles. This
 	 * should return an array where the key is the column slug (and class) and
 	 * the value is the column's title text.
