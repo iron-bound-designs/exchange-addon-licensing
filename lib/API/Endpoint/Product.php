@@ -58,7 +58,7 @@ class Product extends Endpoint implements Authenticatable {
 
 		$release = $this->key->get_product()->get_latest_release_for_activation( $this->activation );
 
-		$product = array(
+		$info = array(
 			'id'              => $this->key->get_product()->ID,
 			'name'            => $this->key->get_product()->post_title,
 			'description'     => $this->key->get_product()->get_feature( 'description' ),
@@ -75,11 +75,21 @@ class Product extends Endpoint implements Authenticatable {
 			'sections'        => array()
 		);
 
+		/**
+		 * Filter the product info returned by the API.
+		 *
+		 * @since 1.0
+		 *
+		 * @param array   $info
+		 * @param Product $product
+		 */
+		$info = apply_filters( 'itelic_api_product_info', $info, $this->key->get_product() );
+
 		return new Response( array(
 			'success' => true,
 			'body'    => array(
 				'list' => array(
-					$this->key->get_product()->ID => $product
+					$this->key->get_product()->ID => $info
 				)
 			)
 		) );
