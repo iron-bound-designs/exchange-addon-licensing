@@ -302,6 +302,27 @@ function set_last_updated_value_in_readme_on_pause( Release $release, Release $p
 add_action( 'itelic_pause_release', '\ITELIC\set_last_updated_value_in_readme_on_pause', 10, 2 );
 
 /* --------------------------------------------
+==================== Cache ====================
+----------------------------------------------- */
+
+/**
+ * Clear a key's active count cache.
+ *
+ * @since 1.0
+ *
+ * @param Activation $activation
+ */
+function clear_key_active_count_cache( Activation $activation ) {
+	wp_cache_delete( $activation->get_key()->get_key(), 'itelic-key-active-count' );
+}
+
+add_action( 'itelic_create_activation', 'ITELIC\clear_key_active_count_cache' );
+add_action( 'itelic_deactivate_activation', 'ITELIC\clear_key_active_count_cache' );
+add_action( 'itelic_reactivate_activation', 'ITELIC\clear_key_active_count_cache' );
+add_action( 'itelic_delete_activation', 'ITELIC\clear_key_active_count_cache' );
+
+
+/* --------------------------------------------
 =============== Exchange Hooks ================
 ----------------------------------------------- */
 

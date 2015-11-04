@@ -453,12 +453,23 @@ class Key extends Model implements API\Serializable {
 	 */
 	public function get_active_count() {
 
-		$db = Manager::make_simple_query_object( 'itelic-activations' );
+		$found = null;
 
-		return $db->count( array(
-			'lkey'   => $this->get_key(),
-			'status' => Activation::ACTIVE
-		) );
+		$count = wp_cache_get( $this->get_key(), 'itelic-key-active-count', false, $found );
+
+		if ( $found === false ) {
+
+			$db = Manager::make_simple_query_object( 'itelic-activations' );
+
+			$count = $db->count( array(
+				'lkey'   => $this->get_key(),
+				'status' => Activation::ACTIVE
+			) );
+
+			wp_cache_set( $this->get_key(), $count, 'itelic-key-active-count' );
+		}
+
+		return $count;
 	}
 
 	/**
