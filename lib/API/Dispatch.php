@@ -106,40 +106,53 @@ class Dispatch {
 		$action = isset( $wp->query_vars[ self::TAG ] ) ? $wp->query_vars[ self::TAG ] : '';
 
 		if ( $action ) {
-
-			if ( ! isset( self::$endpoints[ $action ] ) ) {
-				$response = new Response( array(
-					'success' => false,
-					'error'   => array(
-						'code'    => 404,
-						'message' => __( "API Action Not Found", Plugin::SLUG )
-					)
-				), 404 );
-
-				return $response;
-			} else {
-				$endpoint = self::$endpoints[ $action ];
-
-				if ( $endpoint instanceof Authenticatable ) {
-					if ( ! $this->handle_auth( $endpoint ) ) {
-						$response = $this->generate_auth_missing( $endpoint );
-					}
-				}
-
-				if ( ! isset( $response ) ) {
-					try {
-						$response = $endpoint->serve( new \ArrayObject( $_GET ), new \ArrayObject( $_POST ) );
-					}
-					catch ( \Exception $e ) {
-						$response = $this->generate_response_from_exception( $e );
-					}
-				}
-
-				return $response;
-			}
+			return $this->process_action( $action );
 		}
 
 		return null;
+	}
+
+	/**
+	 * Process an actual API action.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $action
+	 *
+	 * @return Response
+	 */
+	protected function process_action( $action ) {
+
+		if ( ! isset( self::$endpoints[ $action ] ) ) {
+			$response = new Response( array(
+				'success' => false,
+				'error'   => array(
+					'code'    => 404,
+					'message' => __( "API Action Not Found", Plugin::SLUG )
+				)
+			), 404 );
+
+			return $response;
+		} else {
+			$endpoint = self::$endpoints[ $action ];
+
+			if ( $endpoint instanceof Authenticatable ) {
+				if ( ! $this->handle_auth( $endpoint ) ) {
+					$response = $this->generate_auth_missing( $endpoint );
+				}
+			}
+
+			if ( ! isset( $response ) ) {
+				try {
+					$response = $endpoint->serve( new \ArrayObject( $_GET ), new \ArrayObject( $_POST ) );
+				}
+				catch ( \Exception $e ) {
+					$response = $this->generate_response_from_exception( $e );
+				}
+			}
+
+			return $response;
+		}
 	}
 
 	/**
