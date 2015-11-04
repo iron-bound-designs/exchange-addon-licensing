@@ -79,6 +79,7 @@ class ITELIC_Test_HTTP_API_Dispatch extends ITELIC_UnitTestCase {
 		$mock_wp = $this->getMockBuilder( '\WP' )->disableOriginalConstructor()->getMock();
 		$mock_wp->query_vars = array( 'itelic_api' => 'mock' );
 
+		$dispatch = new \ITELIC\API\Dispatch();
 		$dispatch->register_endpoint( $mock_endpoint, 'mock' );
 
 		$response = $dispatch->process( $mock_wp );
