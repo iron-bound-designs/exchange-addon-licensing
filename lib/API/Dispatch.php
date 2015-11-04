@@ -41,9 +41,9 @@ class Dispatch {
 	private $endpoints = array();
 
 	/**
-	 * Constructor.
+	 * Register WordPress hooks.
 	 */
-	public function __construct() {
+	public function add_hooks() {
 		add_action( 'init', array( $this, 'register_rewrites' ) );
 		add_action( 'parse_request', array( $this, 'dispatch' ) );
 	}

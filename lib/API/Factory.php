@@ -1,9 +1,49 @@
 <?php
 /**
- * File Description
+ * Factory for generating an API dispatcher.
  *
  * @author    Iron Bound Designs
  * @since     1.0
  * @license   AGPL
  * @copyright Iron Bound Designs, 2015.
  */
+
+namespace ITELIC\API;
+
+use ITELIC\API\Responder\JSON_Responder;
+
+/**
+ * Class Factory
+ * @package ITELIC\API
+ */
+class Factory {
+
+	/**
+	 * Make an API Dispatcher.
+	 *
+	 * @return \ITELIC\API\Dispatch
+	 */
+	public function make() {
+
+		$dispatch = new Dispatch();
+		$dispatch->set_responder( new JSON_Responder() );
+
+		/**
+		 * Filter the API dispatcher.
+		 *
+		 * If the filtered dispatcher is not a subclass of \ITELIC\API\Dispatch,
+		 * the original dispatcher will be used.
+		 *
+		 * @since 1.0
+		 *
+		 * @param \ITELIC\API\Dispatch $dispatch
+		 */
+		$filtered = apply_filters( 'itelic_api_dispatcher', $dispatch );
+
+		if ( $filtered instanceof Dispatch ) {
+			$dispatch = $filtered;
+		}
+
+		return $dispatch;
+	}
+}
