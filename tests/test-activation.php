@@ -275,4 +275,35 @@ class ITELIC_Test_Activation extends ITELIC_UnitTestCase {
 		$this->assertTrue( $a->delete_meta( 'test' ) );
 		$this->assertEmpty( $a->get_meta( 'test', true ) );
 	}
+
+	/**
+	 * @dataProvider _api_data_provider
+	 */
+	public function test_api_data( $data_key ) {
+
+		/** @var Activation $a */
+		$a = $this->activation_factory->create_and_get( array(
+			'location' => 'loc.com',
+			'key'      => $this->key_factory->create_and_get( array(
+				'customer' => 1,
+				'product'  => $this->product_factory->create()
+			) )
+		) );
+
+		$data = $a->get_api_data();
+
+		$this->assertArrayHasKey( $data_key, $data );
+	}
+
+	public function _api_data_provider() {
+		return array(
+			array( 'id' ),
+			array( 'activation' ),
+			array( 'deactivation' ),
+			array( 'location' ),
+			array( 'status' ),
+			array( 'track' ),
+			array( 'key' ),
+		);
+	}
 }

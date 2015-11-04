@@ -391,4 +391,32 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 
 		$key->set_status( 'garbage' );
 	}
+
+	/**
+	 * @dataProvider _api_data_provider
+	 */
+	public function test_api_data( $data_key ) {
+
+		/** @var Key $key */
+		$key = $this->key_factory->create_and_get( array(
+			'product'  => $this->product_factory->create(),
+			'customer' => 1,
+		) );
+
+		$data = $key->get_api_data();
+
+		$this->assertArrayHasKey( $data_key, $data );
+	}
+
+	public function _api_data_provider() {
+		return array(
+			array( 'transaction' ),
+			array( 'product' ),
+			array( 'customer' ),
+			array( 'status' ),
+			array( 'max' ),
+			array( 'expires' ),
+			array( 'activations' ),
+		);
+	}
 }
