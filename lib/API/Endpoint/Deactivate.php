@@ -51,6 +51,19 @@ class Deactivate extends Endpoint implements Authenticatable {
 			throw new Exception( __( "Activation ID is required.", Plugin::SLUG ), self::CODE_NO_LOCATION_ID );
 		}
 
+		/**
+		 * Fires when the deactivate API endpoint is being validated.
+		 *
+		 * This occurs after authentication has taken place. You can return an error response by throwing an
+		 * \ITELIC\API\Exception in your callback.
+		 *
+		 * @since 1.0
+		 *
+		 * @param \ArrayAccess $get
+		 * @param \ArrayAccess $post
+		 */
+		do_action( 'itelic_api_validate_deactivate_request', $get, $post );
+
 		$activation_id = absint( $post['id'] );
 
 		$activation = itelic_get_activation( $activation_id );
@@ -64,6 +77,17 @@ class Deactivate extends Endpoint implements Authenticatable {
 		} else {
 			throw new Exception( __( "Activation record could not be found.", Plugin::SLUG ), self::CODE_INVALID_LOCATION );
 		}
+
+		/**
+		 * Fires when an activation is deactivated via the HTTP API.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation   $activation
+		 * @param \ArrayAccess $get
+		 * @param \ArrayAccess $post
+		 */
+		do_action( 'itelic_api_deactivate_key', $activation, $get, $post );
 
 		return new Response( array(
 			'success' => true,
