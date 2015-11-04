@@ -87,17 +87,30 @@ class Version extends Endpoint implements Authenticatable {
 			}
 		}
 
+		$info = array(
+			'version'        => $release->get_version(),
+			'package'        => \ITELIC\generate_download_link( $this->activation ),
+			'expires'        => $expires->format( \DateTime::ISO8601 ),
+			'upgrade_notice' => $notice,
+			'type'           => $release->get_type()
+		);
+
+		/**
+		 * Filter the version info returned by the API.
+		 *
+		 * @since 1.0
+		 *
+		 * @param array   $info
+		 * @param Key     $key
+		 * @param Product $product
+		 */
+		$info = apply_filters( 'itelic_api_version_info', $info, $this->key, $this->key->get_product() );
+
 		return new Response( array(
 			'success' => true,
 			'body'    => array(
 				'list' => array(
-					$this->key->get_product()->ID => array(
-						'version'        => $release->get_version(),
-						'package'        => \ITELIC\generate_download_link( $this->activation ),
-						'expires'        => $expires->format( \DateTime::ISO8601 ),
-						'upgrade_notice' => $notice,
-						'type'           => $release->get_type()
-					)
+					$this->key->get_product()->ID => $info
 				)
 			)
 		) );
