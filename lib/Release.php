@@ -577,6 +577,8 @@ class Release extends Model {
 			throw new \InvalidArgumentException( "Invalid status." );
 		}
 
+		$old_status = $this->status;
+
 		if ( $this->status == self::STATUS_DRAFT || $this->status == self::STATUS_PAUSED && $status == self::STATUS_ACTIVE ) {
 			$this->activate();
 		}
@@ -591,6 +593,17 @@ class Release extends Model {
 
 		$this->status = $status;
 		$this->update( 'status', $status );
+
+		/**
+		 * Fires when a releases's status is transitioned.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Release $this
+		 * @param string  $old_status
+		 * @param string  $status
+		 */
+		do_action( 'itelic_transition_release_status', $this, $old_status, $status );
 	}
 
 	/**

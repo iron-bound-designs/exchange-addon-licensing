@@ -541,27 +541,34 @@ function count_keys( $status = '' ) {
  */
 function count_releases( $status = '' ) {
 
-	/** @var $wpdb \wpdb */
-	global $wpdb;
+	$counts = wp_cache_get( 'itelic-release-counts' );
 
-	$tn = Manager::get( 'itelic-releases' )->get_table_name( $wpdb );
+	if ( ! is_array( $counts ) ) {
 
-	$raw = $wpdb->get_results(
-		"SELECT COUNT(1) AS C, r.status AS S FROM $tn r GROUP BY r.status"
-	);
+		/** @var $wpdb \wpdb */
+		global $wpdb;
 
-	$counts = array();
+		$tn = Manager::get( 'itelic-releases' )->get_table_name( $wpdb );
 
-	foreach ( $raw as $result ) {
-		$counts[ $result->S ] = $result->C;
+		$raw = $wpdb->get_results(
+			"SELECT COUNT(1) AS C, r.status AS S FROM $tn r GROUP BY r.status"
+		);
+
+		$counts = array();
+
+		foreach ( $raw as $result ) {
+			$counts[ $result->S ] = $result->C;
+		}
+
+		$counts = wp_parse_args( $counts, array(
+			Release::STATUS_ACTIVE   => 0,
+			Release::STATUS_ARCHIVED => 0,
+			Release::STATUS_DRAFT    => 0,
+			Release::STATUS_PAUSED   => 0,
+		) );
+
+		wp_cache_set( 'itelic-release-counts', $counts );
 	}
-
-	$counts = wp_parse_args( $counts, array(
-		Release::STATUS_ACTIVE   => 0,
-		Release::STATUS_ARCHIVED => 0,
-		Release::STATUS_DRAFT    => 0,
-		Release::STATUS_PAUSED   => 0,
-	) );
 
 	if ( $status ) {
 		return $counts[ $status ];

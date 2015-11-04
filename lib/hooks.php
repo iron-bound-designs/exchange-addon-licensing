@@ -337,6 +337,22 @@ add_action( 'itelic_create_key', 'ITELIC\clear_key_status_count_cache' );
 add_action( 'itelic_delete_key', 'ITELIC\clear_key_status_count_cache' );
 add_action( 'itelic_transition_key_status', 'ITELIC\clear_key_status_count_cache' );
 
+/**
+ * Clear our cache of the release status counts.
+ *
+ * @since 1.0
+ *
+ * @see   \ITELIC\count_releases()
+ */
+function clear_release_status_count_cache() {
+
+	wp_cache_delete( 'itelic-release-counts' );
+}
+
+add_action( 'itelic_create_release', 'ITELIC\clear_release_status_count_cache' );
+add_action( 'itelic_delete_release', 'ITELIC\clear_release_status_count_cache' );
+add_action( 'itelic_transition_release_status', 'ITELIC\clear_release_status_count_cache' );
+
 
 /* --------------------------------------------
 =============== Exchange Hooks ================
