@@ -23,7 +23,13 @@ use ITELIC\Purchase_Requirement\Renew_Key;
  * @param int $transaction_id
  */
 function on_add_transaction_generate_license_keys( $transaction_id ) {
-	generate_keys_for_transaction( it_exchange_get_transaction( $transaction_id ) );
+
+	try {
+		generate_keys_for_transaction( it_exchange_get_transaction( $transaction_id ) );
+	}
+	catch ( \Exception $e ) {
+		it_exchange_add_message( 'error', $e->getMessage() );
+	}
 }
 
 add_action( 'it_exchange_add_transaction_success', 'ITELIC\on_add_transaction_generate_license_keys' );
@@ -145,7 +151,12 @@ function renew_key_on_renewal_purchase( $transaction_id ) {
 			$key = itelic_get_key( $product['renewed_key'] );
 
 			if ( $key ) {
-				$key->renew( $transaction );
+				try {
+					$key->renew( $transaction );
+				}
+				catch ( \UnexpectedValueException $e ) {
+					it_exchange_add_message( 'error', $e->getMessage() );
+				}
 			}
 		}
 	}
