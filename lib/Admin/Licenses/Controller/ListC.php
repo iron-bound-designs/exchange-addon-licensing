@@ -156,6 +156,7 @@ class ListC extends Controller {
 				 * @param Key[]  $keys
 				 */
 				do_action( 'itelic_licenses_list_table_process_bulk_action', $action, $keys );
+
 				return '';
 		}
 	}
@@ -247,7 +248,8 @@ class ListC extends Controller {
 
 		wp_send_json_success( array(
 			'expires' => $key->get_expires() === null ? __( "Forever", Plugin::SLUG ) : $key->get_expires()->format( get_option( 'date_format' ) ),
-			'status'  => $key->get_status( true )
+			'status'  => sprintf( '<span class="dashicons dashicons-before status-indicator status-%s"></span> %s',
+				$key->get_status(), $key->get_status( true ) )
 		) );
 	}
 

@@ -30,7 +30,7 @@ jQuery(document).ready(function ($) {
 			} else {
 				var tr = link.closest('tr');
 				$(".expires-date", tr).text(response.data.expires);
-				$(".status", tr).text(response.data.status);
+				$(".status", tr).html(response.data.status);
 			}
 		});
 	});

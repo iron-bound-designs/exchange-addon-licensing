@@ -12,6 +12,9 @@
 
 .status-indicator::before {
 	content: "\f159";
+	font-size: .8em;
+	line-height: .8;
+	vertical-align: middle;
 }
 
 
