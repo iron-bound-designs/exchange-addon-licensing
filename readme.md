@@ -56,7 +56,7 @@ and unlimited license types.
 your products. However, all payment gateways should work.
 
 4. [wpMandrill](https://wordpress.org/plugins/wpmandrill/). Licensing sends renewal reminders to your customers when their
-license key is about to expire. Additionally, emails can be sent to customers who have not yet purchased to the latest
+license key is about to expire. Additionally, emails can be sent to customers who have not yet updated to the latest
 version of your products. By installing the wpMandrill plugin, these notifications will be automatically sent out using
 Mandrill's HTTP API instead of `wp_mail()`. This should significantly improve the speed notifications are sent at.
 
