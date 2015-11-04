@@ -77,7 +77,18 @@ class Dispatch {
 		$response = $this->process( $wp );
 
 		if ( $response ) {
-			echo $this->responder->respond( $response );
+
+			/**
+			 * Filter the API response before passing to the responder.
+			 *
+			 * @since 1.0
+			 *
+			 * @param Response $response
+			 * @param \WP      $wp
+			 */
+			$response = apply_filters( 'itelic_api_response', $response, $wp );
+
+			$this->send_response( $response );
 
 			die();
 		}
@@ -142,14 +153,24 @@ class Dispatch {
 	 */
 	protected function send_response( Response $response ) {
 
-		if ( is_null( $this->responder ) ) {
+		/**
+		 * Filter the responder being used when processing an API request.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Responder $responder
+		 * @param Response  $response
+		 */
+		$responder = apply_filters( 'itelic_api_responder', $this->responder, $response );
+
+		if ( is_null( $responder ) ) {
 			status_header( 500 );
 			echo 'An unexpected error occurred.';
 
 			die();
 		}
 
-		echo $this->responder->respond( $response );
+		echo $responder->respond( $response );
 
 		die();
 	}
