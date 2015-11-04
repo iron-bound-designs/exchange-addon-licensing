@@ -570,7 +570,8 @@ class Activation extends Model implements API\Serializable {
 			'deactivation' => ( $d = $this->get_deactivation() ) === null ? "" : $d->format( \DateTime::ISO8601 ),
 			'location'     => $this->get_location(),
 			'status'       => $this->get_status(),
-			'track'        => $this->get_meta( 'track', true ) ? $this->get_meta( 'track', true ) : 'stable'
+			'track'        => $this->get_meta( 'track', true ) ? $this->get_meta( 'track', true ) : 'stable',
+			'key'          => $this->get_key()->get_key()
 		);
 
 		/**
