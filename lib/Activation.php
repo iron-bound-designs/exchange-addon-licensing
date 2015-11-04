@@ -573,6 +573,16 @@ class Activation extends Model implements API\Serializable {
 			'track'        => $this->get_meta( 'track', true ) ? $this->get_meta( 'track', true ) : 'stable'
 		);
 
+		/**
+		 * Filter the data used in the API for showing info about an activation.
+		 *
+		 * @since 1.0
+		 *
+		 * @param array $data
+		 * @param Key   $this
+		 */
+		$data = apply_filters( 'itelic_activation_api_data', $data, $this );
+
 		return $data;
 	}
 

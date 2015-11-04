@@ -560,6 +560,16 @@ class Key extends Model implements API\Serializable {
 			)
 		);
 
+		/**
+		 * Filter the data used in the API for showing info about a license key.
+		 *
+		 * @since 1.0
+		 *
+		 * @param array $data
+		 * @param Key   $this
+		 */
+		$data = apply_filters( 'itelic_key_api_data', $data, $this );
+
 		return $data;
 	}
 
