@@ -824,16 +824,27 @@ class Release extends Model {
 			return 0;
 		}
 
-		$query = new Activations( array(
-			'status'       => Activation::ACTIVE,
-			'product'      => $this->get_product()->ID,
-			'activation'   => array(
-				'before' => $this->get_start_date()->format( 'Y-m-d H:i:s' )
-			),
-			'return_value' => 'count'
-		) );
+		$found = null;
 
-		return $query->get_total_items();
+		$total = wp_cache_get( $this->get_pk(), 'itelic-release-active-activations', false, $found );
+
+		if ( $found === false ) {
+			
+			$query = new Activations( array(
+				'status'       => Activation::ACTIVE,
+				'product'      => $this->get_product()->ID,
+				'activation'   => array(
+					'before' => $this->get_start_date()->format( 'Y-m-d H:i:s' )
+				),
+				'return_value' => 'count'
+			) );
+
+			$total = $query->get_total_items();
+
+			wp_cache_set( $this->get_pk(), $total, 'itelic-release-active-activations' );
+		}
+
+		return $total;
 	}
 
 	/**

@@ -338,9 +338,22 @@ class Activation extends Model implements API\Serializable {
 			throw new \InvalidArgumentException( "Invalid status." );
 		}
 
+		$old_status = $this->status;
+
 		$this->status = $status;
 
 		$this->update( 'status', $status );
+
+		/**
+		 * Fires when an activation's status is transitioned.
+		 *
+		 * @since 1.0
+		 *
+		 * @param Activation $this
+		 * @param string     $old_status
+		 * @param string     $status
+		 */
+		do_action( 'itelic_transition_activation_status', $this, $old_status, $status );
 	}
 
 	/**

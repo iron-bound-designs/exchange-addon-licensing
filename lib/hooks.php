@@ -312,14 +312,24 @@ add_action( 'itelic_pause_release', '\ITELIC\set_last_updated_value_in_readme_on
  *
  * @param Activation $activation
  */
-function clear_key_active_count_cache( Activation $activation ) {
+function clear_key_active_count_and_total_activation_count_cache( Activation $activation ) {
+	
 	wp_cache_delete( $activation->get_key()->get_key(), 'itelic-key-active-count' );
+
+	$releases = itelic_get_releases( array(
+		'product' => $activation->get_key()->get_product()->ID,
+		'status'  => array( Release::STATUS_ACTIVE, Release::STATUS_PAUSED )
+	) );
+
+	foreach ( $releases as $release ) {
+		wp_cache_delete( $release->get_pk(), 'itelic-release-active-activations' );
+	}
 }
 
-add_action( 'itelic_create_activation', 'ITELIC\clear_key_active_count_cache' );
-add_action( 'itelic_deactivate_activation', 'ITELIC\clear_key_active_count_cache' );
-add_action( 'itelic_reactivate_activation', 'ITELIC\clear_key_active_count_cache' );
-add_action( 'itelic_delete_activation', 'ITELIC\clear_key_active_count_cache' );
+add_action( 'itelic_create_activation', 'ITELIC\clear_key_active_count_and_total_activation_count_cache' );
+add_action( 'itelic_deactivate_activation', 'ITELIC\clear_key_active_count_and_total_activation_count_cache' );
+add_action( 'itelic_reactivate_activation', 'ITELIC\clear_key_active_count_and_total_activation_count_cache' );
+add_action( 'itelic_delete_activation', 'ITELIC\clear_key_active_count_and_total_activation_count_cache' );
 
 /**
  * Clear our cache of the key status counts.
