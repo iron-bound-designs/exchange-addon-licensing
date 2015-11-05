@@ -39,6 +39,11 @@ class Dispatch implements LoggerAwareInterface {
 	private $logger;
 
 	/**
+	 * @var \WP_User|null
+	 */
+	private $current_user;
+
+	/**
 	 * @var string
 	 */
 	const TAG = 'itelic_api';
@@ -139,7 +144,8 @@ class Dispatch implements LoggerAwareInterface {
 				'action'   => $action,
 				'get'      => $_GET,
 				'post'     => $_POST,
-				'response' => $response
+				'response' => $response,
+				'_user'    => $this->current_user->ID
 			) );
 
 			return $response;
@@ -251,6 +257,8 @@ class Dispatch implements LoggerAwareInterface {
 			return false;
 		}
 
+		$this->current_user = $key->get_customer()->wp_user;
+
 		if ( ! empty( $_SERVER['PHP_AUTH_PW'] ) ) {
 			$activation = itelic_get_activation( $_SERVER['PHP_AUTH_PW'] );
 		} else {
@@ -351,7 +359,8 @@ class Dispatch implements LoggerAwareInterface {
 
 			$this->logger->error( 'Unexpected exception during {action} request.', array(
 				'exception' => $e,
-				'action'    => $action
+				'action'    => $action,
+				'_user'     => $this->current_user->ID
 			) );
 		}
 
