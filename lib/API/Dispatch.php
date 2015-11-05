@@ -17,18 +17,26 @@ use ITELIC\Plugin;
 use ITELIC\Key;
 use ITELIC\API\Exception as API_Exception;
 use ITELIC\API\Contracts\Authenticatable;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class Dispatch
  *
  * @package ITELIC\API
  */
-class Dispatch {
+class Dispatch implements LoggerAwareInterface {
 
 	/**
 	 * @var Responder
 	 */
 	private $responder;
+
+	/**
+	 * @var LoggerInterface
+	 */
+	private $logger;
 
 	/**
 	 * @var string
@@ -39,6 +47,13 @@ class Dispatch {
 	 * @var Endpoint[]
 	 */
 	private $endpoints = array();
+
+	/**
+	 * Dispatch constructor.
+	 */
+	public function __construct() {
+		$this->logger = new NullLogger();
+	}
 
 	/**
 	 * Register WordPress hooks.
@@ -65,6 +80,17 @@ class Dispatch {
 	 */
 	public function set_responder( Responder $responder ) {
 		$this->responder = $responder;
+	}
+
+	/**
+	 * Sets a logger instance on the object
+	 *
+	 * @param LoggerInterface $logger
+	 *
+	 * @return null
+	 */
+	public function setLogger( LoggerInterface $logger ) {
+		$this->logger = $logger;
 	}
 
 	/**
