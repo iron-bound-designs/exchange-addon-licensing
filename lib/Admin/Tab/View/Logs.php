@@ -45,6 +45,7 @@ class Logs extends View {
 
 		<form method="GET">
 			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>">
+			<input type="hidden" name="tab" value="<?php echo esc_attr( $_GET['tab'] ); ?>">
 
 			<?php $this->table->views(); ?>
 			<?php $this->table->search_box( __( "Search", Plugin::SLUG ), 'itelic-search' ); ?>
