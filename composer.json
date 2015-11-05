@@ -5,6 +5,7 @@
     "require": {
         "ironbound/db": "^1.1",
         "ironbound/wp-notifications": "^1.0",
+        "ironbound/db-logger": "dev-master",
         "glenscott/url-normalizer": "^1.4",
         "fzaninotto/faker": "1.*"
     },
