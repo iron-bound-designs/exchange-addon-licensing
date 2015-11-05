@@ -132,7 +132,17 @@ class Dispatch implements LoggerAwareInterface {
 		$action = isset( $wp->query_vars[ self::TAG ] ) ? $wp->query_vars[ self::TAG ] : '';
 
 		if ( $action ) {
-			return $this->process_action( $action );
+
+			$response = $this->process_action( $action );
+
+			$this->logger->info( 'Dispatched {action} request', array(
+				'action'   => $action,
+				'get'      => $_GET,
+				'post'     => $_POST,
+				'response' => $response
+			) );
+
+			return $response;
 		}
 
 		return null;
