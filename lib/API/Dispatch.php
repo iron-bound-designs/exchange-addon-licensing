@@ -183,7 +183,7 @@ class Dispatch implements LoggerAwareInterface {
 					$response = $endpoint->serve( new \ArrayObject( $_GET ), new \ArrayObject( $_POST ) );
 				}
 				catch ( \Exception $e ) {
-					$response = $this->generate_response_from_exception( $e );
+					$response = $this->generate_response_from_exception( $e, $action );
 				}
 			}
 
@@ -334,10 +334,11 @@ class Dispatch implements LoggerAwareInterface {
 	 * @since 1.0
 	 *
 	 * @param \Exception $e
+	 * @param string     $action
 	 *
 	 * @return Response
 	 */
-	protected function generate_response_from_exception( \Exception $e ) {
+	protected function generate_response_from_exception( \Exception $e, $action ) {
 
 		if ( $e instanceof API_Exception ) {
 			$code    = $e->getCode();
@@ -347,6 +348,11 @@ class Dispatch implements LoggerAwareInterface {
 			$code    = 0;
 			$message = sprintf( __( "Unknown error %s with code %d", Plugin::SLUG ), $e->getMessage(), $e->getCode() );
 			$status  = 500;
+
+			$this->logger->error( 'Unexpected exception during {action} request.', array(
+				'exception' => $e,
+				'action'    => $action
+			) );
 		}
 
 		return new Response( array(
