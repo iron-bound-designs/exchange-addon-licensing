@@ -313,7 +313,7 @@ add_action( 'itelic_pause_release', '\ITELIC\set_last_updated_value_in_readme_on
  * @param Activation $activation
  */
 function clear_key_active_count_and_total_activation_count_cache( Activation $activation ) {
-	
+
 	wp_cache_delete( $activation->get_key()->get_key(), 'itelic-key-active-count' );
 
 	$releases = itelic_get_releases( array(
