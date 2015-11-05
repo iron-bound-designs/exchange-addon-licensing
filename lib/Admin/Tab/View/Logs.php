@@ -43,6 +43,20 @@ class Logs extends View {
 
 		?>
 
+		<style type="text/css">
+			.column-message {
+				width: 40%;
+			}
+
+			.column-level {
+				width: 10%;
+			}
+
+			.column-time {
+				width: 20%;
+			}
+		</style>
+
 		<form method="GET">
 			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>">
 			<input type="hidden" name="tab" value="<?php echo esc_attr( $_GET['tab'] ); ?>">
