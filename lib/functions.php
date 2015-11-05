@@ -880,6 +880,7 @@ function get_tables() {
 		new Releases(),
 		new Updates(),
 		new Release_Meta(),
-		new Activation_Meta()
+		new Activation_Meta(),
+		new \IronBound\DBLogger\Table( 'itelic-api-logs' )
 	);
 }
