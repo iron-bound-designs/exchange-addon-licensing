@@ -50,6 +50,11 @@ class Logs extends Controller {
 		$view->end();
 	}
 
+	/**
+	 * Setup the Log List Table for rendering.
+	 *
+	 * @since 1.0
+	 */
 	public function setup_table() {
 
 		if ( ! Dispatch::is_current_view( 'logs' ) ) {
@@ -59,6 +64,16 @@ class Logs extends Controller {
 		$this->table = new ListTable( array(
 			'single' => __( "API Log", Plugin::SLUG ),
 			'plural' => __( 'API Logs', Plugin::SLUG )
-		), array(), new Table( 'itelic-api-logs' ), '\ITELIC\API\Log' );
+		), array(
+			'message'          => __( "Message", Plugin::SLUG ),
+			'level'            => __( "Level", Plugin::SLUG ),
+			'time'             => __( "Time", Plugin::SLUG ),
+			'ip'               => __( "IP", Plugin::SLUG ),
+			'user'             => __( "User", Plugin::SLUG ),
+			'group'            => __( "Group", Plugin::SLUG ),
+			'levelFilterLabel' => __( "Filter by Level", Plugin::SLUG ),
+			'allLevels'        => __( "All Levels", Plugin::SLUG ),
+			'filter'           => __( "Filter", Plugin::SLUG )
+		), new Table( 'itelic-api-logs' ), '\ITELIC\API\Log' );
 	}
 }
