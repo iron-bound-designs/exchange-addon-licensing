@@ -145,7 +145,7 @@ class Dispatch implements LoggerAwareInterface {
 				'get'      => $_GET,
 				'post'     => $_POST,
 				'response' => $response,
-				'_user'    => $this->current_user->ID
+				'_user'    => $this->current_user ? $this->current_user->ID : false
 			) );
 
 			return $response;
