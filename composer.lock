@@ -172,12 +172,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/iron-bound-designs/IronBound-DB-Logger.git",
-                "reference": "105295ceab34dee741439ad9531f2c5662f21da9"
+                "reference": "2d9e6fb165ac3093653dbc37a9cb1d85264d6d29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/iron-bound-designs/IronBound-DB-Logger/zipball/105295ceab34dee741439ad9531f2c5662f21da9",
-                "reference": "105295ceab34dee741439ad9531f2c5662f21da9",
+                "url": "https://api.github.com/repos/iron-bound-designs/IronBound-DB-Logger/zipball/2d9e6fb165ac3093653dbc37a9cb1d85264d6d29",
+                "reference": "2d9e6fb165ac3093653dbc37a9cb1d85264d6d29",
                 "shasum": ""
             },
             "require": {
@@ -204,7 +204,7 @@
                 }
             ],
             "description": "PSR-3 Logger for WordPress using IronBound-DB",
-            "time": "2015-11-06 17:30:41"
+            "time": "2015-11-06 18:14:34"
         },
         {
             "name": "ironbound/wp-notifications",

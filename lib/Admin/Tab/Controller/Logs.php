@@ -59,6 +59,6 @@ class Logs extends Controller {
 		$this->table = new ListTable( array(
 			'single' => __( "API Log", Plugin::SLUG ),
 			'plural' => __( 'API Logs', Plugin::SLUG )
-		), array(), new Table( 'itelic-api-logs' ), '\ITELIC\API\Log' );;
+		), array(), new Table( 'itelic-api-logs' ), '\ITELIC\API\Log' );
 	}
 }
