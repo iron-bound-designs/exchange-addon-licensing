@@ -257,7 +257,7 @@ class Dispatch implements LoggerAwareInterface {
 			return false;
 		}
 
-		$this->current_user = $key->get_customer()->wp_user;
+		$this->current_user = $key->get_customer() ? $key->get_customer()->wp_user : null;
 
 		if ( ! empty( $_SERVER['PHP_AUTH_PW'] ) ) {
 			$activation = itelic_get_activation( $_SERVER['PHP_AUTH_PW'] );
