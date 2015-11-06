@@ -10,6 +10,9 @@
 
 namespace ITELIC;
 
+use IronBound\DB\Query\Simple_Query;
+use IronBound\DBLogger\AbstractTable;
+use IronBound\DBLogger\Logger;
 use ITELIC\Purchase_Requirement\Renew_Key;
 
 /**
@@ -300,6 +303,42 @@ function set_last_updated_value_in_readme_on_pause( Release $release, Release $p
 }
 
 add_action( 'itelic_pause_release', '\ITELIC\set_last_updated_value_in_readme_on_pause', 10, 2 );
+
+/* --------------------------------------------
+==================== Logs= ====================
+----------------------------------------------- */
+
+/**
+ * Automatically set the licenses expiry status when their expiry date has
+ * passed.
+ *
+ * @internal
+ *
+ * @since 1.0
+ */
+function purge_logs() {
+
+	foreach ( get_tables() as $table ) {
+
+		if ( $table instanceof AbstractTable ) {
+
+			/**
+			 * Filter for how many days logs are stored.
+			 *
+			 * @since 1.0
+			 *
+			 * @param int           $days
+			 * @param AbstractTable $table
+			 */
+			$days = apply_filters( 'itelic_keep_logs_for_days', 60, $table );
+
+			$logger = new Logger( $table, new Simple_Query( $GLOBALS['wpdb'], $table ) );
+			$logger->purge( $days, $GLOBALS['wpdb'] );
+		}
+	}
+}
+
+add_action( 'it_exchange_itelic_daily_schedule', 'ITELIC\purge_logs' );
 
 /* --------------------------------------------
 ==================== Cache ====================

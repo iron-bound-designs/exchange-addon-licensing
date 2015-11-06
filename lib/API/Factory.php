@@ -10,6 +10,9 @@
 
 namespace ITELIC\API;
 
+use IronBound\DB\Query\Simple_Query;
+use IronBound\DBLogger\Logger;
+use IronBound\DBLogger\Table;
 use ITELIC\API\Responder\JSON_Responder;
 
 /**
@@ -43,6 +46,11 @@ class Factory {
 		if ( $filtered instanceof Dispatch ) {
 			$dispatch = $filtered;
 		}
+
+		$dispatch->setLogger( new Logger(
+				new Table( 'itelic-api-logs' ),
+				new Simple_Query( $GLOBALS['wpdb'], new Table( 'itelic-api-logs' ) )
+		) );
 
 		/**
 		 * Fires when custom API endpoints should be registered with the dispatcher.

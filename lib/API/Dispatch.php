@@ -17,18 +17,31 @@ use ITELIC\Plugin;
 use ITELIC\Key;
 use ITELIC\API\Exception as API_Exception;
 use ITELIC\API\Contracts\Authenticatable;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class Dispatch
  *
  * @package ITELIC\API
  */
-class Dispatch {
+class Dispatch implements LoggerAwareInterface {
 
 	/**
 	 * @var Responder
 	 */
 	private $responder;
+
+	/**
+	 * @var LoggerInterface
+	 */
+	private $logger;
+
+	/**
+	 * @var \WP_User|null
+	 */
+	private $current_user;
 
 	/**
 	 * @var string
@@ -39,6 +52,13 @@ class Dispatch {
 	 * @var Endpoint[]
 	 */
 	private $endpoints = array();
+
+	/**
+	 * Dispatch constructor.
+	 */
+	public function __construct() {
+		$this->logger = new NullLogger();
+	}
 
 	/**
 	 * Register WordPress hooks.
@@ -65,6 +85,17 @@ class Dispatch {
 	 */
 	public function set_responder( Responder $responder ) {
 		$this->responder = $responder;
+	}
+
+	/**
+	 * Sets a logger instance on the object
+	 *
+	 * @param LoggerInterface $logger
+	 *
+	 * @return null
+	 */
+	public function setLogger( LoggerInterface $logger ) {
+		$this->logger = $logger;
 	}
 
 	/**
@@ -106,7 +137,18 @@ class Dispatch {
 		$action = isset( $wp->query_vars[ self::TAG ] ) ? $wp->query_vars[ self::TAG ] : '';
 
 		if ( $action ) {
-			return $this->process_action( $action );
+
+			$response = $this->process_action( $action );
+
+			$this->logger->info( 'Dispatched {action} request', array(
+				'action'   => $action,
+				'get'      => $_GET,
+				'post'     => $_POST,
+				'response' => $response,
+				'_user'    => $this->current_user ? $this->current_user->ID : false
+			) );
+
+			return $response;
 		}
 
 		return null;
@@ -147,7 +189,7 @@ class Dispatch {
 					$response = $endpoint->serve( new \ArrayObject( $_GET ), new \ArrayObject( $_POST ) );
 				}
 				catch ( \Exception $e ) {
-					$response = $this->generate_response_from_exception( $e );
+					$response = $this->generate_response_from_exception( $e, $action );
 				}
 			}
 
@@ -214,6 +256,8 @@ class Dispatch {
 		if ( ! $key ) {
 			return false;
 		}
+
+		$this->current_user = $key->get_customer() ? $key->get_customer()->wp_user : null;
 
 		if ( ! empty( $_SERVER['PHP_AUTH_PW'] ) ) {
 			$activation = itelic_get_activation( $_SERVER['PHP_AUTH_PW'] );
@@ -298,10 +342,11 @@ class Dispatch {
 	 * @since 1.0
 	 *
 	 * @param \Exception $e
+	 * @param string     $action
 	 *
 	 * @return Response
 	 */
-	protected function generate_response_from_exception( \Exception $e ) {
+	protected function generate_response_from_exception( \Exception $e, $action ) {
 
 		if ( $e instanceof API_Exception ) {
 			$code    = $e->getCode();
@@ -311,6 +356,12 @@ class Dispatch {
 			$code    = 0;
 			$message = sprintf( __( "Unknown error %s with code %d", Plugin::SLUG ), $e->getMessage(), $e->getCode() );
 			$status  = 500;
+
+			$this->logger->error( 'Unexpected exception during {action} request.', array(
+				'exception' => $e,
+				'action'    => $action,
+				'_user'    => $this->current_user ? $this->current_user->ID : false
+			) );
 		}
 
 		return new Response( array(
