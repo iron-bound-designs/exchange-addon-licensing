@@ -97,7 +97,7 @@ class ITELIC_Test_Key extends ITELIC_UnitTestCase {
 
 		$key->expire();
 
-		$this->assertEquals( \ITELIC\make_date_time(), $key->get_expires() );
+		$this->assertEquals( \ITELIC\make_date_time()->getTimestamp(), $key->get_expires()->getTimestamp(), '', 5 );
 	}
 
 	public function test_expiring_license_expires_activations() {
