@@ -360,7 +360,7 @@ class Dispatch implements LoggerAwareInterface {
 			$this->logger->error( 'Unexpected exception during {action} request.', array(
 				'exception' => $e,
 				'action'    => $action,
-				'_user'     => $this->current_user->ID
+				'_user'    => $this->current_user ? $this->current_user->ID : false
 			) );
 		}
 
