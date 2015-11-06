@@ -61,7 +61,9 @@ class Logs extends Controller {
 			return;
 		}
 
-		$this->table = new ListTable( array(
+		add_thickbox();
+
+		$this->table = new Log_Table( array(
 			'single' => __( "API Log", Plugin::SLUG ),
 			'plural' => __( 'API Logs', Plugin::SLUG )
 		), array(

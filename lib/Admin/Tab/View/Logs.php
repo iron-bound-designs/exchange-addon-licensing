@@ -66,6 +66,44 @@ class Logs extends View {
 			<?php $this->table->display(); ?>
 		</form>
 
+
+		<?php foreach ( $this->table->items as $item ):
+
+			/** @var \ITELIC\API\Log $item */
+			?>
+
+			<div class="hidden" id="log_details_<?php echo $item->get_pk(); ?>">
+
+				<?php
+				$context   = (array) $item->get_context();
+				$get       = (array) $context['get'];
+				$post      = (array) $context['post'];
+				$exception = $item->get_exception();
+				$trace     = $item->get_trace();
+				?>
+
+				<h4>GET Request</h4>
+				<pre><?php print_r( $get ); ?></pre>
+
+				<h4>POST Request</h4>
+				<pre><?php print_r( $post ); ?></pre>
+
+				<?php if ( ! empty( $exception ) ): ?>
+
+					<h4><?php _e( "Exception Details", Plugin::SLUG ); ?></h4>
+
+					<p><?php printf( __( "Class: %s", Plugin::SLUG ), $exception ); ?></p>
+
+					<?php if ( ! empty( $trace ) ): ?>
+						<p><?php echo $trace; ?></p>
+					<?php endif ?>
+
+				<?php endif; ?>
+
+			</div>
+
+		<?php endforeach; ?>
+
 		<?php
 	}
 
