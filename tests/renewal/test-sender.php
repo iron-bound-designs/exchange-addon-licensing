@@ -130,4 +130,41 @@ class ITELIC_Test_Renewal_Sender extends ITELIC_UnitTestCase {
 		$this->assertEmpty( $keys, "Not all keys received notifications." );
 	}
 
+	public function test_guest_notification_used_for_guest_purchase() {
+
+		$reflection        = new ReflectionClass( '\ITELIC\Renewal\Reminder\Sender' );
+		$make_notification = $reflection->getMethod( 'make_notification' );
+		$make_notification->setAccessible( true );
+
+		$sender = new Reminder\Sender();
+
+		$reminder = $this->getMockBuilder( '\ITELIC\Renewal\Reminder' )->disableOriginalConstructor()->getMock();
+		$reminder->expects( $this->once() )->method( 'get_post' )->willReturn( (object) array(
+			'post_content' => 'Content',
+			'post_title'   => 'Title'
+		) );
+
+		$customer          = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
+		$customer->wp_user = $this->getMockBuilder( '\WP_User' )->disableOriginalConstructor()->getMock();
+
+		$transaction               = $this->getMockBuilder( '\IT_Exchange_Transaction' )->disableOriginalConstructor()->getMock();
+		$transaction->cart_details = (object) array(
+			'is_guest_checkout' => true
+		);
+
+		$product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
+		$product->expects( $this->any() )->method( $this->anything() );
+
+		$key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
+		$key->expects( $this->once() )->method( 'get_customer' )->willReturn( $customer );
+		$key->expects( $this->once() )->method( 'get_transaction' )->willReturn( $transaction );
+		$key->expects( $this->any() )->method( 'get_product' )->willReturn( $product );
+
+		$manager = $this->getMockBuilder( '\IronBound\WP_Notifications\Template\Manager' )->disableOriginalConstructor()->getMock();
+
+		$notification = $make_notification->invoke( $sender, $reminder, $key, $manager );
+
+		$this->assertInstanceOf( '\ITELIC\Utils\Guest_Notification', $notification );
+	}
+
 }

@@ -47,6 +47,7 @@ abstract class ITELIC_UnitTestCase extends WP_UnitTestCase {
 	public function setUp() {
 		parent::setUp();
 
+		it_exchange_temporarily_load_addon( 'guest-checkout' );
 		it_exchange_temporarily_load_addon( 'digital-downloads-product-type' );
 		it_exchange_add_feature_support_to_product_type( 'recurring-payments', 'digital-downloads-product-type' );
 

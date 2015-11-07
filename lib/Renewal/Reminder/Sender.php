@@ -17,6 +17,7 @@ use IronBound\WP_Notifications\Template\Factory;
 use IronBound\WP_Notifications\Template\Manager as Template_Manager;
 use ITELIC\Renewal\Discount;
 use ITELIC\Renewal\Reminder;
+use ITELIC\Utils\Guest_Notification;
 
 /**
  * Class Sender
@@ -118,7 +119,12 @@ class Sender {
 		$manager       = Factory::make( 'itelic-renewal-reminder' );
 
 		foreach ( $expire_to_key as $expire => $key ) {
-			$notifications[] = $this->make_notification( $date_to_reminder[ $expire ], $key, $manager );
+
+			$notification = $this->make_notification( $date_to_reminder[ $expire ], $key, $manager );
+
+			if ( $notification ) {
+				$notifications[] = $notification;
+			}
 		}
 
 		return $notifications;
@@ -139,6 +145,17 @@ class Sender {
 
 		$template     = $reminder->get_post();
 		$notification = new Notification( $key->get_customer()->wp_user, $manager, $template->post_content, $template->post_title );
+
+		$transaction = $key->get_transaction();
+
+		if ( ! empty( $transaction->cart_details->is_guest_checkout ) ) {
+
+			if ( function_exists( 'it_exchange_guest_checkout_generate_guest_user_object' ) ) {
+				$notification = new Guest_Notification( $notification, $transaction );
+			} else {
+				return null;
+			}
+		}
 
 		$notification->add_data_source( $key );
 		$notification->add_data_source( new Discount( $key ) );
