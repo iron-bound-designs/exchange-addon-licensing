@@ -17,6 +17,7 @@ use ITELIC\API\Response;
 use ITELIC\Plugin;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class Download
@@ -29,6 +30,13 @@ class Download extends Endpoint implements LoggerAwareInterface {
 	 * @var LoggerInterface
 	 */
 	protected $logger;
+
+	/**
+	 * Download constructor.
+	 */
+	public function __construct() {
+		$this->logger = new NullLogger();
+	}
 
 	/**
 	 * Sets a logger instance on the object

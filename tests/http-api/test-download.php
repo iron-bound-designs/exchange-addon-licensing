@@ -88,9 +88,13 @@ class ITELIC_Test_HTTP_API_Download extends ITELIC_UnitTestCase {
 		$mock_product = $this->getMockBuilder( '\ITELIC\Product' )->disableOriginalConstructor()->getMock();
 		$mock_product->method( 'get_latest_release_for_activation' )->willReturn( $mock_release );
 
+		$mock_customer     = $this->getMockBuilder( '\IT_Exchange_Customer' )->disableOriginalConstructor()->getMock();
+		$mock_customer->id = 1;
+
 		$mock_key = $this->getMockBuilder( '\ITELIC\Key' )->disableOriginalConstructor()->getMock();
 		$mock_key->method( 'get_key' )->willReturn( 'abcd-1234' );
 		$mock_key->method( 'get_product' )->willReturn( $mock_product );
+		$mock_key->method( 'get_customer' )->willReturn( $mock_customer );
 
 		$mock_activation = $this->getMockBuilder( '\ITELIC\Activation' )->disableOriginalConstructor()->getMock();
 		$mock_activation->method( 'get_key' )->willReturn( $mock_key );
