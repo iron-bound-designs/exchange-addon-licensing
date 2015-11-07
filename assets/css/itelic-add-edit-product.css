@@ -87,7 +87,7 @@ input[type="text"]:read-only {
 	padding: .75em .5em;
 	margin: 0 1em 0 0;
 	float: left;
-	width: 100%;
+	width: auto;
 	max-width: 80%;
 }
 

@@ -95,18 +95,31 @@ class Base extends \IT_Exchange_Product_Feature_Abstract {
 			<?php if ( $settings['sell-online-software'] ): ?>
 				<p>
 					<input type="checkbox" id="itelic-online-software" name="itelic[online-software]" <?php checked( true, $data['online-software'] ); ?>>
-					<label for="itelic-online-software"><?php _e( "Enable Online Software Tools for this product", Plugin::SLUG ); ?></label>
+					<label for="itelic-online-software"><?php _e( "Enable online software tools for this product", Plugin::SLUG ); ?></label>
+					<span class="tip" title="
+					<?php _e( "Online software tools allows for your customers to remotely activate and deactivate their license keys.", Plugin::SLUG ); ?>
+					<?php _e( "Remote activation and remote deactivation needs to be enabled in the add-on settings for this to take effect.", Plugin::SLUG ); ?>
+					">
+						i
+					</span>
 				</p>
 			<?php endif; ?>
 
 			<label for="itelic-update-file"><?php _e( "Update File", Plugin::SLUG ); ?></label>
-			<select id="itelic-update-file" name="itelic[update-file]">
-				<?php foreach ( $downloads as $download ): ?>
-					<option value="<?php echo esc_attr( $download['id'] ); ?>" <?php selected( $data['update-file'], $download['id'] ); ?>>
-						<?php echo $download['name']; ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
+
+			<?php if ( empty( $downloads ) ): ?>
+				<div class="notice notice-warning below-h2">
+					<p><?php _e( "You need to upload a new file to the Product Files section and save the product before configuring the Update File.", Plugin::SLUG ); ?></p>
+				</div>
+			<?php else: ?>
+				<select id="itelic-update-file" name="itelic[update-file]">
+					<?php foreach ( $downloads as $download ): ?>
+						<option value="<?php echo esc_attr( $download['id'] ); ?>" <?php selected( $data['update-file'], $download['id'] ); ?>>
+							<?php echo $download['name']; ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			<?php endif; ?>
 
 			<p class="description">
 				<?php _e( "Select a file to be used for automatic updates.", Plugin::SLUG ); ?>
