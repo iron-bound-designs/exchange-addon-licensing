@@ -123,8 +123,10 @@ class Guest_Notification implements Contract {
 		$billing  = (array) it_exchange_get_transaction_billing_address( $this->transaction );
 		$shipping = (array) it_exchange_get_transaction_shipping_address( $this->transaction );
 
-		$user->first_name = ! empty( $billing['first-name'] ) ? $billing['first-name'] : $shipping['first-name'];
-		$user->last_name  = ! empty( $billing['last-name'] ) ? $billing['last-name'] : $shipping['last-name'];
+		$address = wp_parse_args( $billing, $shipping );
+
+		$user->first_name = ! empty( $address['first-name'] ) ? $address['first-name'] : '';
+		$user->last_name  = ! empty( $address['last-name'] ) ? $address['last-name'] : '';
 
 		return $user;
 	}
@@ -194,9 +196,9 @@ class Guest_Notification implements Contract {
 	 * @since 5.1.0
 	 */
 	public function unserialize( $serialized ) {
-		$data              = unserialize( $serialized );
+		$data = unserialize( $serialized );
 
-		$this->transaction = it_exchange_get_transaction( $data['transaction'] );
+		$this->transaction  = it_exchange_get_transaction( $data['transaction'] );
 		$this->notification = unserialize( $data['notification'] );
 	}
 }
