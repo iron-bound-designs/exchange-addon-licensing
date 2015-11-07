@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "234089084737c21d9b76935a2e62464f",
-    "content-hash": "11a25164163e4b19a2e00c6a7aa94b73",
+    "hash": "8c6bf7df7ed6778e66fe7a197b95f6af",
+    "content-hash": "b18b71265e342c8727eadd38b4131e7e",
     "packages": [
         {
             "name": "fzaninotto/faker",
@@ -168,7 +168,7 @@
         },
         {
             "name": "ironbound/db-logger",
-            "version": "dev-master",
+            "version": "v1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/iron-bound-designs/IronBound-DB-Logger.git",
@@ -1425,9 +1425,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ironbound/db-logger": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
