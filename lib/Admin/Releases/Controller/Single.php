@@ -365,6 +365,10 @@ class Single extends Controller {
 
 			$to = get_user_by( 'id', $result->customer );
 
+			if ( ! $to instanceof \WP_User ) {
+				continue;
+			}
+
 			$notification = new Notification( $to, Factory::make( 'itelic-outdated-customers' ), $message, $subject );
 			$notification->add_data_source( $release );
 
