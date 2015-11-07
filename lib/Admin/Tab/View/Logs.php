@@ -76,8 +76,8 @@ class Logs extends View {
 
 				<?php
 				$context   = (array) $item->get_context();
-				$get       = (array) $context['get'];
-				$post      = (array) $context['post'];
+				$get       = isset( $context['get'] ) ? (array)$context['get'] : array();
+				$post      = isset( $context['post'] ) ? (array) $context['post'] : array();
 				$exception = $item->get_exception();
 				$trace     = $item->get_trace();
 				?>
