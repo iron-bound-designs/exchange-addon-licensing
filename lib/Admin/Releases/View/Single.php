@@ -135,9 +135,9 @@ class Single extends View {
 			<?php endif; ?>
 
 			<?php
-			$this->render_whats_changed();
 			$this->render_security_message();
 			$this->render_upgrades_bar();
+			$this->render_whats_changed();
 
 			if ( $this->release->get_status() != Release::STATUS_ARCHIVED ):
 				$this->render_notification_editor();

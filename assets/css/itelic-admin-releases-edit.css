@@ -431,6 +431,14 @@
 	z-index: 9991 !important;
 }
 
+#notification-body.wp-editor-area,
+#whats-changed-input.wp-editor-area {
+	height: 272px;
+	width: 698px;
+	box-sizing: border-box;
+	font-size: 14px;
+}
+
 /** -----------------------------------------------------:[ upgrade line chart ]:---------- */
 
 .progress-line-chart h4 {
