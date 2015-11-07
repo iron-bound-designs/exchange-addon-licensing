@@ -82,11 +82,24 @@ class Logs extends View {
 				$trace     = $item->get_trace();
 				?>
 
-				<h4>GET Request</h4>
+				<h4><?php printf( __( "%s Data", Plugin::SLUG ), 'GET' ); ?></h4>
 				<pre><?php print_r( $get ); ?></pre>
 
-				<h4>POST Request</h4>
+				<h4><?php printf( __( "%s Data", Plugin::SLUG ), 'POST' ); ?></h4>
 				<pre><?php print_r( $post ); ?></pre>
+
+				<?php if ( ! empty( $context['response'] ) ) : ?>
+
+					<?php $response = (array) $context['response']; ?>
+
+					<h4><?php _e( "Response", Plugin::SLUG ); ?></h4>
+
+					<p><?php printf( __( "Status: %d", Plugin::SLUG ), isset( $response['status'] ) ? $response['status'] : '-' ); ?></p>
+
+					<pre><?php print_r( isset( $response['body'] ) ? $response['body'] : array() ); ?></pre>
+
+				<?php endif; ?>
+
 
 				<?php if ( ! empty( $exception ) ): ?>
 

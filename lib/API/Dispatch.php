@@ -144,7 +144,10 @@ class Dispatch implements LoggerAwareInterface {
 				'action'   => $action,
 				'get'      => $_GET,
 				'post'     => $_POST,
-				'response' => $response,
+				'response' => array(
+					'body'   => $this->responder->prepare_response( $response->get_data() ),
+					'status' => $response->get_status()
+				),
 				'_user'    => $this->current_user ? $this->current_user->ID : false
 			) );
 
@@ -360,7 +363,7 @@ class Dispatch implements LoggerAwareInterface {
 			$this->logger->error( 'Unexpected exception during {action} request.', array(
 				'exception' => $e,
 				'action'    => $action,
-				'_user'    => $this->current_user ? $this->current_user->ID : false
+				'_user'     => $this->current_user ? $this->current_user->ID : false
 			) );
 		}
 
