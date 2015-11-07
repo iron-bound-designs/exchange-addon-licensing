@@ -181,6 +181,10 @@ class Dispatch implements LoggerAwareInterface {
 		} else {
 			$endpoint = $this->endpoints[ $action ];
 
+			if ( $endpoint instanceof LoggerAwareInterface ) {
+				$endpoint->setLogger( $this->logger );
+			}
+
 			if ( $endpoint instanceof Authenticatable ) {
 				if ( ! $this->handle_auth( $endpoint ) ) {
 					$response = $this->generate_auth_missing( $endpoint );

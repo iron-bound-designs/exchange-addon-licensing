@@ -15,18 +15,31 @@ use ITELIC\API\Endpoint;
 use ITELIC\Key;
 use ITELIC\API\Response;
 use ITELIC\Plugin;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Download
  *
  * @package ITELIC\API\Endpoint
  */
-class Download extends Endpoint {
+class Download extends Endpoint implements LoggerAwareInterface {
 
 	/**
-	 * @var Key
+	 * @var LoggerInterface
 	 */
-	protected $key;
+	protected $logger;
+
+	/**
+	 * Sets a logger instance on the object
+	 *
+	 * @param LoggerInterface $logger
+	 *
+	 * @return null
+	 */
+	public function setLogger( LoggerInterface $logger ) {
+		$this->logger = $logger;
+	}
 
 	/**
 	 * Serve the request to this endpoint.
@@ -52,6 +65,12 @@ class Download extends Endpoint {
 		do_action( 'itelic_pre_validate_download', $get, $post );
 
 		if ( ! \ITELIC\validate_query_args( $get ) ) {
+
+			$this->logger->notice( 'Invalid download link used.', array(
+				'get'  => $get,
+				'post' => $post
+			) );
+
 			status_header( 403 );
 
 			_e( "This download link is invalid or has expired.", Plugin::SLUG );
@@ -67,6 +86,23 @@ class Download extends Endpoint {
 		$key        = $get['key'];
 
 		if ( ! $activation || $activation->get_key()->get_key() != $key ) {
+
+			$key_object = itelic_get_key( $key );
+
+			if ( $key_object && $key_object->get_customer() ) {
+				$user = $key_object->get_customer()->id;
+			} elseif ( $activation->get_key()->get_customer() ) {
+				$user = $activation->get_key()->get_customer()->id;
+			} else {
+				$user = 0;
+			}
+
+			$this->logger->notice( 'Invalid download link used. Key activation mismatch.', array(
+				'get'   => $get,
+				'post'  => $post,
+				'_user' => $user
+			) );
+
 			status_header( 403 );
 
 			_e( "This download link is invalid or has expired.", Plugin::SLUG );
@@ -85,6 +121,13 @@ class Download extends Endpoint {
 		itelic_create_update( array(
 			'activation' => $activation,
 			'release'    => $release
+		) );
+
+		$this->logger->info( 'Download for {product} delivered.', array(
+			'product' => $activation->get_key()->get_product()->post_title,
+			'_user'   => $activation->get_key()->get_customer()->id,
+			'get'     => $get,
+			'post'    => $post
 		) );
 
 		/**
