@@ -19,7 +19,7 @@ use ITELIC\Activation;
 use ITELIC\Admin\Chart;
 use ITELIC\Admin\Releases\Controller;
 use ITELIC\Admin\Releases\View\Single as Single_View;
-use ITELIC\Admin\Tab\Dispatch;
+use ITELIC\Admin\Tab\Dispatch as Tab_Dispatch;
 use ITELIC\Admin\Tab\View;
 use ITELIC\Plugin;
 use ITELIC\Release;
@@ -93,7 +93,7 @@ class Single extends Controller {
 
 			if ( $release->get_status() == Release::STATUS_PAUSED ) {
 
-				$new_url = add_query_arg( 'view', 'add-new', Dispatch::get_tab_link( 'releases' ) );
+				$new_url = add_query_arg( 'view', 'add-new', Tab_Dispatch::get_tab_link( 'releases' ) );
 
 				$msg .= sprintf( __( 'You should %1$screate a new release%2$s instead.', Plugin::SLUG ),
 					"<a href=\"$new_url\">", '</a>' );

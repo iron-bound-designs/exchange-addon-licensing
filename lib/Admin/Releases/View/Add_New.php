@@ -22,6 +22,20 @@ use ITELIC\Release;
 class Add_New extends View {
 
 	/**
+	 * @var bool
+	 */
+	private $show_help = true;
+
+	/**
+	 * Add_New constructor.
+	 *
+	 * @param bool $show_help
+	 */
+	public function __construct( $show_help ) {
+		$this->show_help = $show_help;
+	}
+
+	/**
 	 * Render the view.
 	 */
 	public function render() {
@@ -44,6 +58,27 @@ class Add_New extends View {
 
 			<?php do_action( 'itelic_add_new_release_screen_before_types' ); ?>
 			<?php $this->render_types_tab( $selected ); ?>
+
+			<?php if ( $this->show_help ): ?>
+				<div class="release-help">
+					<p class="release-help-major">
+						<?php echo \ITELIC\Admin\Help\get_major_release_help_text(); ?>
+					</p>
+
+					<p class="release-help-minor">
+						<?php echo \ITELIC\Admin\Help\get_minor_release_help_text(); ?>
+					</p>
+
+					<p class="release-help-security">
+						<?php echo \ITELIC\Admin\Help\get_security_release_help_text(); ?>
+					</p>
+
+					<p class="release-help-pre-release">
+						<?php echo \ITELIC\Admin\Help\get_pre_release_help_text(); ?>
+					</p>
+				</div>
+			<?php endif; ?>
+
 			<?php do_action( 'itelic_add_new_release_screen_after_types' ); ?>
 
 			<?php do_action( 'itelic_add_new_release_screen_before' ); ?>

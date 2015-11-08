@@ -12,7 +12,8 @@ namespace ITELIC\Admin\Releases\Controller;
 
 use ITELIC\Admin\Releases\Controller;
 use ITELIC\Admin\Releases\View\Add_New as Add_New_View;
-use ITELIC\Admin\Tab\Dispatch;
+use ITELIC\Admin\Tab\Dispatch as Tab_Dispatch;
+use ITELIC\Admin\Releases\Dispatch as Release_Dispatch;
 use ITELIC\Plugin;
 use ITELIC\Release;
 
@@ -35,8 +36,59 @@ class Add_New extends Controller {
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'save_new_release' ) );
+		add_action( 'admin_init', array( $this, 'save_show_release_help' ) );
 		add_action( 'admin_notices', array( $this, 'display_errors' ) );
 		add_action( 'wp_ajax_itelic_handle_release_file_upload', array( $this, 'process_file_upload' ) );
+		add_filter( 'screen_settings', array( $this, 'render_release_tooltip' ), 10, 2 );
+	}
+
+	/**
+	 * Render the screen options to choose whether to display release help tooltips.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string     $settings
+	 * @param \WP_Screen $screen
+	 *
+	 * @return string
+	 */
+	public function render_release_tooltip( $settings, \WP_Screen $screen ) {
+
+		if ( ! Tab_Dispatch::is_current_view( 'releases' ) && ! Release_Dispatch::is_current_view( 'add-new' ) ) {
+			return $settings;
+		}
+
+		add_filter( 'screen_options_show_submit', '__return_true' );
+
+		$show = get_option( 'itelic_show_release_type_help', 'show' );
+
+		ob_start();
+		?>
+
+		<fieldset class="release-help-screen-option">
+			<legend><?php _e( "Licensing", Plugin::SLUG ); ?></legend>
+			<input type="checkbox" step="1" min="1" max="999" name="itelic_release_type_help" id="itelic_release_type_help" <?php checked( $show, 'show' ); ?> value="1">
+			<label for="itelic_release_type_help"><?php _e( "Show Release Type Help", Plugin::SLUG ); ?></label>
+			<?php wp_nonce_field( 'itelic-release-type-help', 'itelic_nonce' ); ?>
+		</fieldset>
+
+		<?php
+
+		$settings .= ob_get_clean();
+
+		return $settings;
+	}
+
+	/**
+	 * Save the show release help option.
+	 *
+	 * @since 1.0
+	 */
+	public function save_show_release_help() {
+
+		if ( isset( $_POST['itelic_nonce'] ) && wp_verify_nonce( $_POST['itelic_nonce'], 'itelic-release-type-help' ) ) {
+			update_option( 'itelic_show_release_type_help', empty( $_POST['itelic_release_type_help'] ) ? 'hide' : 'show' );
+		}
 	}
 
 	/**
@@ -170,7 +222,7 @@ class Add_New extends Controller {
 
 		$this->enqueue();
 
-		$view = new Add_New_View();
+		$view = new Add_New_View( get_option( 'itelic_show_release_type_help', 'show' ) === 'show' );
 
 		$view->begin();
 		$view->title();

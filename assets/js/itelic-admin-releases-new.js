@@ -17,6 +17,12 @@
 
 		if ($(this).is(':checked')) {
 
+			var type = $(this).val();
+
+			$('.release-help').css('opacity', 1);
+			$('.release-help p').slideUp();
+			$('.release-help .release-help-' + type).slideDown();
+
 			if ($(this).val() == 'security') {
 
 				if ($main.css('opacity') == 0) {

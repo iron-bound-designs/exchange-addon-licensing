@@ -330,24 +330,22 @@ add_action( 'init', function () {
 
 		$html .= '<h4>' . __( 'Major', Plugin::SLUG ) . '</h4>';
 		$html .= '<p>';
-		$html .= __( "Major releases should be used when you are releasing new features. Depending on your version scheme, this could be either 1.0 to 2.0 or 1.1.0 to 1.2.0. These release will recommend to your customers that they create a backup before updating.", Plugin::SLUG );
+		$html .= get_major_release_help_text();
 		$html .= '</p>';
 
 		$html .= '<h4>' . __( 'Minor', Plugin::SLUG ) . '</h4>';
 		$html .= '<p>';
-		$html .= __( "Minor releases are the standard bug fix and feature tweak releases. This could represent a change from 1.0 to 1.1 or 1.0.0 to 1.0.1. These releases shouldn’t have breaking changes, and should be a simple update for your customers." );
+		$html .= get_minor_release_help_text();
 		$html .= '</p>';
 
 		$html .= '<h4>' . __( 'Security', Plugin::SLUG ) . '</h4>';
 		$html .= '<p>';
-		$html .= __( "Security releases should be used whenever you are fixing a security vulnerability. Users will be notified that this is a security release in the admin area of their website." );
+		$html .= get_security_release_help_text();
 		$html .= '</p>';
 
 		$html .= '<h4>' . __( 'Pre-release', Plugin::SLUG ) . '</h4>';
 		$html .= '<p>';
-		$html .= __( "Pre-releases can be used to offer beta versions of your software to your customers. Customers need to opt-in to pre-releases when they activate their license key.", Plugin::SLUG );
-		$html .= __( "You MUST version your beta releases using semantic versioning to ensure everything functions as normal. For example to release a beta version of 1.2, you would version your release 1.2-beta.", Plugin::SLUG );
-		$html .= __( "Pre-releases won’t be available for non pre-release customers and they won’t appear in the changelog." );
+		$html .= get_pre_release_help_text();
 		$html .= '</p>';
 
 		return $html;
@@ -390,3 +388,51 @@ add_action( 'init', function () {
 	 */
 	do_action( 'itelic_register_help_tabs', $help );
 } );
+
+/**
+ * Get the help text for major releases.
+ *
+ * @since 1.0
+ *
+ * @return string
+ */
+function get_major_release_help_text() {
+	return __( "Major releases should be used when new features are developed. Depending on your version scheme, this could be either a 1.0 &rarr; 2.0 or a 1.1.0 &rarr; 1.2.0 release. Customers will be reminded to create a backup before updating.", Plugin::SLUG );
+}
+
+/**
+ * Get the help text for minor releases.
+ *
+ * @since 1.0
+ *
+ * @return string
+ */
+function get_minor_release_help_text() {
+	return __( "Minor releases are for bug fixes or feature tweak releases. This could represent a version change of 1.0 &rarr; 1.1 or 1.0.0 &rarr; 1.0.1. A minor release should not have breaking changes, and should be a simple update for your customers.", Plugin::SLUG );
+}
+
+/**
+ * Get the help text for security releases.
+ *
+ * @since 1.0
+ *
+ * @return string
+ */
+function get_security_release_help_text() {
+	return __( "Whenever a vulnerability is fixed a security release should be created. The security message can be used to inform your customers about the urgency of the update.", Plugin::SLUG );
+}
+
+/**
+ * Get the help text for pre-releases.
+ *
+ * @since 1.0
+ *
+ * @return string
+ */
+function get_pre_release_help_text() {
+	$text = __( "Pre-releases can be used to offer beta versions of your software to your customers. Customers need to opt-in to the pre-release track when activating their license key. Pre-releases won’t appear in the changelog.", Plugin::SLUG );
+	$text .= '<br><br>';
+	$text .= __( "You MUST version these releases using semantic versioning to ensure updates are properly deployed. For example to release a beta for version 1.2, your releases should be versioned 1.2-beta.", Plugin::SLUG );
+
+	return $text;
+}
