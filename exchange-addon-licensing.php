@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: iThemes Exchange - Licensing Add-on
-Plugin URI: http://ironbounddesigns.com
-Description: Sell licenses for your digital products.
+Plugin URI: https://ironbounddesigns.com/product/licensing/
+Description: Sell and manage license keys for your software.
 Version: 1.0-beta
 Author: Iron Bound Designs
-Author URI: http://ironbounddesigns.com
+Author URI: https://ironbounddesigns.com
 License: AGPL
 Text Domain: ibd-exchange-addon-licensing
 Domain Path: /lang
@@ -264,7 +264,7 @@ new Plugin();
 function register_addon() {
 	$options = array(
 		'name'              => __( 'Licensing', Plugin::SLUG ),
-		'description'       => __( 'Sell licenses for your digital products.', Plugin::SLUG ),
+		'description'       => __( 'Sell and manage license keys for your software.', Plugin::SLUG ),
 		'author'            => 'Iron Bound Designs',
 		'author_url'        => 'http://www.ironbounddesigns.com',
 		'file'              => dirname( __FILE__ ) . '/init.php',
