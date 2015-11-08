@@ -10,6 +10,10 @@
 
 namespace ITELIC;
 
+if ( is_admin() ) {
+	Plugin::setup_licensing();
+}
+
 /**
  * Load the main plugin functions.
  */

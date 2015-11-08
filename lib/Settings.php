@@ -55,6 +55,8 @@ class Settings {
 	public static function init() {
 		add_filter( 'it_storage_get_defaults_exchange_addon_itelic', function ( $defaults ) {
 
+			$defaults['license']                    = '';
+			$defaults['activation']                 = '';
 			$defaults['enable-renewal-discounts']   = false;
 			$defaults['renewal-discount-type']      = 'percent';
 			$defaults['renewal-discount-amount']    = '';
@@ -79,11 +81,15 @@ class Settings {
 		$addon = empty( $_GET['add-on-settings'] ) ? false : $_GET['add-on-settings'];
 
 		if ( ! empty( $_POST ) && is_admin() && 'it-exchange-addons' == $page && 'licensing' == $addon ) {
-			add_action( 'it_exchange_save_add_on_settings_itelic', array(
-				$this,
-				'save_settings'
-			) );
-			do_action( 'it_exchange_save_add_on_settings_itelic' );
+			add_action( 'it_exchange_save_add_on_settings_itelic', array( $this, 'save_settings' ) );
+
+			if ( isset( $_POST['activate'] ) ) {
+				$this->activate();
+			} else if ( isset( $_POST['deactivate'] ) ) {
+				$this->deactivate();
+			} else {
+				do_action( 'it_exchange_save_add_on_settings_itelic' );
+			}
 		}
 	}
 
@@ -152,7 +158,65 @@ class Settings {
 
 		$erd_class    = $form->get_option( 'enable-renewal-discounts' ) ? '' : 'hide-if-js';
 		$era_disabled = $form->get_option( 'sell-online-software' ) ? array() : array( 'disabled' => 'disabled' );
+		
+		$info       = $this->get_key_info();
+		$activation = $form->get_option( 'activation' );
+
+		if ( $info ) {
+
+			if ( ! isset( $info->activations->list->{$activation} ) || $info->activations->list->{$activation}->status == 'deactivated' ) {
+				$still_active = false;
+			} else {
+				$still_active = true;
+			}
+
+		} else {
+			$still_active = true;
+		}
 		?>
+
+		<style type="text/css">
+			.description.active {
+				color: #8cc53e;
+			}
+
+			.description.expired {
+				color: #ffba00;
+			}
+
+			.description.disabled {
+				color: #dd3d36;
+			}
+		</style>
+
+		<div class="it-exchange-addon-settings it-exchange-itelic-addon-settings">
+
+			<label for="license"><?php _e( "License Key", Plugin::SLUG ); ?></label>
+			<?php $form->add_text_box( 'license' ); ?>
+
+			<?php if ( empty( $activation ) || ! $still_active ): ?>
+				<?php submit_button( __( "Activate", Plugin::SLUG ), 'secondary large', 'activate', false, 'style="height:46px;padding:0 20px;"' ); ?>
+			<?php else: ?>
+				<?php submit_button( __( "Deactivate", Plugin::SLUG ), 'secondary large', 'deactivate', false, 'style="height:46px;padding:0 20px;"' ); ?>
+			<?php endif; ?>
+
+			<?php if ( $info && $still_active ): ?>
+				<p class="description <?php echo $info->status; ?>">
+					<?php if ( $info->status == 'active' ): ?>
+						<?php if ( $info->expires ): ?>
+							<?php printf( __( "License is active and expires %s", Plugin::SLUG ), date( get_option( 'date_format' ), strtotime( $info->expires ) ) ); ?>
+						<?php else: ?>
+							<?php printf( __( "License is active.", Plugin::SLUG ) ); ?>
+						<?php endif; ?>
+					<?php elseif ( $info->status == 'expired' ): ?>
+						<?php _e( "License has expired.", Plugin::SLUG ); ?>
+					<?php elseif ( $info->status == 'disabled' ): ?>
+						<?php _e( "License is disabled.", Plugin::SLUG ); ?>
+					<?php endif; ?>
+				</p>
+			<?php elseif ( ! $still_active && $form->get_option( 'activation' ) ): ?>
+				<p class="description expired"><?php _e( "License deactivated remotely.", Plugin::SLUG ); ?></p>
+			<?php endif; ?>
 
 		<div class="it-exchange-addon-settings it-exchange-itelic-addon-settings">
 
@@ -314,5 +378,118 @@ class Settings {
 		$errors = array();
 
 		return $errors;
+	}
+	
+	/**
+	 * Handle activation POST request.
+	 *
+	 * @since 1.0
+	 */
+	protected function activate() {
+
+		if ( empty( $_POST['it-exchange-add-on-itelic-license'] ) ) {
+			$this->error_message = __( "A license key is required for activation", Plugin::SLUG );
+
+			return;
+		}
+
+		$key = $_POST['it-exchange-add-on-itelic-license'];
+
+		$response = Plugin::$updater->activate( $key );
+
+		if ( is_wp_error( $response ) ) {
+
+			if ( ! $response->get_error_message() ) {
+				$msg = __( "An unexpected error occurred.", Plugin::SLUG );
+			} else {
+				$msg = $response->get_error_message();
+			}
+
+			$this->error_message = $msg;
+
+			return;
+		}
+
+		$options               = it_exchange_get_option( 'addon_itelic' );
+		$options['license']    = $key;
+		$options['activation'] = $response;
+		it_exchange_save_option( 'addon_itelic', $options );
+
+		$info = Plugin::$updater->get_info( $key );
+
+		if ( ! is_wp_error( $info ) ) {
+			set_transient( 'itelic_key_info', $info, DAY_IN_SECONDS );
+
+			$active = $info->activations->count_active;
+			$max    = $info->max;
+
+			if ( empty( $max ) ) {
+				$left = '-';
+			} else {
+				$left = $max - $active;
+			}
+
+			if ( $left == '-' ) {
+				$this->status_message = __( "License activated. You have unlimited activations left.", Plugin::SLUG );
+			} else {
+				$this->status_message = sprintf(
+					_n( "License activated. You have %d activation left.",
+						"License activated. You have %d activations left.",
+						$left, Plugin::SLUG ), $left
+				);
+			}
+		} else {
+			$this->status_message = __( "License activated.", Plugin::SLUG );
+		}
+	}
+
+	/**
+	 * Handle deactivation POST request.
+	 *
+	 * @since 1.0
+	 */
+	protected function deactivate() {
+
+		$options = it_exchange_get_option( 'addon_itelic' );
+
+		$response = Plugin::$updater->deactivate( $options['license'], $options['activation'] );
+
+		if ( is_wp_error( $response ) ) {
+			$this->error_message = $response->get_error_message();
+
+			return;
+		}
+
+		$options               = it_exchange_get_option( 'addon_itelic' );
+		$options['activation'] = '';
+		it_exchange_save_option( 'addon_itelic', $options );
+
+		$this->status_message = __( "License deactivated.", Plugin::SLUG );
+	}
+
+	/**
+	 * Get info about the key.
+	 *
+	 * @since 1.0.2
+	 *
+	 * @param bool $break_cache
+	 *
+	 * @return object|bool
+	 */
+	protected function get_key_info( $break_cache = false ) {
+
+		$options = it_exchange_get_option( 'addon_itelic' );
+		$key     = $options['license'];
+
+		if ( $break_cache || false === ( $data = get_transient( 'itelic_key_info' ) ) ) {
+
+			$data = Plugin::$updater->get_info( $key );
+
+			if ( ! is_wp_error( $data ) ) {
+				set_transient( 'itelic_key_info', $data, DAY_IN_SECONDS );
+			}
+		}
+
+		return $data;
 	}
 }

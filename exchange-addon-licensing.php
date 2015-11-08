@@ -14,6 +14,7 @@ Domain Path: /lang
 namespace ITELIC;
 
 use IronBound\DB\Manager;
+use ITELIC_Plugin_Updater;
 
 /**
  * Class ITELIC
@@ -31,6 +32,11 @@ class Plugin {
 	const SLUG = 'ibd-exchange-addon-licensing';
 
 	/**
+	 * @var int
+	 */
+	const ID = 1574;
+
+	/**
 	 * @var string
 	 */
 	static $dir;
@@ -39,6 +45,11 @@ class Plugin {
 	 * @var string
 	 */
 	static $url;
+
+	/**
+	 * @var ITELIC_Plugin_Updater
+	 */
+	static $updater;
 
 	/**
 	 * Constructor.
@@ -93,6 +104,31 @@ class Plugin {
 				break;
 			}
 		}
+	}
+
+	/**
+	 * Setup the licensing for EDD.
+	 *
+	 * @since 1.0
+	 */
+	public static function setup_licensing() {
+
+		if ( ! function_exists( 'it_exchange_get_option' ) ) {
+			return;
+		}
+
+		$options = it_exchange_get_option( 'addon_itecls' );
+
+		// retrieve our license key from the DB
+		$license_key = trim( $options['license'] );
+		$activation  = trim( $options['activation'] );
+
+		// setup the updater
+		self::$updater = new ITELIC_Plugin_Updater( 'https://ironbounddesigns.com', self::ID, __FILE__, array(
+				'license'       => $license_key,
+				'activation_id' => $activation
+			)
+		);
 	}
 
 	/**
@@ -211,6 +247,10 @@ class Plugin {
 	 */
 	public static function autoload() {
 		require_once( dirname( __FILE__ ) . '/vendor/autoload.php' );
+
+		if ( ! class_exists( '\ITELIC_Plugin_Updater' ) ) {
+			require_once ( dirname( __FILE__ ) ) . '/updater.php';
+		}
 	}
 }
 
