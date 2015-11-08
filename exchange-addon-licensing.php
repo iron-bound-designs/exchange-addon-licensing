@@ -117,7 +117,7 @@ class Plugin {
 			return;
 		}
 
-		$options = it_exchange_get_option( 'addon_itecls' );
+		$options = it_exchange_get_option( 'addon_itelic' );
 
 		// retrieve our license key from the DB
 		$license_key = trim( $options['license'] );
