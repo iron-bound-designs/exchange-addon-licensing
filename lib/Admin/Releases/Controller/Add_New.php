@@ -54,7 +54,7 @@ class Add_New extends Controller {
 	 */
 	public function render_release_tooltip( $settings, \WP_Screen $screen ) {
 
-		if ( ! Tab_Dispatch::is_current_view( 'releases' ) && ! Release_Dispatch::is_current_view( 'add-new' ) ) {
+		if ( ! Tab_Dispatch::is_current_view( 'releases' ) || ! Release_Dispatch::is_current_view( 'add-new' ) ) {
 			return $settings;
 		}
 
