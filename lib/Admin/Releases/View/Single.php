@@ -58,6 +58,10 @@ class Single extends View {
 	 */
 	public function render() {
 
+		if ( ! $this->release ) {
+			return;
+		}
+
 		$df  = str_replace( 'F', 'M', get_option( 'date_format' ) );
 		$tf  = get_option( 'time_format' );
 		$dtf = "$df $tf";

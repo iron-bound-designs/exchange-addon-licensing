@@ -40,7 +40,7 @@ class Single extends View {
 	 * @param Key       $key
 	 * @param Renewal[] $renewals
 	 */
-	public function __construct( Key $key, array $renewals = array() ) {
+	public function __construct( Key $key = null, array $renewals = array() ) {
 		$this->key      = $key;
 		$this->renewals = $renewals;
 	}
@@ -49,6 +49,10 @@ class Single extends View {
 	 * Render the view.
 	 */
 	public function render() {
+
+		if ( ! $this->key ) {
+			return;
+		}
 
 		wp_enqueue_style( 'itelic-admin-license-detail' );
 		wp_enqueue_script( 'itelic-admin-license-detail' );

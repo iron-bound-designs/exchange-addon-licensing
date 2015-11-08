@@ -61,45 +61,52 @@ class Single extends Controller {
 	public function render() {
 		$release = itelic_get_release( $_GET['ID'] );
 
-		if ( ! $release ) {
-			wp_redirect( Dispatch::get_tab_link( 'releases' ) );
-
-			return;
-		}
-
 		$this->enqueue();
 
-		$view = new Single_View( $release, $this->get_progress_chart( $release ), $this->get_version_chart( $release ) );
+		if ( $release ) {
+			$progress = $this->get_progress_chart( $release );
+			$version  = $this->get_version_chart( $release );
+		} else {
+			$progress = null;
+			$version  = null;
+		}
+
+		$view = new Single_View( $release, $progress, $version );
 
 		$view->begin();
 		$view->title();
 
-		$current = $release->get_product()->get_feature( 'licensing', array( 'field' => 'version' ) );
-		$new     = $release->get_version();
+		if ( $release ) {
 
-		$version_statuses = array(
-			Release::STATUS_DRAFT,
-			Release::STATUS_PAUSED
-		);
+			$current = $release->get_product()->get_feature( 'licensing', array( 'field' => 'version' ) );
+			$new     = $release->get_version();
 
-		if ( in_array( $release->get_status(), $version_statuses ) && version_compare( $new, $current, '<=' ) ) {
+			$version_statuses = array(
+				Release::STATUS_DRAFT,
+				Release::STATUS_PAUSED
+			);
 
-			$msg = __( "The version number of this release is less than the current version.", Plugin::SLUG ) . '&nbsp;';
+			if ( in_array( $release->get_status(), $version_statuses ) && version_compare( $new, $current, '<=' ) ) {
 
-			if ( $release->get_status() == Release::STATUS_DRAFT ) {
-				$msg .= sprintf( __( "This release's version must be greater than %s in order to activate this release.",
-					Plugin::SLUG ), $current );
+				$msg = __( "The version number of this release is less than the current version.", Plugin::SLUG ) . '&nbsp;';
+
+				if ( $release->get_status() == Release::STATUS_DRAFT ) {
+					$msg .= sprintf( __( "This release's version must be greater than %s in order to activate this release.",
+						Plugin::SLUG ), $current );
+				}
+
+				if ( $release->get_status() == Release::STATUS_PAUSED ) {
+
+					$new_url = add_query_arg( 'view', 'add-new', Tab_Dispatch::get_tab_link( 'releases' ) );
+
+					$msg .= sprintf( __( 'You should %1$screate a new release%2$s instead.', Plugin::SLUG ),
+						"<a href=\"$new_url\">", '</a>' );
+				}
+
+				$view->notice( $msg, View::NOTICE_ERROR );
 			}
-
-			if ( $release->get_status() == Release::STATUS_PAUSED ) {
-
-				$new_url = add_query_arg( 'view', 'add-new', Tab_Dispatch::get_tab_link( 'releases' ) );
-
-				$msg .= sprintf( __( 'You should %1$screate a new release%2$s instead.', Plugin::SLUG ),
-					"<a href=\"$new_url\">", '</a>' );
-			}
-
-			$view->notice( $msg, View::NOTICE_ERROR );
+		} else {
+			$view->notice( __( "Release not found.", Plugin::SLUG ), View::NOTICE_ERROR );
 		}
 
 		$view->tabs( 'releases' );
@@ -404,8 +411,8 @@ class Single extends Controller {
 			'update_nonce'   => wp_create_nonce( 'itelic-update-release-' . $_GET['ID'] ),
 			'ok'             => __( "Ok", Plugin::SLUG ),
 			'cancel'         => __( "Cancel", Plugin::SLUG ),
-			'currentVersion' => $release->get_product()->get_feature(
-				'licensing', array( 'field' => 'version' ) )
+			'currentVersion' => $release ? $release->get_product()->get_feature(
+				'licensing', array( 'field' => 'version' ) ) : ''
 		) );
 
 		wp_enqueue_media();

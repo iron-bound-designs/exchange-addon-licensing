@@ -14,6 +14,7 @@ use ITELIC\Activation;
 use ITELIC\Admin\Licenses\Controller;
 use ITELIC\Admin\Licenses\Dispatch;
 use ITELIC\Admin\Licenses\View\Single as Single_View;
+use ITELIC\Admin\Tab\View;
 use ITELIC\Key;
 use ITELIC\Plugin;
 use ITELIC\Renewal;
@@ -60,6 +61,10 @@ class Single extends Controller {
 		$view->title();
 
 		$view->tabs( 'licenses' );
+
+		if ( ! $this->get_current_key() ) {
+			$view->notice( __( "License key not found.", Plugin::SLUG ), View::NOTICE_ERROR );
+		}
 
 		$view->render();
 
@@ -324,6 +329,11 @@ class Single extends Controller {
 	 * @return Renewal[]
 	 */
 	protected function get_renewals() {
+
+		if ( ! $this->get_current_key() ) {
+			return array();
+		}
+
 		$query = new Renewals( array(
 			'key'   => $this->get_current_key()->get_key(),
 			'order' => array(
