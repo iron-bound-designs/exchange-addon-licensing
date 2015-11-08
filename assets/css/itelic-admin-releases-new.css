@@ -57,6 +57,8 @@ ul.release-types {
 
 .release-help {
 	width: 300px;
+	position: absolute;
+	right: 20px;
 	box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.2);
 	background: #A6DE56;
 	color: #334940;
@@ -67,7 +69,6 @@ ul.release-types {
 	line-height: 1.4;
 	display: inline-block;
 	height: auto;
-	float: right;
 	margin: 12px 12px 12px 26px;
 	opacity: 0;
 	-webkit-transition-duration: 0.3s;
@@ -285,6 +286,13 @@ ul.release-types {
 .tip {
 	margin-top: 0;
 	font-weight: 600;
+}
+
+@media screen and (max-width: 1140px) {
+
+	.release-help {
+		display: none !important;
+	}
 }
 
 @media screen and (max-width: 600px) {
