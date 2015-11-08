@@ -67,14 +67,14 @@ function itelic_rename_file( WP_Post $file, $name ) {
 		throw new InvalidArgumentException( "Invalid file." );
 	}
 
+	$old_name = basename( $zip );
 	$new_name = str_replace( array( ' ', '/' ), '-', strtolower( $name ) );
-
-	$new_path = str_replace( basename( $zip ), $new_name, $zip );
+	$new_path = str_replace( $old_name, $new_name, $zip );
 
 	copy( $zip, $new_path );
 
 	$file = wp_insert_attachment( array(
-		'guid'           => str_replace( $zip, $new_path, $file->guid ),
+		'guid'           => str_replace( $old_name, $name, $file->guid ),
 		'post_mime_type' => $file->post_mime_type,
 		'post_title'     => preg_replace( '/\.[^.]+$/', '', $new_name )
 	), $new_path );

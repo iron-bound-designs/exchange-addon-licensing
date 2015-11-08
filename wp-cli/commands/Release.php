@@ -609,7 +609,7 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 		$version = \WP_CLI\Utils\increment_version( $latest->get_version(), 'major' );
 
 		$download = $latest->get_download();
-		$name     = $download->post_name . "-$version.zip";
+		$name     = $product->post_title . "-$version.zip";
 
 		$file = itelic_rename_file( $download, $name );
 
@@ -643,7 +643,7 @@ class ITELIC_Release_Command extends \WP_CLI\CommandWithDBObject {
 		$version = \WP_CLI\Utils\increment_version( $latest->get_version(), 'minor' );
 
 		$download = $latest->get_download();
-		$name     = $download->post_name . "-$version.zip";
+		$name     = $product->post_title . "-$version.zip";
 
 		$file = itelic_rename_file( $download, $name );
 
