@@ -72,8 +72,8 @@
 	border-top: 1px solid #DFDFDF;
 }
 
-#release-details input[type="text"]:read-write,
-#release-details input[type="number"]:read-write,
+#release-details input[type="text"],
+#release-details input[type="number"],
 #release-details textarea {
 	background: #fff;
 	border: 1px solid #d6d6d6;
@@ -89,8 +89,8 @@
 	transition: .05s border-color ease-in-out;
 }
 
-#release-details .misc-block input[type="text"]:read-write,
-#release-details .misc-block input[type="number"]:read-write {
+#release-details .misc-block input[type="text"],
+#release-details .misc-block input[type="number"] {
 	width: 192px;
 }
 
