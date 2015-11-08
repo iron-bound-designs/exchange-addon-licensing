@@ -63,6 +63,8 @@ class Plugin {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts_and_styles' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'scripts_and_styles' ), 5 );
+		add_action( 'after_plugin_row_' . plugin_basename( __FILE__ ), array( $this, 'display_register_notice' ) );
+		add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'action_links' ) );
 
 		self::autoload();
 	}
@@ -129,6 +131,46 @@ class Plugin {
 				'activation_id' => $activation
 			)
 		);
+	}
+
+	/**
+	 * Display a notice to register this add-on.
+	 *
+	 * @since 1.0
+	 */
+	public function display_register_notice() {
+
+		$options = it_exchange_get_option( 'addon_itelic' );
+
+		if ( ! empty( $options['license'] ) && ! empty( $options['activation'] ) ) {
+			return;
+		}
+
+		$ID = self::ID;
+
+		echo '</tr><tr class="plugin-update-tr"><td colspan="3" class="plugin-update"><div class="update-message">';
+		echo sprintf( esc_html__(
+			'%sRegister%s this add-on to receive access to automatic upgrades and support. Need a license key? %sPurchase one now%s.',
+			self::SLUG ),
+			'<a href="' . admin_url() . 'admin.php?page=it-exchange-addons&add-on-settings=licensing">',
+			'</a>', "<a href=\"https://ironbounddesigns.com?p={$ID}\">",
+			'</a>' );
+		echo '</div></td>';
+	}
+
+	/**
+	 * Add Setup action link.
+	 *
+	 * @param array $links
+	 *
+	 * @return array
+	 */
+	public function action_links( $links ) {
+		$links[] = sprintf( '<a href="%s">%s</a>',
+			admin_url() . 'admin.php?page=it-exchange-addons&add-on-settings=licensing',
+			__( "Setup", Plugin::SLUG ) );
+
+		return $links;
 	}
 
 	/**
