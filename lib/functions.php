@@ -622,8 +622,24 @@ function get_current_product_id() {
  */
 function generate_download_link( Activation $activation ) {
 
-	$now     = make_date_time();
-	$expires = $now->add( new \DateInterval( "P1D" ) );
+	$now      = make_date_time();
+	$interval = new \DateInterval( 'P1D' );
+
+	/**
+	 * Filter the expiration interval for a download link.
+	 *
+	 * @since 1.0
+	 *
+	 * @param \DateInterval $interval
+	 * @param Activation    $activation
+	 */
+	$filtered = apply_filters( 'itelic_download_link_expiration_interval', $interval, $activation );
+
+	if ( $filtered instanceof \DateInterval ) {
+		$interval = $filtered;
+	}
+
+	$expires = $now->add( $interval );
 
 	$args = generate_download_query_args( $activation, $expires );
 
@@ -729,7 +745,6 @@ function validate_query_args( $query_args ) {
 			$valid = $now < $expires;
 		}
 	}
-
 
 	/**
 	 * Filter whether the download link query args are valid.
