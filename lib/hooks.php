@@ -309,8 +309,9 @@ add_action( 'itelic_pause_release', '\ITELIC\set_last_updated_value_in_readme_on
 ----------------------------------------------- */
 
 /**
- * Automatically set the licenses expiry status when their expiry date has
- * passed.
+ * Daily CRON job to purge API logs.
+ *
+ * By default, logs are kept for 60 days.
  *
  * @internal
  *

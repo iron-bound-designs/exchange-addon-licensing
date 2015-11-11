@@ -84,8 +84,8 @@ function generate_keys_for_transaction( \IT_Exchange_Transaction $transaction, $
  * @param \IT_Exchange_Transaction $transaction
  * @param Product                  $product
  * @param Factory                  $factory
- * @param string                   $status
- * @param string                   $key
+ * @param string                   $status Optionally override the new key's status. Default active.
+ * @param string                   $key    Optionally specify the license key to be used. If empty, uses Factory.
  *
  * @return Key
  */
