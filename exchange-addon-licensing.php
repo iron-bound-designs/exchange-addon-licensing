@@ -14,6 +14,8 @@ Domain Path: /lang
 namespace ITELIC;
 
 use IronBound\DB\Manager;
+use ITELIC\Admin\Tab\Dispatch;
+use ITELIC\Renewal\Reminder\CPT;
 use ITELIC_Plugin_Updater;
 
 /**
@@ -63,6 +65,7 @@ class Plugin {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts_and_styles' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'scripts_and_styles' ), 5 );
+		add_action( 'admin_notices', array( $this, 'display_register_admin_notice' ) );
 		add_action( 'after_plugin_row_' . plugin_basename( __FILE__ ), array( $this, 'display_register_notice' ) );
 		add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'action_links' ) );
 
@@ -131,6 +134,42 @@ class Plugin {
 				'activation_id' => $activation
 			)
 		);
+	}
+
+	/**
+	 * Display a link to register the add-on on Licensing admin pages.
+	 *
+	 * @since 1.0
+	 */
+	public function display_register_admin_notice() {
+
+		$options = it_exchange_get_option( 'addon_itelic' );
+
+		if ( ! empty( $options['license'] ) && ! empty( $options['activation'] ) ) {
+			return;
+		}
+
+		$screen = get_current_screen();
+
+		if ( $screen->post_type != CPT::TYPE && ( ! isset( $_GET['page'] ) || $_GET['page'] != Dispatch::PAGE_SLUG ) ) {
+			return;
+		}
+
+		$ID = self::ID;
+		?>
+
+		<div class="notice notice-info" style="margin-bottom: 0">
+			<p>
+				<?php echo sprintf( esc_html__(
+					'%sRegister%s Licensing to receive access to automatic upgrades and support. Need a license key? %sPurchase one now%s.',
+					self::SLUG ),
+					'<a href="' . admin_url() . 'admin.php?page=it-exchange-addons&add-on-settings=licensing">',
+					'</a>', "<a href=\"https://ironbounddesigns.com?p={$ID}\">",
+					'</a>' ); ?>
+			</p>
+		</div>
+
+		<?php
 	}
 
 	/**

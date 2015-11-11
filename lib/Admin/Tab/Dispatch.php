@@ -127,7 +127,7 @@ class Dispatch {
 			return false;
 		}
 
-		if ( ! $_GET['page'] == 'it-exchange-licensing' ) {
+		if ( ! $_GET['page'] == self::PAGE_SLUG ) {
 			return false;
 		}
 
