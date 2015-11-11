@@ -44,6 +44,8 @@ function itelic_get_renewals( $args = array() ) {
  */
 function itelic_get_renewal_record( $id ) {
 
+	$renewal = \ITELIC\Renewal::get( $id );
+
 	/**
 	 * Filters the renewal as it is retrieved from the database.
 	 *
@@ -51,7 +53,13 @@ function itelic_get_renewal_record( $id ) {
 	 *
 	 * @param \ITELIC\Renewal $renewal
 	 */
-	return apply_filters( 'itelic_get_renewal', \ITELIC\Renewal::get( $id ) );
+	$filtered = apply_filters( 'itelic_get_renewal', $renewal );
+
+	if ( $filtered instanceof \ITELIC\Renewal ) {
+		$renewal = $filtered;
+	}
+
+	return $renewal;
 }
 
 /**

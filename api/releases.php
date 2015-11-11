@@ -44,6 +44,8 @@ function itelic_get_releases( $args = array() ) {
  */
 function itelic_get_release( $id ) {
 
+	$release = \ITELIC\Release::get( $id );
+
 	/**
 	 * Filter the release object as retrieved from the database.
 	 *
@@ -51,7 +53,13 @@ function itelic_get_release( $id ) {
 	 *
 	 * @param \ITELIC\Release $release
 	 */
-	return apply_filters( 'itelic_get_release', \ITELIC\Release::get( $id ) );
+	$filtered = apply_filters( 'itelic_get_release', $release );
+
+	if ( $filtered instanceof \ITELIC\Release ) {
+		$release = $filtered;
+	}
+
+	return $release;
 }
 
 /**
@@ -119,7 +127,7 @@ function itelic_keep_last_n_releases( IT_Exchange_Product $product ) {
 function itelic_get_admin_edit_release_link( $release ) {
 	return add_query_arg( array(
 		'view' => 'single',
-		'ID'  => (string) $release,
+		'ID'   => (string) $release,
 	), \ITELIC\Admin\Tab\Dispatch::get_tab_link( 'releases' ) );
 }
 

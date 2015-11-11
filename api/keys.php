@@ -44,6 +44,8 @@ function itelic_get_keys( $args = array() ) {
  */
 function itelic_get_key( $key ) {
 
+	$key = \ITELIC\Key::get( $key );
+
 	/**
 	 * Filters the key as it is retrieved from the database.
 	 *
@@ -51,7 +53,13 @@ function itelic_get_key( $key ) {
 	 *
 	 * @param \ITELIC\Key $key
 	 */
-	return apply_filters( 'itelic_get_key', \ITELIC\Key::get( $key ) );
+	$filtered = apply_filters( 'itelic_get_key', $key );
+
+	if ( $filtered instanceof \ITELIC\Key ) {
+		$key = $filtered;
+	}
+
+	return $key;
 }
 
 /**

@@ -44,6 +44,8 @@ function itelic_get_updates( $args = array() ) {
  */
 function itelic_get_update( $id ) {
 
+	$update = \ITELIC\Update::get( $id );
+
 	/**
 	 * Filter the update object as retrieved from the database.
 	 *
@@ -51,7 +53,13 @@ function itelic_get_update( $id ) {
 	 *
 	 * @param \ITELIC\Update $update
 	 */
-	return apply_filters( 'itelic_get_update', \ITELIC\Update::get( $id ) );
+	$filtered = apply_filters( 'itelic_get_update', $update );
+
+	if ( $filtered instanceof \ITELIC\Update ) {
+		$update = $filtered;
+	}
+
+	return $update;
 }
 
 /**

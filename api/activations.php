@@ -44,6 +44,8 @@ function itelic_get_activations( $args = array() ) {
  */
 function itelic_get_activation( $id ) {
 
+	$activation = \ITELIC\Activation::get( $id );
+
 	/**
 	 * Filters the activation as it is retrieved from the database.
 	 *
@@ -51,7 +53,13 @@ function itelic_get_activation( $id ) {
 	 *
 	 * @param \ITELIC\Activation $activation
 	 */
-	return apply_filters( 'itelic_get_activation', \ITELIC\Activation::get( $id ) );
+	$filtered = apply_filters( 'itelic_get_activation', $activation );
+
+	if ( $filtered instanceof \ITELIC\Activation ) {
+		$activation = $filtered;
+	}
+
+	return $activation;
 }
 
 /**
