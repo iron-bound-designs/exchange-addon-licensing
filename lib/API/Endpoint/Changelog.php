@@ -39,6 +39,7 @@ class Changelog extends Endpoint {
 		$product = itelic_get_product( $get['ID'] );
 
 		if ( ! $product ) {
+			status_header( 404 );
 			echo __( "No product found.", Plugin::SLUG );
 		} else {
 			echo $product->get_changelog();
