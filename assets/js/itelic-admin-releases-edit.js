@@ -310,7 +310,7 @@
 			var msgClass = response.success ? 'notice-success' : 'notice-warning';
 			msgClass += ' is-dismissible';
 
-			var $notice = $('<div class="notice ' + msgClass + '"><p>' + message + '</p></div>');
+			var $notice = $('<div class="notice notice-alt ' + msgClass + '"><p>' + message + '</p></div>');
 			$notice.css({
 				display: 'none'
 			});
@@ -608,10 +608,6 @@
 		version.on('save', function (e, params) {
 
 			var prev = $(this).data('value');
-
-			console.log(prev);
-			console.log(ITELIC.currentVersion);
-			console.log(params.newValue);
 
 			if ($.versioncompare(prev, ITELIC.currentVersion) == -1 &&
 				$.versioncompare(params.newValue, ITELIC.currentVersion) == 1

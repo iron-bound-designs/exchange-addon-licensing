@@ -7,7 +7,7 @@
 
 jQuery(document).ready(function ($) {
 
-	$("#remote-activate-submit" ).tooltip();
+	$("#remote-activate-submit").tooltip();
 
 	var status_span = $(".status span");
 
@@ -155,15 +155,15 @@ jQuery(document).ready(function ($) {
 			if (remoteActivate.hasClass('button-disabled')) {
 				remoteActivate.removeClass('button-disabled');
 				remoteActivate.prop('title', '');
-				$("#remote-activate-location" ).prop('disabled', false);
+				$("#remote-activate-location").prop('disabled', false);
 			}
 		} else {
 
-			if (! remoteActivate.hasClass('button-disabled')) {
-				remoteActivate.addClass( 'button-disabled' );
-				remoteActivate.prop('title',remoteActivate.data('tip'));
+			if (!remoteActivate.hasClass('button-disabled')) {
+				remoteActivate.addClass('button-disabled');
+				remoteActivate.prop('title', remoteActivate.data('tip'));
 				/*remoteActivate.tooltip();*/
-				$("#remote-activate-location" ).prop('disabled',true);
+				$("#remote-activate-location").prop('disabled', true);
 			}
 
 		}
@@ -183,7 +183,7 @@ jQuery(document).ready(function ($) {
 
 		e.preventDefault();
 
-		if ($(this ).hasClass('button-disabled')) {
+		if ($(this).hasClass('button-disabled')) {
 			return;
 		}
 
@@ -202,7 +202,24 @@ jQuery(document).ready(function ($) {
 			button.prop('disabled', false);
 
 			if (!response.success) {
-				alert(response.data.message);
+
+				var message = response.data.message;
+
+				var $notice = $('<div class="notice notice-error notice-alt"><p>' + message + '</p></div>');
+				$notice.css({
+					display: 'none'
+				});
+
+				$notice.insertAfter("#remote-activate-submit");
+
+				$notice.slideDown();
+
+				setTimeout(function () {
+					$notice.slideUp(400, function () {
+						$(this).remove();
+					})
+				}, 5000);
+
 			} else {
 				var html = response.data.html;
 
