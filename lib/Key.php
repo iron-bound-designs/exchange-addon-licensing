@@ -309,12 +309,13 @@ class Key extends Model implements API\Serializable {
 	 */
 	public function expire( \DateTime $date = null ) {
 
-		if ( $date === null ) {
-			$date = make_date_time();
+		if ( $this->status != self::EXPIRED ) {
+			$this->status = self::EXPIRED;
+			$this->update( 'status', self::EXPIRED );
 		}
 
-		if ( $this->get_status() !== self::EXPIRED ) {
-			$this->set_status( self::EXPIRED );
+		if ( $date === null ) {
+			$date = make_date_time();
 		}
 
 		$this->set_expires( $date );
@@ -430,6 +431,10 @@ class Key extends Model implements API\Serializable {
 		}
 
 		$old_status = $this->status;
+
+		if ( $old_status == self::ACTIVE && $status == self::EXPIRED ) {
+			$this->expire();
+		}
 
 		$this->status = $status;
 		$this->update( 'status', $this->get_status() );
