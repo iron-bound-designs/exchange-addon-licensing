@@ -229,26 +229,26 @@ add_action( 'init', function () {
 		$html .= '<h4>' . __( 'Draft', Plugin::SLUG ) . '</h4>';
 		$html .= '<p>';
 		$html .= __( "Draft mode is your staging ground for new releases. These releases aren’t yet available to be downloaded. At this time, you can edit the type of release by clicking the release type and selecting a new release. You can also change the version number by clicking on the version number in the version box.", Plugin::SLUG );
-		$html .= __( "Additionally, the download file can be replaced by clicking the <em>Replace</em> button. Finally, to edit the release’s changelog just click the text, enter your changes, and click the save button.", Plugin::SLUG );
-		$html .= __( "To release the new version, hover over the status indicator, and change the release’s status to <em>Active</em>. This will update the version number of the product, and will update the download file made available to new customers as well.", Plugin::SLUG );
+		$html .= ' ' . __( "Additionally, the download file can be replaced by clicking the <em>Replace</em> button. Finally, to edit the release’s changelog just click the text, enter your changes, and click the save button.", Plugin::SLUG );
+		$html .= ' ' . __( "To release the new version, hover over the status indicator, and change the release’s status to <em>Active</em>. This will update the version number of the product, and will update the download file made available to new customers as well.", Plugin::SLUG );
 		$html .= '</p>';
 
 		$html .= '<h4>' . __( 'Active', Plugin::SLUG ) . '</h4>';
 		$html .= '<p>';
 		$html .= __( "Active releases are available to your customers to update to. When a release is active, <em>all</em> update records are kept allowing you to notify customers who haven’t yet updated to that version. As such, just because a release is active, does not mean it is the latest release available." );
-		$html .= __( "When a release is active, the only thing that can be edited is the changelog. If the update file needs to be changed, you should pause this release and create a new one.", Plugin::SLUG );
+		$html .= ' ' . __( "When a release is active, the only thing that can be edited is the changelog. If the update file needs to be changed, you should pause this release and create a new one.", Plugin::SLUG );
 		$html .= '</p>';
 
 		$html .= '<h4>' . __( 'Paused', Plugin::SLUG ) . '</h4>';
 		$html .= '<p>';
 		$html .= __( "When a release is paused, the version number and download file is reverted to the latest active release. When a customer goes to update their install, they will receive the latest active release, not the paused release." );
-		$html .= __( "Paused releases can’t be reactivated, instead you should create a new minor release and bump the version number.", Plugin::SLUG );
+		$html .= ' ' . __( "Paused releases can’t be reactivated, instead you should create a new minor release and bump the version number.", Plugin::SLUG );
 		$html .= '</p>';
 
 		$html .= '<h4>' . __( 'Archived', Plugin::SLUG ) . '</h4>';
 		$html .= '<p>';
 		$html .= __( "Full update data is kept for the latest 10 releases – this exact number can be controlled via a filter. After that, the release will be automatically archived." );
-		$html .= __( "Archived releases aggregate the update data to save database space. After a release has been archived, you can no longer notify customers who haven’t updated.", Plugin::SLUG );
+		$html .= ' ' . __( "Archived releases aggregate the update data to save database space. After a release has been archived, you can no longer notify customers who haven’t updated.", Plugin::SLUG );
 		$html .= '</p>';
 
 		return $html;
