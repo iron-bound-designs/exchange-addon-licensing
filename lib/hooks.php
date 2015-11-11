@@ -901,6 +901,12 @@ function account_licenses_deactivate_location() {
 		die();
 	}
 
+	if ( ! $record ) {
+		wp_send_json_error( array(
+				'message' => __( "Invalid install location.", Plugin::SLUG )
+		) );
+	}
+
 	if ( ! current_user_can( 'edit_user', $record->get_key()->get_customer()->wp_user->ID ) ) {
 		wp_send_json_error( array(
 			'message' => __( "You don't have permission to do this.", Plugin::SLUG )
@@ -948,6 +954,12 @@ function account_licenses_activate() {
 		) );
 
 		die();
+	}
+
+	if ( ! $key ) {
+		wp_send_json_error( array(
+				'message' => __( "Invalid license key.", Plugin::SLUG )
+		) );
 	}
 
 	if ( ! current_user_can( 'edit_user', $key->get_customer()->wp_user->ID ) ) {
