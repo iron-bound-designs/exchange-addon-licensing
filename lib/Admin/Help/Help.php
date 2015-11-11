@@ -108,7 +108,7 @@ class Help {
 		$html .= '<p>' . sprintf( '<a href="%s">%s</a>', 'https://ironbounddesigns.com/contact?reason=support',
 				__( "Talk to a human", Plugin::SLUG ) ) . '</p>';
 
-		$html .= '<p>' . sprintf( '<a href="%s">%s</a>', 'https://ironbounddesigns.zendesk.com/hc/en-us',
+		$html .= '<p>' . sprintf( '<a href="%s">%s</a>', 'https://ironbounddesigns.zendesk.com/hc/en-us/sections/201420916-Licensing',
 				__( "View the documentation", Plugin::SLUG ) ) . '</p>';
 
 		return $html;
