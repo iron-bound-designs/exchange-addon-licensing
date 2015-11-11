@@ -2,12 +2,12 @@
 
 [![Build Status](https://travis-ci.org/iron-bound-designs/exchange-addon-licensing.svg?branch=master)](https://travis-ci.org/iron-bound-designs/exchange-addon-licensing) [![codecov.io](http://codecov.io/github/iron-bound-designs/exchange-addon-licensing/coverage.svg?branch=master&token=l8Gr12jRC3)](http://codecov.io/github/iron-bound-designs/exchange-addon-licensing?branch=master)
 
-Licensing for iThemes Exchange allows you to sell license keys for your digital products. Licensing is currently in beta.
+Licensing for iThemes Exchange allows you to sell license keys for your digital products.
 
-Licensing will be a commercial plugin available from Iron Bound Designs. The plugin is hosted here on a public Github repository 
+Licensing is a commercial plugin available from Iron Bound Designs. The plugin is hosted here on a public Github repository 
 in order to better faciliate community contributions from developers and users alike. If you have a suggestion, a bug report, 
 or a patch for an issue, feel free to submit it here. We do ask, however, that if you are using the plugin on a live site 
-that you please purchase a valid license from the [website](https://ironbounddesigns.com/plugins). 
+that you please purchase a valid license from the [website](https://ironbounddesigns.com/product/licensing/). 
 We cannot provide support to anyone that does not hold a valid license key.
 
 ## Installation
@@ -65,7 +65,8 @@ to manually create license keys if needed.
 
 ## Help
 
-Formal documentation will be available at launch, but every admin page has a _Help_ tab with inline help for that screen.
+Documentation can be found in our [Help Center](https://ironbounddesigns.zendesk.com/hc/en-us/sections/201420916-Licensing).
+ Additionally, on every admin page has a _Help_ tab with inline help for that screen.
 
 ## HTTP API
 
@@ -75,9 +76,6 @@ authenticated using Basic Auth for providing license keys and activation records
 A sample [Plugin Updater](https://github.com/iron-bound-designs/itelic-plugin-updater) and 
 [Theme Updater](https://github.com/iron-bound-designs/itelic-theme-updater) are provided. You can check these out
 to see how the API can be consumed.
-
-An issue describing the initial API can be seen [here](https://github.com/iron-bound-designs/exchange-addon-licensing/issues/8),
-but things have changed since the original specification.
 
 ## WP CLI
 
