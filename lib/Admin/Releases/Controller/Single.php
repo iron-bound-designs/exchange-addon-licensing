@@ -186,11 +186,25 @@ class Single extends Controller {
 				break;
 
 			case 'changelog':
+
+				$val = stripslashes( $val );
+
+				if ( ! current_user_can( 'unfiltered_html' ) ) {
+					$val = wp_kses( $val, wp_kses_allowed_html() );
+				}
+
 				$release->set_changelog( $val );
 				break;
 
 			case 'security-message':
-				$release->update_meta( 'security-message', sanitize_text_field( $val ) );
+
+				$val = stripslashes( $val );
+
+				if ( ! current_user_can( 'unfiltered_html' ) ) {
+					$val = wp_kses( $val, wp_kses_allowed_html() );
+				}
+
+				$release->update_meta( 'security-message', $val );
 				break;
 
 			default:
