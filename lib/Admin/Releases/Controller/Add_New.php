@@ -153,9 +153,14 @@ class Add_New extends Controller {
 
 		$attachment = get_post( $_POST['upload-file'] );
 
-		$changelog = empty( $_POST['whats-changed'] ) ? '' : $_POST['whats-changed'];
+		$changelog = empty( $_POST['whats-changed'] ) ? '' : stripslashes( $_POST['whats-changed'] );
 
-		$security_message = empty( $_POST['security-message'] ) ? '' : $_POST['security-message'];
+		$security_message = empty( $_POST['security-message'] ) ? '' : stripslashes( $_POST['security-message'] );
+
+		if ( ! current_user_can( 'unfiltered_html' ) ) {
+			$changelog = wp_kses( $changelog, wp_kses_allowed_html() );
+			$security_message = wp_kses( $security_message, wp_kses_allowed_html() );
+		}
 
 		$action = isset( $_POST['release'] ) && $_POST['release'] ? 'release' : 'draft';
 		$status = 'release' == $action ? Release::STATUS_ACTIVE : Release::STATUS_DRAFT;
