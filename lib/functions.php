@@ -867,7 +867,7 @@ function page_rewrites( $page ) {
 	}
 
 	$rewrites = array(
-		$account_slug . '/([^/]+)/' . $slug . '$' => 'index.php?' . $account_slug . '=$matches[1]&' . $slug . '=1',
+		$account_slug . '/([0-9]+)/' . $slug . '$' => 'index.php?' . $account_slug . '=$matches[1]&' . $slug . '=1',
 		$account_slug . '/' . $slug . '$'         => 'index.php?' . $account_slug . '=1&' . $slug . '=1',
 	);
 

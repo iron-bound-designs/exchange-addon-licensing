@@ -827,15 +827,15 @@ function register_account_licenses_page() {
 
 	// Profile
 	$options = array(
-		'slug'            => 'licenses',
-		'name'            => __( 'Licenses', Plugin::SLUG ),
-		'rewrite - rules' => array( 128, 'ITELIC\page_rewrites' ),
-		'url'             => 'it_exchange_get_core_page_urls',
-		'settings - name' => __( 'Licenses Page', Plugin::SLUG ),
-		'tip'             => __( 'A list of a customer\'s licenses.', Plugin::SLUG ),
-		'type'            => 'exchange',
-		'menu'            => true,
-		'optional'        => true,
+		'slug'          => 'licenses',
+		'name'          => __( 'Licenses', Plugin::SLUG ),
+		'rewrite-rules' => array( 126, 'ITELIC\page_rewrites' ),
+		'url'           => 'it_exchange_get_core_page_urls',
+		'settings-name' => __( 'Licenses Page', Plugin::SLUG ),
+		'tip'           => __( 'A list of a customer\'s licenses.', Plugin::SLUG ),
+		'type'          => 'exchange',
+		'menu'          => true,
+		'optional'      => true,
 	);
 
 	it_exchange_register_page( 'licenses', $options );
@@ -903,7 +903,7 @@ function account_licenses_deactivate_location() {
 
 	if ( ! $record ) {
 		wp_send_json_error( array(
-				'message' => __( "Invalid install location.", Plugin::SLUG )
+			'message' => __( "Invalid install location.", Plugin::SLUG )
 		) );
 	}
 
@@ -958,7 +958,7 @@ function account_licenses_activate() {
 
 	if ( ! $key ) {
 		wp_send_json_error( array(
-				'message' => __( "Invalid license key.", Plugin::SLUG )
+			'message' => __( "Invalid license key.", Plugin::SLUG )
 		) );
 	}
 
