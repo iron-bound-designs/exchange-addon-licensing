@@ -81,27 +81,11 @@ class Single extends Controller {
 			$current = $release->get_product()->get_feature( 'licensing', array( 'field' => 'version' ) );
 			$new     = $release->get_version();
 
-			$version_statuses = array(
-				Release::STATUS_DRAFT,
-				Release::STATUS_PAUSED
-			);
-
-			if ( in_array( $release->get_status(), $version_statuses ) && version_compare( $new, $current, '<=' ) ) {
+			if ( $release->get_status() == Release::STATUS_DRAFT && version_compare( $new, $current, '<=' ) ) {
 
 				$msg = __( "The version number of this release is less than the current version.", Plugin::SLUG ) . '&nbsp;';
-
-				if ( $release->get_status() == Release::STATUS_DRAFT ) {
-					$msg .= sprintf( __( "This release's version must be greater than %s in order to activate this release.",
-						Plugin::SLUG ), $current );
-				}
-
-				if ( $release->get_status() == Release::STATUS_PAUSED ) {
-
-					$new_url = add_query_arg( 'view', 'add-new', Tab_Dispatch::get_tab_link( 'releases' ) );
-
-					$msg .= sprintf( __( 'You should %1$screate a new release%2$s instead.', Plugin::SLUG ),
-						"<a href=\"$new_url\">", '</a>' );
-				}
+				$msg .= sprintf( __( "This release's version must be greater than %s in order to activate this release.",
+					Plugin::SLUG ), $current );
 
 				$view->notice( $msg, View::NOTICE_ERROR );
 			}
@@ -186,11 +170,25 @@ class Single extends Controller {
 				break;
 
 			case 'changelog':
+
+				$val = stripslashes( $val );
+
+				if ( ! current_user_can( 'unfiltered_html' ) ) {
+					$val = wp_kses( $val, wp_kses_allowed_html() );
+				}
+
 				$release->set_changelog( $val );
 				break;
 
 			case 'security-message':
-				$release->update_meta( 'security-message', sanitize_text_field( $val ) );
+
+				$val = stripslashes( $val );
+
+				if ( ! current_user_can( 'unfiltered_html' ) ) {
+					$val = wp_kses( $val, wp_kses_allowed_html() );
+				}
+
+				$release->update_meta( 'security-message', $val );
 				break;
 
 			default:

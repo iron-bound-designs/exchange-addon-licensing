@@ -189,13 +189,11 @@ class ITELIC_Test_Admin_Releases_Single extends ITELIC_UnitTestCase {
 			'return' => true
 		) );
 
-		WP_Mock::wpFunction( 'current_user_can', array(
-			'times'  => 1,
-			'args'   => array( 'manage_options' ),
-			'return' => true
-		) );
+		wp_set_current_user( 1 );
 
 		$controller->do_update( $release, 'changelog', 'new-changes', 'nonce' );
+
+		wp_set_current_user( 0 );
 	}
 
 	public function test_update_security_message() {
@@ -212,13 +210,11 @@ class ITELIC_Test_Admin_Releases_Single extends ITELIC_UnitTestCase {
 			'return' => true
 		) );
 
-		WP_Mock::wpFunction( 'current_user_can', array(
-			'times'  => 1,
-			'args'   => array( 'manage_options' ),
-			'return' => true
-		) );
+		wp_set_current_user( 1 );
 
 		$controller->do_update( $release, 'security-message', 'new-message', 'nonce' );
+
+		wp_set_current_user( 0 );
 	}
 
 	/**

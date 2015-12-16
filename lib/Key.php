@@ -471,11 +471,9 @@ class Key extends Model implements API\Serializable {
 	 */
 	public function get_active_count() {
 
-		$found = null;
+		$count = wp_cache_get( $this->get_key(), 'itelic-key-active-count' );
 
-		$count = wp_cache_get( $this->get_key(), 'itelic-key-active-count', false, $found );
-
-		if ( $found === false ) {
+		if ( $count === false ) {
 
 			$db = Manager::make_simple_query_object( 'itelic-activations' );
 

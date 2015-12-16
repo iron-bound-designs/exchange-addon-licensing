@@ -790,11 +790,9 @@ class Release extends Model {
 			return $this->get_meta( 'updated', true );
 		}
 
-		$found = null;
+		$count = wp_cache_get( $this->get_ID(), 'itelic-release-upgrade-count' );
 
-		$count = wp_cache_get( $this->get_ID(), 'itelic-release-upgrade-count', false, $found );
-
-		if ( ! $found || $break_cache ) {
+		if ( $count === false || $break_cache ) {
 
 			$simple_query = Manager::make_simple_query_object( 'itelic-updates' );
 			$count        = $simple_query->count( array(
