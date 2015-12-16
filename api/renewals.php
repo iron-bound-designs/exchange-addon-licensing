@@ -213,6 +213,7 @@ function itelic_create_renewal_transaction( $args ) {
 	$total = empty( $args['paid'] ) ? $discounted : it_exchange_convert_to_database_number( $args['paid'] );
 
 	$object              = new stdClass();
+	$object->cart_id     = it_exchange_create_cart_id();
 	$object->total       = number_format( it_exchange_convert_from_database_number( $total ), 2, '.', '' );
 	$object->currency    = $currency;
 	$object->description = $description;

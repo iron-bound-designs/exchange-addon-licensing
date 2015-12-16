@@ -181,6 +181,7 @@ function itelic_create_key( $args ) {
 		$total = empty( $args['paid'] ) ? 0 : it_exchange_convert_to_database_number( $args['paid'] );
 
 		$object              = new stdClass();
+		$object->cart_id     = it_exchange_create_cart_id();
 		$object->total       = number_format( it_exchange_convert_from_database_number( $total ), 2, '.', '' );
 		$object->currency    = $currency;
 		$object->description = $description;
