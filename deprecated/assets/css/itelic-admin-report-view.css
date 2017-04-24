@@ -1,0 +1,59 @@
+.filter-form {
+	padding-bottom: 10px;
+}
+
+#product {
+	width: 300px;
+}
+
+.report {
+	background: white;
+	border: 1px solid #DFDFDF;
+	width: 80%;
+	padding: 2em;
+}
+
+.report h3 {
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+
+.report p.description {
+	font-style: oblique;
+	color: #666;
+	margin-bottom: 10px;
+}
+
+.report .chart {
+	width: calc(100% - 2em);
+}
+
+.chart-js-legend ul {
+	float: right;
+	margin-right: 1em;
+	margin-bottom: 0;
+}
+
+.chart-js-legend li {
+	display: inline-block;
+	margin-right: 10px;
+	margin-bottom: 0;
+}
+
+.chart-js-legend li span {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin-right: 5px;
+	margin-bottom: -1px;
+}
+
+.chart-js-legend:before,
+.chart-js-legend:after {
+	content: " ";
+	display: table;
+}
+
+.chart-js-legend:after {
+	clear: both;
+}

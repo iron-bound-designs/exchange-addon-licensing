@@ -17,69 +17,15 @@ use IronBound\DB\Manager;
 
 /**
  * Class Renewal
+ *
+ * @property int                      $id
+ * @property Key                      $lkey
+ * @property \DateTime                $renewal_date
+ * @property \DateTime                $key_expired_date
+ * @property \IT_Exchange_Transaction $transaction
+ * @property float                    $revenue
  */
 class Renewal extends Model {
-
-	/**
-	 * @var int
-	 */
-	private $id;
-
-	/**
-	 * @var Key
-	 */
-	private $key;
-
-	/**
-	 * @var \DateTime
-	 */
-	private $renewal_date;
-
-	/**
-	 * @var \DateTime
-	 */
-	private $key_expired_date;
-
-	/**
-	 * @var \IT_Exchange_Transaction
-	 */
-	private $transaction;
-
-	/**
-	 * @var float
-	 */
-	private $revenue;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param object $data Data from the DB
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function __construct( $data ) {
-		$this->init( $data );
-	}
-
-	/**
-	 * Initialize this object.
-	 *
-	 * @param \stdClass $data
-	 */
-	protected function init( \stdClass $data ) {
-		$this->id               = $data->id;
-		$this->key              = itelic_get_key( $data->lkey );
-		$this->renewal_date     = make_date_time( $data->renewal_date );
-		$this->key_expired_date = make_date_time( $data->key_expired_date );
-
-		if ( $data->transaction_id ) {
-			$this->transaction = it_exchange_get_transaction( $data->transaction_id );
-		} else {
-			$this->transaction = null;
-		}
-
-		$this->revenue = (float) $data->revenue;
-	}
 
 	/**
 	 * Create a renewal record.
@@ -95,7 +41,7 @@ class Renewal extends Model {
 	 */
 	public static function create( Key $key, \IT_Exchange_Transaction $transaction = null, \DateTime $expired, \DateTime $renewal = null ) {
 
-		if ( empty( $renewal ) ) {
+		if ( ! $renewal ) {
 			$renewal = make_date_time();
 		}
 
@@ -118,16 +64,13 @@ class Renewal extends Model {
 
 		$data = array(
 			'lkey'             => $key->get_key(),
-			'renewal_date'     => $renewal->format( "Y-m-d H:i:s" ),
-			'key_expired_date' => $expired->format( "Y-m-d H:i:s" ),
+			'renewal_date'     => $renewal,
+			'key_expired_date' => $expired,
 			'transaction_id'   => $tid,
 			'revenue'          => $revenue
 		);
 
-		$db = Manager::make_simple_query_object( 'itelic-renewals' );
-		$id = $db->insert( $data );
-
-		$renewal = self::get( $id );
+		$renewal = static::_do_create( $data );
 
 		if ( $renewal ) {
 
@@ -139,8 +82,6 @@ class Renewal extends Model {
 			 * @param Renewal $renewal
 			 */
 			do_action( 'itelic_create_renewal', $renewal );
-
-			Cache::add( $renewal );
 		}
 
 		return $renewal;
@@ -176,7 +117,7 @@ class Renewal extends Model {
 	 * @return Key
 	 */
 	public function get_key() {
-		return $this->key;
+		return $this->lkey;
 	}
 
 	/**
@@ -268,29 +209,6 @@ class Renewal extends Model {
 	}
 
 	/**
-	 * Get the data we'd like to cache.
-	 *
-	 * This is a bit magical. It iterates through all of the table columns,
-	 * and checks if a getter for that method exists. If so, it pulls in that
-	 * value. Otherwise, it will pull in the default value. If you'd like to
-	 * customize this you should override this function in your child model
-	 * class.
-	 *
-	 * @since 1.0
-	 *
-	 * @return array
-	 */
-	public function get_data_to_cache() {
-		$data = parent::get_data_to_cache();
-
-		unset( $data['key'] );
-		$data['lkey']           = $this->get_key();
-		$data['transaction_id'] = $this->get_transaction() ? $this->get_transaction()->ID : null;
-
-		return $data;
-	}
-
-	/**
 	 * Get the table object for this model.
 	 *
 	 * @since 1.0
@@ -299,5 +217,26 @@ class Renewal extends Model {
 	 */
 	protected static function get_table() {
 		return Manager::get( 'itelic-renewals' );
+	}
+
+	protected function _access_transaction( $raw ) {
+		return it_exchange_get_transaction( $raw );
+	}
+
+	protected function _mutate_transaction( $value ) {
+
+		if ( is_numeric( $value ) ) {
+			return $value;
+		}
+
+		if ( $value instanceof \IT_Exchange_Transaction ) {
+			return $value->get_ID();
+		}
+
+		if ( $value instanceof \WP_Post ) {
+			return $value->ID;
+		}
+
+		return $value;
 	}
 }

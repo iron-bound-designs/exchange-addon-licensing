@@ -1,0 +1,25 @@
+{
+    "name": "ironbound/db-logger",
+    "description": "PSR-3 Logger for WordPress using IronBound-DB",
+    "type": "library",
+    "require": {
+        "psr/log": "^1.0",
+        "ironbound/db": "^1.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Iron Bound Designs",
+            "email": "info@ironbounddesigns.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "^4.8.0"
+    },
+    "autoload": {
+    "psr-4": {
+        "IronBound\\DBLogger\\"    : "src/"
+    }
+}
+}

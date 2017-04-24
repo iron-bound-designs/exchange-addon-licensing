@@ -1,0 +1,31 @@
+.product-filter-container {
+	display: inline-block;
+}
+
+#filter-by-product {
+	width: 300px;
+}
+
+.product-filter-container .select2 {
+	margin-bottom: -10px;
+}
+
+.status-indicator::before {
+	content: "\f159";
+	font-size: .8em;
+	line-height: .8;
+	vertical-align: middle;
+}
+
+
+.status-indicator.status-active {
+	color: #8cc53e;
+}
+
+.status-indicator.status-expired {
+	color: #ffba00;
+}
+
+.status-indicator.status-disabled {
+	color: #dd3d36;
+}

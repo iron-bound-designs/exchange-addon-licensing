@@ -10,13 +10,19 @@
 
 namespace ITELIC\DB\Table;
 
-use IronBound\DB\Table\Table;
+use IronBound\DB\Manager;
+use IronBound\DB\Table\BaseTable;
+use IronBound\DB\Table\Column\DateTime;
+use IronBound\DB\Table\Column\ForeignModel;
+use IronBound\DB\Table\Column\IntegerBased;
+use IronBound\DB\Table\Column\StringBased;
 
 /**
  * Class Upgrades
+ *
  * @package ITELIC\DB\Table
  */
-class Updates implements Table {
+class Updates extends BaseTable {
 
 	/**
 	 * Retrieve the name of the database table.
@@ -53,11 +59,12 @@ class Updates implements Table {
 	 */
 	public function get_columns() {
 		return array(
-			'ID'               => '%d',
-			'activation'       => '%d',
-			'release_id'       => '%d',
-			'previous_version' => '%s',
-			'update_date'     => '%s',
+			'ID'               =>
+				new IntegerBased( 'BIGINT', 'ID', array( 'NOT NULL', 'auto_increment' ), array( 20 ) ),
+			'activation'       => new ForeignModel( 'activation', 'ITELIC\Activation', Manager::get( 'itelic-activations' ) ),
+			'release_id'       => new ForeignModel( 'release_id', 'ITELIC\Release', Manager::get( 'itelic-releases' ) ),
+			'previous_version' => new StringBased( 'VARCHAR', 'previous_version', array( 'NOT NULL' ), array( 20 ) ),
+			'update_date'      => new DateTime( 'update_date' ),
 		);
 	}
 
@@ -74,8 +81,20 @@ class Updates implements Table {
 			'activation'       => '',
 			'release_id'       => '',
 			'previous_version' => '',
-			'update_date'     => '',
+			'update_date'      => '',
 		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function get_keys() {
+		$keys   = parent::get_keys();
+		$keys[] = 'release_id (release_id)';
+		$keys[] = 'previous_version (previous_version)';
+		$keys[] = 'update_date (update_date)';
+
+		return $keys;
 	}
 
 	/**
@@ -87,33 +106,6 @@ class Updates implements Table {
 	 */
 	public function get_primary_key() {
 		return 'ID';
-	}
-
-	/**
-	 * Get creation SQL.
-	 *
-	 * @since 1.0
-	 *
-	 * @param \wpdb $wpdb
-	 *
-	 * @return string
-	 */
-	public function get_creation_sql( \wpdb $wpdb ) {
-		$tn = $this->get_table_name( $wpdb );
-
-		// todo figure out what indexes will be necessary
-
-		return "CREATE TABLE {$tn} (
-		ID BIGINT(20) NOT NULL AUTO_INCREMENT,
-		activation BIGINT(20) UNSIGNED NOT NULL,
-		release_id BIGINT(20) UNSIGNED NOT NULL,
-		previous_version VARCHAR(20) NOT NULL,
-		update_date DATETIME DEFAULT NULL,
-		PRIMARY KEY  (ID),
-		KEY release_id (release_id),
-		KEY previous_version (previous_version),
-		KEY update_date (update_date)
-		) {$wpdb->get_charset_collate()};";
 	}
 
 	/**

@@ -12,6 +12,8 @@ namespace ITELIC;
 
 use Faker\Provider\tr_TR\DateTime;
 use IronBound\Cache\Cache;
+use IronBound\DB\Extensions\Meta\MetaTable;
+use IronBound\DB\Extensions\Meta\ModelWithMeta;
 use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
@@ -24,8 +26,17 @@ use ITELIC\Query\Updates;
  * Class Release
  *
  * @package ITELIC
+ *
+ * @property int            $ID
+ * @property Product        $product
+ * @property \WP_Post       $download
+ * @property string         $version
+ * @property string         $status
+ * @property string         $type
+ * @property string         $changelog
+ * @property \DateTime|null $start_date
  */
-class Release extends Model {
+class Release extends ModelWithMeta {
 
 	/**
 	 * Major releases. 1.5 -> 1.6
@@ -73,92 +84,6 @@ class Release extends Model {
 	const STATUS_ARCHIVED = 'archived';
 
 	/**
-	 * @var int
-	 */
-	private $ID;
-
-	/**
-	 * @var Product
-	 */
-	private $product;
-
-	/**
-	 * @var int
-	 */
-	private $download;
-
-	/**
-	 * @var string
-	 */
-	private $version;
-
-	/**
-	 * @var string
-	 */
-	private $status;
-
-	/**
-	 * @var string
-	 */
-	private $type;
-
-	/**
-	 * @var string
-	 */
-	private $changelog;
-
-	/**
-	 * @var \DateTime|null
-	 */
-	private $start_date;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param \stdClass $data
-	 */
-	public function __construct( \stdClass $data ) {
-		$this->init( $data );
-	}
-
-	/**
-	 * Init an object.
-	 *
-	 * @since 1.0
-	 *
-	 * @param \stdClass $data
-	 */
-	protected function init( \stdClass $data ) {
-		$this->ID      = $data->ID;
-		$this->product = itelic_get_product( $data->product );
-
-		if ( ! $this->product ) {
-			throw new \InvalidArgumentException( "Invalid product." );
-		}
-
-		$this->download = (int) $data->download;
-		$this->version  = $data->version;
-
-		if ( array_key_exists( $data->status, self::get_statuses() ) ) {
-			$this->status = $data->status;
-		} else {
-			throw new \InvalidArgumentException( "Invalid status." );
-		}
-
-		if ( array_key_exists( $data->type, self::get_types() ) ) {
-			$this->type = $data->type;
-		} else {
-			throw new \InvalidArgumentException( "Invalid type." );
-		}
-
-		$this->changelog = $data->changelog;
-
-		if ( $data->start_date && $data->start_date != '0000-00-00 00:00:00' ) {
-			$this->start_date = make_date_time( $data->start_date );
-		}
-	}
-
-	/**
 	 * Create a new release record.
 	 *
 	 * If status is set to active, the start date will automatically be set to
@@ -190,7 +115,7 @@ class Release extends Model {
 			throw new \InvalidArgumentException( "Invalid type." );
 		}
 
-		if ( get_post_type( $file ) != 'attachment' ) {
+		if ( get_post_type( $file ) !== 'attachment' ) {
 			throw new \InvalidArgumentException( "Invalid update file." );
 		}
 
@@ -216,13 +141,10 @@ class Release extends Model {
 		);
 
 		if ( $status == self::STATUS_ACTIVE ) {
-			$data['start_date'] = make_date_time()->format( 'Y-m-d H:i:s' );
+			$data['start_date'] = make_date_time();
 		}
 
-		$db = Manager::make_simple_query_object( 'itelic-releases' );
-		$ID = $db->insert( $data );
-
-		$release = self::get( $ID );
+		$release = static::_do_create( $data );
 
 		if ( $release ) {
 
@@ -235,9 +157,9 @@ class Release extends Model {
 			 */
 			do_action( 'itelic_create_release', $release );
 
-			if ( $status == self::STATUS_ACTIVE ) {
+			if ( $status === self::STATUS_ACTIVE ) {
 
-				if ( $type != self::TYPE_PRERELEASE ) {
+				if ( $type !== self::TYPE_PRERELEASE ) {
 					self::do_activation( $product, $file, $version );
 				}
 
@@ -251,14 +173,9 @@ class Release extends Model {
 				do_action( 'itelic_activate_release', $release );
 			}
 
-			if ( in_array( $status, array(
-				self::STATUS_ACTIVE,
-				self::STATUS_ARCHIVED
-			) ) ) {
+			if ( in_array( $status, array( self::STATUS_ACTIVE, self::STATUS_ARCHIVED ), true ) ) {
 				wp_cache_delete( $product->ID, 'itelic-changelog' );
 			}
-
-			Cache::add( $release );
 		}
 
 		return $release;
@@ -313,9 +230,9 @@ class Release extends Model {
 	 */
 	public function activate( \DateTime $when = null ) {
 
-		if ( $this->status != self::STATUS_ACTIVE ) {
+		if ( $this->status !== self::STATUS_ACTIVE ) {
 			$this->status = self::STATUS_ACTIVE;
-			$this->update( 'status', self::STATUS_ACTIVE );
+			$this->save();
 		}
 
 		if ( ! $this->get_start_date() ) {
@@ -327,7 +244,7 @@ class Release extends Model {
 			$this->set_start_date( $when );
 		}
 
-		if ( $this->get_type() != self::TYPE_PRERELEASE ) {
+		if ( $this->get_type() !== self::TYPE_PRERELEASE ) {
 			self::do_activation( $this->get_product(), $this->get_download(), $this->get_version() );
 		}
 
@@ -350,12 +267,12 @@ class Release extends Model {
 	 */
 	public function pause() {
 
-		if ( $this->status != self::STATUS_PAUSED ) {
+		if ( $this->status !== self::STATUS_PAUSED ) {
 			$this->status = self::STATUS_PAUSED;
-			$this->update( 'status', self::STATUS_PAUSED );
+			$this->save();
 		}
 
-		if ( $this->get_type() != self::TYPE_PRERELEASE ) {
+		if ( $this->get_type() !== self::TYPE_PRERELEASE ) {
 
 			$releases = itelic_get_releases( array(
 				'items_per_page' => 1,
@@ -428,9 +345,9 @@ class Release extends Model {
 		$first_14_days = $this->get_first_14_days_of_upgrades();
 		$this->update_meta( 'first_14_days', $first_14_days );
 
-		if ( $this->status != self::STATUS_ARCHIVED ) {
+		if ( $this->status !== self::STATUS_ARCHIVED ) {
 			$this->status = self::STATUS_ARCHIVED;
-			$this->update( 'status', self::STATUS_ARCHIVED );
+			$this->save();
 		}
 
 		$updates = itelic_get_updates( array(
@@ -492,7 +409,7 @@ class Release extends Model {
 	 * @return \WP_Post
 	 */
 	public function get_download() {
-		return get_post( $this->download );
+		return $this->download;
 	}
 
 	/**
@@ -509,8 +426,7 @@ class Release extends Model {
 		}
 
 		$this->download = $download;
-
-		$this->update( 'download', $download );
+		$this->save();
 	}
 
 	/**
@@ -540,8 +456,7 @@ class Release extends Model {
 		}
 
 		$this->version = $version;
-
-		$this->update( 'version', $version );
+		$this->save();
 	}
 
 	/**
@@ -579,20 +494,20 @@ class Release extends Model {
 
 		$old_status = $this->status;
 
-		if ( $this->status == self::STATUS_DRAFT || $this->status == self::STATUS_PAUSED && $status == self::STATUS_ACTIVE ) {
+		if ( $this->status === self::STATUS_DRAFT || ( $this->status === self::STATUS_PAUSED && $status === self::STATUS_ACTIVE ) ) {
 			$this->activate();
 		}
 
-		if ( $this->status == self::STATUS_ACTIVE && $status == self::STATUS_PAUSED ) {
+		if ( $this->status === self::STATUS_ACTIVE && $status === self::STATUS_PAUSED ) {
 			$this->pause();
 		}
 
-		if ( $this->status == self::STATUS_ACTIVE && $status == self::STATUS_ARCHIVED ) {
+		if ( $this->status === self::STATUS_ACTIVE && $status === self::STATUS_ARCHIVED ) {
 			$this->archive();
 		}
 
 		$this->status = $status;
-		$this->update( 'status', $status );
+		$this->save();
 
 		/**
 		 * Fires when a releases's status is transitioned.
@@ -640,7 +555,7 @@ class Release extends Model {
 		}
 
 		$this->type = $type;
-		$this->update( 'type', $type );
+		$this->save();
 	}
 
 	/**
@@ -665,7 +580,7 @@ class Release extends Model {
 	 */
 	public function set_changelog( $changelog, $mode = 'replace' ) {
 
-		if ( $mode == 'append' ) {
+		if ( $mode === 'append' ) {
 			$this->changelog .= $changelog;
 		} else {
 			$this->changelog = $changelog;
@@ -673,7 +588,7 @@ class Release extends Model {
 
 		wp_cache_delete( $this->get_product()->ID, 'itelic-changelog' );
 
-		$this->update( 'changelog', $this->changelog );
+		$this->save();
 	}
 
 	/**
@@ -700,79 +615,7 @@ class Release extends Model {
 	 */
 	public function set_start_date( \DateTime $start_date = null ) {
 		$this->start_date = $start_date;
-
-		if ( $start_date ) {
-			$val = $start_date->format( "Y-m-d H:i:s" );
-		} else {
-			$val = null;
-		}
-
-		$this->update( 'start_date', $val );
-	}
-
-	/**
-	 * Add metadata to this release.
-	 *
-	 * @since 1.0
-	 *
-	 * @param string $key    Metadata key
-	 * @param mixed  $value  Metadata value. Must be serializable if
-	 *                       non-scalar.
-	 * @param bool   $unique Optional, default is false. Whether the meta key
-	 *                       should be unique for this release.
-	 *
-	 * @return false|int The meta ID on success, false on failure.
-	 */
-	public function add_meta( $key, $value, $unique = false ) {
-		return add_metadata( 'itelic_release', $this->get_ID(), $key, $value, $unique );
-	}
-
-	/**
-	 * Retrieve metadata for this release..
-	 *
-	 * @since 1.5.0
-	 *
-	 * @param string $key     Optional. The meta key to retrieve. By default,
-	 *                        returns data for all keys. Default empty.
-	 * @param bool   $single  Optional. Whether to return a single value.
-	 *                        Default false.
-	 *
-	 * @return mixed Will be an array if $single is false. Will be value of
-	 *               meta data field if $single is true.
-	 */
-	public function get_meta( $key = '', $single = false ) {
-		return get_metadata( 'itelic_release', $this->get_ID(), $key, $single );
-	}
-
-	/**
-	 * Update metadata for this release.
-	 *
-	 * @since 1.0
-	 *
-	 * @param string $key        Metadata key.
-	 * @param mixed  $value      Metadata value. Must be serializable if
-	 *                           non-scalar.
-	 * @param string $prev_value Optional. Previous value to check before
-	 *                           removing. Default empty.
-	 *
-	 * @return bool|int Meta ID if the key didn't exist, true on successful
-	 *                  update, false on failure.
-	 */
-	public function update_meta( $key, $value, $prev_value = '' ) {
-		return update_metadata( 'itelic_release', $this->get_ID(), $key, $value, $prev_value );
-	}
-
-	/**
-	 * Remove metadata from this release.
-	 *
-	 * @param string $key   Metadata key.
-	 * @param mixed  $value Optional. Metadata value. Must be serializable if
-	 *                      non-scalar. Default empty.
-	 *
-	 * @return bool
-	 */
-	public function delete_meta( $key, $value = '' ) {
-		return delete_metadata( 'itelic_release', $this->get_ID(), $key, $value );
+		$this->save();
 	}
 
 	/**
@@ -827,7 +670,7 @@ class Release extends Model {
 		$total = wp_cache_get( $this->get_pk(), 'itelic-release-active-activations', false, $found );
 
 		if ( $found === false ) {
-			
+
 			$query = new Activations( array(
 				'status'       => Activation::ACTIVE,
 				'product'      => $this->get_product()->ID,
@@ -1015,4 +858,28 @@ class Release extends Model {
 	protected static function get_table() {
 		return Manager::get( 'itelic-releases' );
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public static function get_meta_table() {
+		return Manager::get( 'itelic-release-meta' );
+	}
+
+	protected function _access_product( $raw ) {
+		return itelic_get_product( $raw );
+	}
+
+	protected function _mutate_product( $value ) {
+		if ( is_numeric( $value ) ) {
+			return $value;
+		}
+
+		if ( $value instanceof \IT_Exchange_Product ) {
+			return $value->get_ID();
+		}
+
+		return $value;
+	}
+
 }

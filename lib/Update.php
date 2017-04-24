@@ -20,57 +20,14 @@ use IronBound\DB\Exception as DB_Exception;
  * Class Upgrade
  *
  * @package ITELIC
+ *
+ * @property int        $ID
+ * @property Activation $activation
+ * @property Release    $release
+ * @property \DateTime  $update_date
+ * @property string     $previous_version
  */
 class Update extends Model {
-
-	/**
-	 * @var int
-	 */
-	private $ID;
-
-	/**
-	 * @var Activation
-	 */
-	private $activation;
-
-	/**
-	 * @var Release
-	 */
-	private $release;
-
-	/**
-	 * @var \DateTime
-	 */
-	private $update_date;
-
-	/**
-	 * @var string
-	 */
-	private $previous_version;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param \stdClass $data
-	 */
-	public function __construct( \stdClass $data ) {
-		$this->init( $data );
-	}
-
-	/**
-	 * Init an object.
-	 *
-	 * @since 1.0
-	 *
-	 * @param \stdClass $data
-	 */
-	protected function init( \stdClass $data ) {
-		$this->ID               = $data->ID;
-		$this->activation       = itelic_get_activation( $data->activation );
-		$this->release          = itelic_get_release( $data->release_id );
-		$this->update_date      = make_date_time( $data->update_date );
-		$this->previous_version = $data->previous_version;
-	}
 
 	/**
 	 * Create an Upgrade record.
@@ -96,16 +53,13 @@ class Update extends Model {
 		}
 
 		$data = array(
-			'activation'       => $activation->get_id(),
-			'release_id'       => $release->get_ID(),
-			'update_date'      => $update_date->format( "Y-m-d H:i:s" ),
+			'activation'       => $activation,
+			'release_id'       => $release,
+			'update_date'      => $update_date,
 			'previous_version' => $previous_version
 		);
 
-		$db = Manager::make_simple_query_object( 'itelic-updates' );
-		$ID = $db->insert( $data );
-
-		$update = self::get( $ID );
+		$update = static::_do_create( $data );
 
 		if ( $update ) {
 
@@ -119,8 +73,6 @@ class Update extends Model {
 			 * @param Update $update
 			 */
 			do_action( 'itelic_create_update', $update );
-
-			Cache::add( $update );
 		}
 
 		return $update;

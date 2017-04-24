@@ -1,0 +1,24 @@
+{
+    "name": "ironbound/wp-notifications",
+    "description": "Drop in framework for sending notifications in WordPress.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Iron Bound Designs",
+            "email": "info@ironbounddesigns.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.0"	
+    },
+    "suggest": {
+        "mandrill/mandrill": "Allows for sending notifications via Mandrill"
+    },
+    "autoload": {
+        "psr-4": {
+            "IronBound\\WP_Notifications\\" : "src/"
+        }
+    }
+}

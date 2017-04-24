@@ -9,13 +9,21 @@
  */
 
 namespace ITELIC\DB\Table;
-use IronBound\DB\Table\Table;
+
+use IronBound\DB\Table\BaseTable;
+use IronBound\DB\Table\Column\DateTime;
+use IronBound\DB\Table\Column\Enum;
+use IronBound\DB\Table\Column\ForeignPost;
+use IronBound\DB\Table\Column\IntegerBased;
+use IronBound\DB\Table\Column\StringBased;
+use ITELIC\Release;
 
 /**
  * Class Releases
+ *
  * @package ITELIC\DB\Table
  */
-class Releases implements Table {
+class Releases extends BaseTable {
 
 	/**
 	 * Retrieve the name of the database table.
@@ -52,14 +60,15 @@ class Releases implements Table {
 	 */
 	public function get_columns() {
 		return array(
-			'ID'         => '%d',
-			'product'    => '%d',
-			'download'   => '%d',
-			'version'    => '%s',
-			'status'     => '%s',
-			'type'       => '%s',
-			'changelog'  => '%s',
-			'start_date' => '%s'
+			'ID'         =>
+				new IntegerBased( 'BIGINT', 'ID', array( 'unsigned', 'NOT NULL', 'auto_increment' ), array( 20 ) ),
+			'product'    => new ForeignPost( 'product' ),
+			'download'   => new ForeignPost( 'download' ),
+			'version'    => new StringBased( 'VARCHAR', 'version', array( 'NOT NULL' ), array( 20 ) ),
+			'status'     => new Enum( array_keys( Release::get_statuses() ), 'status', 'draft', false ),
+			'type'       => new StringBased( 'VARCHAR', 'type', array( 'NOT NULL' ), array( 20 ) ),
+			'changelog'  => new StringBased( 'TEXT', 'changelog' ),
+			'start_date' => new DateTime( 'start_date' ),
 		);
 	}
 
@@ -84,6 +93,16 @@ class Releases implements Table {
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	protected function get_keys() {
+		$keys   = parent::get_keys();
+		$keys[] = 'product__version (product,version)';
+
+		return $keys;
+	}
+
+	/**
 	 * Retrieve the name of the primary key.
 	 *
 	 * @since 1.0
@@ -92,32 +111,6 @@ class Releases implements Table {
 	 */
 	public function get_primary_key() {
 		return 'ID';
-	}
-
-	/**
-	 * Get creation SQL.
-	 *
-	 * @since 1.0
-	 *
-	 * @param \wpdb $wpdb
-	 *
-	 * @return string
-	 */
-	public function get_creation_sql( \wpdb $wpdb ) {
-		$tn = $this->get_table_name( $wpdb );
-
-		return "CREATE TABLE {$tn} (
-		ID bigint(20) unsigned NOT NULL auto_increment,
-		product bigint(20) unsigned NOT NULL,
-		download bigint(20) unsigned NOT NULL,
-		version varchar(20) NOT NULL,
-		status varchar(20) NOT NULL,
-		type varchar(20) NOT NULL,
-		changelog TEXT,
-		start_date DATETIME,
-		PRIMARY KEY  (ID),
-		KEY product__version (product,version)
-		) {$wpdb->get_charset_collate()};";
 	}
 
 	/**
@@ -132,6 +125,4 @@ class Releases implements Table {
 	public function get_version() {
 		return 1;
 	}
-
-
 }

@@ -23,25 +23,6 @@ foreach ( \ITELIC\get_tables() as $table ) {
 	Manager::register( $table );
 }
 
-global $wpdb;
-
-$wpdb->itelic_releasemeta    = Manager::get( 'itelic-release-meta' )->get_table_name( $wpdb );
-$wpdb->itelic_activationmeta = Manager::get( 'itelic-activation-meta' )->get_table_name( $wpdb );
-
-add_filter( 'sanitize_key', function ( $sanitized, $original ) {
-
-	if ( $original == 'itelic_release_id' ) {
-		$sanitized = sanitize_key( 'release_id' );
-	}
-
-	if ( $original == 'itelic_activation_id' ) {
-		$sanitized = sanitize_key( 'activation_id' );
-	}
-
-	return $sanitized;
-
-}, 10, 2 );
-
 /**
  * Install custom DB tables.
  *

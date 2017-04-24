@@ -868,7 +868,7 @@ function page_rewrites( $page ) {
 
 	$rewrites = array(
 		$account_slug . '/([0-9]+)/' . $slug . '$' => 'index.php?' . $account_slug . '=$matches[1]&' . $slug . '=1',
-		$account_slug . '/' . $slug . '$'         => 'index.php?' . $account_slug . '=1&' . $slug . '=1',
+		$account_slug . '/' . $slug . '$'          => 'index.php?' . $account_slug . '=1&' . $slug . '=1',
 	);
 
 	return $rewrites;
@@ -888,14 +888,18 @@ function page_rewrites( $page ) {
  * @return Table[]
  */
 function get_tables() {
+
+	$releases    = new Releases();
+	$activations = new Activations();
+
 	return array(
 		new Keys(),
-		new Activations(),
+		$activations,
 		new Renewals(),
-		new Releases(),
+		$releases,
 		new Updates(),
-		new Release_Meta(),
-		new Activation_Meta(),
+		new Release_Meta( $releases ),
+		new Activation_Meta( $activations ),
 		new \IronBound\DBLogger\Table( 'itelic-api-logs' )
 	);
 }

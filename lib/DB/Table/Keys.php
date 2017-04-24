@@ -9,13 +9,22 @@
  */
 
 namespace ITELIC\DB\Table;
-use IronBound\DB\Table\Table;
+
+use IronBound\DB\Manager;
+use IronBound\DB\Table\BaseTable;
+use IronBound\DB\Table\Column\DateTime;
+use IronBound\DB\Table\Column\ForeignModel;
+use IronBound\DB\Table\Column\ForeignPost;
+use IronBound\DB\Table\Column\ForeignUser;
+use IronBound\DB\Table\Column\IntegerBased;
+use IronBound\DB\Table\Column\StringBased;
 
 /**
  * Class Keys
+ *
  * @package ITELIC\DB\Table
  */
-class Keys implements Table {
+class Keys extends BaseTable {
 
 	/**
 	 * Columns in the table.
@@ -28,13 +37,13 @@ class Keys implements Table {
 	 */
 	public function get_columns() {
 		return array(
-			'lkey'           => '%s',
-			'transaction_id' => '%d',
-			'product'        => '%d',
-			'customer'       => '%d',
-			'status'         => '%s',
-			'max'            => '%d',
-			'expires'        => '%s'
+			'lkey'           => new StringBased( 'VARCHAR', 'lkey', array( 128 ), array( 'NOT NULL' ) ),
+			'transaction_id' => new ForeignModel( 'transaction_id', 'IT_Exchange_Transaction', Manager::get( 'ite-transactions' ) ),
+			'product'        => new ForeignPost( 'product' ),
+			'customer'       => new ForeignUser( 'customer' ),
+			'status'         => new StringBased( 'VARCHAr', 'status', array( 'NOT NULL' ), array( 20 ) ),
+			'max'            => new IntegerBased( 'INTEGER', array( 'unsigned', 'NOT NULL' ) ),
+			'expires'        => new DateTime( 'expires' )
 		);
 	}
 
@@ -55,6 +64,18 @@ class Keys implements Table {
 			'max'            => 0,
 			'expires'        => null
 		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function get_keys() {
+		$keys   = parent::get_keys();
+		$keys[] = 'customer (customer)';
+		$keys[] = 'transaction_id (transaction_id)';
+		$keys[] = 'expires (expires)';
+
+		return $keys;
 	}
 
 	/**
@@ -90,33 +111,6 @@ class Keys implements Table {
 	 */
 	public function get_primary_key() {
 		return 'lkey';
-	}
-
-	/**
-	 * Get creation SQL.
-	 *
-	 * @since 1.0
-	 *
-	 * @param \wpdb $wpdb
-	 *
-	 * @return string
-	 */
-	public function get_creation_sql( \wpdb $wpdb ) {
-		$tn = $this->get_table_name( $wpdb );
-
-		return "CREATE TABLE {$tn} (
-		lkey VARCHAR(128) NOT NULL,
-		transaction_id BIGINT(20) UNSIGNED NOT NULL,
-		product BIGINT(20) UNSIGNED NOT NULL,
-		customer BIGINT(20) UNSIGNED NOT NULL,
-		status VARCHAR(20) NOT NULL,
-		max INTEGER UNSIGNED NOT NULL,
-		expires DATETIME DEFAULT NULL,
-		PRIMARY KEY  (lkey),
-		KEY customer (customer),
-		KEY transaction_id (transaction_id),
-		KEY expires (expires)
-		) {$wpdb->get_charset_collate()};";
 	}
 
 	/**

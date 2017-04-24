@@ -1,0 +1,554 @@
+/** -----------------------------------------------------:[ reset & locals ]:---------- */
+
+#release-details {
+	margin: 0;
+	padding: 0;
+	background: #FFF;
+	border: 1px solid #DFDFDF;
+	max-width: 750px;
+}
+
+#release-details * {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#release-details .wp-editor-wrap * {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
+
+#release-details .left {
+	float: left;
+}
+
+#release-details .right {
+	float: right;
+	text-align: right;
+}
+
+#release-details .third {
+	margin: -2em 0;
+	padding: 2em 2em;
+	float: left;
+	width: 35.8%;
+	border-right: 1px solid #DFDFDF;
+	height: 120px;
+}
+
+#release-details .third-row div:first-child {
+	padding-left: 2em;
+	margin-left: -2em;
+}
+
+#release-details .third-row div:last-child {
+	border-right: none;
+	margin-right: -2em;
+	padding-right: 2em;
+}
+
+#release-details:after,
+#release-details .clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+#release-details .spacing-wrapper {
+	overflow: hidden;
+	padding: 2em;
+}
+
+#release-details .bottom-border {
+	border-bottom: 1px solid #DFDFDF;
+}
+
+#release-details .top-border {
+	border-top: 1px solid #DFDFDF;
+}
+
+#release-details input[type="text"],
+#release-details input[type="number"],
+#release-details textarea {
+	background: #fff;
+	border: 1px solid #d6d6d6;
+	border-radius: 3px;
+	font-size: 18px;
+	padding: 10px;
+	color: #3d4142;
+	width: 260px;
+	-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, .07);
+	outline: 0;
+	-webkit-transition: .05s border-color ease-in-out;
+	transition: .05s border-color ease-in-out;
+}
+
+#release-details .misc-block input[type="text"],
+#release-details .misc-block input[type="number"] {
+	width: 192px;
+}
+
+.ui-datepicker-trigger {
+	display: none;
+}
+
+.chart-js-legend li span {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin-right: 5px;
+}
+
+.tip {
+	font-weight: 600;
+	margin-top: 0;
+}
+
+#release-details .editableform-loading {
+	margin: 10px 0 0 0 !important;
+	padding: 0;
+	width: 100%;
+}
+
+/** -----------------------------------------------------:[ release status ]:---------- */
+
+#release-details .header-block {
+	position: relative;
+}
+
+#release-details .header-block .status {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 75px;
+	height: 75px;
+	border-bottom-left-radius: 75px;
+	-webkit-transition-property: width, border-bottom-left-radius, background-color, color;
+	transition-property: width, border-bottom-left-radius, background-color, color;
+	-webkit-transition-duration: .75s;
+	transition-duration: .75s;
+	-webkit-transition-delay: .3s;
+	transition-delay: .3s;
+}
+
+#release-details .header-block .status:hover,
+#release-details .header-block .status.status-hovered {
+	width: 200px;
+	border-bottom-left-radius: 25px;
+	-webkit-transition-delay: 0s;
+	transition-delay: 0s;
+}
+
+#release-details .header-block .status span {
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+	padding: 25px 0 0 25px;
+	font-size: 25px;
+	letter-spacing: .5px;
+	opacity: 0;
+	text-transform: uppercase;
+	-webkit-transition-property: opacity;
+	transition-property: opacity;
+	-webkit-transition-duration: .25s;
+	transition-duration: .25s;
+	-webkit-transition-delay: .3s;
+	transition-delay: .3s;
+}
+
+#release-details .header-block .status:hover span,
+#release-details .header-block .status.status-hovered span {
+	opacity: 1;
+	-webkit-transition-delay: 0s;
+	transition-delay: 0s;
+}
+
+#release-details .header-block .status-active {
+	background: #8cc53e;
+}
+
+#release-details .header-block .status-active span {
+	color: #fff;
+}
+
+#release-details .header-block .status-paused {
+	background: #ffba00;
+}
+
+#release-details .header-block .status-paused span {
+	color: #fff;
+}
+
+#release-details .header-block .status-expired span {
+	color: #fafafa;
+}
+
+#release-details .header-block .status-draft {
+	background: #454545;
+}
+
+#release-details .header-block .status-draft span {
+	color: #E7E7E7;
+}
+
+#release-details .header-block .status-archived {
+	background: #3F88C5;
+}
+
+#release-details .header-block .status-archived span {
+	color: #fff;
+}
+
+/** -----------------------------------------------------:[ release header-details ]:---------- */
+
+#release-details .header-block h2 {
+	display: inline-block;
+	font-size: 24px;
+	margin: 0;
+	padding: 0;
+	font-weight: 400;
+}
+
+#release-details .header-block .product-name::after {
+	content: '|';
+	padding: 0 5px;
+}
+
+#release-details .header-block .version-name {
+	font-size: 20px;
+	color: #666;
+}
+
+/** -----------------------------------------------------:[ release misc ]:---------- */
+
+#release-details h4,
+#release-details label {
+	margin: 0 0 5px 0;
+	font-size: 16px;
+	color: #666666;
+	font-weight: 300;
+}
+
+#release-details .misc-block h3 {
+	margin: .60em 0 .4em 0;
+	font-size: 22px;
+	font-weight: 400;
+}
+
+#release-details .misc-block h3 a {
+	color: #222222;
+	-webkit-transition: color .5s;
+	transition: color .5s;
+}
+
+#release-details .misc-block h3 a:hover {
+	color: #6d6d6d;
+}
+
+#release-details .initial-release-notice {
+	width: 100%;
+	color: #666;
+	font-style: oblique;
+	text-align: center;
+}
+
+/** -----------------------------------------------------:[ release click to edit ]:---------- */
+
+.editable-click, a.editable-click, a.editable-click:hover {
+	border-bottom: none;
+}
+
+.ui-tooltip.editable-container {
+	background: none;
+}
+
+#release-details .status span,
+#release-details .expires h3,
+#release-details .max-activations h3 {
+	cursor: pointer;
+}
+
+/** -----------------------------------------------------:[ replace file ]:---------- */
+
+.replace-file-container {
+	display: inline-block;
+	width: 100%;
+	text-align: center;
+}
+
+.replace-file-container .button {
+	vertical-align: middle;
+	margin-left: 5px;
+}
+
+/** -----------------------------------------------------:[ whats changed ]:---------- */
+
+.whats-changed ul li {
+	list-style: square;
+	margin-left: 25px;
+}
+
+.whats-changed-editor {
+	display: none;
+}
+
+.whats-changed-editor p {
+	float: right;
+}
+
+/** -----------------------------------------------------:[ security message ]:---------- */
+
+#release-details .editable-container.editable-inline {
+	width: 100%;
+}
+
+#release-details .editable-input {
+	width: 100%;
+}
+
+#release-details .security-message-block textarea {
+	width: 100%;
+	resize: vertical;
+	font-size: 16px;
+}
+
+#release-details .security-message-block .editable-buttons {
+	display: block !important;
+	margin-left: 0 !important;
+	text-align: right;
+}
+
+#release-details .security-message-block .editable-buttons button.ui-button-icon-only {
+	height: 28px;
+	width: auto !important;
+}
+
+#release-details .security-message-block .editable-buttons button.button-primary {
+	margin-left: 5px;
+}
+
+/** -----------------------------------------------------:[ upgrade progress ]:---------- */
+
+#more-upgrades-link {
+	font-size: .7em;
+	text-decoration: none;
+	margin-left: 4px;
+}
+
+#release-details .progress-container {
+	position: relative;
+}
+
+#release-details progress[value],
+#release-details .progress-bar {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	border: none;
+
+	width: calc(100% - 81px);
+	height: 25px;
+	margin-top: 10px;
+	display: inline-block;
+	float: left;
+
+	/* For IE10 */
+	color: #8cc53e;
+}
+
+#release-details .progress-bar > span {
+	background-color: #8cc53e;
+	border-radius: 2px;
+
+	display: block;
+	text-indent: -9999px;
+}
+
+#release-details progress[value]::-webkit-progress-bar {
+	background-color: #eee;
+	border-radius: 2px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+#release-details .progress-container::before {
+	content: attr(data-percent) '%';
+	position: absolute;
+	top: 13px;
+	right: 90px;
+	color: rgb(94, 94, 94);
+	opacity: 0;
+	-webkit-transition-duration: 0.3s;
+	transition-duration: 0.3s;
+	-webkit-transition-property: opacity;
+	transition-property: opacity;
+}
+
+#release-details .full-upgrade-details .progress-container::before {
+	right: 15px;
+}
+
+#release-details .progress-container:hover::before {
+	opacity: 1;
+}
+
+#release-details progress[value]::-webkit-progress-value {
+	background: #8cc53e;
+	border-radius: 2px;
+	background-size: 35px 20px, 100% 100%, 100% 100%;
+}
+
+#release-details #notify-button {
+	width: 68px;
+	display: inline-block;
+	float: left;
+	margin-top: 8px;
+	margin-left: 8px;
+	text-align: center;
+}
+
+/** -----------------------------------------------------:[ notification editor ]:---------- */
+
+#release-details #notification-subject {
+	width: 100%;
+	margin: 5px 0 20px 0;
+}
+
+#release-details .notification-buttons {
+	float: right;
+}
+
+.blockUI.blockMsg.blockPage {
+	z-index: 9999 !important;
+}
+
+.blockUI.blockOverlay {
+	z-index: 9991 !important;
+}
+
+#notification-body.wp-editor-area,
+#whats-changed-input.wp-editor-area {
+	height: 272px;
+	width: 698px;
+	box-sizing: border-box;
+	font-size: 14px;
+}
+
+/** -----------------------------------------------------:[ upgrade line chart ]:---------- */
+
+.progress-line-chart h4 {
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.progress-line-chart .chart {
+	width: calc(100% - 2em);
+}
+
+/** -----------------------------------------------------:[ versions pie chart ]:---------- */
+
+.versions-pie-chart h4 {
+	text-align: center;
+	margin-bottom: 15px !important;
+}
+
+.versions-pie-chart .chart {
+	width: calc(100% - 2em);
+}
+
+#pie-chart-legend ul {
+	text-align: center;
+	margin-bottom: 0;
+}
+
+#pie-chart-legend li {
+	display: inline-block;
+	margin-right: 10px;
+	margin-bottom: 0;
+}
+
+#pie-chart-legend li:last-of-type {
+	margin-right: 0;
+}
+
+/** -----------------------------------------------------:[ notify button block ]:---------- */
+
+#notify-button-full {
+	width: 100%;
+	text-align: center;
+}
+
+@media screen and (max-width: 781px) {
+
+	#release-details progress[value],
+	#release-details .progress-bar {
+		height: 31px;
+	}
+
+	#release-details .progress-container::before {
+		top: 17px;
+	}
+}
+
+@media screen and (max-width: 600px) {
+
+	#release-details .third-row {
+		padding: 2em 0 !important;
+	}
+
+	#release-details .third-row div.third {
+		width: 100%;
+		padding: 2em 0;
+		margin: 0;
+		border-right: none;
+		border-bottom: 1px solid #DFDFDF;
+		height: auto;
+	}
+
+	#release-details .third-row div.third:first-of-type {
+		margin-top: 0;
+		padding-top: 0;
+	}
+
+	#release-details .third-row div.third:last-of-type {
+		border-bottom: none;
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
+
+	#release-details .misc-block h4 {
+		text-align: center;
+	}
+
+	#release-details .misc-block h3 {
+		text-align: center;
+	}
+
+	#release-details .third .editable-container.editable-inline {
+		width: 100%;
+	}
+
+	#release-details .third .editable-container.editable-inline .editable-input {
+		text-align: center;
+		display: block;
+		width: 100%;
+		margin: 10px 0 0 0;
+		padding: 0;
+	}
+
+	#release-details .third .editable-container.editable-inline .editable-input input {
+		text-align: center;
+	}
+
+	#release-details .third .editable-inline .editableform-loading {
+		width: 100%;
+		margin: 5px 0 0 0;
+		padding: 0;
+		background-position: center center;
+	}
+}

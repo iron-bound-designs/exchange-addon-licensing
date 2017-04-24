@@ -10,13 +10,19 @@
 
 namespace ITELIC\DB\Table;
 
-use IronBound\DB\Table\Table;
+use IronBound\DB\Manager;
+use IronBound\DB\Table\BaseTable;
+use IronBound\DB\Table\Column\DateTime;
+use IronBound\DB\Table\Column\DecimalBased;
+use IronBound\DB\Table\Column\ForeignModel;
+use IronBound\DB\Table\Column\IntegerBased;
 
 /**
  * Class Renewals
+ *
  * @package ITELIC\DB\Table
  */
-class Renewals implements Table {
+class Renewals extends BaseTable {
 
 	/**
 	 * Columns in the table.
@@ -29,12 +35,13 @@ class Renewals implements Table {
 	 */
 	public function get_columns() {
 		return array(
-			'id'               => '%d',
-			'lkey'             => '%s',
-			'renewal_date'     => '%s',
-			'key_expired_date' => '%s',
-			'transaction_id'   => '%d',
-			'revenue'          => '%f'
+			'id'               =>
+				new IntegerBased( 'BIGINT', 'id', array( 'unsigned', 'NOT NULL', 'auto_increment' ), array( 20 ) ),
+			'lkey'             => new ForeignModel( 'lkey', 'ITELIC\Key', Manager::get( 'itelic-keys' ) ),
+			'renewal_date'     => new DateTime( 'renewal_date', array( 'NOT NULL' ) ),
+			'key_expired_date' => new DateTime( 'key_expired_date' ),
+			'transaction_id'   => new ForeignModel( 'transaction_id', 'IT_Exchange_Transaction', Manager::get( 'ite-transactions' ) ),
+			'revenue'          => new DecimalBased( 'DECIMAL', 'revenue', array( 'NOT NULL' ), array( 10, 2 ) ),
 		);
 	}
 
@@ -54,6 +61,16 @@ class Renewals implements Table {
 			'transaction_id'   => 0,
 			'revenue'          => '0.00'
 		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function get_keys() {
+		$keys   = parent::get_keys();
+		$keys[] = 'key_to_dates (lkey,renewal_date,key_expired_date)';
+
+		return $keys;
 	}
 
 	/**
@@ -89,30 +106,6 @@ class Renewals implements Table {
 	 */
 	public function get_primary_key() {
 		return 'id';
-	}
-
-	/**
-	 * Get creation SQL.
-	 *
-	 * @since 1.0
-	 *
-	 * @param \wpdb $wpdb
-	 *
-	 * @return string
-	 */
-	public function get_creation_sql( \wpdb $wpdb ) {
-		$tn = $this->get_table_name( $wpdb );
-
-		return "CREATE TABLE {$tn} (
-		id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-		lkey VARCHAR(255) NOT NULL,
-		renewal_date DATETIME NOT NULL,
-		key_expired_date DATETIME,
-		transaction_id BIGINT(20) NOT NULL,
-		revenue DECIMAL(10,2) NOT NULL,
-		PRIMARY KEY  (id),
-		KEY key_to_dates (lkey,renewal_date,key_expired_date)
-		) {$wpdb->get_charset_collate()};";
 	}
 
 	/**

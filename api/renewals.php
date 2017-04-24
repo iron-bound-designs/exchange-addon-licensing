@@ -204,7 +204,10 @@ function itelic_create_renewal_transaction( $args ) {
 	$products[ $i ]['product_subtotal']   = $products[ $i ]['product_base_price']; //need to add count
 	$products[ $i ]['product_name']       = get_the_title( $product_id );
 	$products[ $i ]['product_id']         = $product_id;
+	$products[ $i ]['product_cart_id']    = $i;
 	$products[ $i ]['count']              = 1;
+	$products[ $i ]['itemized_data']      = $itemized_data;
+	$products[ $i ]['additional_data']    = serialize( array() );
 	$description[]                        = $products[ $i ]['product_name'];
 
 	$description = apply_filters( 'it_exchange_get_cart_description', join( ', ', $description ), $description );

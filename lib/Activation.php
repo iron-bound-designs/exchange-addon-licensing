@@ -11,6 +11,8 @@
 namespace ITELIC;
 
 use IronBound\Cache\Cache;
+use IronBound\DB\Extensions\Meta\MetaTable;
+use IronBound\DB\Extensions\Meta\ModelWithMeta;
 use IronBound\DB\Model;
 use IronBound\DB\Table\Table;
 use IronBound\DB\Manager;
@@ -23,8 +25,16 @@ use ITELIC\Query\Updates;
  * Class that logs activations.
  *
  * @since 1.0
+ *
+ * @property int            $id
+ * @property Key            $lkey
+ * @property string         $location
+ * @property string         $status
+ * @property \DateTime      $activation
+ * @property \DateTime|null $deactivation
+ * @property Release        $release_id
  */
-class Activation extends Model implements API\Serializable {
+class Activation extends ModelWithMeta implements API\Serializable {
 
 	/**
 	 * Represents when this site is active.
@@ -42,69 +52,6 @@ class Activation extends Model implements API\Serializable {
 	 * has expired.
 	 */
 	const EXPIRED = 'expired';
-
-	/**
-	 * @var int
-	 */
-	private $id;
-
-	/**
-	 * @var Key
-	 */
-	private $key;
-
-	/**
-	 * @var string
-	 */
-	private $location;
-
-	/**
-	 * @var string
-	 */
-	private $status;
-
-	/**
-	 * @var \DateTime
-	 */
-	private $activation;
-
-	/**
-	 * @var \DateTime
-	 */
-	private $deactivation = null;
-
-	/**
-	 * @var Release
-	 */
-	private $release;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param object $data
-	 */
-	public function __construct( $data ) {
-		$this->init( $data );
-	}
-
-	/**
-	 * Initialize this object.
-	 *
-	 * @param \stdClass $data
-	 */
-	protected function init( \stdClass $data ) {
-		$this->id         = $data->id;
-		$this->key        = itelic_get_key( $data->lkey );
-		$this->location   = $data->location;
-		$this->status     = $data->status;
-		$this->activation = make_date_time( $data->activation );
-
-		if ( ! empty( $data->deactivation ) && $data->deactivation != '0000-00-00 00:00:00' ) {
-			$this->deactivation = make_date_time( $data->deactivation );
-		}
-
-		$this->release = itelic_get_release( $data->release_id );
-	}
 
 	/**
 	 * Create an activation.
@@ -148,7 +95,7 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		$data = array(
-			'lkey'         => $key->get_key(),
+			'lkey'         => $key,
 			'location'     => $location,
 			'activation'   => $activation,
 			'deactivation' => null,
@@ -156,10 +103,8 @@ class Activation extends Model implements API\Serializable {
 		);
 
 		if ( $release ) {
-			$data['release_id'] = $release->get_pk();
+			$data['release_id'] = $release;
 		}
-
-		$db = Manager::make_simple_query_object( 'itelic-activations' );
 
 		$existing_activation = itelic_get_activation_by_location( $location, $key );
 
@@ -167,15 +112,7 @@ class Activation extends Model implements API\Serializable {
 			throw new \InvalidArgumentException( __( "An activation with this same location already exists.", Plugin::SLUG ) );
 		}
 
-		$id = $db->insert( $data );
-
-		if ( ! $id ) {
-			return null;
-		}
-
-		$activation = self::get( $id );
-
-		Cache::add( $activation );
+		$activation = static::_do_create( $data );
 
 		if ( ! $release ) {
 
@@ -299,7 +236,7 @@ class Activation extends Model implements API\Serializable {
 	 * @return Key
 	 */
 	public function get_key() {
-		return $this->key;
+		return $this->lkey;
 	}
 
 	/**
@@ -339,10 +276,8 @@ class Activation extends Model implements API\Serializable {
 		}
 
 		$old_status = $this->status;
-
 		$this->status = $status;
-
-		$this->update( 'status', $status );
+		$this->save();
 
 		/**
 		 * Fires when an activation's status is transitioned.
@@ -388,16 +323,8 @@ class Activation extends Model implements API\Serializable {
 	 * @param \DateTime $time
 	 */
 	protected function set_activation( \DateTime $time = null ) {
-
 		$this->activation = $time;
-
-		if ( $time ) {
-			$val = $time->format( "Y-m-d H:i:s" );
-		} else {
-			$val = null;
-		}
-
-		$this->update( 'activation', $val );
+		$this->save();
 	}
 
 	/**
@@ -422,16 +349,8 @@ class Activation extends Model implements API\Serializable {
 	 * @param \DateTime $time
 	 */
 	protected function set_deactivation( \DateTime $time = null ) {
-
 		$this->deactivation = $time;
-
-		if ( $time ) {
-			$val = $time->format( "Y-m-d H:i:s" );
-		} else {
-			$val = null;
-		}
-
-		$this->update( 'deactivation', $val );
+		$this->save();
 	}
 
 	/**
@@ -442,7 +361,7 @@ class Activation extends Model implements API\Serializable {
 	 * @return Release
 	 */
 	public function get_release() {
-		return $this->release;
+		return $this->release_id;
 	}
 
 	/**
@@ -453,10 +372,8 @@ class Activation extends Model implements API\Serializable {
 	 * @param Release $release
 	 */
 	public function set_release( Release $release ) {
-
-		$this->release = $release;
-
-		$this->update( 'release_id', $this->release->get_pk() );
+		$this->release_id = $release;
+		$this->save();
 	}
 
 	/**
@@ -505,71 +422,6 @@ class Activation extends Model implements API\Serializable {
 	}
 
 	/**
-	 * Add metadata to this activation.
-	 *
-	 * @since 1.0
-	 *
-	 * @param string $key    Metadata key
-	 * @param mixed  $value  Metadata value. Must be serializable if
-	 *                       non-scalar.
-	 * @param bool   $unique Optional, default is false. Whether the meta key
-	 *                       should be unique for this release.
-	 *
-	 * @return false|int The meta ID on success, false on failure.
-	 */
-	public function add_meta( $key, $value, $unique = false ) {
-		return add_metadata( 'itelic_activation', $this->get_ID(), $key, $value, $unique );
-	}
-
-	/**
-	 * Retrieve metadata for this activation.
-	 *
-	 * @since 1.5.0
-	 *
-	 * @param string $key     Optional. The meta key to retrieve. By default,
-	 *                        returns data for all keys. Default empty.
-	 * @param bool   $single  Optional. Whether to return a single value.
-	 *                        Default false.
-	 *
-	 * @return mixed Will be an array if $single is false. Will be value of
-	 *               meta data field if $single is true.
-	 */
-	public function get_meta( $key = '', $single = false ) {
-		return get_metadata( 'itelic_activation', $this->get_ID(), $key, $single );
-	}
-
-	/**
-	 * Update metadata for this activation.
-	 *
-	 * @since 1.0
-	 *
-	 * @param string $key        Metadata key.
-	 * @param mixed  $value      Metadata value. Must be serializable if
-	 *                           non-scalar.
-	 * @param string $prev_value Optional. Previous value to check before
-	 *                           removing. Default empty.
-	 *
-	 * @return bool|int Meta ID if the key didn't exist, true on successful
-	 *                  update, false on failure.
-	 */
-	public function update_meta( $key, $value, $prev_value = '' ) {
-		return update_metadata( 'itelic_activation', $this->get_ID(), $key, $value, $prev_value );
-	}
-
-	/**
-	 * Remove metadata from this activation.
-	 *
-	 * @param string $key   Metadata key.
-	 * @param mixed  $value Optional. Metadata value. Must be serializable if
-	 *                      non-scalar. Default empty.
-	 *
-	 * @return bool
-	 */
-	public function delete_meta( $key, $value = '' ) {
-		return delete_metadata( 'itelic_activation', $this->get_ID(), $key, $value );
-	}
-
-	/**
 	 * Get data suitable for the API.
 	 *
 	 * @since 1.0
@@ -579,11 +431,11 @@ class Activation extends Model implements API\Serializable {
 	public function get_api_data() {
 		$data = array(
 			'id'           => $this->get_id(),
-			'activation'   => $this->get_activation()->format( \DateTime::ISO8601 ),
-			'deactivation' => ( $d = $this->get_deactivation() ) === null ? "" : $d->format( \DateTime::ISO8601 ),
+			'activation'   => $this->get_activation()->format( \DateTime::ATOM ),
+			'deactivation' => ( $d = $this->get_deactivation() ) ? $d->format( \DateTime::ATOM ) : '',
 			'location'     => $this->get_location(),
 			'status'       => $this->get_status(),
-			'track'        => $this->get_meta( 'track', true ) ? $this->get_meta( 'track', true ) : 'stable',
+			'track'        => $this->get_meta( 'track', true ) ?: 'stable',
 			'key'          => $this->get_key()->get_key()
 		);
 
@@ -601,29 +453,6 @@ class Activation extends Model implements API\Serializable {
 	}
 
 	/**
-	 * Get the data we'd like to cache.
-	 *
-	 * This is a bit magical. It iterates through all of the table columns,
-	 * and checks if a getter for that method exists. If so, it pulls in that
-	 * value. Otherwise, it will pull in the default value. If you'd like to
-	 * customize this you should override this function in your child model
-	 * class.
-	 *
-	 * @since 1.0
-	 *
-	 * @return array
-	 */
-	public function get_data_to_cache() {
-		$data = parent::get_data_to_cache();
-
-		unset( $data['key'] );
-		$data['lkey']       = $this->get_key()->get_key();
-		$data['release_id'] = $this->get_release() ? $this->get_release()->get_pk() : null;
-
-		return $data;
-	}
-
-	/**
 	 * Get the table object for this model.
 	 *
 	 * @since 1.0
@@ -634,4 +463,10 @@ class Activation extends Model implements API\Serializable {
 		return Manager::get( 'itelic-activations' );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public static function get_meta_table() {
+		return Manager::get( 'itelic-activation-meta' );
+	}
 }

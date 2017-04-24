@@ -23,6 +23,14 @@ use ITELIC\Query\Renewals;
  * Class used to represent a license key.
  *
  * @since 1.0
+ *
+ * @property string                   $lkey
+ * @property \IT_Exchange_Transaction $transaction_id
+ * @property Product                  $product
+ * @property \IT_Exchange_Customer    $customer
+ * @property string                   $status
+ * @property \DateTime|null           $expires
+ * @property int                      $max
  */
 class Key extends Model implements API\Serializable {
 
@@ -40,97 +48,6 @@ class Key extends Model implements API\Serializable {
 	 * Represents when this license key was disabled by an admin.
 	 */
 	const DISABLED = 'disabled';
-
-	/**
-	 * @var string
-	 */
-	private $key;
-
-	/**
-	 * @var \IT_Exchange_Transaction
-	 */
-	private $transaction;
-
-	/**
-	 * @var Product
-	 */
-	private $product;
-
-	/**
-	 * @var \IT_Exchange_Customer
-	 */
-	private $customer;
-
-	/**
-	 * @var string
-	 */
-	private $status;
-
-	/**
-	 * @var \DateTime|null
-	 */
-	private $expires = null;
-
-	/**
-	 * @var int
-	 */
-	private $max;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param object $data Data from the DB
-	 *
-	 * @throws \InvalidArgumentException If an invalid transaction, product or
-	 *                                  customer.
-	 */
-	public function __construct( $data ) {
-		$this->init( $data );
-	}
-
-	/**
-	 * Initialize this object.
-	 *
-	 * @param \stdClass $data
-	 */
-	protected function init( \stdClass $data ) {
-		$this->key         = $data->lkey;
-		$this->transaction = it_exchange_get_transaction( $data->transaction_id );
-		$this->product     = itelic_get_product( $data->product );
-
-		// account for guest checkouts
-		if ( $data->customer ) {
-			$this->customer = it_exchange_get_customer( $data->customer );
-		} else {
-			$customer = it_exchange_get_transaction_customer( $this->transaction );
-
-			if ( ! $customer instanceof \IT_Exchange_Customer ) {
-				$customer                        = new \IT_Exchange_Customer( $customer );
-				$customer->wp_user->display_name = sprintf( __( "Guest (%s)", Plugin::SLUG ), $customer->wp_user->user_email );
-			}
-
-			$this->customer = $customer;
-		}
-
-		$this->status = $data->status;
-		$this->max    = $data->max;
-
-		if ( ! empty( $data->expires ) && $data->expires != '0000-00-00 00:00:00' ) {
-			$this->expires = make_date_time( $data->expires );
-		}
-
-		foreach (
-			array(
-				'transaction',
-				'product',
-				'customer'
-			) as $maybe_error
-		) {
-			if ( ! $this->$maybe_error || is_wp_error( $this->$maybe_error ) ) {
-				throw new \InvalidArgumentException( "Invalid $maybe_error" );
-			}
-		}
-	}
 
 	/**
 	 * Create a license key record.
@@ -169,18 +86,15 @@ class Key extends Model implements API\Serializable {
 
 		$data = array(
 			'lkey'           => $key,
-			'transaction_id' => $transaction->ID,
+			'transaction_id' => $transaction,
 			'product'        => $product->ID,
-			'customer'       => $customer->id,
+			'customer'       => $customer,
 			'status'         => $status,
 			'max'            => (int) $max,
-			'expires'        => isset( $expires ) ? $expires->format( "Y-m-d H:i:s" ) : null
+			'expires'        => $expires
 		);
 
-		$db = Manager::make_simple_query_object( 'itelic-keys' );
-		$db->insert( $data );
-
-		$key = self::get( $key );
+		$key = static::_do_create( $data );
 
 		if ( $key ) {
 
@@ -192,8 +106,6 @@ class Key extends Model implements API\Serializable {
 			 * @param Key $key
 			 */
 			do_action( 'itelic_create_key', $key );
-
-			Cache::add( $key );
 		}
 
 		return $key;
@@ -225,7 +137,7 @@ class Key extends Model implements API\Serializable {
 
 		$now = make_date_time();
 
-		if ( $this->get_expires() > $now && $this->get_status() != self::ACTIVE ) {
+		if ( $this->get_expires() > $now && $this->get_status() !== self::ACTIVE ) {
 			$this->set_status( self::ACTIVE );
 		}
 
@@ -275,7 +187,7 @@ class Key extends Model implements API\Serializable {
 		if ( $transaction === null ) {
 			$date = null;
 		} else {
-			$date = make_date_time( $transaction->post_date_gmt );
+			$date = make_date_time( $transaction->get_date( true ) );
 		}
 
 		$record = Renewal::create( $this, $transaction, $this->get_expires(), $date );
@@ -309,9 +221,8 @@ class Key extends Model implements API\Serializable {
 	 */
 	public function expire( \DateTime $date = null ) {
 
-		if ( $this->status != self::EXPIRED ) {
+		if ( $this->status !== self::EXPIRED ) {
 			$this->status = self::EXPIRED;
-			$this->update( 'status', self::EXPIRED );
 		}
 
 		if ( $date === null ) {
@@ -369,7 +280,7 @@ class Key extends Model implements API\Serializable {
 	 * @return mixed (generally int, but not necessarily).
 	 */
 	public function get_pk() {
-		return $this->key;
+		return $this->lkey;
 	}
 
 	/**
@@ -383,7 +294,7 @@ class Key extends Model implements API\Serializable {
 	 * @return \IT_Exchange_Transaction
 	 */
 	public function get_transaction() {
-		return $this->transaction;
+		return $this->transaction_id;
 	}
 
 	/**
@@ -397,7 +308,7 @@ class Key extends Model implements API\Serializable {
 	 * @return \IT_Exchange_Customer
 	 */
 	public function get_customer() {
-		return $this->customer;
+		return $this->customer ?: $this->transaction_id->get_customer();
 	}
 
 	/**
@@ -432,12 +343,12 @@ class Key extends Model implements API\Serializable {
 
 		$old_status = $this->status;
 
-		if ( $old_status == self::ACTIVE && $status == self::EXPIRED ) {
+		if ( $old_status === self::ACTIVE && $status === self::EXPIRED ) {
 			$this->expire();
 		}
 
 		$this->status = $status;
-		$this->update( 'status', $this->get_status() );
+		$this->save();
 
 		/**
 		 * Fires when a key's status is transitioned.
@@ -512,23 +423,15 @@ class Key extends Model implements API\Serializable {
 	 * @param \DateTime $expires . Set null for forever.
 	 */
 	public function set_expires( \DateTime $expires = null ) {
-
 		$this->expires = $expires;
-
-		if ( $expires ) {
-			$val = $expires->format( "Y-m-d H:i:s" );
-		} else {
-			$val = null;
-		}
-
-		$this->update( 'expires', $val );
+		$this->save();
 	}
 
 	/**
 	 * @return int
 	 */
 	public function get_max() {
-		return $this->max ? $this->max : '';
+		return $this->max ?: '';
 	}
 
 	/**
@@ -539,9 +442,8 @@ class Key extends Model implements API\Serializable {
 	 * @param int $max
 	 */
 	public function set_max( $max ) {
-
 		$this->max = (int) $max;
-		$this->update( 'max', $this->get_max() );
+		$this->save();
 	}
 
 	/**
@@ -579,7 +481,7 @@ class Key extends Model implements API\Serializable {
 			'customer'    => $this->get_customer()->wp_user->ID,
 			'status'      => $this->get_status(),
 			'max'         => $this->get_max(),
-			'expires'     => $this->get_expires() ? $this->get_expires()->format( \DateTime::ISO8601 ) : '',
+			'expires'     => $this->get_expires() ? $this->get_expires()->format( \DateTime::ATOM ) : '',
 			'activations' => array(
 				'count'        => count( $activations ),
 				'count_active' => $this->get_active_count(),
@@ -643,33 +545,6 @@ class Key extends Model implements API\Serializable {
 	}
 
 	/**
-	 * Get the data we'd like to cache.
-	 *
-	 * This is a bit magical. It iterates through all of the table columns,
-	 * and checks if a getter for that method exists. If so, it pulls in that
-	 * value. Otherwise, it will pull in the default value. If you'd like to
-	 * customize this you should override this function in your child model
-	 * class.
-	 *
-	 * @since 1.0
-	 *
-	 * @return array
-	 */
-	public function get_data_to_cache() {
-		$data = parent::get_data_to_cache();
-
-		$data['lkey']           = $this->get_key();
-		$data['transaction_id'] = $this->get_transaction()->ID;
-
-		// account for guest checkouts
-		if ( ! is_int( $data['customer'] ) ) {
-			$data['customer'] = 0;
-		}
-
-		return $data;
-	}
-
-	/**
 	 * Get the table object for this model.
 	 *
 	 * @since 1.0
@@ -678,5 +553,61 @@ class Key extends Model implements API\Serializable {
 	 */
 	protected static function get_table() {
 		return Manager::get( 'itelic-keys' );
+	}
+
+	protected function _access_product( $raw ) {
+		return itelic_get_product( $raw );
+	}
+
+	protected function _mutate_product( $value ) {
+		if ( is_numeric( $value ) ) {
+			return $value;
+		}
+
+		if ( $value instanceof \IT_Exchange_Product ) {
+			return $value->get_ID();
+		}
+
+		return $value;
+	}
+
+	protected function _access_transaction_id( $raw ) {
+		return it_exchange_get_transaction( $raw );
+	}
+
+	protected function _mutate_transaction_id( $value ) {
+		if ( is_numeric( $value ) ) {
+			return $value;
+		}
+
+		if ( $value instanceof \IT_Exchange_Transaction ) {
+			return $value->get_ID();
+		}
+
+		if ( $value instanceof \WP_Post ) {
+			return $value->ID;
+		}
+
+		return $value;
+	}
+
+	protected function _access_customer( $raw ) {
+		return it_exchange_get_customer( $raw );
+	}
+
+	protected function _mutate_customer( $value ) {
+		if ( is_numeric( $value ) ) {
+			return $value;
+		}
+
+		if ( $value instanceof \IT_Exchange_Customer ) {
+			return $value->get_ID();
+		}
+
+		if ( $value instanceof \WP_User ) {
+			return $value->ID;
+		}
+
+		return $value;
 	}
 }

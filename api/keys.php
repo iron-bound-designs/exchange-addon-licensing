@@ -171,8 +171,11 @@ function itelic_create_key( $args ) {
 		$products[ $key ]['product_base_price'] = $product->get_feature( 'base-price' );
 		$products[ $key ]['product_subtotal']   = $products[ $key ]['product_base_price']; //need to add count
 		$products[ $key ]['product_name']       = get_the_title( $product_id );
+		$products[ $key ]['product_cart_id']    = $key;
 		$products[ $key ]['product_id']         = $product_id;
 		$products[ $key ]['count']              = 1;
+		$products[ $key ]['itemized_data']      = $itemized_data;
+		$products[ $key ]['additional_data']    = serialize( array() );
 		$description[]                          = $products[ $key ]['product_name'];
 
 		$description = apply_filters( 'it_exchange_get_cart_description', join( ', ', $description ), $description );
